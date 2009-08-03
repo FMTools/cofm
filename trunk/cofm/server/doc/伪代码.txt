@@ -1,0 +1,71 @@
+class Server {
+     class SocketConnection {
+          String[] responses;
+          ByteBuffer readBuffer;
+          public ArrayList pollResponseList() {
+                remove responses and return them;
+          }
+     }
+     public service() {
+           while (selector.select() > 0) { 
+               for all selected keys {
+                     if (key is acceptable) 
+                           socketChannel = accept();
+                           store <ip:port, socketConnection> in Map;
+                           key.attach(socketConnection);
+                           register READ | WRITE for socketChannel.
+                     if (key is readable)  
+                           request = ReadPolicy.read(key.attachment());
+                           if (request != null) {
+                                actionController.dispatchRequest(request);
+                           }
+                     if (key is writable)
+                          sendResponse(key);
+               }
+           }
+     }
+     
+     public addResponse(response) {
+            if (response.type == "broadcast") {
+                    add response.data to all ip:port in Map;
+            }
+            if (response.type == "targeted") {
+                    add response.data to all ip:port in targetList;
+            }
+     }
+
+     private sendResponse(key) {
+          if (hasUnsendResponses(key)) {
+              writePolicy.write(key.attachment()); 
+          }
+     }
+}
+
+interface WritePolicy {
+// Maybe we use different policies for different responses, for example, the "UPDATE" response returns the whole model, which is very big, so we may employ a thread to send data. We may also decide that small amount of data should be send first, e.g. use several buffers to hold big data and send a small amount each time.
+NOTE: if we use a thread to wrtie, then we must mark the SocketChannel as unreadable, because the SocketChannelObject is a shared data here
+}
+
+interface SocketDataTransferPolicy {
+     // contains WritePolicy and ReadPolicy
+}
+
+class ActionController {
+     private requestActionMap = { <"update", [action objects]>, <"commit", [action objects>... };
+     public attachHandler(Handler);
+     public dispatchRequest(request) {
+          for each registered action {
+               handler.addResponse(action.process(requestObject));
+          }
+     }
+}
+
+class SomeAction implements Action {
+    public process(requestObject) {
+        //process request
+        return new Response(type=broadcast, data=Object...);
+    }
+    public register(ArrayOfRequestTypes) {
+         actionController.register(requestType1, this);
+    }
+}
