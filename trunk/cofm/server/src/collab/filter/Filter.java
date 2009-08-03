@@ -35,6 +35,11 @@ public abstract class Filter {
 		return filteredResponse;
 	}
 	
+	protected void onFilterError(Filterable filtee, String error, String msg) {
+		filtee.filterError(error);
+		filtee.filterMessage(msg);
+	}
+	
 	protected abstract Request doFilterRequest(Request request);
 	protected abstract Response doFilterResponse(Response response);
 	
