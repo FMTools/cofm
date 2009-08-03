@@ -9,6 +9,7 @@ TODOs(not bugs) are listed here.
 ==Server-side==
 *2009.08.03*<br>
  # Implement `Feature` and `Operation` data structures.
+ # `AccessController`：添加一个Map记录已经登录的用户（在过滤Response时记录，过滤Request时检测）
 
 ==Client-side==
 _(not under development now)_
