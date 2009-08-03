@@ -18,9 +18,11 @@ public class JsonConverter extends Filter {
 			JSONObject jsonObject = (JSONObject)JSONSerializer.toJSON(json);
 			DynaBean bean = (DynaBean)JSONSerializer.toJava(jsonObject);
 			request.body(bean);
+			request.name((String)bean.get(Resources.get(Resources.PRTCL_NAME_FIELD)));
 			return request;
 		} catch (Exception e){
 			///~locale
+			request.name(Resources.get(Resources.REQ_BAD));
 			request.filterMessage("Exception: " + e.getMessage());
 			return null;
 		}

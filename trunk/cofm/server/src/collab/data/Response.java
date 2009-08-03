@@ -7,14 +7,15 @@ import collab.filter.Filterable;
 
 public class Response extends Filterable {
 	public static final String TERMINATOR = "\0";
+	
 	public static final String TYPE_PEER = "peer";
 	public static final String TYPE_BROADCAST = "broadcast";
-	
+
 	private String type;
 	private boolean sendBack; // write response back to requester ?
 	private ArrayList<InetSocketAddress> targets = null; // for other targets
 	
-	private Object body;
+	private Object body; // "name" is a field of body
 		
 	public Response(String type, Object content, boolean sendBack) {
 		this.type = type;

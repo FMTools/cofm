@@ -6,14 +6,14 @@ import collab.filter.Filterable;
 
 public class Request extends Filterable {
 	public static final String TERMINATOR = "\n";
-	public static final String TYPE_UPDATE = "update";
-	public static final String TYPE_COMMIT = "commit";
 	
 	private InetSocketAddress source;
+	private String name;
 	private Object body; 
 	
 	public Request(InetSocketAddress address, Object content) {
 		source = address;
+		name = null;
 		body = content;
 	}
 	
@@ -23,6 +23,18 @@ public class Request extends Filterable {
 	
 	public void body(Object newContent) {
 		body = newContent;
+	}
+	
+	public String name() {
+		return name;
+	}
+	
+	public void name(String n) {
+		name = n;
+	}
+	
+	public InetSocketAddress source() {
+		return source;
 	}
 
 }
