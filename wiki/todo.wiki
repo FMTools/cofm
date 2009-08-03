@@ -8,11 +8,7 @@ TODOs(not bugs) are listed here.
 
 ==Server-side==
 *2009.08.03*<br>
-1. Add a `Name` field in `Request` and `Response`, create two name lists for them<br>
-2. Implement `Feature` and `Operation` data structures.<br>
-
-*Future*<br>
-1. 把`Request`和`Response`的Name写到一个资源文件中，使得服务器和客户端可以共享<br>
+ # Implement `Feature` and `Operation` data structures.
 
 ==Client-side==
 _(not under development now)_
