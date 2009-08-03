@@ -5,6 +5,5 @@
 APIs, tutorials, useful articles and code samples for this project.
 
 = Details =
-*[http://commons.apache.org Apache Commons]
-*[http://commons.apache.org/beanutils/v1.8.0/apidocs/index.html commons.beanutils javadoc]
-
+ *[http://commons.apache.org Apache Commons]
+ *[http://commons.apache.org/beanutils/v1.8.0/apidocs/index.html commons.beanutils javadoc]
