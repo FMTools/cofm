@@ -1,0 +1,15 @@
+#summary TODO
+
+= Introduction =
+
+TODOs(not bugs) are listed here.
+
+
+= Details =
+==Server-side==
+*[2009.08.03]*
+1. Add a `Name` field in `Request` and `Response`, create two name lists for them
+2. Implement `Feature` and `Operation` data structures.
+
+==Client-side==
+_(not under development now)_
