@@ -12,14 +12,12 @@ public class Response extends Filterable {
 	public static final String TYPE_BROADCAST = "broadcast";
 
 	private String type;
-	private boolean sendBack; // write response back to requester ?
 	private ArrayList<InetSocketAddress> targets = null; // for other targets
 	
 	private Object body; // "name" is a field of body
 		
-	public Response(String type, Object content, boolean sendBack) {
+	public Response(String type, Object content) {
 		this.type = type;
-		this.sendBack = sendBack;
 		body = content;
 	}
 	
@@ -48,13 +46,5 @@ public class Response extends Filterable {
 	
 	public void body(Object newBody) {
 		body = newBody;
-	}
-	
-	public boolean sendBack() {
-		return sendBack;
-	}
-	
-	public void sendBack(boolean back) {
-		sendBack = back;
 	}
 }

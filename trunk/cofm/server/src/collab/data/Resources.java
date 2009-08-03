@@ -5,19 +5,26 @@ import java.util.Locale;;
 
 public class Resources {
 	//Protocol
-	public static final String PRTCL_NAME_FIELD = "p_name_field";
+	public static final String REQ_FIELD_NAME = "req.field.name";
+	public static final String REQ_FIELD_ID = "req.field.id";
+	public static final String REQ_FIELD_USER = "req.field.user";
+	public static final String REQ_ERROR_AUTHORITY = "req.error.authority";
+	public static final String REQ_ERROR_FORMAT = "req.error.format";
+	public static final String REQ_UPDATE = "req.update";
+	public static final String REQ_COMMIT = "req.commit";
+	public static final String REQ_LOGIN = "req.login";
+	public static final String REQ_LOGOUT = "req.logout";
 	
-	public static final String REQ_UPDATE = "pc_update";
-	public static final String REQ_COMMIT = "pc_commit";
-	public static final String REQ_LOGIN = "pc_login";
-	public static final String REQ_LOGOUT = "pc_logout";
-	public static final String REQ_UNAUTHORIZED = "pc_unauthorized";
-	public static final String REQ_BAD = "pc_bad_format";
+	public static final String RSP_FIELD_NAME = "rsp.field.name";
+	public static final String RSP_FIELD_SOURCE_ID = "rsp.field.source.id";
+	public static final String RSP_FIELD_SOURCE_NAME = "rsp.field.source.name";
+	public static final String RSP_FIELD_SOURCE_ADDR = "rsp.field.source.addr";
+	public static final String RSP_ERROR_FORMAT = "rsp.error.format";
+	public static final String RSP_SUCCESS = "rsp.success";
+	public static final String RSP_FORWARD = "rsp.forward";
+	public static final String RSP_DENIED = "rsp.denied";
+	public static final String RSP_FAILURE = "rsp.failure";
 	
-	public static final String RSP_SUCCESS = "ps_success";
-	public static final String RSP_DENIED = "ps_denied";
-	public static final String RSP_NEW_OP = "ps_new_op";
-	public static final String RSP_MODEL_ERROR = "ps_model_error";
 	
 	private static ResourceBundle protocolRes = ResourceBundle.getBundle("protocol");
 	

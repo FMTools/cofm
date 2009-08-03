@@ -2,14 +2,15 @@ package collab.filter;
 
 public class Filterable {
 	protected String latestFilterName;
-	protected String latestFilterMsg;
+	protected String filterMsg;
+	protected String filterError;
 	
 	public void filterMessage(String message) {
-		latestFilterMsg = message;
+		filterMsg = message;
 	}
 
 	public String filterMessage() {
-		return latestFilterMsg;
+		return filterMsg;
 	}
 
 	public void latestFilter(String name) {
@@ -18,5 +19,13 @@ public class Filterable {
 
 	public String latestFilter() {
 		return latestFilterName;
+	}
+	
+	public void filterError(String error) {
+		filterError = error;
+	}
+	
+	public String filterError() {
+		return filterError;
 	}
 }

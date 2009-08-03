@@ -53,10 +53,10 @@ public class EventHandler extends IoHandlerAdapter {
     }
     
     private void distributeResponse(IoSession session, Response rsp) {
-    	if (rsp.sendBack()) {
-    		writeResponse((InetSocketAddress)session.getRemoteAddress(), rsp);
-    		
-    	}
+    	// Write back to requester
+    	writeResponse((InetSocketAddress)session.getRemoteAddress(), rsp);
+    	
+    	// Do multicast or broadcast
     	if (rsp.type().equals(Response.TYPE_PEER)) {
     		ArrayList<InetSocketAddress> dest = rsp.targets();
     		Iterator<InetSocketAddress> it = dest.iterator();

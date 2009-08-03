@@ -18,11 +18,10 @@ public class JsonConverter extends Filter {
 			JSONObject jsonObject = (JSONObject)JSONSerializer.toJSON(json);
 			DynaBean bean = (DynaBean)JSONSerializer.toJava(jsonObject);
 			request.body(bean);
-			request.name((String)bean.get(Resources.get(Resources.PRTCL_NAME_FIELD)));
 			return request;
 		} catch (Exception e){
 			///~locale
-			request.name(Resources.get(Resources.REQ_BAD));
+			request.filterError(Resources.get(Resources.REQ_ERROR_FORMAT));
 			request.filterMessage("Exception: " + e.getMessage());
 			return null;
 		}
@@ -36,6 +35,7 @@ public class JsonConverter extends Filter {
 			return response;
 		} catch (Exception e) {
 			///~locale
+			response.filterError(Resources.get(Resources.RSP_ERROR_FORMAT));
 			response.filterMessage("Exception: " + e.getMessage());
 			return null;
 		}

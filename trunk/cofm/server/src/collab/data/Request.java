@@ -7,14 +7,12 @@ import collab.filter.Filterable;
 public class Request extends Filterable {
 	public static final String TERMINATOR = "\n";
 	
-	private InetSocketAddress source;
-	private String name;
+	private InetSocketAddress address;
 	private Object body; 
 	
-	public Request(InetSocketAddress address, Object content) {
-		source = address;
-		name = null;
-		body = content;
+	public Request(InetSocketAddress address, Object body) {
+		this.address = address;
+		this.body = body;
 	}
 	
 	public Object body() {
@@ -25,16 +23,8 @@ public class Request extends Filterable {
 		body = newContent;
 	}
 	
-	public String name() {
-		return name;
-	}
-	
-	public void name(String n) {
-		name = n;
-	}
-	
-	public InetSocketAddress source() {
-		return source;
+	public InetSocketAddress address() {
+		return address;
 	}
 
 }

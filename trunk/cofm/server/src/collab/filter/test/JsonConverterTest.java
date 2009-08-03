@@ -36,7 +36,7 @@ public class JsonConverterTest {
 	@Test
 	public void testFilterResponse() {
 		Body rawBody = new Body("commit", "admin");
-		Response rsp = new Response(Response.TYPE_PEER, rawBody, true);
+		Response rsp = new Response(Response.TYPE_PEER, rawBody);
 		Response filteredRsp = jc.filterResponse(rsp);
 		if (filteredRsp == null) {
 			System.out.println(rsp.filterMessage());
