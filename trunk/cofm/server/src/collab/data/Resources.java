@@ -26,12 +26,14 @@ public class Resources {
 	public static final String RSP_DENIED = "rsp.denied";
 	public static final String RSP_FAILURE = "rsp.failure";
 	
+	public static final String MSG_ERROR_EXCEPTION = "msg.error.exception";
 	public static final String MSG_ERROR_DENIED = "msg.error.denied";	
+	public static final String MSG_ERROR_MISSING = "msg.error.missing";
+	public static final String MSG_ERROR_VALUE = "msg.error.value";
 	
 	private static ResourceBundle protocolRes = ResourceBundle.getBundle("protocol");
 	
 	public static String get(String key) {
-		//TODO: handle more locale resources
 		return protocolRes.getString(key);
 	}
 

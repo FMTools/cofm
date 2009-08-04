@@ -1,6 +1,6 @@
-package collab.filter;
+package collab.data;
 
-public class Filterable {
+public abstract class Filterable {
 	protected String latestFilterName;
 	protected String filterMsg;
 	protected String filterError;

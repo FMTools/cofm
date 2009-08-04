@@ -2,7 +2,6 @@ package collab.data;
 
 import java.net.InetSocketAddress;
 
-import collab.filter.Filterable;
 
 public class Request extends Filterable {
 	public static final String TERMINATOR = "\n";

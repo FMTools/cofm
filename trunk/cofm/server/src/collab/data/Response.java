@@ -3,7 +3,6 @@ package collab.data;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 
-import collab.filter.Filterable;
 
 public class Response extends Filterable {
 	public static final String TERMINATOR = "\0";

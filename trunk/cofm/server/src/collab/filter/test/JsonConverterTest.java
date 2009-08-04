@@ -4,7 +4,11 @@ import static org.junit.Assert.*;
 
 import java.net.InetSocketAddress;
 
+import org.apache.commons.beanutils.BasicDynaBean;
 import org.apache.commons.beanutils.DynaBean;
+import org.apache.commons.beanutils.BasicDynaClass;
+import org.apache.commons.beanutils.DynaClass;
+import org.apache.commons.beanutils.DynaProperty;
 import org.junit.*;
 
 import collab.filter.*;
@@ -24,6 +28,7 @@ public class JsonConverterTest {
 		Request req = new Request(new InetSocketAddress(1234), rawBody);
 		Request filteredReq = jc.filterRequest(req); // OK if no "req = "
 		if (filteredReq == null) {
+			System.out.println(req.filterError());
 			System.out.println(req.filterMessage());
 		} else {
 			DynaBean body = (DynaBean)filteredReq.body();
@@ -35,40 +40,23 @@ public class JsonConverterTest {
 	
 	@Test
 	public void testFilterResponse() {
-		Body rawBody = new Body("commit", "admin");
+		//class Body { String type; String username; }
+		DynaClass dc = new BasicDynaClass("Body", BasicDynaBean.class, 
+				new DynaProperty[] {
+			new DynaProperty("type", String.class),
+			new DynaProperty("username", String.class)
+		});
+		DynaBean rawBody = new BasicDynaBean(dc); 
+		rawBody.set("type", "commit");
+		rawBody.set("username", "admin");
 		Response rsp = new Response(Response.TYPE_PEER, rawBody);
 		Response filteredRsp = jc.filterResponse(rsp);
 		if (filteredRsp == null) {
+			System.out.println(rsp.filterError());
 			System.out.println(rsp.filterMessage());
 		} else {
 			System.out.println(rsp.body());
 		}
 		
-	}
-	
-	public class Body {
-		private String type;
-		private String username;
-		
-		public Body(String t, String u) {
-			type = t;
-			username = u;
-		}
-		
-		public String getType() {
-			return type;
-		}
-		
-		public void setType(String t) {
-			type = t;
-		}
-		
-		public String getUsername() {
-			return username;
-		}
-		
-		public void setUsername(String u) {
-			username = u;
-		}
 	}
 }

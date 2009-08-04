@@ -1,5 +1,7 @@
 package collab.filter;
 
+import java.text.MessageFormat;
+
 import org.apache.commons.beanutils.*;
 import net.sf.json.*;
 
@@ -21,10 +23,10 @@ public class JsonConverter extends Filter {
 			return request;
 		} catch (Exception e){
 			///~locale
-			request.filterError(Resources.get(Resources.REQ_ERROR_FORMAT));
-			request.filterMessage("Exception: " + e.getMessage());
+			onFilterError(request, Resources.get(Resources.REQ_ERROR_FORMAT),
+					MessageFormat.format(Resources.get(Resources.MSG_ERROR_EXCEPTION), e.getMessage()));
 			return null;
-		}
+		} 
 	}
 
 	@Override
@@ -35,8 +37,8 @@ public class JsonConverter extends Filter {
 			return response;
 		} catch (Exception e) {
 			///~locale
-			response.filterError(Resources.get(Resources.RSP_ERROR_FORMAT));
-			response.filterMessage("Exception: " + e.getMessage());
+			onFilterError(response, Resources.get(Resources.RSP_ERROR_FORMAT),
+					MessageFormat.format(Resources.get(Resources.MSG_ERROR_EXCEPTION), e.getMessage()));
 			return null;
 		}
 	}

@@ -1,5 +1,6 @@
 package collab.filter;
 
+import java.text.MessageFormat;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.beanutils.*;
@@ -35,12 +36,13 @@ public class AccessController extends Filter {
 							Resources.get(Resources.MSG_ERROR_DENIED));
 					return null;
 				}
-			}
-			if (Resources.get(Resources.REQ_LOGOUT).equals(name)) {
+			} else if (Resources.get(Resources.REQ_LOGOUT).equals(name)) {
 				loginUsers.remove(user);
 			}
 			return request;
-		} catch (IllegalArgumentException iae) {
+		} catch (Exception e) {
+			onFilterError(request, Resources.get(Resources.REQ_ERROR_FORMAT),
+					MessageFormat.format(Resources.get(Resources.MSG_ERROR_EXCEPTION), e.getMessage()));
 			return null;
 		}
 	}
@@ -59,7 +61,9 @@ public class AccessController extends Filter {
 				loginUsers.put(sourceUser, sourceAddr);
 			}
 			return response;
-		} catch (IllegalArgumentException iae) {
+		} catch (Exception e) {
+			onFilterError(response, Resources.get(Resources.RSP_ERROR_FORMAT),
+					MessageFormat.format(Resources.get(Resources.MSG_ERROR_EXCEPTION), e.getMessage()));
 			return null;
 		}
 	}

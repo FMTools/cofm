@@ -2,5 +2,3 @@
 
    1. Implement Feature and Operation data structures.
    2. Implement the CommitAction
-   3. Add format string to message (Invalid value for field...)
-   4. Override onFilterError
