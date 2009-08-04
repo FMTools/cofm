@@ -1,4 +1,4 @@
-package collab.data;
+package collab.data.bean;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
