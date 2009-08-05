@@ -14,6 +14,7 @@ import org.apache.mina.filter.codec.textline.*;
 import org.apache.mina.transport.socket.nio.SocketAcceptor; 
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 
+import collab.action.*;
 import collab.data.Request;
 import collab.data.Response;
 
@@ -39,6 +40,7 @@ public class Server {
 						new TextLineDecoder(Charset.forName("UTF-8"), new LineDelimiter(Request.TERMINATOR))));
 		//~sketch
 		Controller controller = null; // setup controller here
+		Action action = null; // setup actions here
 		///~
 		try {
 			acceptor.bind(new InetSocketAddress(PORT), new EventHandler(controller));

@@ -19,7 +19,7 @@ public class JsonConverterTest {
 	protected static JsonConverter jc; 
 	@BeforeClass
 	public static void setUp() {
-		jc = new JsonConverter("json-converter", null, null);
+		jc = new JsonConverter("json-converter");
 	}
 
 	@Test

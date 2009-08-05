@@ -9,8 +9,8 @@ import collab.data.*;
 
 public class JsonConverter extends Filter {
 //~sketch
-	public JsonConverter(String name, Filter prev, Filter next) {
-		super(name, prev, next);
+	public JsonConverter(String filterName) {
+		super(filterName);
 	}
 
 	@Override

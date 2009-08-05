@@ -6,16 +6,23 @@ import java.util.TreeSet;
 
 public abstract class Votable {
 	
-	
-	protected final Object value;
+	protected Object value;
 	protected SortedSet<Long> support = new TreeSet<Long>(); // List of User ID
 	protected SortedSet<Long> against = new TreeSet<Long>(); // List of User ID
 	
 	public Votable() {
-		this.value = new Boolean(true);
+		
 	}
 	
 	public Votable(Object value) {
+		setValue(value);
+	}
+	
+	public Object getValue() {
+		return value;
+	}
+
+	protected void setValue(Object value) { // for Hibernate
 		this.value = value;
 	}
 	
@@ -28,10 +35,6 @@ public abstract class Votable {
 	public synchronized void voteNo(Long userid) {
 		support.remove(userid);
 		against.add(userid);
-	}
-	
-	public Object value() {
-		return value;
 	}
 	
 	public void vote(Object val, Long userid) {

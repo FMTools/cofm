@@ -5,8 +5,8 @@ import collab.data.Response;
 
 public class Validator extends Filter {
 
-	public Validator(String filterName, Filter prevFilter, Filter nextFilter) {
-		super(filterName, prevFilter, nextFilter);
+	public Validator(String filterName) {
+		super(filterName);
 		// TODO Auto-generated constructor stub
 	}
 

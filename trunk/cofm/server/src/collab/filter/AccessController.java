@@ -18,8 +18,8 @@ public class AccessController extends Filter {
 	private ConcurrentHashMap<String, String> loginUsers = 
 		new ConcurrentHashMap<String, String>();
 	
-	public AccessController(String filterName, Filter prevFilter, Filter nextFilter) {
-		super(filterName, prevFilter, nextFilter);
+	public AccessController(String filterName) {
+		super(filterName);
 		// TODO Auto-generated constructor stub
 	}
 
