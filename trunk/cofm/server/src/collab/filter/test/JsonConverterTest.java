@@ -13,6 +13,7 @@ import org.junit.*;
 
 import collab.filter.*;
 import collab.data.*;
+import collab.data.bean.*;
 
 public class JsonConverterTest {
 	
@@ -41,17 +42,15 @@ public class JsonConverterTest {
 	
 	@Test
 	public void testFilterResponse() {
-		//class Body { String type; String username; }
-		DynaClass dc = new BasicDynaClass("Body", BasicDynaBean.class, 
-				new DynaProperty[] {
-			new DynaProperty("type", String.class),
-			new DynaProperty("username", String.class),
-			new DynaProperty("nil", Object.class)
-		});
-		DynaBean rawBody = new BasicDynaBean(dc); 
-		rawBody.set("type", "commit");
-		rawBody.set("username", "admin");
-		rawBody.set("nil", null);
+		ResponseBody rawBody = new ResponseBody();
+		rawBody.setName("myname");
+		ResponseBody.Source src = rawBody.new Source();
+		src.setName("srcname");
+		src.setAddress("123:321");
+		src.setId("444");
+		src.setUser("admin");
+		rawBody.setSource(src);
+		
 		Response rsp = new Response(Response.TYPE_PEER, rawBody);
 		Response filteredRsp = jc.filterResponse(rsp);
 		if (filteredRsp == null) {

@@ -21,11 +21,12 @@ public abstract class Controller {
 	
 	public Controller() {
 		buildFilterChain();
-		initEvents();
 	}
 	
 	public void registerAction(String event, Action a) {
-		eventMap.put(event, a);
+		if (isInterestedEvent(event)) {
+			eventMap.put(event, a);
+		}
 	}
 	
 	public Response handleRequest(Request request) {
@@ -66,7 +67,7 @@ public abstract class Controller {
 	}
 	
 	protected abstract void buildFilterChain();
-	protected abstract void initEvents();
+	protected abstract boolean isInterestedEvent(String name);
 	protected abstract Response doBadRequest(Request req);
 	protected abstract Response doRequest(Request req);
 	protected abstract Response doBadResponse(Response rsp);

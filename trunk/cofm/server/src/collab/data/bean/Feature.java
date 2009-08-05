@@ -2,30 +2,18 @@ package collab.data.bean;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class Feature extends Votable {
-	
-	private class VotableString extends Votable {		
-		public VotableString(String value) {
-			super(value);
-		}
-	}
-	
-	private class VotableBoolean extends Votable {
-		public VotableBoolean() {
-			super(new Boolean(true));
-		}
-	}
+public class Feature extends Votable<Boolean> {
 	
 	private Long id;
-	private VotableBoolean mandatory = new VotableBoolean();
-	private ConcurrentLinkedQueue<VotableString> names = new ConcurrentLinkedQueue<VotableString>();
-	private ConcurrentLinkedQueue<VotableString> descriptions = new ConcurrentLinkedQueue<VotableString>();
-	private ConcurrentLinkedQueue<Feature> requiring = new ConcurrentLinkedQueue<Feature>();
-	private ConcurrentLinkedQueue<Feature> excluding = new ConcurrentLinkedQueue<Feature>();
-	private ConcurrentLinkedQueue<Feature> children = new ConcurrentLinkedQueue<Feature>();
+	private Votable<Boolean> mandatory = new Votable<Boolean>(Boolean.valueOf(true));
+	private ConcurrentLinkedQueue<Votable<String>> names = new ConcurrentLinkedQueue<Votable<String>>();
+	private ConcurrentLinkedQueue<Votable<String>> descriptions = new ConcurrentLinkedQueue<Votable<String>>();
+	private ConcurrentLinkedQueue<Votable<Long>> requiring = new ConcurrentLinkedQueue<Votable<Long>>();
+	private ConcurrentLinkedQueue<Votable<Long>> excluding = new ConcurrentLinkedQueue<Votable<Long>>();
+	private ConcurrentLinkedQueue<Votable<Long>> children = new ConcurrentLinkedQueue<Votable<Long>>();
 	
 	public Feature() {
-		super();
+		super(Boolean.valueOf(true));
 	}
 
 	public Long getId() {

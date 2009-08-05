@@ -1,7 +1,10 @@
 package collab.server;
 
+import org.apache.commons.beanutils.*;
+
 import collab.data.*;
 import collab.filter.*;
+import collab.action.Action;
 
 public class BasicController extends Controller {
 	
@@ -26,28 +29,46 @@ public class BasicController extends Controller {
 	}
 	
 	@Override
-	protected void initEvents() {
-		for (String name: INTERESTED_EVENTS) {
-			eventMap.put(name, null);
+	protected boolean isInterestedEvent(String name) {
+		for (String s: INTERESTED_EVENTS) {
+			if (s.equals(name)) {
+				return true;
+			}
 		}
+		return false;
 	}
 	
 	@Override
 	protected Response doBadRequest(Request req) {
-		
+		Action action = eventMap.get(BAD_REQUEST);
+		if (action != null) {
+			return action.process(req);
+		}
 		return null;
 	}
 
 	@Override
 	protected Response doBadResponse(Response rsp) {
-		// TODO Auto-generated method stub
+		Action action = eventMap.get(BAD_RESPONSE);
+		if (action != null) {
+			return action.process(rsp);
+		}
 		return null;
 	}
 
 	@Override
 	protected Response doRequest(Request req) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			DynaBean bean = (DynaBean)req.body();
+			Action action = eventMap.get(bean.get(Resources.get(Resources.REQ_FIELD_NAME)));
+			if (action != null) {
+				return action.process(req);
+			}
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return doBadRequest(req);
+		}
 	}
 
 }

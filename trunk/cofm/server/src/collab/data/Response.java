@@ -7,6 +7,8 @@ import java.util.ArrayList;
 public class Response extends Filterable {
 	public static final String TERMINATOR = "\0";
 	
+	public static final String BODY_CLASS_NAME = "RspBody";
+	
 	public static final String TYPE_PEER = "peer";
 	public static final String TYPE_BROADCAST = "broadcast";
 

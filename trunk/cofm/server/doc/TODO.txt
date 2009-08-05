@@ -1,3 +1,7 @@
+1. Implement commit action.
+2. Define feature fields' names and operation fields' names in protocol.
+3. Complete the Response Body class.
+-----------------------------
 1. Implement Feature and Operation data structures.
   1.1 Make them Java Beans (default constructor and bean style getters/setters) 
   1.2 Add resource strings for operations (because they will be shared by Flex client program)

@@ -4,9 +4,9 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 
-public abstract class Votable {
+public class Votable<T> {
 	
-	protected Object value;
+	protected T value;
 	protected SortedSet<Long> support = new TreeSet<Long>(); // List of User ID
 	protected SortedSet<Long> against = new TreeSet<Long>(); // List of User ID
 	
@@ -14,15 +14,15 @@ public abstract class Votable {
 		
 	}
 	
-	public Votable(Object value) {
+	public Votable(T value) {
 		setValue(value);
 	}
 	
-	public Object getValue() {
+	public T getValue() {
 		return value;
 	}
 
-	protected void setValue(Object value) { // for Hibernate
+	protected void setValue(T value) { // for Hibernate
 		this.value = value;
 	}
 	
@@ -37,7 +37,7 @@ public abstract class Votable {
 		against.add(userid);
 	}
 	
-	public void vote(Object val, Long userid) {
+	public void vote(T val, Long userid) {
 		if (val.equals(value)) {
 			voteYes(userid);
 		} else {

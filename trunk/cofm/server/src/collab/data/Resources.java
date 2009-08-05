@@ -34,11 +34,20 @@ public class Resources {
 	public static final String REQ_CONNECT = "req.connect";
 	
 	public static final String RSP_FIELD_NAME = "rsp.field.name";
+	public static final String RSP_FIELD_SOURCE = "rsp.field.source";
 	public static final String RSP_FIELD_SOURCE_ID = "rsp.field.source.id";
 	public static final String RSP_FIELD_SOURCE_NAME = "rsp.field.source.name";
 	public static final String RSP_FIELD_SOURCE_ADDR = "rsp.field.source.addr";
 	public static final String RSP_FIELD_SOURCE_USER = "rsp.field.source.user";
+	public static final String RSP_FIELD_DATA = "rsp.field.data";
+	public static final String RSP_FIELD_DATA_TYPE = "rsp.field.data.type";
+	public static final String RSP_FIELD_DATA_VALUE = "rsp.field.data.value";
+	
+	public static final String RSP_TYPE_FEATURE = "rsp.type.feature";
+	public static final String RSP_TYPE_OP = "rsp.type.op";
+	
 	public static final String RSP_ERROR_FORMAT = "rsp.error.format";
+	
 	public static final String RSP_SUCCESS = "rsp.success";
 	public static final String RSP_FORWARD = "rsp.forward";
 	public static final String RSP_DENIED = "rsp.denied";

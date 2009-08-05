@@ -38,7 +38,9 @@ public class EventHandler extends IoHandlerAdapter {
 				(InetSocketAddress)session.getRemoteAddress(), 
 				message);
 		Response rsp = (Response)controller.handleRequest(req);
-		distributeResponse(session, rsp);
+		if (rsp != null) {
+			distributeResponse(session, rsp);
+		}
 	}
 
 	public void messageSent(IoSession session, Object message) throws Exception {
