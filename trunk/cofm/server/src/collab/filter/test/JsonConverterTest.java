@@ -24,7 +24,7 @@ public class JsonConverterTest {
 
 	@Test
 	public void testFilterRequest() {
-		String rawBody = "{'type': 'commit', 'username': 'admin'}";
+		String rawBody = "{'type': 'commit', 'username': 'admin', 'nil': null}";
 		Request req = new Request(new InetSocketAddress(1234), rawBody);
 		Request filteredReq = jc.filterRequest(req); // OK if no "req = "
 		if (filteredReq == null) {
@@ -34,6 +34,7 @@ public class JsonConverterTest {
 			DynaBean body = (DynaBean)filteredReq.body();
 			assertEquals("commit", body.get("type"));
 			assertEquals("admin", body.get("username"));
+			assertNull(body.get("nil"));
 			assertEquals("json-converter", filteredReq.latestFilter());
 		}
 	}
@@ -44,11 +45,13 @@ public class JsonConverterTest {
 		DynaClass dc = new BasicDynaClass("Body", BasicDynaBean.class, 
 				new DynaProperty[] {
 			new DynaProperty("type", String.class),
-			new DynaProperty("username", String.class)
+			new DynaProperty("username", String.class),
+			new DynaProperty("nil", Object.class)
 		});
 		DynaBean rawBody = new BasicDynaBean(dc); 
 		rawBody.set("type", "commit");
 		rawBody.set("username", "admin");
+		rawBody.set("nil", null);
 		Response rsp = new Response(Response.TYPE_PEER, rawBody);
 		Response filteredRsp = jc.filterResponse(rsp);
 		if (filteredRsp == null) {
