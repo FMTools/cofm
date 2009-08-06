@@ -4,6 +4,7 @@ public class ResponseBody {
 	
 	protected String name;
 	protected Source source;
+	protected Object data;
 	
 	public ResponseBody() {
 		
@@ -19,6 +20,12 @@ public class ResponseBody {
 	}
 	public void setSource(Source source) {
 		this.source = source;
+	}
+	public Object getData() {
+		return data;
+	}
+	public void setData(Object data) {
+		this.data = data;
 	}
 	
 	public class Source {

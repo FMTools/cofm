@@ -12,6 +12,7 @@ public class AccessController extends Filter {
 	private static final String[] restricted = {
 		Resources.get(Resources.REQ_COMMIT),
 		Resources.get(Resources.REQ_UPDATE),
+		Resources.get(Resources.REQ_LISTUSER),
 		Resources.get(Resources.REQ_LOGOUT)
 	};
 	
@@ -26,18 +27,16 @@ public class AccessController extends Filter {
 	@Override
 	protected Request doFilterRequest(Request request) {
 		try {
-			DynaBean body = (DynaBean)request.body();
-			String name = (String)body.get(Resources.get(Resources.REQ_FIELD_NAME));
-			String user = (String)body.get(Resources.get(Resources.REQ_FIELD_USER));
-			if (isRestricted(name)) {
-				String address = loginUsers.get(user);
-				if (address == null || !address.equals(request.address().toString())) {
+			if (isRestricted(request.getName())) {
+				String address = loginUsers.get(request.getUser());
+				if (address == null || !address.equals(request.getAddress())) {
 					onFilterError(request, Resources.get(Resources.REQ_ERROR_AUTHORITY),
 							Resources.get(Resources.MSG_ERROR_DENIED));
 					return null;
 				}
-			} else if (Resources.get(Resources.REQ_LOGOUT).equals(name)) {
-				loginUsers.remove(user);
+			}
+			if (Resources.get(Resources.REQ_LOGOUT).equals(request.getName())) {
+				loginUsers.remove(request.getUser());
 			}
 			return request;
 		} catch (Exception e) {
@@ -50,15 +49,11 @@ public class AccessController extends Filter {
 	@Override
 	protected Response doFilterResponse(Response response) {
 		try {
-			DynaBean body = (DynaBean)response.body();
-			String name = (String)body.get(Resources.get(Resources.RSP_FIELD_NAME));
-			String sourceName = (String)body.get(Resources.get(Resources.RSP_FIELD_SOURCE_NAME));
-			if (Resources.get(Resources.RSP_SUCCESS).equals(name) &&
-					Resources.get(Resources.REQ_LOGIN).equals(sourceName)) {
+			Response.Body body = (Response.Body)response.getBody();
+			if (Resources.get(Resources.RSP_SUCCESS).equals(body.getStatus()) &&
+					Resources.get(Resources.REQ_LOGIN).equals(body.getSource().getName())) {
 				// successful login
-				String sourceUser = (String)body.get(Resources.get(Resources.RSP_FIELD_SOURCE_USER));
-				String sourceAddr = (String)body.get(Resources.get(Resources.RSP_FIELD_SOURCE_ADDR));
-				loginUsers.put(sourceUser, sourceAddr);
+				loginUsers.put(body.getSource().getUser(), body.getSource().getAddress());
 			}
 			return response;
 		} catch (Exception e) {

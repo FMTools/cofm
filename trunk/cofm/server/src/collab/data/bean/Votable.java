@@ -37,11 +37,17 @@ public class Votable<T> {
 		against.add(userid);
 	}
 	
-	public void vote(T val, Long userid) {
+	public void support(T val, Long userid) {
 		if (val.equals(value)) {
 			voteYes(userid);
 		} else {
 			voteNo(userid);
 		}
+	}
+	
+	public void against(T val, Long userid) {
+		if (val.equals(value)) {
+			voteNo(userid);
+		} 
 	}
 }

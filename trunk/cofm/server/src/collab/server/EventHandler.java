@@ -3,6 +3,7 @@ package collab.server;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,8 +20,8 @@ import collab.data.*;
  */
 public class EventHandler extends IoHandlerAdapter {
 	
-	private ConcurrentHashMap<InetSocketAddress, IoSession> sessionMap = 
-		new ConcurrentHashMap<InetSocketAddress, IoSession>();
+	private ConcurrentHashMap<String, IoSession> sessionMap = 
+		new ConcurrentHashMap<String, IoSession>();
 	
 	//~sketch
 	private Controller controller;
@@ -34,12 +35,14 @@ public class EventHandler extends IoHandlerAdapter {
 	}
 
 	public void messageReceived(IoSession session, Object message) throws Exception {
-		Request req = new Request(
-				(InetSocketAddress)session.getRemoteAddress(), 
-				message);
-		Response rsp = (Response)controller.handleRequest(req);
+		Request req = new Request();
+		req.setAddress(session.getRemoteAddress().toString());
+		req.setData(message);
+		List<Response> rsp = controller.handleRequest(req);
 		if (rsp != null) {
-			distributeResponse(session, rsp);
+			for (Response r: rsp) {
+				distributeResponse(session, r);
+			}
 		}
 	}
 
@@ -47,11 +50,11 @@ public class EventHandler extends IoHandlerAdapter {
 	}
 	
     public void sessionOpened(IoSession session) throws Exception {
-    	sessionMap.put((InetSocketAddress)session.getRemoteAddress(), session);
+    	sessionMap.put(session.getRemoteAddress().toString(), session);
     }
 
     public void sessionClosed(IoSession session) throws Exception {
-    	sessionMap.remove((InetSocketAddress)session.getRemoteAddress());
+    	sessionMap.remove(session.getRemoteAddress().toString());
     }
 
     public void sessionIdle(IoSession session, IdleStatus status) throws Exception {
@@ -59,35 +62,29 @@ public class EventHandler extends IoHandlerAdapter {
     
     private void distributeResponse(IoSession session, Response rsp) {
     	// Write back to requester
-    	writeResponse((InetSocketAddress)session.getRemoteAddress(), rsp);
+    	if (Response.TYPE_BACK.equals(rsp.getType())) {
+    		writeResponse(session.getRemoteAddress().toString(), rsp);
+    	}
     	
     	// Do multicast or broadcast
-    	if (rsp.type().equals(Response.TYPE_PEER)) {
-    		ArrayList<InetSocketAddress> dest = rsp.targets();
-    		Iterator<InetSocketAddress> it = dest.iterator();
-    		writeResponseForAll(session, it, rsp);
+    	if (Response.TYPE_PEER.equals(rsp.getType())) {
+    		List<String> dest = rsp.getTargets();
+    		for (String addr: dest) {
+    			writeResponse(addr, rsp);
+    		}
     		
-    	} else if (rsp.type().equals(Response.TYPE_BROADCAST)) {
-    		Set<InetSocketAddress> addrs = sessionMap.keySet();
-    		Iterator<InetSocketAddress> it = addrs.iterator();
-    		writeResponseForAll(session, it, rsp);
+    	} else if (Response.TYPE_BROADCAST.equals(rsp.getType())) {
+    		Set<String> addrs = sessionMap.keySet();
+    		for (String addr: addrs) {
+    			writeResponse(addr, rsp);
+    		}
     	}
     }
     
-    private void writeResponseForAll(IoSession session, Iterator<InetSocketAddress> it, Response rsp) {
-    	while (it.hasNext()) {
-			InetSocketAddress addr = it.next();
-			if (addr.equals((InetSocketAddress)session.getRemoteAddress())) {
-				continue;
-			}
-			writeResponse(addr, rsp);
-		}
-    }
-    
-    private void writeResponse(InetSocketAddress address, Response rsp) {
+    private void writeResponse(String address, Response rsp) {
     	IoSession session = sessionMap.get(address);
     	if (session != null) {
-    		session.write((String)rsp.body());
+    		session.write((String)rsp.getBody());
     	}
     }
 }

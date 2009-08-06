@@ -1,6 +1,8 @@
 package collab.server;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,10 +31,9 @@ public abstract class Controller {
 		}
 	}
 	
-	public Response handleRequest(Request request) {
+	public List<Response> handleRequest(Request request) {
 		Request filteredRequest = null;
-		Response rawResponse = null;
-		Response filteredResponse = null;
+		List<Response> rawResponse = null;
 		
 		for (ListIterator<Filter> li = filterChain.listIterator(0); li.hasNext();) {
 			Filter filter = li.next();
@@ -52,23 +53,30 @@ public abstract class Controller {
 			return null;
 		}
 		
-		for (ListIterator<Filter> li = filterChain.listIterator(filterChain.size()); li.hasPrevious();) {
-			Filter filter = li.previous();
-			if ((filteredResponse = filter.filterResponse(rawResponse)) == null) {
-				break;
+		List<Response> filteredResponse = new LinkedList<Response>();
+		for (Response rsp: rawResponse) {
+			Response frsp = null;
+			for (ListIterator<Filter> li = filterChain.listIterator(filterChain.size()); li.hasPrevious();) {
+				Filter filter = li.previous();
+				if ((frsp = filter.filterResponse(rsp)) == null) {
+					break;
+				}
+				rsp = frsp;
 			}
-			rawResponse = filteredResponse;
+			if (frsp == null) {
+				doBadResponse(rsp);
+			} else {
+				filteredResponse.add(frsp);
+			}
 		}
 		
-		if (filteredResponse == null) {
-			filteredResponse = doBadResponse(rawResponse);
-		}
+		
 		return filteredResponse;
 	}
 	
 	protected abstract void buildFilterChain();
 	protected abstract boolean isInterestedEvent(String name);
-	protected abstract Response doBadRequest(Request req);
-	protected abstract Response doRequest(Request req);
-	protected abstract Response doBadResponse(Response rsp);
+	protected abstract List<Response> doBadRequest(Request req);
+	protected abstract List<Response> doRequest(Request req);
+	protected abstract void doBadResponse(Response rsp);
 }

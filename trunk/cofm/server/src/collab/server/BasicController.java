@@ -1,5 +1,7 @@
 package collab.server;
 
+import java.util.List;
+
 import org.apache.commons.beanutils.*;
 
 import collab.data.*;
@@ -24,8 +26,10 @@ public class BasicController extends Controller {
 	 */
 	@Override
 	protected void buildFilterChain() {
-		filterChain.add(new JsonConverter("json-converter"));
+		filterChain.add(new ProtocolInterpreter("json-converter"));
+		filterChain.add(new RequestValidator("request-validator"));
 		filterChain.add(new AccessController("access-controller"));
+		filterChain.add(new ResponseValidator("response-validator"));
 	}
 	
 	@Override
@@ -39,7 +43,7 @@ public class BasicController extends Controller {
 	}
 	
 	@Override
-	protected Response doBadRequest(Request req) {
+	protected List<Response> doBadRequest(Request req) {
 		Action action = eventMap.get(BAD_REQUEST);
 		if (action != null) {
 			return action.process(req);
@@ -48,19 +52,17 @@ public class BasicController extends Controller {
 	}
 
 	@Override
-	protected Response doBadResponse(Response rsp) {
+	protected void doBadResponse(Response rsp) {
 		Action action = eventMap.get(BAD_RESPONSE);
 		if (action != null) {
-			return action.process(rsp);
+			action.process(rsp);
 		}
-		return null;
 	}
 
 	@Override
-	protected Response doRequest(Request req) {
+	protected List<Response> doRequest(Request req) {
 		try {
-			DynaBean bean = (DynaBean)req.body();
-			Action action = eventMap.get(bean.get(Resources.get(Resources.REQ_FIELD_NAME)));
+			Action action = eventMap.get(req.getName());
 			if (action != null) {
 				return action.process(req);
 			}

@@ -2,6 +2,7 @@ package collab.data;
 
 import java.lang.reflect.*;
 import java.util.ResourceBundle;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Resources {
 	//Protocol
@@ -9,20 +10,6 @@ public class Resources {
 	public static final String REQ_FIELD_ID = "req.field.id";
 	public static final String REQ_FIELD_USER = "req.field.user";
 	public static final String REQ_FIELD_DATA = "req.field.data";
-	public static final String REQ_FIELD_DATA_OP = "req.field.data.op";
-	public static final String REQ_FIELD_DATA_LEFT = "req.field.data.left";
-	public static final String REQ_FIELD_DATA_RIGHT = "req.field.data.right";
-	public static final String REQ_FIELD_DATA_VOTE = "req.field.data.vote";
-	
-	public static final String REQ_VOTE_YES = "req.vote.yes";
-	public static final String REQ_VOTE_NO = "req.vote.no";
-	
-	public static final String REQ_OP_ADDCHILD = "req.op.addChild";
-	public static final String REQ_OP_ADDREQUIRE = "req.op.addRequire";
-	public static final String REQ_OP_ADDEXCLUDE = "req.op.addExclude";
-	public static final String REQ_OP_ADDNAME = "req.op.addName";
-	public static final String REQ_OP_ADDDES = "req.op.addDes";
-	public static final String REQ_OP_SETOPT = "req.op.setOpt";
 	
 	public static final String REQ_ERROR_AUTHORITY = "req.error.authority";
 	public static final String REQ_ERROR_FORMAT = "req.error.format";
@@ -32,26 +19,26 @@ public class Resources {
 	public static final String REQ_LOGIN = "req.login";
 	public static final String REQ_LOGOUT = "req.logout";
 	public static final String REQ_CONNECT = "req.connect";
-	
-	public static final String RSP_FIELD_NAME = "rsp.field.name";
-	public static final String RSP_FIELD_SOURCE = "rsp.field.source";
-	public static final String RSP_FIELD_SOURCE_ID = "rsp.field.source.id";
-	public static final String RSP_FIELD_SOURCE_NAME = "rsp.field.source.name";
-	public static final String RSP_FIELD_SOURCE_ADDR = "rsp.field.source.addr";
-	public static final String RSP_FIELD_SOURCE_USER = "rsp.field.source.user";
-	public static final String RSP_FIELD_DATA = "rsp.field.data";
-	public static final String RSP_FIELD_DATA_TYPE = "rsp.field.data.type";
-	public static final String RSP_FIELD_DATA_VALUE = "rsp.field.data.value";
-	
-	public static final String RSP_TYPE_FEATURE = "rsp.type.feature";
-	public static final String RSP_TYPE_OP = "rsp.type.op";
-	
+	public static final String REQ_LISTUSER = "req.listuser";
+
 	public static final String RSP_ERROR_FORMAT = "rsp.error.format";
 	
 	public static final String RSP_SUCCESS = "rsp.success";
 	public static final String RSP_FORWARD = "rsp.forward";
 	public static final String RSP_DENIED = "rsp.denied";
-	public static final String RSP_FAILURE = "rsp.failure";
+	public static final String RSP_ERROR = "rsp.error";
+	
+	public static final String OP_FIELD_OP = "op.field.op";
+	public static final String OP_FIELD_LEFT = "op.field.left";
+	public static final String OP_FIELD_RIGHT = "op.field.right";
+	public static final String OP_FIELD_VOTE = "op.field.vote";
+	
+	public static final String OP_ADDCHILD = "op.addChild";
+	public static final String OP_ADDREQUIRE = "op.addRequire";
+	public static final String OP_ADDEXCLUDE = "op.addExclude";
+	public static final String OP_ADDNAME = "op.addName";
+	public static final String OP_ADDDES = "op.addDes";
+	public static final String OP_SETOPT = "op.setOpt";
 	
 	public static final String MSG_ERROR_EXCEPTION = "msg.error.exception";
 	public static final String MSG_ERROR_DENIED = "msg.error.denied";	
@@ -59,9 +46,29 @@ public class Resources {
 	public static final String MSG_ERROR_VALUE = "msg.error.value";
 	
 	private static ResourceBundle protocolRes = ResourceBundle.getBundle("protocol");
+	private static ResourceBundle msgRes = ResourceBundle.getBundle("locale.message");
+	
+	private static ConcurrentHashMap<String, String> map = new ConcurrentHashMap<String, String>();
+	
+	static {
+		try {
+			Class thisClass = Class.forName("collab.data.Resources");
+			Field[] fields = thisClass.getFields();
+			for (Field f: fields) {
+				String key = (String)f.get(null);
+				try {
+					map.put(key, protocolRes.getString(key));
+				} catch (Exception e) {
+					map.put(key, msgRes.getString(key));
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public static String get(String key) {
-		return protocolRes.getString(key);
+		return map.get(key);
 	}
 	
 	public static void main(String[] args) throws ClassNotFoundException, IllegalArgumentException, IllegalAccessException {

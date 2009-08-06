@@ -1,29 +1,47 @@
 package collab.data;
 
-import java.net.InetSocketAddress;
-
 
 public class Request extends Filterable {
 	public static final String TERMINATOR = "\n";
 	
-	private InetSocketAddress address;
-	private Object body; 
+	private Integer id;
+	private String name;
+	private String address;
+	private String user;
+	private Object data;
 	
-	public Request(InetSocketAddress address, Object body) {
-		this.address = address;
-		this.body = body;
+	public Request() {
+		
 	}
-	
-	public Object body() {
-		return body;
+	public Integer getId() {
+		return id;
 	}
-	
-	public void body(Object newContent) {
-		body = newContent;
+	public void setId(Integer id) {
+		this.id = id;
 	}
-	
-	public InetSocketAddress address() {
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getAddress() {
 		return address;
 	}
-
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public String getUser() {
+		return user;
+	}
+	public void setUser(String user) {
+		this.user = user;
+	}
+	public Object getData() {
+		return data;
+	}
+	public void setData(Object data) {
+		this.data = data;
+	}	
+	
 }

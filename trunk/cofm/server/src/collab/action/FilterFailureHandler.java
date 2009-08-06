@@ -1,5 +1,7 @@
 package collab.action;
 
+import java.util.List;
+
 import collab.data.*;
 import collab.server.Controller;
 
@@ -13,20 +15,20 @@ public class FilterFailureHandler extends Action {
 	}
 
 	@Override
-	public Response process(Object input) {
+	public List<Response> process(Object input) {
 		if (input instanceof Request) {
 			return doRequest((Request)input);
 		} else if (input instanceof Response) {
-			return doResponse((Response)input);
+			doResponse((Response)input);
+			return null;
 		}
 		return null;
 	}
 	
-	protected Response doRequest(Request req) {
+	protected List<Response> doRequest(Request req) {
 		return null;
 	}
 	
-	protected Response doResponse(Response rsp) {
-		return null;
+	protected void doResponse(Response rsp) {
 	}
 }

@@ -5,6 +5,7 @@ public class Operation {
 	private String op;
 	private String left;
 	private String right;  // op(left, right);
+	private boolean vote;
 	private String committer;
 	
 	public Operation() {

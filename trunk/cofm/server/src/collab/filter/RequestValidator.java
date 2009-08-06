@@ -3,9 +3,9 @@ package collab.filter;
 import collab.data.Request;
 import collab.data.Response;
 
-public class Validator extends Filter {
+public class RequestValidator extends Filter {
 
-	public Validator(String filterName) {
+	public RequestValidator(String filterName) {
 		super(filterName);
 		// TODO Auto-generated constructor stub
 	}
@@ -18,8 +18,7 @@ public class Validator extends Filter {
 
 	@Override
 	protected Response doFilterResponse(Response response) {
-		// TODO Auto-generated method stub
-		return null;
+		return response;
 	}
 
 }

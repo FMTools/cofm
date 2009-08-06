@@ -15,49 +15,43 @@ import collab.filter.*;
 import collab.data.*;
 import collab.data.bean.*;
 
-public class JsonConverterTest {
+public class ProtocolInterpreterTest {
 	
-	protected static JsonConverter jc; 
+	protected static ProtocolInterpreter jc; 
 	@BeforeClass
 	public static void setUp() {
-		jc = new JsonConverter("json-converter");
+		jc = new ProtocolInterpreter("json-converter");
 	}
 
 	@Test
 	public void testFilterRequest() {
-		String rawBody = "{'type': 'commit', 'username': 'admin', 'nil': null}";
-		Request req = new Request(new InetSocketAddress(1234), rawBody);
+		String rawBody = "{'id':100,'name':'commit','data':{'op':'god', 'vote':'yes'}}";
+		Request req = new Request();
+		req.setAddress("123.456");
+		req.setData(rawBody);
 		Request filteredReq = jc.filterRequest(req); // OK if no "req = "
 		if (filteredReq == null) {
 			System.out.println(req.filterError());
 			System.out.println(req.filterMessage());
 		} else {
-			DynaBean body = (DynaBean)filteredReq.body();
-			assertEquals("commit", body.get("type"));
-			assertEquals("admin", body.get("username"));
-			assertNull(body.get("nil"));
-			assertEquals("json-converter", filteredReq.latestFilter());
+			assertEquals("commit", filteredReq.getName());
+			assertEquals(100, filteredReq.getId());
+			assertEquals("god", ((DynaBean)filteredReq.getData()).get("op"));
+			assertEquals("json-converter", filteredReq.latestFilter());		
 		}
 	}
 	
 	@Test
 	public void testFilterResponse() {
-		ResponseBody rawBody = new ResponseBody();
-		rawBody.setName("myname");
-		ResponseBody.Source src = rawBody.new Source();
-		src.setName("srcname");
-		src.setAddress("123:321");
-		src.setId("444");
-		src.setUser("admin");
-		rawBody.setSource(src);
-		
-		Response rsp = new Response(Response.TYPE_PEER, rawBody);
+		Response rsp = new Response();
+		rsp.setType(Response.TYPE_PEER);
+		rsp.setBody(null);
 		Response filteredRsp = jc.filterResponse(rsp);
 		if (filteredRsp == null) {
 			System.out.println(rsp.filterError());
 			System.out.println(rsp.filterMessage());
 		} else {
-			System.out.println(rsp.body());
+			System.out.println(rsp.getBody());
 		}
 		
 	}
