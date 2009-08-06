@@ -63,28 +63,31 @@ public class EventHandler extends IoHandlerAdapter {
     private void distributeResponse(IoSession session, Response rsp) {
     	// Write back to requester
     	if (Response.TYPE_BACK.equals(rsp.getType())) {
-    		writeResponse(session.getRemoteAddress().toString(), rsp);
+    		session.write((String)rsp.getBody());
     	}
     	
     	// Do multicast or broadcast
     	if (Response.TYPE_PEER.equals(rsp.getType())) {
     		List<String> dest = rsp.getTargets();
     		for (String addr: dest) {
-    			writeResponse(addr, rsp);
+    			writeResponse(session, addr, rsp);
     		}
     		
     	} else if (Response.TYPE_BROADCAST.equals(rsp.getType())) {
     		Set<String> addrs = sessionMap.keySet();
     		for (String addr: addrs) {
-    			writeResponse(addr, rsp);
+    			writeResponse(session, addr, rsp);
     		}
     	}
     }
     
-    private void writeResponse(String address, Response rsp) {
-    	IoSession session = sessionMap.get(address);
-    	if (session != null) {
-    		session.write((String)rsp.getBody());
+    private void writeResponse(IoSession session, String address, Response rsp) {
+    	if (address.equals(session.getRemoteAddress().toString())) {
+    		return;
+    	}
+    	IoSession target = sessionMap.get(address);
+    	if (target != null) {
+    		target.write((String)rsp.getBody());
     	}
     }
 }

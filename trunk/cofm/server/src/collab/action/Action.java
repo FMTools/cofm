@@ -13,5 +13,11 @@ public abstract class Action {
 		}
 	}
 	
+	/**
+	 * Most action should return a "write back" response to notify the requester about
+	 * the result of process. 
+	 * @param input
+	 * @return responses
+	 */
 	public abstract List<Response> process(Object input);
 }

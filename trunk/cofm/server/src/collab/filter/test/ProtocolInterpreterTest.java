@@ -42,6 +42,18 @@ public class ProtocolInterpreterTest {
 	}
 	
 	@Test
+	public void testFilterRequest2() {
+		String json = "{'id':100,'name':'commit','data':{'yesno':true}}";
+		Request req = new Request();
+		req.setData(json);
+		jc.filterRequest(req);
+		assertTrue((Boolean)((DynaBean)req.getData()).get("yesno"));
+		/*if (Boolean.class.isInstance(((DynaBean)req.getData()).get("yesno"))) {
+			System.out.println("yes");
+		}*/
+	}
+	
+	@Test
 	public void testFilterResponse() {
 		Response rsp = new Response();
 		rsp.setType(Response.TYPE_PEER);
@@ -53,6 +65,6 @@ public class ProtocolInterpreterTest {
 		} else {
 			System.out.println(rsp.getBody());
 		}
-		
 	}
+	
 }
