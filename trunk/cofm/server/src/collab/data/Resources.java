@@ -42,8 +42,9 @@ public class Resources {
 	
 	public static final String MSG_ERROR_EXCEPTION = "msg.error.exception";
 	public static final String MSG_ERROR_DENIED = "msg.error.denied";	
-	public static final String MSG_ERROR_MISSING = "msg.error.missing";
-	public static final String MSG_ERROR_VALUE = "msg.error.value";
+	public static final String MSG_ERROR_FIELD_MISSING = "msg.error.field.missing";
+	public static final String MSG_ERROR_FIELD_VALUE = "msg.error.field.value";
+	public static final String MSG_ERROR_CONSTRAINT = "msg.error.constraint";
 	
 	private static ResourceBundle protocolRes = ResourceBundle.getBundle("protocol");
 	private static ResourceBundle msgRes = ResourceBundle.getBundle("locale.message");

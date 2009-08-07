@@ -3,8 +3,6 @@ package collab.filter;
 import java.text.MessageFormat;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.beanutils.*;
-
 import collab.data.*;
 
 public class AccessController extends Filter {

@@ -1,22 +1,22 @@
 package collab.data.bean;
 
 public class Operation {
-	private Long id;
+	private Integer id;
 	private String op;
 	private String left;
 	private String right;  // op(left, right);
-	private boolean vote;
+	private Boolean vote;
 	private String committer;
 	
 	public Operation() {
 		
 	}
 	
-	public Long getId() {
+	public Integer getId() {
 		return id;
 	}
 	
-	private void setId(Long id) { // for Hibernate
+	private void setId(Integer id) { // for Hibernate
 		this.id = id;
 	}
 	
@@ -50,5 +50,13 @@ public class Operation {
 	
 	public void setCommitter(String committer) {
 		this.committer = committer;
+	}
+
+	public Boolean getVote() {
+		return vote;
+	}
+
+	public void setVote(Boolean vote) {
+		this.vote = vote;
 	}
 }

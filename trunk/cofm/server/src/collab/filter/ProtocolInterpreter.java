@@ -33,7 +33,7 @@ public class ProtocolInterpreter extends Filter {
 				request.setUser(null);
 			}
 			try {
-				JsonConfig jsonConfig = new JsonConfig();
+/*				JsonConfig jsonConfig = new JsonConfig();
 				jsonConfig.setJsonPropertyFilter(new PropertyFilter() {
 					public boolean apply(Object source, String name, Object value) {
 						// Ignore all "top-level" fields of the json object, except "data"
@@ -46,7 +46,8 @@ public class ProtocolInterpreter extends Filter {
 					}
 				});    
 				DynaBean dataBean = (DynaBean)JSONSerializer.toJava(jsonObject, jsonConfig); 
-				request.setData(dataBean.get("data"));
+				request.setData(dataBean.get("data"));*/
+				request.setData(bean.get("data"));
 			} catch (Exception e) {
 				request.setData(null);
 			}
