@@ -55,4 +55,19 @@ public class Votable<T> {
 		} 
 		// NO else part here. See the "NOTES" above.
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		try {
+			return value.equals(((Votable<?>)obj).getValue());
+		} catch (Exception e) {
+			return false;
+		}
+	}
+
+	@Override
+	public String toString() {
+		int s1 = support.size(), s2 = against.size();
+		return value.toString() + "(" + s1 + "/" + (s1+s2) + ")"; 
+	}
 }
