@@ -4,14 +4,15 @@ import java.util.List;
 
 import collab.data.*;
 import collab.server.Controller;
+import collab.storage.DataProvider;
 
 public class FilterFailureHandler extends Action {
 
-	public FilterFailureHandler(Controller controller) {
+	public FilterFailureHandler(Controller controller, DataProvider dp) {
 		super(new String[] {
 			Controller.BAD_REQUEST,
 			Controller.BAD_RESPONSE
-		}, controller);
+		}, controller, dp);
 	}
 
 	@Override

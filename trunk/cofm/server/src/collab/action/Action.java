@@ -3,14 +3,17 @@ package collab.action;
 import java.util.List;
 
 import collab.data.*;
+import collab.storage.DataProvider;
 import collab.server.Controller;
 
 public abstract class Action {
 	
-	public Action(String[] interestedEvents, Controller controller) {
+	protected DataProvider dp;
+	public Action(String[] interestedEvents, Controller controller, DataProvider dp) {
 		for (String event: interestedEvents) {
 			controller.registerAction(event, this);
 		}
+		this.dp = dp;
 	}
 	
 	/**
