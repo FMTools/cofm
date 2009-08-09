@@ -23,4 +23,23 @@ public abstract class Action {
 	 * @return responses
 	 */
 	public abstract List<Response> process(Object input);
+	
+	protected void write(Response rsp, String type, String status, Object data) {
+		rsp.setType(type);
+		Response.Body body = (Response.Body)rsp.getBody();
+		body.setStatus(status);
+		body.setData(data);
+	}
+	
+	protected void writeError(Response rsp, String message) {
+		write(rsp, Response.TYPE_BACK, Resources.get(Resources.RSP_ERROR), message);
+	}
+	
+	protected void writeSource(Response rsp, Request req) {
+		Response.Body.Source src = ((Response.Body)rsp.getBody()).getSource();
+		src.setAddress(req.getAddress());
+		src.setId(req.getId());
+		src.setName(req.getName());
+		src.setUser(req.getUser());
+	}
 }

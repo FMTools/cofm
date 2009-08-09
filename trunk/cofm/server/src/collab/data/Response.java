@@ -14,7 +14,7 @@ public class Response extends Filterable {
 	
 	private String type;
 	private List<String> targets = new ArrayList<String>(); 
-	private Object body;
+	private Object body = new Body();
 	
 	public Response() {
 		
@@ -46,7 +46,7 @@ public class Response extends Filterable {
 	public class Body {
 		
 		private String status;
-		private Source source;
+		private Source source = new Source();
 		private Object data;
 		
 		public Body() {
@@ -77,17 +77,17 @@ public class Response extends Filterable {
 		}
 		
 		public class Source {
-			private Long id;
+			private Integer id;
 			private String name;
 			private String user;
 			private String address;
 			public Source() {
 				
 			}
-			public Long getId() {
+			public Integer getId() {
 				return id;
 			}
-			public void setId(Long id) {
+			public void setId(Integer id) {
 				this.id = id;
 			}
 			public String getName() {

@@ -29,7 +29,7 @@ public class AccessController extends Filter {
 				String address = loginUsers.get(request.getUser());
 				if (address == null || !address.equals(request.getAddress())) {
 					onFilterError(request, Resources.get(Resources.REQ_ERROR_AUTHORITY),
-							Resources.get(Resources.MSG_ERROR_DENIED));
+							Resources.get(Resources.MSG_ERROR_USER_DENIED));
 					return null;
 				}
 			}

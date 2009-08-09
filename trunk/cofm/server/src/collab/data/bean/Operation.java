@@ -59,4 +59,14 @@ public class Operation {
 	public void setUserid(Integer userid) {
 		this.userid = userid;
 	}
+
+	@Override
+	public String toString() {
+		return "Operation = {op: " + op +
+			   ", left: " + left + 
+			   ", right: " + right +
+			   ", vote: " + (vote ? "yes" : "no") + 
+			   ", userId: " + userid + "}";
+	}
+	
 }

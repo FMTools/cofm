@@ -17,12 +17,12 @@ All "Dyna" fields and their possible values are listed in protocol.properties.
       data = null (may change in the future)
     1.2.4 commit
       data:Object = the feature modeling/voting operation
-      data.op:String = addChild|addRequire|addExclude|addName|addDes|setOpt
+      data.op:String = addChild|addRequire|addExclude|addName|addDes|setOpt|setExt
       data.left:Integer/String = ID or Name of the operated feature. The name can NOT start with digit.
       data.right:Integer/String = 
         ID or Name of another feature; (for addChild, addRequire, addExclude)
         or the content; (for "addName" and "addDes")
-        or any string; (for "setOpt", the data will be ignored)
+        or any string; (for "setOpt" and "setExt", the data will be ignored)
       data.vote:Boolean = vote yes or no for the operation.
   1.3 Filter Message (for filters)
     // See code(Filterable.java), this part doesn't belong to the protocol
@@ -41,7 +41,7 @@ All "Dyna" fields and their possible values are listed in protocol.properties.
       source.address:String = Requester Address
     data:DynaBean, use get and set to access this field.
       2.2.1 For login, connect and commit, just answer the request
-        data:String = message. e.g. if an error occurred.
+        data:String = message
       2.2.2 For update
         data:List of Feature, where Feature is a Java Bean so that can be JSON serialized and persisted.
       2.2.3 For commit
@@ -50,6 +50,8 @@ All "Dyna" fields and their possible values are listed in protocol.properties.
         data:List of User = [
           id:Integer = user id
           name:String = user name
+      2.2.5 For error and denied
+        data:String = message
         ]
   2.3 Filter Message (see 1.3)
 

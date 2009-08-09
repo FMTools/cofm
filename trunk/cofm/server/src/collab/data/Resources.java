@@ -39,12 +39,23 @@ public class Resources {
 	public static final String OP_ADDNAME = "op.addName";
 	public static final String OP_ADDDES = "op.addDes";
 	public static final String OP_SETOPT = "op.setOpt";
+	public static final String OP_SETEXT = "op.setExt";
 	
 	public static final String MSG_ERROR_EXCEPTION = "msg.error.exception";
-	public static final String MSG_ERROR_DENIED = "msg.error.denied";	
+	public static final String MSG_ERROR_CONSTRAINT = "msg.error.constraint";
+	public static final String MSG_ERROR_REQUEST = "msg.error.request";
+	
 	public static final String MSG_ERROR_FIELD_MISSING = "msg.error.field.missing";
 	public static final String MSG_ERROR_FIELD_VALUE = "msg.error.field.value";
-	public static final String MSG_ERROR_CONSTRAINT = "msg.error.constraint";
+		
+	public static final String MSG_ERROR_USER_DENIED = "msg.error.user.denied";
+	public static final String MSG_ERROR_USER_NOTFOUND = "msg.error.user.notfound";
+	
+	public static final String MSG_ERROR_FEATURE_NOTFOUND = "msg.error.feature.notfound";
+	public static final String MSG_ERROR_FEATURE_APPLYOP = "msg.error.feature.applyop";
+	
+	public static final String MSG_ERROR_PERSISTENT_WRITE = "msg.error.persistent.write";
+	public static final String MSG_ERROR_PERSISTENT_GET = "msg.error.persistent.get";
 	
 	private static ResourceBundle protocolRes = ResourceBundle.getBundle("protocol");
 	private static ResourceBundle msgRes = ResourceBundle.getBundle("locale.message");
