@@ -3,10 +3,10 @@ package collab.data.bean;
 public class Operation {
 	private Integer id;
 	private String op;
-	private String left;
-	private String right;  // op(left, right);
+	private Integer left;
+	private Object right;  // op(left, right);
 	private Boolean vote;
-	private String committer;
+	private Integer userid; // the committer id
 	
 	public Operation() {
 		
@@ -16,7 +16,7 @@ public class Operation {
 		return id;
 	}
 	
-	private void setId(Integer id) { // for Hibernate
+	public void setId(Integer id) {
 		this.id = id;
 	}
 	
@@ -28,28 +28,20 @@ public class Operation {
 		this.op = op;
 	}
 
-	public String getLeft() {
+	public Integer getLeft() {
 		return left;
 	}
-	
-	public void setLeft(String left) {
+
+	public void setLeft(Integer left) {
 		this.left = left;
 	}
-	
-	public String getRight() {
+
+	public Object getRight() {
 		return right;
 	}
-	
-	public void setRight(String right) {
+
+	public void setRight(Object right) {
 		this.right = right;
-	}
-	
-	public String getCommitter() {
-		return committer;
-	}
-	
-	public void setCommitter(String committer) {
-		this.committer = committer;
 	}
 
 	public Boolean getVote() {
@@ -58,5 +50,13 @@ public class Operation {
 
 	public void setVote(Boolean vote) {
 		this.vote = vote;
+	}
+	
+	public Integer getUserid() {
+		return userid;
+	}
+
+	public void setUserid(Integer userid) {
+		this.userid = userid;
 	}
 }

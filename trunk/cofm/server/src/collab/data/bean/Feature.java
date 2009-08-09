@@ -1,5 +1,7 @@
 package collab.data.bean;
 
+import java.util.Arrays;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Feature {
@@ -21,7 +23,7 @@ public class Feature {
 		return id;
 	}
 
-	private void setId(Integer id) { // for Hibernate
+	public void setId(Integer id) { 
 		this.id = id;
 	}
 	
@@ -34,47 +36,74 @@ public class Feature {
 	}
 	
 	public void voteName(String name, boolean support, int userid) {
-		vote(names, name, support, userid);
+		vote(true, names, name, support, userid);
 	}
 	
 	public void voteDescription(String des, boolean support, int userid) {
-		vote(descriptions, des, support, userid);
+		vote(true, descriptions, des, support, userid);
 	}
 	
 	public void voteRequiring(Integer requireeId, boolean support, int userid) {
-		vote(require, requireeId, support, userid);
+		vote(false, require, requireeId, support, userid);
+		//if support A requires B, then auto vote against A excludes B
 	}
 	
 	public void voteExcluding(Integer excludeeId, boolean support, int userid) {
-		vote(exclude, excludeeId, support, userid);
+		vote(false, exclude, excludeeId, support, userid);
+		// if support A excludes B, then auto vote against A requires B
 	}
 	
 	public void voteChild(Integer childId, boolean support, int userid) {
-		vote(children, childId, support, userid);
+		vote(false, children, childId, support, userid);
 	}
 	
 	private void vote(Votable<Boolean> field, boolean val, int userid) {
-		field.support(val, userid);
+		field.vote(field.getValue().equals(val), userid);
 	}
 	
-	private <T> void vote(ConcurrentLinkedQueue<Votable<T>> field, T val, boolean support, int userid) {
-		Votable<T> v = new Votable<T>(val);
-		if (field.contains(v)) {
-			for (Votable<T> vot: field) {
+	private <T> void vote(boolean supportAtMostOne, ConcurrentLinkedQueue<Votable<T>> field, T val, boolean support, int userid) {
+		TreeSet<Integer> otherValSupporters = null;
+		Votable<T> theVal = new Votable<T>(val);
+		boolean isValExisted = field.contains(theVal);
+		if (supportAtMostOne) {
+			otherValSupporters = new TreeSet<Integer>();
+		}
+	
+		for (Votable<T> v : field) {
+			if (v.getValue().equals(val)) {
+				v.vote(support, userid);
+			} else if (supportAtMostOne) {
 				if (support) {
-					vot.support(val, userid);
-				} else {
-					vot.against(val, userid);
+					v.voteNo(userid);
+				}
+				if (!isValExisted) {
+					otherValSupporters.addAll(Arrays.asList(v.getSupport()));
 				}
 			}
-		} else if (support) {
-			v.voteYes(userid);
-			for (Votable<T> vot: field) {
-				vot.voteNo(userid);
-			}
-			field.add(v);
 		}
-		// NOTE: vote against an inexistent value is meaningless, so
-		// there's no "else if (not support) {...}"
+	
+		if (!isValExisted && support) {
+			theVal.voteYes(userid);
+			if (supportAtMostOne) {
+				for (Integer user: otherValSupporters) {
+					theVal.voteNo(user);
+				}
+			}
+			field.add(theVal);
+		}
+		//NOTE: if (!isValExisted && !support), that means vote against an inexistent value, which makes no sense.
+		//so we ignore those vote
 	}
+
+	@Override
+	public String toString() {
+		return "Feature: {\n\tId: " + id + 
+			   ",\n\tExistence: " + existence.toString() +
+			   ",\n\tMandatory: " + mandatory.toString() +
+			   ",\n\tName: " + names.toString() +
+			   ",\n\tRequiring: " + require.toString() +
+			   ",\n\tExcluding: " + exclude.toString() +
+			   ",\n\tChildren: " + children.toString() + "\n}";
+	}
+	
 }

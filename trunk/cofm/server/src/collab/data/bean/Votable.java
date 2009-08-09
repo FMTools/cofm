@@ -37,25 +37,22 @@ public class Votable<T> {
 		against.add(userid);
 	}
 	
-	// NOTES: For a group of candidates, say {A, B, C}. 
-	//  Support A means against B and C; that is, support one means against others.
-	//  But against one does NOT mean support others, maybe you want to against them all; that's
-	//  why the against() method has no "else" part in it.
-	public void support(T val, Integer userid) {
-		if (val.equals(value)) {
+	public void vote(boolean support, Integer userid) {
+		if (support) {
 			voteYes(userid);
 		} else {
 			voteNo(userid);
 		}
 	}
 	
-	public void against(T val, Integer userid) {
-		if (val.equals(value)) {
-			voteNo(userid);
-		} 
-		// NO else part here. See the "NOTES" above.
+	public Integer[] getSupport() {
+		return support.toArray(new Integer[0]);
 	}
-
+	
+	public Integer[] getAgainst() {
+		return against.toArray(new Integer[0]);
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		try {
@@ -67,7 +64,7 @@ public class Votable<T> {
 
 	@Override
 	public String toString() {
-		int s1 = support.size(), s2 = against.size();
-		return value.toString() + "(" + s1 + "/" + (s1+s2) + ")"; 
+		//int s1 = support.size(), s2 = against.size();
+		return value.toString() + "(" + support.toString() + "/" + against.toString() + ")"; 
 	}
 }

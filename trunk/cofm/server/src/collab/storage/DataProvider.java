@@ -54,4 +54,11 @@ public interface DataProvider {
 	 * @return null if no such operations can be found.
 	 */
 	List<Operation> getRecentOperations(Long beginId);
+	
+	/**
+	 * 
+	 * @param username
+	 * @return the user's auto-generated id, null if no such user.
+	 */
+	Integer getUserIdByName(String username);
 }
