@@ -13,11 +13,11 @@ public class BasicController extends Controller {
 	protected static final String[] INTERESTED_EVENTS = {
 		BAD_REQUEST,
 		BAD_RESPONSE,
-		Resources.get(Resources.REQ_COMMIT),
-		Resources.get(Resources.REQ_CONNECT),
-		Resources.get(Resources.REQ_UPDATE),
-		Resources.get(Resources.REQ_LOGIN),
-		Resources.get(Resources.REQ_LOGOUT)
+		Resources.REQ_COMMIT,
+		Resources.REQ_CONNECT,
+		Resources.REQ_UPDATE,
+		Resources.REQ_LOGIN,
+		Resources.REQ_LOGOUT
 	};
 	
 	/**

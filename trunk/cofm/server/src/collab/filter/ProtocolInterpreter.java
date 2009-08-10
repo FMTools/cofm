@@ -23,12 +23,12 @@ public class ProtocolInterpreter extends Filter {
 			DynaBean bean = (DynaBean)JSONSerializer.toJava(jsonObject);
 			
 			// request ID and Name must exist.
-			request.setId((Integer)bean.get(Resources.get(Resources.REQ_FIELD_ID)));
-			request.setName((String)bean.get(Resources.get(Resources.REQ_FIELD_NAME)));
+			request.setId((Integer)bean.get(Resources.REQ_FIELD_ID));
+			request.setName((String)bean.get(Resources.REQ_FIELD_NAME));
 			
 			// request User and Data are optional
 			try {
-				request.setUser((String)bean.get(Resources.get(Resources.REQ_FIELD_USER)));
+				request.setUser((String)bean.get(Resources.REQ_FIELD_USER));
 			} catch (Exception e) {
 				request.setUser(null);
 			}
@@ -38,7 +38,7 @@ public class ProtocolInterpreter extends Filter {
 					public boolean apply(Object source, String name, Object value) {
 						// Ignore all "top-level" fields of the json object, except "data"
 						if (source instanceof JSONObject) {
-							if (((JSONObject) source).has(Resources.get(Resources.REQ_FIELD_DATA))) {
+							if (((JSONObject) source).has(Resources.REQ_FIELD_DATA)) {
 								return true;
 							}
 						}
@@ -54,8 +54,8 @@ public class ProtocolInterpreter extends Filter {
 			return request;
 		} catch (Exception e){
 			///~locale
-			onFilterError(request, Resources.get(Resources.REQ_ERROR_FORMAT),
-					MessageFormat.format(Resources.get(Resources.MSG_ERROR_EXCEPTION), e.getMessage()));
+			onFilterError(request, Resources.REQ_ERROR_FORMAT,
+					MessageFormat.format(Resources.MSG_ERROR_EXCEPTION, e.getMessage()));
 			return null;
 		} 
 	}
@@ -68,8 +68,8 @@ public class ProtocolInterpreter extends Filter {
 			return response;
 		} catch (Exception e) {
 			///~locale
-			onFilterError(response, Resources.get(Resources.RSP_ERROR_FORMAT),
-					MessageFormat.format(Resources.get(Resources.MSG_ERROR_EXCEPTION), e.getMessage()));
+			onFilterError(response, Resources.RSP_ERROR_FORMAT,
+					MessageFormat.format(Resources.MSG_ERROR_EXCEPTION, e.getMessage()));
 			return null;
 		}
 	}

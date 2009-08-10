@@ -8,10 +8,10 @@ import collab.data.*;
 public class AccessController extends Filter {
 	
 	private static final String[] restricted = {
-		Resources.get(Resources.REQ_COMMIT),
-		Resources.get(Resources.REQ_UPDATE),
-		Resources.get(Resources.REQ_LISTUSER),
-		Resources.get(Resources.REQ_LOGOUT)
+		Resources.REQ_COMMIT,
+		Resources.REQ_UPDATE,
+		Resources.REQ_LISTUSER,
+		Resources.REQ_LOGOUT
 	};
 	
 	private ConcurrentHashMap<String, String> loginUsers = 
@@ -28,18 +28,18 @@ public class AccessController extends Filter {
 			if (isRestricted(request.getName())) {
 				String address = loginUsers.get(request.getUser());
 				if (address == null || !address.equals(request.getAddress())) {
-					onFilterError(request, Resources.get(Resources.REQ_ERROR_AUTHORITY),
-							Resources.get(Resources.MSG_ERROR_USER_DENIED));
+					onFilterError(request, Resources.REQ_ERROR_AUTHORITY,
+							Resources.MSG_ERROR_USER_DENIED);
 					return null;
 				}
 			}
-			if (Resources.get(Resources.REQ_LOGOUT).equals(request.getName())) {
+			if (Resources.REQ_LOGOUT.equals(request.getName())) {
 				loginUsers.remove(request.getUser());
 			}
 			return request;
 		} catch (Exception e) {
-			onFilterError(request, Resources.get(Resources.REQ_ERROR_FORMAT),
-					MessageFormat.format(Resources.get(Resources.MSG_ERROR_EXCEPTION), e.getMessage()));
+			onFilterError(request, Resources.REQ_ERROR_FORMAT,
+					MessageFormat.format(Resources.MSG_ERROR_EXCEPTION, e.getMessage()));
 			return null;
 		}
 	}
@@ -48,15 +48,15 @@ public class AccessController extends Filter {
 	protected Response doFilterResponse(Response response) {
 		try {
 			Response.Body body = (Response.Body)response.getBody();
-			if (Resources.get(Resources.RSP_SUCCESS).equals(body.getStatus()) &&
-					Resources.get(Resources.REQ_LOGIN).equals(body.getSource().getName())) {
+			if (Resources.RSP_SUCCESS.equals(body.getStatus()) &&
+					Resources.REQ_LOGIN.equals(body.getSource().getName())) {
 				// successful login
 				loginUsers.put(body.getSource().getUser(), body.getSource().getAddress());
 			}
 			return response;
 		} catch (Exception e) {
-			onFilterError(response, Resources.get(Resources.RSP_ERROR_FORMAT),
-					MessageFormat.format(Resources.get(Resources.MSG_ERROR_EXCEPTION), e.getMessage()));
+			onFilterError(response, Resources.RSP_ERROR_FORMAT,
+					MessageFormat.format(Resources.MSG_ERROR_EXCEPTION, e.getMessage()));
 			return null;
 		}
 	}

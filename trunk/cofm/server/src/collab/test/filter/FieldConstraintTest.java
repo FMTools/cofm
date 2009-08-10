@@ -1,4 +1,4 @@
-package collab.filter.test;
+package collab.test.filter;
 
 import static org.junit.Assert.*;
 import org.apache.commons.beanutils.*;

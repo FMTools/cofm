@@ -32,7 +32,7 @@ public abstract class Action {
 	}
 	
 	protected void writeError(Response rsp, String message) {
-		write(rsp, Response.TYPE_BACK, Resources.get(Resources.RSP_ERROR), message);
+		write(rsp, Response.TYPE_BACK, Resources.RSP_ERROR, message);
 	}
 	
 	protected void writeSource(Response rsp, Request req) {

@@ -25,15 +25,15 @@ public class RequestValidator extends Filter {
 		new ConcurrentHashMap<String, List<Constraint>>();
 	
 	static {
-		cstTable.put(Resources.get(Resources.REQ_COMMIT), 
+		cstTable.put(Resources.REQ_COMMIT, 
 				Arrays.asList(userCst, dataOpCst, dataLeftCst, dataRightCst, dataVoteCst));
-		cstTable.put(Resources.get(Resources.REQ_UPDATE),
+		cstTable.put(Resources.REQ_UPDATE,
 				Arrays.asList(userCst));
-		cstTable.put(Resources.get(Resources.REQ_LISTUSER),
+		cstTable.put(Resources.REQ_LISTUSER,
 				Arrays.asList(userCst));
-		cstTable.put(Resources.get(Resources.REQ_LOGOUT),
+		cstTable.put(Resources.REQ_LOGOUT,
 				Arrays.asList(userCst));
-		cstTable.put(Resources.get(Resources.REQ_LOGIN),
+		cstTable.put(Resources.REQ_LOGIN,
 				Arrays.asList(userCst, dataStrCst));
 	}
 	
@@ -48,16 +48,16 @@ public class RequestValidator extends Filter {
 			List<Constraint> csts = cstTable.get(request.getName());
 			for (Constraint cst: csts) {
 				if (!cst.conformTo(request)) {
-					onFilterError(request, Resources.get(Resources.REQ_ERROR_FORMAT),
-							MessageFormat.format(Resources.get(Resources.MSG_ERROR_CONSTRAINT),
+					onFilterError(request, Resources.REQ_ERROR_FORMAT,
+							MessageFormat.format(Resources.MSG_ERROR_CONSTRAINT,
 									cst.toString()));
 					return null;
 				}
 			}
 			return request;
 		} catch (Exception e) {
-			onFilterError(request, Resources.get(Resources.REQ_ERROR_FORMAT), 
-					MessageFormat.format(Resources.get(Resources.MSG_ERROR_EXCEPTION), e.getMessage()));
+			onFilterError(request, Resources.REQ_ERROR_FORMAT, 
+					MessageFormat.format(Resources.MSG_ERROR_EXCEPTION, e.getMessage()));
 			return null;
 		}
 	}

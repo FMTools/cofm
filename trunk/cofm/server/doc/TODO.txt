@@ -1,1 +1,1 @@
-Implement a RequestGenerator to run a demo test.
+Test controller, filters and CommitAction using RequestGenerator.

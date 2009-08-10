@@ -43,32 +43,32 @@ public class CommitAction extends Action {
 
 	
 	private static final String[] featureAsRightOperandOp = {
-		Resources.get(Resources.OP_ADDCHILD),
-		Resources.get(Resources.OP_ADDEXCLUDE),
-		Resources.get(Resources.OP_ADDREQUIRE)
+		Resources.OP_ADDCHILD,
+		Resources.OP_ADDEXCLUDE,
+		Resources.OP_ADDREQUIRE
 	};
 
 	public CommitAction(Controller controller,
 			DataProvider dp) {
-		super(new String[]{Resources.get(Resources.REQ_COMMIT)}, controller, dp);
+		super(new String[]{Resources.REQ_COMMIT}, controller, dp);
 		initOpApplyPolicies();
 	}
 	
 	private void initOpApplyPolicies() {
 		try {
-			opApplyPolicies.put(Resources.get(Resources.OP_ADDCHILD),
+			opApplyPolicies.put(Resources.OP_ADDCHILD,
 					new OpApplyPolicy(Integer.class, Feature.class.getMethod("voteChild")));
-			opApplyPolicies.put(Resources.get(Resources.OP_ADDDES),
+			opApplyPolicies.put(Resources.OP_ADDDES,
 					new OpApplyPolicy(String.class, Feature.class.getMethod("voteDescription")));
-			opApplyPolicies.put(Resources.get(Resources.OP_ADDEXCLUDE),
+			opApplyPolicies.put(Resources.OP_ADDEXCLUDE,
 					new OpApplyPolicy(Integer.class, Feature.class.getMethod("voteExcluding")));
-			opApplyPolicies.put(Resources.get(Resources.OP_ADDNAME),
+			opApplyPolicies.put(Resources.OP_ADDNAME,
 					new OpApplyPolicy(String.class, Feature.class.getMethod("voteName")));
-			opApplyPolicies.put(Resources.get(Resources.OP_ADDREQUIRE),
+			opApplyPolicies.put(Resources.OP_ADDREQUIRE,
 					new OpApplyPolicy(Integer.class, Feature.class.getMethod("voteRequiring")));
-			opApplyPolicies.put(Resources.get(Resources.OP_SETEXT), 
+			opApplyPolicies.put(Resources.OP_SETEXT, 
 					new OpApplyPolicy(null, Feature.class.getMethod("voteFeature")));
-			opApplyPolicies.put(Resources.get(Resources.OP_SETOPT), 
+			opApplyPolicies.put(Resources.OP_SETOPT, 
 					new OpApplyPolicy(null, Feature.class.getMethod("voteMandatory")));
 		} catch (NoSuchMethodException e) {
 			logger.error("OpApplyPolicies init failed.", e);
@@ -83,10 +83,10 @@ public class CommitAction extends Action {
 			writeSource(toRequester, (Request)input);
 			
 			DynaBean data = (DynaBean)((Request)input).getData();
-			String op = (String)data.get(Resources.get(Resources.OP_FIELD_OP));
-			Object left = data.get(Resources.get(Resources.OP_FIELD_LEFT));
-			Object right = data.get(Resources.get(Resources.OP_FIELD_RIGHT));
-			Boolean vote = (Boolean)data.get(Resources.get(Resources.OP_FIELD_VOTE));
+			String op = (String)data.get(Resources.OP_FIELD_OP);
+			Object left = data.get(Resources.OP_FIELD_LEFT);
+			Object right = data.get(Resources.OP_FIELD_RIGHT);
+			Boolean vote = (Boolean)data.get(Resources.OP_FIELD_VOTE);
 			String user = ((Request)input).getUser();
 			
 			Operation operation = makeOperation(op, left, right, vote, user, toRequester);
@@ -99,7 +99,7 @@ public class CommitAction extends Action {
 			if (committedOp == null) {
 				logger.warn("Can't write to persistent layer: " + operation.toString()); 
 				writeError(toRequester,
-						MessageFormat.format(Resources.get(Resources.MSG_ERROR_PERSISTENT_WRITE),
+						MessageFormat.format(Resources.MSG_ERROR_PERSISTENT_WRITE,
 								operation.toString()));
 				result.add(toRequester);
 				return result;
@@ -109,7 +109,7 @@ public class CommitAction extends Action {
 			if (feat == null) {
 				logger.warn("Can't get from persistent layer: Feature(ID=" + committedOp.getLeft() + ")");
 				writeError(toRequester,
-						MessageFormat.format(Resources.get(Resources.MSG_ERROR_PERSISTENT_GET),
+						MessageFormat.format(Resources.MSG_ERROR_PERSISTENT_GET,
 								"Feature(ID=" + committedOp.getLeft() + ")"));
 				result.add(toRequester);
 				return result;
@@ -121,7 +121,7 @@ public class CommitAction extends Action {
 			}
 			
 			if (dp.updateFeature(feat)) {
-				write(toRequester, Response.TYPE_BACK, Resources.get(Resources.RSP_SUCCESS), 
+				write(toRequester, Response.TYPE_BACK, Resources.RSP_SUCCESS, 
 						null);
 				Response toOthers = new Response();
 				writeSource(toOthers, (Request)input);
@@ -132,14 +132,14 @@ public class CommitAction extends Action {
 			} else {
 				logger.warn("Can't write to persistent layer: " + feat.toString()); 
 				writeError(toRequester,
-						MessageFormat.format(Resources.get(Resources.MSG_ERROR_PERSISTENT_WRITE),
+						MessageFormat.format(Resources.MSG_ERROR_PERSISTENT_WRITE,
 								feat.toString().replaceAll("\n", "")));
 				result.add(toRequester);
 				return result;
 			}
 		} catch (Exception e) {
 			logger.warn("Invalid request. You may need to check whether RequestValidator has been set and worked as desired.", e);
-			writeError(toRequester, Resources.get(Resources.MSG_ERROR_REQUEST));
+			writeError(toRequester, Resources.MSG_ERROR_REQUEST);
 			result.add(toRequester);
 			return result;
 		}
@@ -151,7 +151,7 @@ public class CommitAction extends Action {
 			return true;
 		} catch (Exception e) {
 			logger.warn("Can't apply " + op.toString() + " on " + feat.toString(), e);
-			writeError(rsp, MessageFormat.format(Resources.get(Resources.MSG_ERROR_FEATURE_APPLYOP), 
+			writeError(rsp, MessageFormat.format(Resources.MSG_ERROR_FEATURE_APPLYOP, 
 					op.toString(), feat.toString().replaceAll("\n", "")));
 			return false;
 		}
@@ -172,7 +172,7 @@ public class CommitAction extends Action {
 		data.set("right", isFeatureAsRightOperand(op.getOp()) ? (Integer)op.getRight() : (String)op.getRight());
 		data.set("vote", op.getVote());
 		data.set("user", req.getUser());
-		write(rsp, Response.TYPE_BROADCAST, Resources.get(Resources.RSP_FORWARD), data);
+		write(rsp, Response.TYPE_BROADCAST, Resources.RSP_FORWARD, data);
 	}
 	
 	private Operation makeOperation(String op, Object left, Object right, Boolean vote, String user, Response response) {
@@ -186,7 +186,7 @@ public class CommitAction extends Action {
 			Integer userid = dp.getUserIdByName(user);
 			if (userid == null) {
 				writeError(response, 
-						MessageFormat.format(Resources.get(Resources.MSG_ERROR_USER_NOTFOUND), user));
+						MessageFormat.format(Resources.MSG_ERROR_USER_NOTFOUND, user));
 				return null;
 			}
 			o.setUserid(userid);
@@ -218,7 +218,7 @@ public class CommitAction extends Action {
 			Integer id = dp.getFeatureIdByName((String)idOrName);
 			if (id == null) {
 				writeError(rsp, 
-						MessageFormat.format(Resources.get(Resources.MSG_ERROR_FEATURE_NOTFOUND),
+						MessageFormat.format(Resources.MSG_ERROR_FEATURE_NOTFOUND,
 								idOrName));
 				return null;
 			}

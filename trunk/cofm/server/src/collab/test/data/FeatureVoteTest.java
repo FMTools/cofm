@@ -1,4 +1,4 @@
-package collab.data.test;
+package collab.test.data;
 
 import static org.junit.Assert.*;
 
