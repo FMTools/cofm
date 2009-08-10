@@ -235,4 +235,9 @@ public class CommitAction extends Action {
 		return false;
 	}
 
+	@Override
+	protected Logger getLogger() {
+		return logger;
+	}
+
 }

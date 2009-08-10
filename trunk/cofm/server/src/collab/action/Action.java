@@ -2,6 +2,8 @@ package collab.action;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import collab.data.*;
 import collab.storage.DataProvider;
 import collab.server.Controller;
@@ -23,6 +25,7 @@ public abstract class Action {
 	 * @return responses
 	 */
 	public abstract List<Response> process(Object input);
+	protected abstract Logger getLogger();
 	
 	protected void write(Response rsp, String type, String status, Object data) {
 		rsp.setType(type);

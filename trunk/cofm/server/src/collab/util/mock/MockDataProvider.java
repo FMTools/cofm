@@ -1,21 +1,28 @@
-package collab.storage;
+package collab.util.mock;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import collab.data.bean.Feature;
 import collab.data.bean.Operation;
 
+import collab.storage.DataProvider;
+import collab.util.Utils;
 /**
  * Mock class for unit test. Almost do nothing.
  * @author Yi Li
  *
  */
-public class DataProviderMock implements DataProvider {
+public class MockDataProvider implements DataProvider {
 
+	static Logger logger = Logger.getLogger(MockDataProvider.class);
+	
 	@Override
 	public Operation commitOperation(Operation op) {
 		op.setId(1);
+		logger.info("Committed " + op.toString());
 		return op;
 	}
 
@@ -63,6 +70,7 @@ public class DataProviderMock implements DataProvider {
 
 	@Override
 	public boolean updateFeature(Feature f) {
+		logger.info("Updated " + f.toString());
 		return true;
 	}
 

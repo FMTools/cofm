@@ -3,12 +3,15 @@ package collab.server;
 import java.util.List;
 
 import org.apache.commons.beanutils.*;
+import org.apache.log4j.Logger;
 
 import collab.data.*;
 import collab.filter.*;
 import collab.action.Action;
 
 public class BasicController extends Controller {
+	
+	static Logger logger = Logger.getLogger(BasicController.class);
 	
 	protected static final String[] INTERESTED_EVENTS = {
 		BAD_REQUEST,
@@ -71,6 +74,11 @@ public class BasicController extends Controller {
 			e.printStackTrace();
 			return doBadRequest(req);
 		}
+	}
+
+	@Override
+	protected Logger getLogger() {
+		return logger;
 	}
 
 }

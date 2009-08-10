@@ -7,9 +7,12 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Logger;
+
 import collab.data.Request;
 import collab.data.Response;
 import collab.filter.Filter;
+import collab.util.Utils;
 import collab.action.Action;
 
 public abstract class Controller {
@@ -44,8 +47,10 @@ public abstract class Controller {
 		}
 		
 		if (filteredRequest == null) {
+			getLogger().info("Forwarded to doBadRequest: " + Utils.beanToJson(request));
 			rawResponse = doBadRequest(request);
 		} else {
+			getLogger().info("Forwarded to doRequest: " + Utils.beanToJson(filteredRequest));
 			rawResponse = doRequest(filteredRequest);
 		}
 		
@@ -79,4 +84,5 @@ public abstract class Controller {
 	protected abstract List<Response> doBadRequest(Request req);
 	protected abstract List<Response> doRequest(Request req);
 	protected abstract void doBadResponse(Response rsp);
+	protected abstract Logger getLogger();
 }

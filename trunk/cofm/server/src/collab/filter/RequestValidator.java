@@ -5,10 +5,14 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Logger;
+
 import collab.data.*;
 import collab.filter.util.*;
 
 public class RequestValidator extends Filter {
+	
+	static Logger logger = Logger.getLogger(RequestValidator.class);
 	
 	private static Constraint userCst = new FieldConstraint("user", String.class);
 	private static Constraint dataStrCst = new FieldConstraint("data", String.class);
@@ -66,6 +70,11 @@ public class RequestValidator extends Filter {
 	protected Response doFilterResponse(Response response) {
 		// Do nothing
 		return response;
+	}
+
+	@Override
+	protected Logger getLogger() {
+		return logger;
 	}
 
 }

@@ -3,13 +3,18 @@ package collab.filter;
 import java.text.MessageFormat;
 
 import org.apache.commons.beanutils.*;
+import org.apache.log4j.Logger;
+
 import net.sf.json.*;
 import net.sf.json.util.PropertyFilter;
 
 import collab.data.*;
+import collab.util.Utils;
 
 public class ProtocolInterpreter extends Filter {
 
+	static Logger logger = Logger.getLogger(ProtocolInterpreter.class);
+	
 	public ProtocolInterpreter(String filterName) {
 		super(filterName);
 	}
@@ -51,6 +56,7 @@ public class ProtocolInterpreter extends Filter {
 			} catch (Exception e) {
 				request.setData(null);
 			}
+			logger.info("Request interpreted as: " + Utils.beanToJson(request));
 			return request;
 		} catch (Exception e){
 			///~locale
@@ -72,6 +78,11 @@ public class ProtocolInterpreter extends Filter {
 					MessageFormat.format(Resources.MSG_ERROR_EXCEPTION, e.getMessage()));
 			return null;
 		}
+	}
+
+	@Override
+	protected Logger getLogger() {
+		return logger;
 	}
 	
 }

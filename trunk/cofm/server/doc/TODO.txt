@@ -1,1 +1,2 @@
-Test controller, filters and CommitAction using RequestGenerator.
+1. CommitAction init failed.
+2. Why Filter.onFilterError can't log the message? (i.e.: Exception : 0...)

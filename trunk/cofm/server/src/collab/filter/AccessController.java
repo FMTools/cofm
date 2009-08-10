@@ -3,9 +3,13 @@ package collab.filter;
 import java.text.MessageFormat;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Logger;
+
 import collab.data.*;
 
 public class AccessController extends Filter {
+	
+	static Logger logger = Logger.getLogger(AccessController.class);
 	
 	private static final String[] restricted = {
 		Resources.REQ_COMMIT,
@@ -68,6 +72,11 @@ public class AccessController extends Filter {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	protected Logger getLogger() {
+		return logger;
 	}
 	
 }
