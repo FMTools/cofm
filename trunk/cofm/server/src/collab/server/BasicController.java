@@ -23,18 +23,7 @@ public class BasicController extends Controller {
 		Resources.REQ_LOGOUT
 	};
 	
-	/**
-	 * Build a filter chain consists of:
-	 *  JsonConverter, AccessController
-	 */
-	@Override
-	protected void buildFilterChain() {
-		filterChain.add(new ProtocolInterpreter("json-converter"));
-		filterChain.add(new RequestValidator("request-validator"));
-		filterChain.add(new AccessController("access-controller"));
-		filterChain.add(new ResponseValidator("response-validator"));
-	}
-	
+
 	@Override
 	protected boolean isInterestedEvent(String name) {
 		for (String s: INTERESTED_EVENTS) {

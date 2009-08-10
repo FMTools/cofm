@@ -25,13 +25,16 @@ public abstract class Controller {
 	protected ConcurrentHashMap<String, Action> eventMap = new ConcurrentHashMap<String, Action>();
 	
 	public Controller() {
-		buildFilterChain();
 	}
 	
 	public void registerAction(String event, Action a) {
 		if (isInterestedEvent(event)) {
 			eventMap.put(event, a);
 		}
+	}
+	
+	public void addFilter(Filter filter) {
+		filterChain.add(filter);
 	}
 	
 	public List<Response> handleRequest(Request request) {
@@ -79,7 +82,6 @@ public abstract class Controller {
 		return filteredResponse;
 	}
 	
-	protected abstract void buildFilterChain();
 	protected abstract boolean isInterestedEvent(String name);
 	protected abstract List<Response> doBadRequest(Request req);
 	protected abstract List<Response> doRequest(Request req);

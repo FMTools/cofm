@@ -43,7 +43,7 @@ public class AccessController extends Filter {
 			return request;
 		} catch (Exception e) {
 			onFilterError(request, Resources.REQ_ERROR_FORMAT,
-					MessageFormat.format(Resources.MSG_ERROR_EXCEPTION, e.getMessage()));
+					MessageFormat.format(Resources.MSG_ERROR_EXCEPTION, e.getMessage()), e);
 			return null;
 		}
 	}
@@ -60,7 +60,7 @@ public class AccessController extends Filter {
 			return response;
 		} catch (Exception e) {
 			onFilterError(response, Resources.RSP_ERROR_FORMAT,
-					MessageFormat.format(Resources.MSG_ERROR_EXCEPTION, e.getMessage()));
+					MessageFormat.format(Resources.MSG_ERROR_EXCEPTION, e.getMessage()), e);
 			return null;
 		}
 	}

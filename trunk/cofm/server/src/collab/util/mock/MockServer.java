@@ -11,6 +11,7 @@ import collab.storage.DataProvider;
 import collab.util.Utils;
 import collab.action.*;
 import collab.data.*;
+import collab.filter.*;
 
 public class MockServer {
 	static Logger logger = Logger.getLogger(MockServer.class);
@@ -20,6 +21,9 @@ public class MockServer {
 	private List<Action> actions = new LinkedList<Action>();
 	
 	public MockServer() {
+		controller.addFilter(new ProtocolInterpreter("protocol-interpreter"));
+		controller.addFilter(new RequestValidator("req-validator"));
+		
 		actions.add(new CommitAction(controller, dp));
 	}
 	

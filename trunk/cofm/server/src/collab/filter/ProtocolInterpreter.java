@@ -61,7 +61,7 @@ public class ProtocolInterpreter extends Filter {
 		} catch (Exception e){
 			///~locale
 			onFilterError(request, Resources.REQ_ERROR_FORMAT,
-					MessageFormat.format(Resources.MSG_ERROR_EXCEPTION, e.getMessage()));
+					MessageFormat.format(Resources.MSG_ERROR_EXCEPTION, e.getMessage()), e);
 			return null;
 		} 
 	}
@@ -75,7 +75,7 @@ public class ProtocolInterpreter extends Filter {
 		} catch (Exception e) {
 			///~locale
 			onFilterError(response, Resources.RSP_ERROR_FORMAT,
-					MessageFormat.format(Resources.MSG_ERROR_EXCEPTION, e.getMessage()));
+					MessageFormat.format(Resources.MSG_ERROR_EXCEPTION, e.getMessage()), e);
 			return null;
 		}
 	}

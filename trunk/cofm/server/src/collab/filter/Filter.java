@@ -27,6 +27,12 @@ public abstract class Filter {
 		filtee.filterMessage(msg);
 	}
 	
+	protected void onFilterError(Filterable filtee, String error, String msg, Throwable t) {
+		getLogger().info("Filter failure(" + error + "): " + msg, t);
+		filtee.filterError(error);
+		filtee.filterMessage(msg);
+	}
+	
 	protected abstract Request doFilterRequest(Request request);
 	protected abstract Response doFilterResponse(Response response);
 	protected abstract Logger getLogger();

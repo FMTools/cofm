@@ -1,8 +1,10 @@
 package collab.filter.util;
 
 import java.lang.reflect.*;
+import java.util.Arrays;
 
 import org.apache.commons.beanutils.DynaBean;
+import org.apache.log4j.Logger;
 
 /** 
  * Check missing field, wrong field type and/or null field value in a bean(or a dynabean)
@@ -10,12 +12,14 @@ import org.apache.commons.beanutils.DynaBean;
  */
 public class FieldConstraint implements Constraint {
 	
+	static Logger logger = Logger.getLogger(FieldConstraint.class);
+	
 	private String[] parts;
 	private Class<?> type;
 	
 	public FieldConstraint(String name, Class<?> type) {
 		if (name.indexOf(".") >= 0) {
-			parts = name.split(".");
+			parts = name.split("\\.");
 		} else {
 			parts = new String[]{name};
 		}

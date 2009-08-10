@@ -57,19 +57,26 @@ public class CommitAction extends Action {
 	private void initOpApplyPolicies() {
 		try {
 			opApplyPolicies.put(Resources.OP_ADDCHILD,
-					new OpApplyPolicy(Integer.class, Feature.class.getMethod("voteChild")));
+					new OpApplyPolicy(Integer.class, 
+							Feature.class.getMethod("voteChild", Integer.class, Boolean.class, Integer.class)));
 			opApplyPolicies.put(Resources.OP_ADDDES,
-					new OpApplyPolicy(String.class, Feature.class.getMethod("voteDescription")));
+					new OpApplyPolicy(String.class, 
+							Feature.class.getMethod("voteDescription", String.class, Boolean.class, Integer.class)));
 			opApplyPolicies.put(Resources.OP_ADDEXCLUDE,
-					new OpApplyPolicy(Integer.class, Feature.class.getMethod("voteExcluding")));
+					new OpApplyPolicy(Integer.class, 
+							Feature.class.getMethod("voteExcluding", Integer.class, Boolean.class, Integer.class)));
 			opApplyPolicies.put(Resources.OP_ADDNAME,
-					new OpApplyPolicy(String.class, Feature.class.getMethod("voteName")));
+					new OpApplyPolicy(String.class, 
+							Feature.class.getMethod("voteName", String.class, Boolean.class, Integer.class)));
 			opApplyPolicies.put(Resources.OP_ADDREQUIRE,
-					new OpApplyPolicy(Integer.class, Feature.class.getMethod("voteRequiring")));
+					new OpApplyPolicy(Integer.class, 
+							Feature.class.getMethod("voteRequiring", Integer.class, Boolean.class, Integer.class)));
 			opApplyPolicies.put(Resources.OP_SETEXT, 
-					new OpApplyPolicy(null, Feature.class.getMethod("voteFeature")));
+					new OpApplyPolicy(null, 
+							Feature.class.getMethod("voteFeature", Boolean.class, Integer.class)));
 			opApplyPolicies.put(Resources.OP_SETOPT, 
-					new OpApplyPolicy(null, Feature.class.getMethod("voteMandatory")));
+					new OpApplyPolicy(null, 
+							Feature.class.getMethod("voteMandatory", Boolean.class, Integer.class)));
 		} catch (NoSuchMethodException e) {
 			logger.error("OpApplyPolicies init failed.", e);
 		}
@@ -138,7 +145,7 @@ public class CommitAction extends Action {
 				return result;
 			}
 		} catch (Exception e) {
-			logger.warn("Invalid request. You may need to check whether RequestValidator has been set and worked as desired.", e);
+			logger.warn("Invalid request. Maybe the 'right' operand doesn't fit the 'op'.", e);
 			writeError(toRequester, Resources.MSG_ERROR_REQUEST);
 			result.add(toRequester);
 			return result;
@@ -169,7 +176,11 @@ public class CommitAction extends Action {
 		DynaBean data = new BasicDynaBean(opClass);
 		data.set("op", op.getOp());
 		data.set("left", op.getLeft());
-		data.set("right", isFeatureAsRightOperand(op.getOp()) ? (Integer)op.getRight() : (String)op.getRight());
+		if (isFeatureAsRightOperand(op.getOp())) {
+			data.set("right", (Integer)op.getRight());
+		} else {
+			data.set("right", (String)op.getRight());
+		}
 		data.set("vote", op.getVote());
 		data.set("user", req.getUser());
 		write(rsp, Response.TYPE_BROADCAST, Resources.RSP_FORWARD, data);

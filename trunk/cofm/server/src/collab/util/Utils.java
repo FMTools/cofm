@@ -1,5 +1,7 @@
 package collab.util;
 
+import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
 
 import net.sf.json.JSONObject;
@@ -37,4 +39,19 @@ public class Utils {
 			return "{beanToJsonFailure: true}";
 		}
 	} 
+	
+	public static String randomName(int maxlength, String[] candidates) {
+		if (candidates != null && candidates.length > 0) {
+			return candidates[RandomUtils.nextInt(candidates.length)];
+		}
+		return RandomStringUtils.randomAlphabetic(maxlength);
+	}
+	
+	public static Object randomIdOrName(int maxVal, int maxStrLen, String[] candidates) {
+		boolean needName = RandomUtils.nextBoolean();
+		if (needName) {
+			return Utils.randomName(maxStrLen, candidates);
+		}
+		return new Integer(RandomUtils.nextInt(maxVal) + 1);
+	}
 }
