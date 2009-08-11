@@ -40,7 +40,7 @@ public class InMemoryDataProvider implements DataProvider {
 	
 	private static List<Feature> features = new ArrayList<Feature>(100);
 	private static Map<String, Integer> featureNames = new HashMap<String, Integer>();
-	
+
 	private static List<Operation> ops = new ArrayList<Operation>(1000);
 	
 	private static Map<String, Integer> userNames = new HashMap<String, Integer>();

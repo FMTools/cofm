@@ -96,54 +96,59 @@ public class CommitAction extends Action {
 			Boolean vote = (Boolean)data.get(Resources.OP_FIELD_VOTE);
 			String user = ((Request)input).getUser();
 			
-			Operation operation = makeOperation(op, left, right, vote, user, toRequester);
-			if (operation == null) {
+			List<Operation> operations = makeOperation(op, left, right, vote, user, toRequester);
+			if (operations == null) {
 				result.add(toRequester);
 				return result;
 			}
 			
-			Operation committedOp = dp.commitOperation(operation);
-			if (committedOp == null) {
-				logger.warn("Can't write to persistent layer: " + operation.toString()); 
-				writeError(toRequester,
+			List<Operation> committedOps = new ArrayList<Operation>(2);
+			for (Operation operation: operations) {
+				Operation committedOp = dp.commitOperation(operation);
+				if (committedOp == null) {
+					logger.warn("Can't write to persistent layer: " + operation.toString()); 
+					writeError(toRequester,
 						MessageFormat.format(Resources.MSG_ERROR_PERSISTENT_WRITE,
 								operation.toString()));
-				result.add(toRequester);
-				return result;
+					result.add(toRequester);
+					return result;
+				}
+				committedOps.add(committedOp);
 			}
 			
-			Feature feat = dp.getFeatureById(committedOp.getLeft());
-			if (feat == null) {
-				logger.warn("Can't get from persistent layer: Feature(ID=" + committedOp.getLeft() + ")");
-				writeError(toRequester,
-						MessageFormat.format(Resources.MSG_ERROR_PERSISTENT_GET,
-								"Feature(ID=" + committedOp.getLeft() + ")"));
-				result.add(toRequester);
-				return result;
+			for (Operation committedOp: committedOps) {
+				Feature feat = dp.getFeatureById(committedOp.getLeft());
+				if (feat == null) {
+					logger.warn("Can't get from persistent layer: Feature(ID=" + committedOp.getLeft() + ")");
+					writeError(toRequester,
+							MessageFormat.format(Resources.MSG_ERROR_PERSISTENT_GET,
+									"Feature(ID=" + committedOp.getLeft() + ")"));
+					result.add(toRequester);
+					return result;
+				}
+				
+				if (!applyOperation(feat, committedOp, toRequester)) {
+					result.add(toRequester);
+					return result;
+				}
+				
+				if (dp.updateFeature(feat)) {
+					Response toOthers = new Response();
+					writeSource(toOthers, (Request)input);
+					broadcastOperation(toOthers, committedOp, (Request)input);
+					result.add(toOthers);
+				} else {
+					logger.warn("Can't write to persistent layer: " + feat.toString()); 
+					writeError(toRequester,
+							MessageFormat.format(Resources.MSG_ERROR_PERSISTENT_WRITE,
+									feat.toString().replaceAll("\n", "")));
+					result.add(toRequester);
+					return result;
+				}
 			}
-			
-			if (!applyOperation(feat, committedOp, toRequester)) {
-				result.add(toRequester);
-				return result;
-			}
-			
-			if (dp.updateFeature(feat)) {
-				write(toRequester, Response.TYPE_BACK, Resources.RSP_SUCCESS, 
-						null);
-				Response toOthers = new Response();
-				writeSource(toOthers, (Request)input);
-				broadcastOperation(toOthers, committedOp, (Request)input);
-				result.add(toRequester);
-				result.add(toOthers);
-				return result;
-			} else {
-				logger.warn("Can't write to persistent layer: " + feat.toString()); 
-				writeError(toRequester,
-						MessageFormat.format(Resources.MSG_ERROR_PERSISTENT_WRITE,
-								feat.toString().replaceAll("\n", "")));
-				result.add(toRequester);
-				return result;
-			}
+			write(toRequester, Response.TYPE_BACK, Resources.RSP_SUCCESS, null);
+			result.add(toRequester);
+			return result;
 		} catch (Exception e) {
 			logger.warn("Invalid request. Maybe the 'right' operand doesn't fit the 'op'.", e);
 			writeError(toRequester, Resources.MSG_ERROR_REQUEST);
@@ -186,7 +191,8 @@ public class CommitAction extends Action {
 		write(rsp, Response.TYPE_BROADCAST, Resources.RSP_FORWARD, data);
 	}
 	
-	private Operation makeOperation(String op, Object left, Object right, Boolean vote, String user, Response response) {
+	private List<Operation> makeOperation(String op, Object left, Object right, Boolean vote, String user, Response response) {
+		List<Operation> result = new ArrayList<Operation>(2);
 		Operation o = new Operation();
 		o.setOp(op);
 		o.setVote(vote);
@@ -215,11 +221,23 @@ public class CommitAction extends Action {
 				return null;
 			}
 			o.setRight(featureId2);
+			
+			if (Resources.OP_ADDCHILD.equals(op) && right instanceof String) {
+				// add_name(featureId2, right)
+				Operation extra = new Operation();
+				extra.setOp(Resources.OP_ADDNAME);
+				extra.setLeft(featureId2);
+				extra.setRight(right);
+				extra.setVote(new Boolean(true));
+				extra.setUserid(o.getUserid());
+				result.add(extra);
+			}
 		} else {
 			o.setRight(right);
 		}
+		result.add(o);
 		
-		return o;
+		return result;
 	}
 	
 	private Integer getFeatureId(Object idOrName, Response rsp) {

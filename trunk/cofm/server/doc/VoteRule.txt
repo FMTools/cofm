@@ -1,0 +1,35 @@
+1. 建模操作有以下几类：
+ add_child(F1, F2): F1已存在，F2如果是Name可能是不存在的
+ add_name(F, name)
+ add_des(F, description)
+ add_require(F1, F2): F1、F2一定是已有的
+ add_exclude(F1, F2): 同上
+ set_opt(F, mandatory)
+ set_ext(F, existence)
+ 注：上述F、F1、F2都可能是名字（String）或者ID（Int）
+ 在以上操作后面加上vote: yes or no，就可以同时表达投票和建模了：
+ - 建模：一定是vote=yes
+ - 投票：vote yes or no
+ 
+2、对F中不存在的值：
+ - vote yes：一定是建模操作带来的
+ - vote no：无意义，忽略
+ 
+3、客户端提交一个操作，服务器端（CommitAction）可能生成多个操作；但是仅仅向别的客户端广播提交的原操作，
+只不过尽可能把上述用名字表达的F、F1、F2全部换成ID（唯一的例外是add_child中Name不存在的情况）
+其他客户端收到原操作再（按照相同的算法）恢复出多个操作。这样可以减少网络通信量，且生成多个操作仅仅是查表，
+开销很小，适合放在客户端做。
+下表对应了提交的原操作（包含vote），生成的多个操作，向客户端广播的操作。其中i后缀表示id，s表示名字（string），N表示不存在
+//TODO: table
+
+4、上一节所说的是要对多个特征生成操作的情况，如果对于一个特征的一个操作会导致该特征另一个操作的自动执行，
+那么该附加操作就可以在特征内定义。
+
+Issue1：特征内的附加操作是定义在特征中，还是定义在CommitAction.applyOperation中？
+ A：应该定义在CommitAction中，这样这些附加操作可以集中的定义在一个类中，便于维护。
+
+Issue2: 是否要对F的所有祖先特征生成set_ext(true)操作？
+ A： 不需要。这主要是对删除祖先特征有影响，可以在客户端要删除一个特征时检查其子特征是否全部为existence = all false.
+ 但这似乎需要在对F进行set_ext(false)的时候对F的所有子特征生成set_ext(false)。
+ 
+ 

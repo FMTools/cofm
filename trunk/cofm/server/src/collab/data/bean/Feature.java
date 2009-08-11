@@ -42,28 +42,40 @@ public class Feature {
 	
 	public void voteMandatory(Boolean val, Integer userid) {
 		vote(mandatory, val, userid);
+		voteFeature(true, userid);
 	}
 	
 	public void voteName(String name, Boolean support, Integer userid) {
 		vote(true, names, name, support, userid);
+		voteFeature(true, userid);
 	}
 	
 	public void voteDescription(String des, Boolean support, Integer userid) {
 		vote(true, descriptions, des, support, userid);
+		voteFeature(true, userid);
 	}
 	
 	public void voteRequiring(Integer requireeId, Boolean support, Integer userid) {
 		vote(false, require, requireeId, support, userid);
+		if (support) {
+			voteExcluding(requireeId, false, userid);
+		}
+		voteFeature(true, userid);
 		//if support A requires B, then auto vote against A excludes B
 	}
 	
 	public void voteExcluding(Integer excludeeId, Boolean support, Integer userid) {
 		vote(false, exclude, excludeeId, support, userid);
+		if (support) {
+			voteRequiring(excludeeId, false, userid);
+		}
+		voteFeature(true, userid);
 		// if support A excludes B, then auto vote against A requires B
 	}
 	
 	public void voteChild(Integer childId, Boolean support, Integer userid) {
 		vote(false, children, childId, support, userid);
+		voteFeature(true, userid);
 	}
 	
 	private void vote(Votable<Boolean> field, boolean val, int userid) {
