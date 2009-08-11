@@ -13,17 +13,11 @@ public interface DataProvider {
 	 */
 	Feature getFeatureById(Integer id);
 	
+
 	/**
 	 * If the feature name doesn't exist, a new feature will be created and returned.
 	 * @param name The name, or one of the name candidates of feature
-	 * @return Feature
-	 */
-	Feature getFeatureByName(String name);
-	
-	/**
-	 * 
-	 * @param name
-	 * @return Feature's auto-generated ID.
+	 * @return feature's auto-generated ID.
 	 */
 	Integer getFeatureIdByName(String name);
 	/**
@@ -67,4 +61,11 @@ public interface DataProvider {
 	 * @return the user's auto-generated id, null if no such user.
 	 */
 	Integer getUserIdByName(String username);
+	
+	/**
+	 * 
+	 * @param user
+	 * @return the user with auto-generated id.
+	 */
+	User addUser(User user);
 }

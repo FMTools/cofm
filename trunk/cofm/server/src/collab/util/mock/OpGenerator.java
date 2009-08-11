@@ -6,22 +6,23 @@ import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
 
 import collab.data.Resources;
+import collab.data.bean.Operation;
 import collab.util.Pair;
 import collab.util.Utils;
 
-public class OpGenerator {
+/**
+ * @deprecated
+ * @author Administrator
+ *
+ */
+public class OpGenerator implements Generator<Object, String> {
 	
 	static Logger logger = Logger.getLogger(OpGenerator.class);
 	
-	private static final String[] op = {
-		Resources.OP_ADDCHILD,
-		Resources.OP_ADDDES,
-		Resources.OP_ADDEXCLUDE,
-		Resources.OP_ADDNAME,
-		Resources.OP_ADDREQUIRE,
-		Resources.OP_SETEXT,
-		Resources.OP_SETOPT
-	};
+	private static OpGenerator g = null;
+	private OpGenerator() {
+
+	}
 	
 	private static class ReqField extends Pair<Class<?>, String[]> {
 		public ReqField(Class<?> type, String[] possibleValues) {
@@ -54,15 +55,22 @@ public class OpGenerator {
 	
 	private static final int maxFeatureNameLen = 8;
 	private static final int maxFeatureId = 20;
-
-	public static Object nextOp() {
-		return nextOp(op[RandomUtils.nextInt(op.length)]);
+	
+	public static synchronized OpGenerator getInstance() {
+		if (g == null) {
+			g = new OpGenerator();
+		}
+		return g;
 	}
 	
-	public static Object nextOp(String opName) {
+	public Object next() {
+		return next(Operation.NAMES[RandomUtils.nextInt(Operation.NAMES.length)]);
+	}
+	
+	public Object next(String opName) {
 		OpBean bean = new OpBean();
 		bean.setOp(opName);
-		bean.setLeft(Utils.randomIdOrName(maxFeatureId, maxFeatureNameLen, featureNames));
+		bean.setLeft(Utils.randomIntOrString(maxFeatureId, maxFeatureNameLen, featureNames));
 		bean.setRight(genRightOperand(opName));
 		bean.setVote(new Boolean(RandomUtils.nextBoolean()));
 		return bean;
@@ -79,43 +87,10 @@ public class OpGenerator {
 		}
 		ReqField field = fields[i];
 		if (field.first.equals(String.class)) {
-			return Utils.randomName(maxFeatureNameLen, field.second);
+			return Utils.randomString(maxFeatureNameLen, field.second);
 		} else if (field.equals(Integer.class)) {
 			return new Integer(RandomUtils.nextInt(maxFeatureId) + 1);
 		}
 		return "Error-In-RightOperandTable";
 	}
-	
-	public static class OpBean {
-		private String op;
-		private Object left;
-		private Object right;
-		private Boolean vote;
-		public OpBean() {}
-		public String getOp() {
-			return op;
-		}
-		public void setOp(String op) {
-			this.op = op;
-		}
-		public Object getLeft() {
-			return left;
-		}
-		public void setLeft(Object left) {
-			this.left = left;
-		}
-		public Object getRight() {
-			return right;
-		}
-		public void setRight(Object right) {
-			this.right = right;
-		}
-		public Boolean getVote() {
-			return vote;
-		}
-		public void setVote(Boolean vote) {
-			this.vote = vote;
-		}
-	}
-
 }

@@ -7,10 +7,11 @@ import org.apache.log4j.Logger;
 
 import collab.data.bean.Feature;
 import collab.data.bean.Operation;
+import collab.data.bean.User;
 
 import collab.storage.DataProvider;
 import collab.util.Utils;
-/**
+/**@deprecated
  * Mock class for unit test. Almost do nothing.
  * @author Yi Li
  *
@@ -30,13 +31,6 @@ public class MockDataProvider implements DataProvider {
 	public Feature getFeatureById(Integer id) {
 		Feature feat = new Feature();
 		feat.setId(id);
-		return feat;
-	}
-
-	@Override
-	public Feature getFeatureByName(String name) {
-		Feature feat = new Feature();
-		feat.setId(1);
 		return feat;
 	}
 
@@ -72,6 +66,12 @@ public class MockDataProvider implements DataProvider {
 	public boolean updateFeature(Feature f) {
 		logger.info("Updated " + f.toString());
 		return true;
+	}
+
+	@Override
+	public User addUser(User user) {
+		user.setId(1);
+		return user;
 	}
 
 }

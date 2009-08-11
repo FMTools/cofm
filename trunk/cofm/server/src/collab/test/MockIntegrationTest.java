@@ -9,7 +9,7 @@ import collab.util.mock.MockServer;
 public class MockIntegrationTest {
 	
 	protected static MockServer theServer;
-	protected static final int testTimes = 20;
+	protected static final int testTimes = 100;
 	
 	@BeforeClass
 	public static void setUp() {

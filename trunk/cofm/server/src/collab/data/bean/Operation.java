@@ -1,6 +1,19 @@
 package collab.data.bean;
 
+import collab.data.Resources;
+
 public class Operation {
+	
+	public static transient final String[] NAMES = {
+		Resources.OP_ADDCHILD,
+		Resources.OP_ADDDES,
+		Resources.OP_ADDEXCLUDE,
+		Resources.OP_ADDNAME,
+		Resources.OP_ADDREQUIRE,
+		Resources.OP_SETEXT,
+		Resources.OP_SETOPT
+	};
+	
 	private Integer id;
 	private String op;
 	private Integer left;

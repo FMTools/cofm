@@ -31,8 +31,8 @@ public class MockServer {
 		for (; times > 0; times--) {
 			logger.info("************ Start " + times + " *************");
 			Request req = new Request();
-			req.setAddress(RequestGenerator.nextIPv4());
-			req.setData(RequestGenerator.nextCommit());
+			req.setAddress(Utils.randomSocketAddress());
+			req.setData(CommitGenerator.getInstance().next());
 			List<Response> rsp = controller.handleRequest(req);
 			if (rsp == null) {
 				logger.info("Response is null.");

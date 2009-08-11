@@ -32,6 +32,10 @@ public class Feature {
 		this.id = id;
 	}
 	
+	public String[] names() {
+		return names.toArray(new String[0]);
+	}
+	
 	public void voteFeature(Boolean val, Integer userid) {
 		vote(existence, val, userid);
 	}

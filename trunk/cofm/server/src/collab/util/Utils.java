@@ -40,18 +40,67 @@ public class Utils {
 		}
 	} 
 	
-	public static String randomName(int maxlength, String[] candidates) {
+	public static Boolean randomBool(int possibilityOfTrue) {
+		int p = RandomUtils.nextInt(100);
+		if (p <= possibilityOfTrue) {
+			return true;
+		}
+		return false;
+	}
+	
+	public static Object randomSelect(Object[] candidates) {
+		return candidates[RandomUtils.nextInt(candidates.length)];
+	}
+	
+	public static String randomString(int maxlength, String[] candidates) {
 		if (candidates != null && candidates.length > 0) {
 			return candidates[RandomUtils.nextInt(candidates.length)];
 		}
 		return RandomStringUtils.randomAlphabetic(maxlength);
 	}
 	
-	public static Object randomIdOrName(int maxVal, int maxStrLen, String[] candidates) {
+	public static Object randomIntOrString(int maxVal, int maxStrLen, String[] candidates) {
 		boolean needName = RandomUtils.nextBoolean();
 		if (needName) {
-			return Utils.randomName(maxStrLen, candidates);
+			return Utils.randomString(maxStrLen, candidates);
 		}
 		return new Integer(RandomUtils.nextInt(maxVal) + 1);
+	}
+	
+	public static String randomSocketAddress() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < 4; i++) {
+			sb.append(randomIPv4Part(i > 0));
+			if (i < 3) {
+				sb.append('.');
+			}
+		}
+		sb.append(":");
+		sb.append(randomPort());
+		return sb.toString();
+	}
+	
+	private static String randomIPv4Part(boolean allowZero) {
+		Integer num = null;
+		if (allowZero) {
+			num = new Integer(RandomUtils.nextInt(256)); // 0 to 255
+		} else {
+			num = new Integer(RandomUtils.nextInt(255) + 1);  // 1 to 255
+		}
+		return num.toString();
+	}
+	
+	private static String randomPort() {
+		StringBuilder sb = new StringBuilder();
+		sb.append(RandomUtils.nextInt(9) + 1); // 1 to 9
+		sb.append(RandomStringUtils.randomNumeric(RandomUtils.nextInt(2) + 3)); // 3 to 4 digits
+		Integer port = new Integer(sb.toString());
+		if (port > 65535) {
+			port -= 65535;
+		}
+		if (port < 1000) {
+			port += 1000;
+		}
+		return port.toString();
 	}
 }

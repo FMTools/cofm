@@ -50,10 +50,10 @@ public abstract class Controller {
 		}
 		
 		if (filteredRequest == null) {
-			getLogger().info("Forwarded to doBadRequest: " + Utils.beanToJson(request));
+			getLogger().debug("Forwarded to doBadRequest: " + Utils.beanToJson(request));
 			rawResponse = doBadRequest(request);
 		} else {
-			getLogger().info("Forwarded to doRequest: " + Utils.beanToJson(filteredRequest));
+			getLogger().debug("Forwarded to doRequest: " + Utils.beanToJson(filteredRequest));
 			rawResponse = doRequest(filteredRequest);
 		}
 		
