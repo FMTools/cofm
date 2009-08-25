@@ -1,19 +1,4 @@
-1. Complete the MockClient
-  1.1  generate requests through a config file.
-  1.2  register, login, update and commit should be implemented for testing.
-  1.3  parse response. 
-    a)  see if the request is successful. 
-    b)  update the features and users.
-  1.4  convert response.body from json to dynabean.
-  1.5  set address and id in client.send()  ****** NEXT TO DO
-
-2. Init a root feature (name is "root") for dp. 
-
-3. Complete the Bean style of feature and votable, test Utils.beanToJson.
-
-NOTE: the request script file: 
-R = register, L = login, C = commit (new op), V = vote (old op), P = print 
-R 30 = generate successive 30 register requests. (random user name)
-L 10 50 = generate successive 10 to 50 login requests.
-L A = login for ALL (registered) users.
-CV 50 200 = generate successive 50 to 200 commit or vote requests. (random user)
+1、学习Hibernate，设计数据库，实现持久层
+2、实现Flex客户端原型，中止server的mock实现
+  2.1 树形控件浏览模型
+  2.2 编辑界面

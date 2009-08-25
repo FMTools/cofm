@@ -161,7 +161,7 @@ public class Feature {
 	}
 
 	public synchronized List<Votable<String>> getNames() {
-		return names;
+		return Collections.unmodifiableList(names);
 	}
 
 	public synchronized void setNames(List<Votable<String>> names) {
@@ -169,7 +169,7 @@ public class Feature {
 	}
 
 	public synchronized List<Votable<String>> getDescriptions() {
-		return descriptions;
+		return Collections.unmodifiableList(descriptions);
 	}
 
 	public synchronized void setDescriptions(List<Votable<String>> descriptions) {
@@ -177,7 +177,7 @@ public class Feature {
 	}
 
 	public synchronized List<Votable<Integer>> getRequire() {
-		return require;
+		return Collections.unmodifiableList(require);
 	}
 
 	public synchronized void setRequire(List<Votable<Integer>> require) {
@@ -185,7 +185,7 @@ public class Feature {
 	}
 
 	public synchronized List<Votable<Integer>> getExclude() {
-		return exclude;
+		return Collections.unmodifiableList(exclude);
 	}
 
 	public synchronized void setExclude(List<Votable<Integer>> exclude) {
@@ -193,7 +193,7 @@ public class Feature {
 	}
 
 	public synchronized List<Votable<Integer>> getChildren() {
-		return children;
+		return Collections.unmodifiableList(children);
 	}
 
 	public synchronized void setChildren(List<Votable<Integer>> children) {

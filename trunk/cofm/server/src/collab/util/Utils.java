@@ -1,6 +1,6 @@
 package collab.util;
 
-import java.util.Map;
+import java.util.*;
 
 import net.sf.ezmorph.*;
 import net.sf.ezmorph.bean.BeanMorpher;
@@ -59,15 +59,20 @@ public class Utils {
 		return resultClass.cast(JSONSerializer.toJava(json, cfg));
 	}
 	
-	public static <T> List<T> castBeanList(List src, Class<T> beanClass) {
+	public static List castBeanList(List src, Class<? extends List> listImplClass, Class beanClass ) {
 		MorpherRegistry reg = JSONUtils.getMorpherRegistry();
 		reg.registerMorpher(new BeanMorpher(beanClass, reg));
 		
-		List list = src.getClass().newInstance();
-		for (Object o: src) {
-			list.add(reg.morph(beanClass, o));
+		List list = null;
+		try {
+			list = listImplClass.newInstance();
+		} catch (Exception e) {
+			list = new ArrayList();
 		}
-		return List.convert(beanClass, list);
+		for (Object o: src) {
+			list.add(beanClass.cast(reg.morph(beanClass, o)));
+		}
+		return list;
 	}
 	
 	public static Boolean randomBool(int possibilityOfTrue) {

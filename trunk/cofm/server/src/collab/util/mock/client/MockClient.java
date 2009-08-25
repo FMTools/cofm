@@ -16,6 +16,10 @@ public class MockClient {
 	
 	static Logger logger = Logger.getLogger(MockClient.class);
 	
+	private static Map<String, Handler> handlers = new HashMap<String, Handler>();
+	
+	private static final Engine engine = new ScriptEngine();
+	
 	private static int requestCount = 0;
 	
 	private static List<User> registeredUsers = new ArrayList<User>();
@@ -51,8 +55,8 @@ public class MockClient {
 		}
 	}
 	
-	public void onBadMethod(Response.Body body, String expected) {
-		logger.warn("Unexpected method: expected '" + expected + "', but '" + body.getSource().getName() + "'.");
+	public void addHandler(String requestName, Handler handler) {
+		handlers.put(requestName, handler);
 	}
 	
 	public void onSuccess(Response.Body body) {
@@ -118,10 +122,41 @@ public class MockClient {
 		}
 	}
 	
-	public String send(Request req) {
-		req.setAddress("localhost");
-		req.setId(nextId());
-		return Utils.beanToJson(req); 
+	public void printFeatures() {
+		synchronized (featLock) {
+			
+		}
+	}
+	
+	public String sendRequest() {
+		Pair<String, ? extends HandlerOptions> next = engine.nextRequest();
+		if (next.first != null) {
+			try {
+				Handler handler = handlers.get(next.first);
+				Request req = handler.send(next.second);
+				req.setAddress("localhost");
+				req.setId(nextId());
+				return Utils.beanToJson(req);
+			} catch (Exception e) {
+				logger.warn("Sender exception.", e);
+				return null;
+			}
+		}
+		return null;
+	}
+	
+	public void dispatchResponse(Response rsp) {
+		try {
+			Map<String, Class> clsMap = new HashMap<String, Class>();
+			clsMap.put("source", Response.Body.Source.class);
+			Response.Body body = Utils.jsonToBean(rsp.getBody(),
+					Response.Body.class, clsMap);
+
+			Handler handler = handlers.get(body.getSource().getName());
+			handler.recv(body);
+		} catch (Exception e) {
+			logger.warn("Receiver exception.", e);
+		}
 	}
 	
 	public String randomUserName() {

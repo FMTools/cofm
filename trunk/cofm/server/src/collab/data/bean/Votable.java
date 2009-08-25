@@ -66,7 +66,7 @@ public class Votable<T> {
 	}
 	
 	@Override
-	public boolean equals(Object obj) {
+	public synchronized boolean equals(Object obj) {
 		try {
 			return value.equals(((Votable<?>)obj).getValue());
 		} catch (Exception e) {
@@ -75,7 +75,7 @@ public class Votable<T> {
 	}
 
 	@Override
-	public String toString() {
+	public synchronized String toString() {
 		//int s1 = support.size(), s2 = against.size();
 		return value.toString() + "(" + support.toString() + "/" + against.toString() + ")"; 
 	}
