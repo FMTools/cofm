@@ -2,6 +2,11 @@ package collab.util.mock.client;
 
 import java.util.List;
 
+import net.sf.ezmorph.*;
+import net.sf.ezmorph.bean.BeanMorpher;
+import net.sf.json.*;
+import net.sf.json.util.JSONUtils;
+
 import org.apache.commons.beanutils.DynaBean;
 import org.apache.log4j.Logger;
 
@@ -24,7 +29,18 @@ public class Update implements MockRequest {
 			if (Resources.RSP_SUCCESS.equals(body.getStatus())) {
 				client.onSuccess(body);
 				try {
-					List features = (List)body.getData();
+					// body.getData() == list of Features
+					Map<String, Class> map = new HashMap<String, Class>();
+					map.put("existence", Votable.class);
+					map.put("mandatory", Votable.class);
+					map.put("names", Votable.class);
+					map.put("descriptions", Votable.class);
+					map.put("require", Votable.class);
+					map.put("exclude", Votable.class);
+					map.put("children", Votable.class);
+					List features = (List) Utils.jsonToBean(body.getData(), List.class, Feature.class, map);
+					
+					
 					client.removeAllFeatures();
 					for (Object f: features) {
 						client.addFeature((Feature)f);

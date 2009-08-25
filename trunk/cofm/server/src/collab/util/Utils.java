@@ -2,6 +2,11 @@ package collab.util;
 
 import java.util.Map;
 
+import net.sf.ezmorph.*;
+import net.sf.ezmorph.bean.BeanMorpher;
+import net.sf.json.*;
+import net.sf.json.util.JSONUtils;
+
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
@@ -41,13 +46,28 @@ public class Utils {
 	} 
 	
 	public static <T> T jsonToBean(Object srcJson, Class<T> beanClass, Map<String, Class> clsMap) {
+		return jsonToBean(srcJson, beanClass, beanClass, clsMap);
+	}
+	
+	public static <T, U> U jsonToBean(Object srcJson, Class<U> resultClass, Class<T> beanClass, Map<String, Class> clsMap) {
 		JSON json = JSONSerializer.toJSON(srcJson);
 		JsonConfig cfg = new JsonConfig();
 		cfg.setRootClass(beanClass);
 		if (clsMap != null) {
 			cfg.setClassMap(clsMap);
 		}
-		return beanClass.cast(JSONSerializer.toJava(json, cfg));
+		return resultClass.cast(JSONSerializer.toJava(json, cfg));
+	}
+	
+	public static <T> List<T> castBeanList(List src, Class<T> beanClass) {
+		MorpherRegistry reg = JSONUtils.getMorpherRegistry();
+		reg.registerMorpher(new BeanMorpher(beanClass, reg));
+		
+		List list = src.getClass().newInstance();
+		for (Object o: src) {
+			list.add(reg.morph(beanClass, o));
+		}
+		return List.convert(beanClass, list);
 	}
 	
 	public static Boolean randomBool(int possibilityOfTrue) {

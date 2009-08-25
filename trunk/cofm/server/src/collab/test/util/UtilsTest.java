@@ -8,6 +8,7 @@ import static org.junit.Assert.*;
 
 import collab.util.*;
 import collab.data.*;
+import collab.data.bean.*;
 
 public class UtilsTest {
 
