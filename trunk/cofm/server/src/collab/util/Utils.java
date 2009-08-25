@@ -1,12 +1,12 @@
 package collab.util;
 
+import java.util.Map;
+
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
 
-import net.sf.json.JSONObject;
-import net.sf.json.JSONSerializer;
-import net.sf.json.JsonConfig;
+import net.sf.json.*;
 import net.sf.json.util.PropertyFilter;
 
 public class Utils {
@@ -40,6 +40,16 @@ public class Utils {
 		}
 	} 
 	
+	public static <T> T jsonToBean(Object srcJson, Class<T> beanClass, Map<String, Class> clsMap) {
+		JSON json = JSONSerializer.toJSON(srcJson);
+		JsonConfig cfg = new JsonConfig();
+		cfg.setRootClass(beanClass);
+		if (clsMap != null) {
+			cfg.setClassMap(clsMap);
+		}
+		return beanClass.cast(JSONSerializer.toJava(json, cfg));
+	}
+	
 	public static Boolean randomBool(int possibilityOfTrue) {
 		int p = RandomUtils.nextInt(100);
 		if (p <= possibilityOfTrue) {
@@ -48,7 +58,7 @@ public class Utils {
 		return false;
 	}
 	
-	public static Object randomSelect(Object[] candidates) {
+	public static <T> T randomSelect(T[] candidates) {
 		return candidates[RandomUtils.nextInt(candidates.length)];
 	}
 	

@@ -1,5 +1,7 @@
 package collab.data.bean;
 
+import java.util.Collections;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -7,8 +9,8 @@ import java.util.TreeSet;
 public class Votable<T> {
 	
 	protected T value;
-	protected SortedSet<Integer> support = new TreeSet<Integer>(); // List of User ID
-	protected SortedSet<Integer> against = new TreeSet<Integer>(); // List of User ID
+	protected Set<Integer> support = new TreeSet<Integer>(); // List of User ID
+	protected Set<Integer> against = new TreeSet<Integer>(); // List of User ID
 	
 	public Votable() {
 		
@@ -18,11 +20,11 @@ public class Votable<T> {
 		setValue(value);
 	}
 	
-	public T getValue() {
+	public synchronized T getValue() {
 		return value;
 	}
 
-	protected void setValue(T value) { // for Hibernate
+	public synchronized void setValue(T value) { 
 		this.value = value;
 	}
 	
@@ -45,12 +47,22 @@ public class Votable<T> {
 		}
 	}
 	
-	public Integer[] getSupport() {
-		return support.toArray(new Integer[0]);
+	public synchronized void setSupport(Set<Integer> support) {
+		this.support.clear();
+		this.support.addAll(support);
+	}
+
+	public synchronized void setAgainst(Set<Integer> against) {
+		this.against.clear();
+		this.against.addAll(against);
+	}
+
+	public synchronized Set<Integer> getSupport() {
+		return Collections.unmodifiableSet(support);
 	}
 	
-	public Integer[] getAgainst() {
-		return against.toArray(new Integer[0]);
+	public synchronized Set<Integer> getAgainst() {
+		return Collections.unmodifiableSet(against);
 	}
 	
 	@Override

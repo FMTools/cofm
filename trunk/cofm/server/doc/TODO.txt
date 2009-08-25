@@ -1,9 +1,19 @@
-1. Generate extra operations for commit action:
-1.1 Modify CommitAction as "VoteRule.txt" says.
-1.2 In Feature
-voteXXX except voteExistence on the feature will also call voteExistence(true) on it.
+1. Complete the MockClient
+  1.1  generate requests through a config file.
+  1.2  register, login, update and commit should be implemented for testing.
+  1.3  parse response. 
+    a)  see if the request is successful. 
+    b)  update the features and users.
+  1.4  convert response.body from json to dynabean.
+  1.5  set address and id in client.send()  ****** NEXT TO DO
 
-2. Init a root feature (name is "root") for dp and client. 
+2. Init a root feature (name is "root") for dp. 
 
-3. The client should send request according to a "script" file, which contains predefined requests.
-This will enable us to generate different request sequences without modifying the code.
+3. Complete the Bean style of feature and votable, test Utils.beanToJson.
+
+NOTE: the request script file: 
+R = register, L = login, C = commit (new op), V = vote (old op), P = print 
+R 30 = generate successive 30 register requests. (random user name)
+L 10 50 = generate successive 10 to 50 login requests.
+L A = login for ALL (registered) users.
+CV 50 200 = generate successive 50 to 200 commit or vote requests. (random user)

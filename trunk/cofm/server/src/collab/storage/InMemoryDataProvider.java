@@ -12,9 +12,9 @@ public class InMemoryDataProvider implements DataProvider {
 	
 	static Logger logger = Logger.getLogger(InMemoryDataProvider.class);
 	
-	private static int opId = 1;
-	private static int featureId = 1;
-	private static int userId = 1;
+	private static int opId = 0;
+	private static int featureId = 0;
+	private static int userId = 0;
 	
 	private static Object opLock = new Object();
 	private static Object featLock = new Object();
@@ -58,10 +58,10 @@ public class InMemoryDataProvider implements DataProvider {
 	@Override
 	public Feature getFeatureById(Integer id) {
 		synchronized (featLock) {
-			if (id < 1 || id > features.size()) {
+			if (id < 0 || id > features.size()) {
 				return null;
 			}
-			return features.get(id - 1);
+			return features.get(id);
 		}
 	}
 
@@ -85,11 +85,11 @@ public class InMemoryDataProvider implements DataProvider {
 		List<Feature> result = null;
 		synchronized (featLock) {
 			if (beginId <= features.size()) {
-				if (beginId < 1) {
-					beginId = 1;
+				if (beginId < 0) {
+					beginId = 0;
 				}
 				result = new ArrayList<Feature>();
-				for (int i = beginId - 1; i < features.size(); i++) {
+				for (int i = beginId; i < features.size(); i++) {
 					result.add(features.get(i));
 				}
 			}
@@ -102,11 +102,11 @@ public class InMemoryDataProvider implements DataProvider {
 		List<Operation> result = null;
 		synchronized (opLock) {
 			if (beginId <= ops.size()) {
-				if (beginId < 1) {
-					beginId = 1;
+				if (beginId < 0) {
+					beginId = 0;
 				}
 				result = new ArrayList<Operation>();
-				for (int i = beginId - 1; i < ops.size(); i++) {
+				for (int i = beginId; i < ops.size(); i++) {
 					result.add(ops.get(i));
 				}
 			}
@@ -124,10 +124,10 @@ public class InMemoryDataProvider implements DataProvider {
 	@Override
 	public boolean updateFeature(Feature f) {
 		synchronized (featLock) {
-			if (f.getId() < 1 || f.getId() > features.size()) {
+			if (f.getId() < 0 || f.getId() > features.size()) {
 				return false;
 			}
-			features.set(f.getId() - 1, f);
+			features.set(f.getId(), f);
 			return true;
 		}
 	}

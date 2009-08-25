@@ -96,7 +96,7 @@ public class CommitAction extends Action {
 			Boolean vote = (Boolean)data.get(Resources.OP_FIELD_VOTE);
 			String user = ((Request)input).getUser();
 			
-			List<Operation> operations = makeOperation(op, left, right, vote, user, toRequester);
+			List<Operation> operations = parseOperation(op, left, right, vote, user, toRequester);
 			if (operations == null) {
 				result.add(toRequester);
 				return result;
@@ -191,32 +191,26 @@ public class CommitAction extends Action {
 		write(rsp, Response.TYPE_BROADCAST, Resources.RSP_FORWARD, data);
 	}
 	
-	private List<Operation> makeOperation(String op, Object left, Object right, Boolean vote, String user, Response response) {
+	private List<Operation> parseOperation(String op, Object left, Object right, Boolean vote, String user, Response response) {
 		List<Operation> result = new ArrayList<Operation>(2);
 		Operation o = new Operation();
 		o.setOp(op);
 		o.setVote(vote);
 		
-		try {
-		    o.setUserid(new Integer(user));
-		} catch (NumberFormatException nfe) {
-			Integer userid = dp.getUserIdByName(user);
-			if (userid == null) {
-				writeError(response, 
-						MessageFormat.format(Resources.MSG_ERROR_USER_NOTFOUND, user));
-				return null;
-			}
-			o.setUserid(userid);
+		Integer userId = parseUserId(user, response);
+		if (userId == null) {
+			return null;
 		}
+		o.setUserid(userId);
 		
-		Integer featureId1 = getFeatureId(left, response);
+		Integer featureId1 = parseFeatureId(left, response);
 		if (featureId1 == null) {
 			return null;
 		}
 		o.setLeft(featureId1);
 		
 		if (isFeatureAsRightOperand(op)) {
-			Integer featureId2 = getFeatureId(right, response);
+			Integer featureId2 = parseFeatureId(right, response);
 			if (featureId2 == null) {
 				return null;
 			}
@@ -235,24 +229,39 @@ public class CommitAction extends Action {
 		} else {
 			o.setRight(right);
 		}
-		result.add(o);
 		
+		result.add(o);
 		return result;
 	}
 	
-	private Integer getFeatureId(Object idOrName, Response rsp) {
-		if (idOrName instanceof Integer) {
-			return (Integer)idOrName;
-		} else {
-			Integer id = dp.getFeatureIdByName((String)idOrName);
+	private Integer parseUserId(String input, Response rsp) {
+		try {
+		    return new Integer(input);
+		} catch (NumberFormatException nfe) {
+			Integer userid = dp.getUserIdByName(input);
+			if (userid == null) {
+				writeError(rsp, 
+						MessageFormat.format(Resources.MSG_ERROR_USER_NOTFOUND, input));
+				return null;
+			}
+			return userid;
+		}
+	}
+	
+	private Integer parseFeatureId(Object input, Response rsp) {
+		if (input instanceof Integer) {
+			return (Integer)input;
+		} else if (input instanceof String) {
+			Integer id = dp.getFeatureIdByName((String)input);
 			if (id == null) {
 				writeError(rsp, 
 						MessageFormat.format(Resources.MSG_ERROR_FEATURE_NOTFOUND,
-								idOrName));
+								input));
 				return null;
 			}
 			return id;
 		}
+		return null;
 	}
 	
 	private boolean isFeatureAsRightOperand(String op) {

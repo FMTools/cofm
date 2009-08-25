@@ -16,6 +16,7 @@ public class RequestValidator extends Filter {
 	
 	private static Constraint userCst = new FieldConstraint("user", String.class);
 	private static Constraint dataStrCst = new FieldConstraint("data", String.class);
+	private static Constraint dataIntCst = new FieldConstraint("data", Integer.class);
 	private static Constraint dataOpCst = new FieldConstraint("data.op", String.class);
 	private static Constraint dataLeftCst = new OrConstraint(
 			new FieldConstraint("data.left", Integer.class),
@@ -32,7 +33,7 @@ public class RequestValidator extends Filter {
 		cstTable.put(Resources.REQ_COMMIT, 
 				Arrays.asList(userCst, dataOpCst, dataLeftCst, dataRightCst, dataVoteCst));
 		cstTable.put(Resources.REQ_UPDATE,
-				Arrays.asList(userCst));
+				Arrays.asList(userCst, dataIntCst));
 		cstTable.put(Resources.REQ_LISTUSER,
 				Arrays.asList(userCst));
 		cstTable.put(Resources.REQ_LOGOUT,

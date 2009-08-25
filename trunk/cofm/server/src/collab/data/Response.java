@@ -43,7 +43,7 @@ public class Response extends Filterable {
 		this.body = body;
 	}
 	
-	public class Body {
+	public static class Body {
 		
 		private String status;
 		private Source source = new Source();
@@ -76,7 +76,7 @@ public class Response extends Filterable {
 			this.data = data;
 		}
 		
-		public class Source {
+		public static class Source {
 			private Integer id;
 			private String name;
 			private String user;
