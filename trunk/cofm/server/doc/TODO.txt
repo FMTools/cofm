@@ -1,5 +1,0 @@
-1、学习Hibernate，设计数据库，实现持久层
-2、实现Flex客户端原型，中止server的mock实现
-  2.1 树形控件浏览模型
-  2.2 编辑界面
-3. Learn Maven, and replace MyEclipse with Eclipse
