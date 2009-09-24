@@ -1,4 +1,4 @@
-package collab.fm.server.bean;
+package collab.fm.server.util;
 
 import java.lang.reflect.*;
 import java.util.ResourceBundle;

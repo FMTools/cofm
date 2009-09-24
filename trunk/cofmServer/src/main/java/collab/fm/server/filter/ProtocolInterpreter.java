@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import net.sf.json.*;
 
 import collab.fm.server.bean.*;
+import collab.fm.server.util.Resources;
 import collab.fm.server.util.Utils;
 
 public class ProtocolInterpreter extends Filter {
