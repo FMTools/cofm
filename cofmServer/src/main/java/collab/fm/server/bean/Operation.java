@@ -1,6 +1,6 @@
 package collab.fm.server.bean;
 
-import collab.fm.server.bean.Resources;
+import collab.fm.server.util.Resources;
 
 public class Operation {
 	

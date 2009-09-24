@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.*;
 import collab.fm.server.storage.*;
+import collab.fm.server.util.Resources;
 import collab.fm.server.controller.*;
 
 

@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.*;
 import collab.fm.server.filter.util.*;
+import collab.fm.server.util.Resources;
 
 public class RequestValidator extends Filter {
 	

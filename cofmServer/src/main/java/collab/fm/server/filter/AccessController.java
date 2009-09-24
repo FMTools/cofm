@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.*;
+import collab.fm.server.util.Resources;
 
 public class AccessController extends Filter {
 	
