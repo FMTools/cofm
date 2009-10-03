@@ -65,8 +65,8 @@ public class BinarySearchTree<Key, Val> implements SearchTree<Key, Val> {
 		throw new UnsupportedOperationException("Unused operation for tgen");
 	}
 	
-	public TreeIterator<Val> inOrderIterator() {
-		return new InOrderIterator<Val>(root);
+	public TreeIterator<Key, Val> inOrderIterator() {
+		return new InOrderIterator<Key, Val>(root);
 	}
 	
 	// The Binary Tree Node
@@ -108,29 +108,35 @@ public class BinarySearchTree<Key, Val> implements SearchTree<Key, Val> {
 		}
 	}
 	
-	public static class InOrderIterator<T> implements TreeIterator<T> {
+	public static class InOrderIterator<K, V> implements TreeIterator<K, V> {
 		
-		private Stack<TreeNode<?, T>> context = null; 
-		private TreeNode<?, T> cur = null;
+		private Stack<TreeNode<K, V>> context = null; 
+		private TreeNode<K, V> cur = null;
+		private TreeNode<K, V> latest = null;
 		
-		public InOrderIterator(TreeNode<?, T> root) {
+		public InOrderIterator(TreeNode<K, V> root) {
 			cur = root;
-			context = new Stack<TreeNode<?, T>>();
+			latest = root;
+			context = new Stack<TreeNode<K, V>>();
 		}
 
 		public boolean hasNext() {
 			return context.size() > 0 || cur != null;
 		}
 
-		public T next() {
+		public V next() {
 			while (cur != null) {
 				context.push(cur);
 				cur = cur.getLeft();
 			} 
 			cur = context.pop();
-			T val = cur.getVal();
+			latest = cur;
 			cur = cur.getRight();
-			return val;	
+			return latest.getVal();	
+		}
+
+		public K getKey() {
+			return latest.getKey();
 		}
 		
 	}

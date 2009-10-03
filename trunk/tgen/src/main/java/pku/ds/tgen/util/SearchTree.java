@@ -8,5 +8,5 @@ public interface SearchTree<Key, Val> {
 	
 	public Val get(Key key);
 	
-	public TreeIterator<Val> inOrderIterator();
+	public TreeIterator<Key, Val> inOrderIterator();
 }

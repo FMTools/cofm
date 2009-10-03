@@ -1,9 +1,13 @@
 package pku.ds.tgen.index;
 
 import java.io.*;
+
+import org.apache.log4j.Logger;
 // Split text by whitespace.
 public class SimpleTokenizer implements Tokenizer {
 
+	static Logger logger = Logger.getLogger(SimpleTokenizer.class);
+	
 	private StringBuilder data = new StringBuilder();
 	private int pos = 0;
 	private int size = 0;
@@ -109,7 +113,17 @@ public class SimpleTokenizer implements Tokenizer {
 					return -1;
 				}
 				// Trim head and tail whitespace.
-				line = line.replaceAll("^\\s+", "").replaceAll("\\s+$", "");
+				int i = 0, sz = line.length();
+				while (i < sz && Character.isWhitespace(line.charAt(i))) {
+					i++;
+				}
+				line = line.substring(i);
+				sz = line.length();
+				i = sz - 1;
+				while (i >= 0 && Character.isWhitespace(line.charAt(i))) {
+					i--;
+				}
+				line = line.substring(0, i+1);
 				if (line.equals("")) {
 					return 0;
 				}
@@ -127,6 +141,7 @@ public class SimpleTokenizer implements Tokenizer {
 						data.append(" " + word); // Insert a whitespace between words
 						size++;  // "++" for the extra whitespace
 					}
+					logger.debug(" --> '" + word + "'");
 					size += wordLen;
 					count++;
 				}
