@@ -1,0 +1,10 @@
+Introduction
+The Java 2 platform includes a collections framework. A collection is an object that represents a group of objects (such as the classic Vector class). A collections framework is a unified architecture for representing and manipulating collections, allowing them to be manipulated independently of the details of their representation. 
+The primary advantages of a collections framework are that it: 
+
+Reduces programming effort by providing useful data structures and algorithms so you don't have to write them yourself. 
+Increases performance by providing high-performance implementations of useful data structures and algorithms. Because the various implementations of each interface are interchangeable, programs can be easily tuned by switching implementations. 
+Provides interoperability between unrelated APIs by establishing a common language to pass collections back and forth. 
+Reduces the effort required to learn APIs by eliminating the need to learn multiple ad hoc collection APIs. 
+Reduces the effort required to design and implement APIs by eliminating the need to produce ad hoc collections APIs. 
+Fosters software reuse by providing a standard interface for collections and algorithms to manipulate them. 
