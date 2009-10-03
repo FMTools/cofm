@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.TreeSet;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class BinarySearchTreeTest {
@@ -21,6 +22,7 @@ public class BinarySearchTreeTest {
 		
 	}
 	
+	@Ignore
 	@Test
 	public void testInOrderTraverse() {
 		// Test against the search tree of java.
