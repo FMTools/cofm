@@ -8,11 +8,21 @@ import pku.ds.tgen.index.Tokenizer.Words;
 
 public class App {
 	//TODO: read input_file_name, output_file_name, K and BeginWords from console
-	public static final String INPUT_FILE_NAME = "src/main/resources/input";
-	public static final String OUTPUT_FILE_NAME = "target/output";
-	public static final int K = 2;
-	public static final int MAX_TEXT_LEN = 100000;
-	public static final int WORDS_PER_LINE = 20;
+	public static final String CFG_FILE_NAME = "tgen";
+	
+	public static final String PROP_INPUT = "input";
+	public static final String PROP_OUTPUT = "output";
+	public static final String PROP_K = "K";
+	public static final String PROP_LEN = "len";
+	public static final String PROP_LINE_LEN = "lineLen";
+	public static final String PROP_SEED = "seedWords";
+	
+	private String inputFileName;
+	private String outputFileName;
+	private String seedWords;
+	private int order;
+	private int textLen;
+	private int wordsPerLine;
 	
 	private Tokenizer tokenizer = null;
 	private Indexer indexer = null;
@@ -45,27 +55,44 @@ public class App {
 		return nextWord.text;
 	}
 	
+	private void loadProperties() {
+		ResourceBundle cfg = ResourceBundle.getBundle(CFG_FILE_NAME);
+		inputFileName = cfg.getString(PROP_INPUT);
+		outputFileName = cfg.getString(PROP_OUTPUT);
+		order = new Integer(cfg.getString(PROP_K));
+		textLen = new Integer(cfg.getString(PROP_LEN));
+		wordsPerLine = new Integer(cfg.getString(PROP_LINE_LEN));
+		seedWords = cfg.getString(PROP_SEED).trim();
+	}
+	
 	public void run() {
-		tokenizer = new SimpleTokenizer(INPUT_FILE_NAME);
+		loadProperties();
+		
+		tokenizer = new SimpleTokenizer(inputFileName);
 		indexer = new BstIndexer();
-		indexer.index(tokenizer, K);
-		// The generated text will begin with "It is..."
-		recentWords.add("It");
-		recentWords.add("is");
+		indexer.index(tokenizer, order);
+		
+		String[] seeds = seedWords.split("\\s+");
+		for (String word: seeds) {
+			recentWords.add(word);
+		}
 		
 		try {
-			FileWriter out = new FileWriter(OUTPUT_FILE_NAME);
-			out.write("It is");
-			for (int i = 0, j = 0; i < MAX_TEXT_LEN - K; i++, j++) {
+			PrintWriter out = new PrintWriter(
+					new OutputStreamWriter(
+							new FileOutputStream(outputFileName), "utf-8"));
+			out.write(seedWords + " ");
+			
+			for (int i = 0, j = 0; i < textLen - order; i++, j++) {
 				String next = nextWord();
 				if (next == null) {
 					break;
 				}
-				out.write(" " + next);
-				if (j >= WORDS_PER_LINE) {
+				if (j >= wordsPerLine) {
 					out.write("\n");
 					j = 0;
 				}
+				out.write((j == 0 ? "" : " ") + next);
 			}
 			out.close();
 		} catch (IOException e) {

@@ -36,7 +36,7 @@ public class BinarySearchTreeTest {
 		}
 		Integer[] result1 = javaSearchTree.toArray(new Integer[0]);
 		
-		TreeIterator<Integer> t = bst.inOrderIterator();
+		TreeIterator<Integer, Integer> t = bst.inOrderIterator();
 		List<Integer> list = new ArrayList<Integer>();
 		while (t.hasNext()) {
 			list.add(t.next());
