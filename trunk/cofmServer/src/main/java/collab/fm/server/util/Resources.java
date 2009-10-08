@@ -45,6 +45,10 @@ public class Resources {
 	public static final String OP_SETOPT = get("op.setOpt");
 	public static final String OP_SETEXT = get("op.setExt");
 	
+	public static final int REL_REFINE = Integer.parseInt(get("rel.refine"));
+	public static final int REL_REQUIRE = Integer.parseInt(get("rel.require"));
+	public static final int REL_EXCLUDE = Integer.parseInt(get("rel.exclude"));
+	
 	//Message
 	public static final String MSG_ERROR_EXCEPTION = get("msg.error.exception");
 	public static final String MSG_ERROR_CONSTRAINT = get("msg.error.constraint");
@@ -71,11 +75,16 @@ public class Resources {
 	}
 	
 	public static void main(String[] args) throws ClassNotFoundException, IllegalArgumentException, IllegalAccessException {
-		Class cRes = Class.forName("collab.fm.server.bean.Resources");
+		Class cRes = Class.forName("collab.fm.server.util.Resources");
 		Field[] fields = cRes.getFields();
 		int i = 1;
 		for (Field f: fields) {
-			String val = (String)f.get(null);
+			String val = null;
+			try {
+				val = (String)f.get(null);
+			} catch (Exception e) {
+				val = String.valueOf(f.get(null));
+			}
 			System.out.println((i++) + ": " + val);
 		}
 	}

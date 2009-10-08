@@ -13,6 +13,12 @@ public interface DataProvider {
 	 */
 	Feature getFeatureById(Integer id);
 	
+	/**
+	 * 
+	 * @param id The id of feature
+	 * @return the feature's all possible ancestors
+	 */
+	List<Feature> getAncestorsById(Integer id);
 
 	/**
 	 * If the feature name doesn't exist, a new feature will be created and returned.

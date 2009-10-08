@@ -15,7 +15,7 @@ public class Operation {
 	};
 	
 	private Integer id;
-	private String op;
+	private String name;
 	private Integer left;
 	private Object right;  // op(left, right);
 	private Boolean vote;
@@ -33,12 +33,12 @@ public class Operation {
 		this.id = id;
 	}
 	
-	public String getOp() {
-		return op;
+	public String getName() {
+		return name;
 	}
 	
-	public void setOp(String op) {
-		this.op = op;
+	public void setName(String op) {
+		this.name = op;
 	}
 
 	public Integer getLeft() {
@@ -75,7 +75,7 @@ public class Operation {
 
 	@Override
 	public String toString() {
-		return "Operation = {op: " + op +
+		return "Operation = {op: " + name +
 			   ", left: " + left + 
 			   ", right: " + right +
 			   ", vote: " + (vote ? "yes" : "no") + 
