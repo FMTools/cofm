@@ -160,7 +160,7 @@ public class CommitAction extends Action {
 	
 	private boolean applyOperation(Feature feat, Operation op, Response rsp) {
 		try {
-			opApplyPolicies.get(op.getOp()).apply(feat, op);
+			opApplyPolicies.get(op.getName()).apply(feat, op);
 			return true;
 		} catch (Exception e) {
 			logger.warn("Can't apply " + op.toString() + " on " + feat.toString(), e);
@@ -175,14 +175,14 @@ public class CommitAction extends Action {
 				new DynaProperty[] {
 			new DynaProperty("op", String.class),
 			new DynaProperty("left", Integer.class),
-			new DynaProperty("right", isFeatureAsRightOperand(op.getOp()) ? Integer.class : String.class),
+			new DynaProperty("right", isFeatureAsRightOperand(op.getName()) ? Integer.class : String.class),
 			new DynaProperty("vote", Boolean.class),
 			new DynaProperty("user", String.class)
 		});
 		DynaBean data = new BasicDynaBean(opClass);
-		data.set("op", op.getOp());
+		data.set("op", op.getName());
 		data.set("left", op.getLeft());
-		if (isFeatureAsRightOperand(op.getOp())) {
+		if (isFeatureAsRightOperand(op.getName())) {
 			data.set("right", (Integer)op.getRight());
 		} else {
 			data.set("right", (String)op.getRight());
@@ -195,7 +195,7 @@ public class CommitAction extends Action {
 	private List<Operation> parseOperation(String op, Object left, Object right, Boolean vote, String user, Response response) {
 		List<Operation> result = new ArrayList<Operation>(2);
 		Operation o = new Operation();
-		o.setOp(op);
+		o.setName(op);
 		o.setVote(vote);
 		
 		Integer userId = parseUserId(user, response);
@@ -220,7 +220,7 @@ public class CommitAction extends Action {
 			if (Resources.OP_ADDCHILD.equals(op) && right instanceof String) {
 				// add_name(featureId2, right)
 				Operation extra = new Operation();
-				extra.setOp(Resources.OP_ADDNAME);
+				extra.setName(Resources.OP_ADDNAME);
 				extra.setLeft(featureId2);
 				extra.setRight(right);
 				extra.setVote(new Boolean(true));

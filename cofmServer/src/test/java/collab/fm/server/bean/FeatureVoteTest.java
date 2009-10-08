@@ -25,22 +25,16 @@ public class FeatureVoteTest {
 		Feature feat = new Feature();
 		feat.setId(1);
 		
-		feat.voteFeature(true, 1);
-		feat.voteFeature(false, 2);
+		feat.voteExistence(true, 1);
+		feat.voteExistence(false, 2);
 		
 		feat.voteName("rootFeat", true, 1);
 		feat.voteName("root", true, 2);
-		
-		feat.voteChild(2, true, 1);
-		feat.voteChild(3, true, 2);
 		
 		feat.voteMandatory(false, 1);
 		feat.voteMandatory(true, 3);
 		
 		feat.voteDescription("DDDDD", true, 3);
-		
-		feat.voteRequiring(3, true, 1);
-		feat.voteExcluding(5, true, 4);
 		
 		logger.info(Utils.beanToJson(feat));
 	}
@@ -127,8 +121,8 @@ public class FeatureVoteTest {
 		Feature feat = new Feature();
 		feat.setId(1);
 		
-		feat.voteFeature(true, 1);
-		feat.voteFeature(false, 2);
+		feat.voteExistence(true, 1);
+		feat.voteExistence(false, 2);
 		
 		feat.voteName("rootFeat", true, 1);
 		feat.voteName("root", true, 2);
@@ -137,16 +131,8 @@ public class FeatureVoteTest {
 		feat.voteName("root", false, 5);
 		feat.voteName("root", true, 3);
 		
-		feat.voteChild(2, true, 1);
-		feat.voteChild(3, true, 2);
-		feat.voteChild(8, false, 3); // this vote should be treated as invalid
-		
 		feat.voteMandatory(false, 1);
 		feat.voteMandatory(true, 3);
-		
-		feat.voteRequiring(3, true, 1);
-		feat.voteRequiring(4, true, 2);
-		feat.voteExcluding(3, true, 3); 
 		
 		logger.info(feat.toString());
 	}
@@ -157,18 +143,13 @@ public class FeatureVoteTest {
 		feat.setId(2);
 		
 		// Repeated vote for Boolean 
-		feat.voteFeature(true, 1);
-		feat.voteFeature(false, 1);
+		feat.voteExistence(true, 1);
+		feat.voteExistence(false, 1);
 		
 		// Repeated vote for Mutex Group
 		feat.voteName("root", true, 1);
 		feat.voteName("root2", true, 1);
-		
-		// Repeated vote for Multi-Group
-		feat.voteChild(3, true, 1);
-		feat.voteChild(3, true, 1);
-		feat.voteChild(3, false, 1);
-		
+
 		logger.info(feat.toString());
 	}
 	

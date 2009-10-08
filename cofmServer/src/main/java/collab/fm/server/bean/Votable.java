@@ -8,8 +8,8 @@ import java.util.TreeSet;
 public class Votable<T> {
 	
 	protected T value;
-	protected Set<Integer> support = new TreeSet<Integer>(); // List of User ID
-	protected Set<Integer> against = new TreeSet<Integer>(); // List of User ID
+	protected Set<Integer> support = new TreeSet<Integer>(); // Set of User ID
+	protected Set<Integer> against = new TreeSet<Integer>(); // Set of User ID
 	
 	public Votable() {
 		
@@ -28,7 +28,7 @@ public class Votable<T> {
 	}
 	
 	public synchronized void voteYes(Integer userid) {
-		// An user either support or against the value
+		// A specific user either support or against the value
 		support.add(userid);
 		against.remove(userid);
 	}
