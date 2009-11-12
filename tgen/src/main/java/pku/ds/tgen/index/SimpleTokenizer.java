@@ -112,6 +112,7 @@ public class SimpleTokenizer implements Tokenizer {
 					isEnd = true;
 					return -1;
 				}
+				logger.debug(line);
 				// Trim head and tail whitespace.
 				int i = 0, sz = line.length();
 				while (i < sz && Character.isWhitespace(line.charAt(i))) {
