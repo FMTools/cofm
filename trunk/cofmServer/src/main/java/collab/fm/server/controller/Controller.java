@@ -11,7 +11,8 @@ import org.apache.log4j.Logger;
 import collab.fm.server.bean.*;
 import collab.fm.server.filter.*;
 import collab.fm.server.action.Action;
-import collab.fm.server.util.Utils;
+import collab.fm.server.util.BeanUtils;
+import collab.fm.server.util.JsonConvertException;
 
 public abstract class Controller {
 	
@@ -21,9 +22,6 @@ public abstract class Controller {
 	protected List<Filter> filterChain = new ArrayList<Filter>();
 	
 	protected ConcurrentHashMap<String, Action> eventMap = new ConcurrentHashMap<String, Action>();
-	
-	public Controller() {
-	}
 	
 	public void registerAction(String event, Action a) {
 		if (isInterestedEvent(event)) {
@@ -48,10 +46,18 @@ public abstract class Controller {
 		}
 		
 		if (filteredRequest == null) {
-			getLogger().debug("Forwarded to doBadRequest: " + Utils.beanToJson(request));
+			try {
+			    getLogger().debug("Forwarded to doBadRequest: " + BeanUtils.beanToJson(request));
+			} catch (JsonConvertException e) {
+				//ignore it
+			}
 			rawResponse = doBadRequest(request);
 		} else {
-			getLogger().debug("Forwarded to doRequest: " + Utils.beanToJson(filteredRequest));
+			try {
+				getLogger().debug("Forwarded to doRequest: " + BeanUtils.beanToJson(filteredRequest));
+			} catch (JsonConvertException e) {
+				//ignore
+			}
 			rawResponse = doRequest(filteredRequest);
 		}
 		

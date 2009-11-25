@@ -6,22 +6,38 @@ import org.apache.log4j.Logger;
 import org.junit.*;
 import static org.junit.Assert.*;
 
-import collab.fm.server.util.*;
 import collab.fm.server.bean.*;
 
-public class UtilsTest {
+public class BeanUtilsTest {
 
-	static Logger logger = Logger.getLogger(UtilsTest.class);
+	static Logger logger = Logger.getLogger(BeanUtilsTest.class);
 	
 	@Test
-	public void testResponseJsonCast() {
+	public void testBeanFromMap() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("name", "Mark");
+		map.put("vote", true);
+		map.put("userid", 100L);
+		map.put("leftFeatureId", 1L);
+		map.put("rightFeatureId", 2L);
+		try {
+		Operation op = BeanUtils.mapToBean(BinaryRelationshipOperation.class, map);
+		logger.debug(op.toString());
+		} catch (Exception e) {
+			assertTrue(false);
+		}
+	}
+	
+	
+	@Test
+	public void testResponseJsonBidirectionCast() {
 		// Response to JSON
 		Response rsp = new Response();
 		Response.Body body = new Response.Body();
 		Response.Body.Source src = new Response.Body.Source();
 		
 		src.setAddress("123.123.123.1");
-		src.setId(1);
+		src.setId(1L);
 		src.setName(Resources.REQ_COMMIT);
 		src.setUser("mark");
 		
@@ -30,33 +46,25 @@ public class UtilsTest {
 		body.setData("String Data");
 		
 		rsp.setBody(body);
-		rsp.setType(Response.TYPE_BROADCAST);
-		
-		String json = Utils.beanToJson(rsp);
-		logger.info(json);
-		
+		rsp.setType(Response.TYPE_BROADCAST_FORWARD);
+		try {
+		String json = BeanUtils.beanToJson(rsp);
+		//logger.info(json);
+		//---------------------------------------------
 		// JSON to Response
 		Map<String, Class> map = new HashMap<String, Class>();
 		map.put("body", Response.Body.class);
 		map.put("source", Response.Body.Source.class);
-		Response rsp2 = Utils.jsonToBean(json, Response.class, map);
+		Response rsp2 = BeanUtils.jsonToBean(json, Response.class, map);
 		
-		Response.Body b = (Response.Body)rsp.getBody();
-		Response.Body.Source s = b.getSource();
-		Response.Body b2 = (Response.Body)rsp2.getBody();
-		Response.Body.Source s2 = b2.getSource();
-		
-		assertEquals(rsp.getType(), rsp2.getType());
-		assertEquals(b.getData(), b2.getData());
-		assertEquals(b.getStatus(), b2.getStatus());
-		assertEquals(s.getAddress(), s2.getAddress());
-		assertEquals(s.getId(), s2.getId());
-		assertEquals(s.getName(), s2.getName());
-		assertEquals(s.getUser(), s2.getUser());
+		assertEquals(rsp.getTargets(), rsp2.getTargets());
+		} catch (Exception e) {
+			assertTrue(false);
+		}
 	}
 		
 	@Test
-	public void testTwoStepJsonToBean() {
+	public void testNestedBeanJsonBidirectionCast() {
 		Bean1 b1 = new Bean1();
 		b1.setName("bean one");
 		Bean2 b2 = new Bean2();
@@ -65,21 +73,24 @@ public class UtilsTest {
 		Bean3 b3 = new Bean3();
 		b3.setKey("key 3");
 		b3.setValue(b2);
-		
-		String json = Utils.beanToJson(b3);
-		logger.info(json);
+		try {
+		String json = BeanUtils.beanToJson(b3);
+		//logger.info(json);
 		
 		// Step 1: json to bean3, typeof value == DynaBean
-		Bean3 bean = Utils.jsonToBean(json, Bean3.class, null);
+		Bean3 bean = BeanUtils.jsonToBean(json, Bean3.class, null);
 		
 		// Step 2: bean3.value(DynaBean) to Bean2
 		Map<String, Class> map = new HashMap<String, Class>();
 		map.put("data", Bean1.class);
-		Bean2 bean2 = Utils.jsonToBean(bean.getValue(), Bean2.class, map);
+		Bean2 bean2 = BeanUtils.jsonToBean(bean.getValue(), Bean2.class, map);
 		
 		assertEquals(b3.getKey(), bean.getKey());
 		assertEquals(b2.getId(), bean2.getId());
 		assertArrayEquals(b2.getData().toArray(), bean2.getData().toArray());
+		} catch (Exception e) {
+			assertTrue(false);
+		}
 	}
 
 	public static class Bean1 {

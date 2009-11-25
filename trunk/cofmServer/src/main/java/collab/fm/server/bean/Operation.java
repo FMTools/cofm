@@ -1,36 +1,27 @@
 package collab.fm.server.bean;
 
-import collab.fm.server.util.Resources;
+import java.lang.reflect.Field;
+import java.util.List;
+import java.util.Map;
+
+import collab.fm.server.util.BeanUtils;
 
 public class Operation {
-	
-	public static transient final String[] NAMES = {
-		Resources.OP_ADDCHILD,
-		Resources.OP_ADDDES,
-		Resources.OP_ADDEXCLUDE,
-		Resources.OP_ADDNAME,
-		Resources.OP_ADDREQUIRE,
-		Resources.OP_SETEXT,
-		Resources.OP_SETOPT
-	};
-	
-	private Integer id;
-	private String name;
-	private Integer left;
-	private Object right;  // op(left, right);
-	private Boolean vote;
-	private Integer userid; // the committer id
+
+	protected String name;
+	protected Boolean vote;
+	protected Long userid; // the committer id
 	
 	public Operation() {
 		
 	}
 	
-	public Integer getId() {
-		return id;
+	public List<Operation> apply() throws RuntimeException {
+		return null;
 	}
 	
-	public void setId(Integer id) {
-		this.id = id;
+	public String toString() {
+		return name + " " + vote + " " + userid;
 	}
 	
 	public String getName() {
@@ -41,22 +32,6 @@ public class Operation {
 		this.name = op;
 	}
 
-	public Integer getLeft() {
-		return left;
-	}
-
-	public void setLeft(Integer left) {
-		this.left = left;
-	}
-
-	public Object getRight() {
-		return right;
-	}
-
-	public void setRight(Object right) {
-		this.right = right;
-	}
-
 	public Boolean getVote() {
 		return vote;
 	}
@@ -65,21 +40,11 @@ public class Operation {
 		this.vote = vote;
 	}
 	
-	public Integer getUserid() {
+	public Long getUserid() {
 		return userid;
 	}
 
-	public void setUserid(Integer userid) {
+	public void setUserid(Long userid) {
 		this.userid = userid;
 	}
-
-	@Override
-	public String toString() {
-		return "Operation = {op: " + name +
-			   ", left: " + left + 
-			   ", right: " + right +
-			   ", vote: " + (vote ? "yes" : "no") + 
-			   ", userId: " + userid + "}";
-	}
-	
 }

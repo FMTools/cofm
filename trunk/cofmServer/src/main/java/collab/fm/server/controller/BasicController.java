@@ -24,7 +24,10 @@ public class BasicController extends Controller {
 		Resources.REQ_LOGOUT
 	};
 	
-
+	public BasicController() {
+		
+	}
+	
 	@Override
 	protected boolean isInterestedEvent(String name) {
 		for (String s: INTERESTED_EVENTS) {
