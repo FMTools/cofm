@@ -1,15 +1,18 @@
-package collab.fm.server.bean;
+package collab.fm.server.bean.entity;
 
 public class User {
-	private Integer id;
+	private Long id;
+	
 	private String name;
+	
 	public User() {
 		
 	}
-	public Integer getId() {
+	
+	public Long getId() {
 		return id;
 	}
-	public void setId(Integer id) {
+	private void setId(Long id) {
 		this.id = id;
 	}
 	public String getName() {

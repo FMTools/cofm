@@ -9,11 +9,6 @@ public class Resources {
 	private static ResourceBundle msgRes = ResourceBundle.getBundle("locale.message");
 	
 	//Protocol
-	public static final String REQ_FIELD_NAME = get("req.field.name");
-	public static final String REQ_FIELD_ID = get("req.field.id");
-	public static final String REQ_FIELD_USER = get("req.field.user");
-	public static final String REQ_FIELD_DATA = get("req.field.data");
-	
 	public static final String REQ_ERROR_AUTHORITY = get("req.error.authority");
 	public static final String REQ_ERROR_FORMAT = get("req.error.format");
 	
@@ -31,24 +26,15 @@ public class Resources {
 	public static final String RSP_FORWARD = get("rsp.forward");
 	public static final String RSP_DENIED = get("rsp.denied");
 	public static final String RSP_ERROR = get("rsp.error");
-	
-	public static final String OP_FIELD_OP = get("op.field.op");
-	public static final String OP_FIELD_LEFT = get("op.field.left");
-	public static final String OP_FIELD_RIGHT = get("op.field.right");
-	public static final String OP_FIELD_VOTE = get("op.field.vote");
-	
-	public static final String OP_ADDCHILD = get("op.addChild");
-	public static final String OP_ADDREQUIRE = get("op.addRequire");
-	public static final String OP_ADDEXCLUDE = get("op.addExclude");
-	public static final String OP_ADDNAME = get("op.addName");
-	public static final String OP_ADDDES = get("op.addDes");
-	public static final String OP_SETOPT = get("op.setOpt");
-	public static final String OP_SETEXT = get("op.setExt");
-	
-	public static final int REL_REFINE = Integer.parseInt(get("rel.refine"));
-	public static final int REL_REQUIRE = Integer.parseInt(get("rel.require"));
-	public static final int REL_EXCLUDE = Integer.parseInt(get("rel.exclude"));
-	
+
+	public static final String OP_ADD_CHILD = get("op.addChild");
+	public static final String OP_ADD_REQUIRE = get("op.addRequire");
+	public static final String OP_ADD_EXCLUDE = get("op.addExclude");
+	public static final String OP_ADD_NAME = get("op.addName");
+	public static final String OP_ADD_DES = get("op.addDes");
+	public static final String OP_SET_OPT = get("op.setOpt");
+	public static final String OP_CREATE_FEATURE = get("op.createFeature"); 
+
 	//Message
 	public static final String MSG_ERROR_EXCEPTION = get("msg.error.exception");
 	public static final String MSG_ERROR_CONSTRAINT = get("msg.error.constraint");

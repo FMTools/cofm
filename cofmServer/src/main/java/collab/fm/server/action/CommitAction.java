@@ -4,100 +4,78 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.beanutils.*;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.*;
-import collab.fm.server.storage.*;
+import collab.fm.server.bean.entity.Feature;
+import collab.fm.server.persistence.*;
+import collab.fm.server.util.BeanUtils;
 import collab.fm.server.util.Resources;
 import collab.fm.server.controller.*;
 
 
 public class CommitAction extends Action {
 	
+	public CommitAction(Controller controller) {
+		super(new String[] { Resources.REQ_COMMIT }, controller);
+	}
+
 	static Logger logger = Logger.getLogger(CommitAction.class);
 	
-	private final class OpApplyPolicy {
-		private Class<?> operandType;
-		private Method callee;
+	private static Map<String, Class<? extends Operation>> opNameClassMap = 
+		new HashMap<String, Class<? extends Operation>>();
+	static {
+		opNameClassMap.put(Resources.OP_ADD_CHILD, BinaryRelationshipOperation.class);
+		opNameClassMap.put(Resources.OP_ADD_EXCLUDE, BinaryRelationshipOperation.class);
+		opNameClassMap.put(Resources.OP_ADD_REQUIRE, BinaryRelationshipOperation.class);
 		
-		public OpApplyPolicy(Class<?> operandType, Method callee) {
-			this.operandType = operandType;
-			this.callee = callee;
-		}
-		
-		public void apply(Feature feat, Operation op) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
-			if (operandType == null) {
-				callee.invoke(feat, op.getVote(), op.getUserid());
-			} else {
-				callee.invoke(feat, operandType.cast(op.getRight()), op.getVote(), op.getUserid());
-			}
-		}
+		opNameClassMap.put(Resources.OP_ADD_DES, FeatureOperation.class);
+		opNameClassMap.put(Resources.OP_ADD_NAME, FeatureOperation.class);
+		opNameClassMap.put(Resources.OP_CREATE_FEATURE, FeatureOperation.class);
+		opNameClassMap.put(Resources.OP_SET_OPT, FeatureOperation.class);
 	}
 	
-	private ConcurrentHashMap<String, OpApplyPolicy> opApplyPolicies = 
-		new ConcurrentHashMap<String, OpApplyPolicy>();
-	
-
-	
-	private static final String[] featureAsRightOperandOp = {
-		Resources.OP_ADDCHILD,
-		Resources.OP_ADDEXCLUDE,
-		Resources.OP_ADDREQUIRE
-	};
-
-	public CommitAction(Controller controller,
-			DataProvider dp) {
-		super(new String[]{Resources.REQ_COMMIT}, controller, dp);
-		initOpApplyPolicies();
-	}
-	
-	private void initOpApplyPolicies() {
+	private Operation getOperation(Request req) {
 		try {
-			opApplyPolicies.put(Resources.OP_ADDCHILD,
-					new OpApplyPolicy(Integer.class, 
-							Feature.class.getMethod("voteChild", Integer.class, Boolean.class, Integer.class)));
-			opApplyPolicies.put(Resources.OP_ADDDES,
-					new OpApplyPolicy(String.class, 
-							Feature.class.getMethod("voteDescription", String.class, Boolean.class, Integer.class)));
-			opApplyPolicies.put(Resources.OP_ADDEXCLUDE,
-					new OpApplyPolicy(Integer.class, 
-							Feature.class.getMethod("voteExcluding", Integer.class, Boolean.class, Integer.class)));
-			opApplyPolicies.put(Resources.OP_ADDNAME,
-					new OpApplyPolicy(String.class, 
-							Feature.class.getMethod("voteName", String.class, Boolean.class, Integer.class)));
-			opApplyPolicies.put(Resources.OP_ADDREQUIRE,
-					new OpApplyPolicy(Integer.class, 
-							Feature.class.getMethod("voteRequiring", Integer.class, Boolean.class, Integer.class)));
-			opApplyPolicies.put(Resources.OP_SETEXT, 
-					new OpApplyPolicy(null, 
-							Feature.class.getMethod("voteFeature", Boolean.class, Integer.class)));
-			opApplyPolicies.put(Resources.OP_SETOPT, 
-					new OpApplyPolicy(null, 
-							Feature.class.getMethod("voteMandatory", Boolean.class, Integer.class)));
-		} catch (NoSuchMethodException e) {
-			logger.error("OpApplyPolicies init failed.", e);
+			Operation abstractOp = BeanUtils.jsonToBean(req.getData(), Operation.class, null);
+			Class<? extends Operation> concreteOpClass = opNameClassMap.get(abstractOp.getName());
+			return BeanUtils.jsonToBean(req.getData(), concreteOpClass, null);
+		} catch (Exception e) {
+			logger.warn("Bad operation.", e);
+			return null;
 		}
+		
 	}
-
-	@Override
+	
 	public List<Response> process(Object input) {
-		List<Response> result = new ArrayList<Response>(2);
+		try {
+			Request req = (Request)input;
+			Operation op = getOperation(req);
+			
+			return null;
+		} catch (Exception e) {
+			logger.warn("Process error.", e);
+			return null;
+		}
+		/*List<Response> result = new ArrayList<Response>(2);
 		Response toRequester = new Response();
 		try {
 			writeSource(toRequester, (Request)input);
 			
-			DynaBean data = (DynaBean)((Request)input).getData();
-			String op = (String)data.get(Resources.OP_FIELD_OP);
-			Object left = data.get(Resources.OP_FIELD_LEFT);
-			Object right = data.get(Resources.OP_FIELD_RIGHT);
-			Boolean vote = (Boolean)data.get(Resources.OP_FIELD_VOTE);
-			String user = ((Request)input).getUser();
+			DynaBean data = (DynaBean)((Request)input).getData();*/
+			/*//String op = (String)data.get(Resources.OP_FIELD_OP);
+			//Object left = data.get(Resources.OP_FIELD_LEFT);
+			//Object right = data.get(Resources.OP_FIELD_RIGHT);
+			//Boolean vote = (Boolean)data.get(Resources.OP_FIELD_VOTE);
+			//String user = ((Request)input).getUser();
 			
-			List<Operation> operations = parseOperation(op, left, right, vote, user, toRequester);
+			//List<Operation> operations = parseOperation(op, left, right, vote, user, toRequester);
 			if (operations == null) {
 				result.add(toRequester);
 				return result;
@@ -155,22 +133,10 @@ public class CommitAction extends Action {
 			writeError(toRequester, Resources.MSG_ERROR_REQUEST);
 			result.add(toRequester);
 			return result;
-		}
+		}*/
 	}
 	
-	private boolean applyOperation(Feature feat, Operation op, Response rsp) {
-		try {
-			opApplyPolicies.get(op.getName()).apply(feat, op);
-			return true;
-		} catch (Exception e) {
-			logger.warn("Can't apply " + op.toString() + " on " + feat.toString(), e);
-			writeError(rsp, MessageFormat.format(Resources.MSG_ERROR_FEATURE_APPLYOP, 
-					op.toString(), feat.toString().replaceAll("\n", "")));
-			return false;
-		}
-	}
-	
-	private void broadcastOperation(Response rsp, Operation op, Request req) {
+	/*private void broadcastOperation(Response rsp, Operation op, Request req) {
 		DynaClass opClass = new BasicDynaClass("OpDyna", BasicDynaBean.class, 
 				new DynaProperty[] {
 			new DynaProperty("op", String.class),
@@ -217,10 +183,10 @@ public class CommitAction extends Action {
 			}
 			o.setRight(featureId2);
 			
-			if (Resources.OP_ADDCHILD.equals(op) && right instanceof String) {
+			if (Resources.OP_ADD_CHILD.equals(op) && right instanceof String) {
 				// add_name(featureId2, right)
 				Operation extra = new Operation();
-				extra.setName(Resources.OP_ADDNAME);
+				extra.setName(Resources.OP_ADD_NAME);
 				extra.setLeft(featureId2);
 				extra.setRight(right);
 				extra.setVote(new Boolean(true));
@@ -273,10 +239,6 @@ public class CommitAction extends Action {
 		}
 		return false;
 	}
-
-	@Override
-	protected Logger getLogger() {
-		return logger;
-	}
+*/
 
 }

@@ -8,16 +8,21 @@ public class Response extends Filterable {
 	public static final String TERMINATOR = "\0";
 	
 	public static final String TYPE_BACK = "back";
-	public static final String TYPE_PEER = "peer";
-	public static final String TYPE_BROADCAST = "broadcast";
+	public static final String TYPE_PEER_FORWARD = "peer_forward";
+	public static final String TYPE_BROADCAST_FORWARD = "broadcast_forward";
 	
 	private String type;
 	private List<String> targets = new ArrayList<String>(); 
+	
+	/**
+	 * When a response is converted to JSON string, the string will be stored in this field. 
+	 */
 	private Object body = new Body();
 	
 	public Response() {
 		
 	}
+	
 	public String getType() {
 		return type;
 	}
@@ -30,6 +35,10 @@ public class Response extends Filterable {
 		return targets;
 	}
 
+	public void setTargets(List<String> targets) {
+		this.targets = targets;
+	}
+	
 	public void addTarget(String target) {
 		this.targets.add(target);
 	}
@@ -51,6 +60,7 @@ public class Response extends Filterable {
 		public Body() {
 			
 		}
+		
 		public String getStatus() {
 			return status;
 		}
@@ -76,17 +86,18 @@ public class Response extends Filterable {
 		}
 		
 		public static class Source {
-			private Integer id;
+			private Long id;
 			private String name;
 			private String user;
 			private String address;
 			public Source() {
 				
 			}
-			public Integer getId() {
+
+			public Long getId() {
 				return id;
 			}
-			public void setId(Integer id) {
+			public void setId(Long id) {
 				this.id = id;
 			}
 			public String getName() {

@@ -13,8 +13,8 @@ import net.sf.json.util.JSONUtils;
 import org.apache.log4j.Logger;
 import org.junit.Test;
 
-import collab.fm.server.bean.*;
-import collab.fm.server.util.Utils;
+import collab.fm.server.bean.entity.Feature;
+import collab.fm.server.util.BeanUtils;
 
 public class FeatureVoteTest {
 	
@@ -23,20 +23,23 @@ public class FeatureVoteTest {
 	@Test
 	public void testFeatureToJson() {
 		Feature feat = new Feature();
-		feat.setId(1);
+		feat.setId(1L);
 		
-		feat.voteExistence(true, 1);
-		feat.voteExistence(false, 2);
+		feat.voteExistence(true, 1L);
+		feat.voteExistence(false, 2L);
 		
-		feat.voteName("rootFeat", true, 1);
-		feat.voteName("root", true, 2);
+		feat.voteName("rootFeat", true, 1L);
+		feat.voteName("root", true, 2L);
 		
-		feat.voteMandatory(false, 1);
-		feat.voteMandatory(true, 3);
+		feat.voteOptionality(false, 1L);
+		feat.voteOptionality(true, 3L);
 		
-		feat.voteDescription("DDDDD", true, 3);
-		
-		logger.info(Utils.beanToJson(feat));
+		feat.voteDescription("DDDDD", true, 3L);
+		try {
+		logger.info(BeanUtils.beanToJson(feat));
+		} catch (Exception e) {
+			assertTrue(false);
+		}
 	}
 	
 	public static class Bean1<T> {
@@ -116,45 +119,4 @@ public class FeatureVoteTest {
 		logger.info(chd.get(0).getAgainst().getClass()); // == TreeSet, not HashSet
 	}
 	
-	@Test
-	public void testNormalVote() {
-		Feature feat = new Feature();
-		feat.setId(1);
-		
-		feat.voteExistence(true, 1);
-		feat.voteExistence(false, 2);
-		
-		feat.voteName("rootFeat", true, 1);
-		feat.voteName("root", true, 2);
-		feat.voteName("rootFeat", true, 3);
-		feat.voteName("rootFeat", false, 4);
-		feat.voteName("root", false, 5);
-		feat.voteName("root", true, 3);
-		
-		feat.voteMandatory(false, 1);
-		feat.voteMandatory(true, 3);
-		
-		logger.info(feat.toString());
-	}
-	
-	@Test
-	public void testRepeatedVoteBySameUser() {
-		Feature feat = new Feature();
-		feat.setId(2);
-		
-		// Repeated vote for Boolean 
-		feat.voteExistence(true, 1);
-		feat.voteExistence(false, 1);
-		
-		// Repeated vote for Mutex Group
-		feat.voteName("root", true, 1);
-		feat.voteName("root2", true, 1);
-
-		logger.info(feat.toString());
-	}
-	
-	@Test
-	public void testMultiThreadVote() {
-		
-	}
 }
