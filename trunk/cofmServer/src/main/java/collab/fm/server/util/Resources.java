@@ -27,13 +27,15 @@ public class Resources {
 	public static final String RSP_DENIED = get("rsp.denied");
 	public static final String RSP_ERROR = get("rsp.error");
 
-	public static final String OP_ADD_CHILD = get("op.addChild");
-	public static final String OP_ADD_REQUIRE = get("op.addRequire");
-	public static final String OP_ADD_EXCLUDE = get("op.addExclude");
 	public static final String OP_ADD_NAME = get("op.addName");
 	public static final String OP_ADD_DES = get("op.addDes");
 	public static final String OP_SET_OPT = get("op.setOpt");
-	public static final String OP_CREATE_FEATURE = get("op.createFeature"); 
+	public static final String OP_CREATE_FEATURE = get("op.createFeature");
+	public static final String OP_CREATE_BINARY_RELATIONSHIP = get("op.createBinaryRelationship");
+	
+	public static final String BIN_REL_REFINES = get("binrel.refines");
+	public static final String BIN_REL_REQUIRES = get("binrel.requires");
+	public static final String BIN_REL_EXCLUDES = get("binrel.excludes");
 
 	//Message
 	public static final String MSG_ERROR_EXCEPTION = get("msg.error.exception");

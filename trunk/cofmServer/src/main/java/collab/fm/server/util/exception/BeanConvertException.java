@@ -1,4 +1,4 @@
-package collab.fm.server.util;
+package collab.fm.server.util.exception;
 
 public class BeanConvertException extends Exception {
 

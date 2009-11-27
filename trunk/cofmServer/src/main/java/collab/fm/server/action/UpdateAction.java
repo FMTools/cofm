@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.*;
 import collab.fm.server.bean.entity.Feature;
+import collab.fm.server.bean.json.Response;
 import collab.fm.server.persistence.*;
 import collab.fm.server.util.Resources;
 import collab.fm.server.controller.*;

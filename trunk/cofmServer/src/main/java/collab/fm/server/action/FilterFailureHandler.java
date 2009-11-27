@@ -5,6 +5,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.*;
+import collab.fm.server.bean.json.Request;
+import collab.fm.server.bean.json.Response;
 import collab.fm.server.persistence.*;
 import collab.fm.server.controller.*;
 
