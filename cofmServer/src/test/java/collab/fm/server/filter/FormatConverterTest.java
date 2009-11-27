@@ -12,6 +12,10 @@ import collab.fm.server.util.BeanUtils;
 import collab.fm.server.util.Resources;
 import collab.fm.server.bean.*;
 import collab.fm.server.bean.entity.User;
+import collab.fm.server.bean.json.BinaryRelationshipOperation;
+import collab.fm.server.bean.json.Operation;
+import collab.fm.server.bean.json.Request;
+import collab.fm.server.bean.json.Response;
 
 public class FormatConverterTest {
 	

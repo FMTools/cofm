@@ -7,6 +7,9 @@ import org.junit.*;
 import static org.junit.Assert.*;
 
 import collab.fm.server.bean.*;
+import collab.fm.server.bean.json.BinaryRelationshipOperation;
+import collab.fm.server.bean.json.Operation;
+import collab.fm.server.bean.json.Response;
 
 public class BeanUtilsTest {
 

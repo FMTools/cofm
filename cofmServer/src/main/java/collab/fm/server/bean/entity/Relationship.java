@@ -9,6 +9,10 @@ public class Relationship {
 		
 	}
 	
+	public void voteExistence(boolean support, Long userid) {
+		existence.vote(support, userid);
+	}
+	
 	public Long getId() {
 		return id;
 	}

@@ -11,6 +11,9 @@ import net.sf.json.util.PropertyFilter;
 
 import org.apache.log4j.Logger;
 
+import collab.fm.server.util.exception.BeanConvertException;
+import collab.fm.server.util.exception.JsonConvertException;
+
 public final class BeanUtils {
 	
 	static Logger logger = Logger.getLogger(BeanUtils.class);
@@ -32,16 +35,19 @@ public final class BeanUtils {
 		}
 		for (Field field: fields) {
 			Object value = map.get(field.getName());
-			if (value != null) {
+			
 				try {
 					field.setAccessible(true);
-					field.set(bean, field.getType().cast(value));
+					if (value != null) {
+						field.set(bean, field.getType().cast(value));
+					} else {
+						field.set(bean,	null);
+					}
 				} catch (IllegalArgumentException e) {
 					throw new BeanConvertException("Cannot set field of the bean.", e);
 				} catch (IllegalAccessException e) {
 					throw new BeanConvertException("Cannot set field of the bean.", e);
 				}
-			}
 		}
 		return bean;
 	}
@@ -69,19 +75,22 @@ public final class BeanUtils {
 		throws JsonConvertException {
 		try {
 			JsonConfig cfg = new JsonConfig();
-			if (skipFields != null) {
+			
 				cfg.setJsonPropertyFilter(new PropertyFilter() {
 					public boolean apply(Object source, String name,
 							Object value) {
-						for (String skip : skipFields) {
-							if (skip.equals(name)) {
-								return true;
+						if (value == null) { // skip the null fields
+							return true;
+						} else if (skipFields != null) {
+							for (String skip : skipFields) {
+								if (skip.equals(name)) {
+									return true;
+								}
 							}
 						}
 						return false;
 					}
 				});
-			}
 			JSONObject jsonObj = (JSONObject) JSONSerializer.toJSON(bean, cfg);
 			return jsonObj.toString();
 		} catch (JSONException e) {

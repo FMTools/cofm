@@ -3,6 +3,9 @@ package collab.fm.server.filter;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.*;
+import collab.fm.server.bean.json.Filterable;
+import collab.fm.server.bean.json.Request;
+import collab.fm.server.bean.json.Response;
 
 public abstract class Filter {
 	protected final String name;

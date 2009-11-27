@@ -1,4 +1,4 @@
-package collab.fm.server.bean;
+package collab.fm.server.bean.json;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -48,8 +48,16 @@ public class Feature {
 		voteBool(optionality, val, userid);
 	}
 	
+	public void voteAllName(boolean support, Long userid) {
+		voteAll(names, support, userid);
+	}
+	
 	public void voteName(String name, Boolean support, Long userid) {
 		voteList(names, name, support, userid);
+	}
+	
+	public void voteAllDescription(boolean support, Long userid) {
+		voteAll(descriptions, support, userid);
 	}
 	
 	public void voteDescription(String des, Boolean support, Long userid) {
@@ -75,6 +83,11 @@ public class Feature {
 		}
 	}
 	
+	private <T> void voteAll(List<Vote<T>> field, boolean support, Long userid) {
+		for (Vote<T> v: field) {
+			v.vote(support, userid);
+		}
+	}
 	/*private <T> void vote(boolean supportAtMostOne, List<Votable<T>> field, T val, boolean support, int userid) {
 		TreeSet<Integer> otherValSupporters = null;
 		Votable<T> theVal = new Votable<T>(val);

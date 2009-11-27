@@ -9,10 +9,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.*;
+import collab.fm.server.bean.json.Request;
+import collab.fm.server.bean.json.Response;
 import collab.fm.server.filter.*;
 import collab.fm.server.action.Action;
 import collab.fm.server.util.BeanUtils;
-import collab.fm.server.util.JsonConvertException;
+import collab.fm.server.util.exception.JsonConvertException;
 
 public abstract class Controller {
 	
