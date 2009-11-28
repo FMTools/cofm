@@ -15,8 +15,8 @@ import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 
 import collab.fm.server.controller.*;
-import collab.fm.server.bean.json.Request;
-import collab.fm.server.bean.json.Response;
+import collab.fm.server.bean.protocol.Request;
+import collab.fm.server.bean.protocol.Response;
 
 public class Server {
 	

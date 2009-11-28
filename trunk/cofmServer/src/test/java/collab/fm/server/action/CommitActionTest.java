@@ -10,9 +10,9 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
-import collab.fm.server.bean.json.BinaryRelationshipOperation;
-import collab.fm.server.bean.json.Operation;
-import collab.fm.server.bean.json.Request;
+import collab.fm.server.bean.protocol.BinaryRelationshipOperation;
+import collab.fm.server.bean.protocol.Operation;
+import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.controller.BasicController;
 import collab.fm.server.controller.Controller;
 import collab.fm.server.util.BeanUtils;

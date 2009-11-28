@@ -1,4 +1,4 @@
-package collab.fm.server.bean.json;
+package collab.fm.server.bean.protocol;
 
 
 public class Request extends Filterable {

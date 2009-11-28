@@ -1,4 +1,4 @@
-package collab.fm.server.bean.json;
+package collab.fm.server.bean.protocol;
 
 public abstract class Filterable {
 	protected String latestFilterName;
