@@ -5,8 +5,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.*;
-import collab.fm.server.bean.json.Request;
-import collab.fm.server.bean.json.Response;
+import collab.fm.server.bean.protocol.Request;
+import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.persistence.*;
 import collab.fm.server.util.Resources;
 import collab.fm.server.controller.*;
@@ -27,14 +27,6 @@ public abstract class Action {
 	 */
 	public abstract List<Response> process(Object input);
 	
-	/**
-	 * Write re
-	 * @param rsp
-	 * @param req
-	 * @param type
-	 * @param status
-	 * @param data
-	 */
 	protected Response makeResponse(Request req, String type, String status, Object data) {
 		Response rsp = new Response();
 		writeSource(rsp, req);

@@ -1,4 +1,4 @@
-package collab.fm.server.bean.json;
+package collab.fm.server.bean.protocol;
 
 import java.util.Arrays;
 import java.util.List;
@@ -76,8 +76,8 @@ public class BinaryRelationshipOperation extends Operation {
 				throw new InvalidOperationException("No relationship has ID: " + relationshipId);
 			}
 			relation.voteExistence(vote, userid);
-			checkImplyYesToInvolvedFeatures(null);
 			DaoUtils.getRelationshipDao().update(relation);
+			checkImplyYesToInvolvedFeatures(null);
 		}
 		return this;
 	}

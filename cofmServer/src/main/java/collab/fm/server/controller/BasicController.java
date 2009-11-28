@@ -6,8 +6,8 @@ import org.apache.commons.beanutils.*;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.*;
-import collab.fm.server.bean.json.Request;
-import collab.fm.server.bean.json.Response;
+import collab.fm.server.bean.protocol.Request;
+import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.filter.*;
 import collab.fm.server.util.Resources;
 import collab.fm.server.action.Action;

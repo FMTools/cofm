@@ -7,7 +7,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import collab.fm.server.bean.json.Operation;
+import collab.fm.server.bean.protocol.Operation;
 import collab.fm.server.util.BeanUtils;
 
 public class OperationTest {

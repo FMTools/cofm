@@ -1,4 +1,4 @@
-package collab.fm.server.bean.json;
+package collab.fm.server.bean.protocol;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -112,8 +112,8 @@ public class FeatureOperation extends Operation {
 				throw new InvalidOperationException("Feature '" + value + "' already existed.");
 			}
 			// Now save the new feature, which will return the generated feature ID
-			checkImplyYesToFeature(featureWithSameName);
 			featureId = DaoUtils.getFeatureDao().save(featureWithSameName);
+			checkImplyYesToFeature(featureWithSameName);
 			return this;
 		}
 		Feature feature = DaoUtils.getFeatureDao().getById(featureId);
@@ -121,6 +121,7 @@ public class FeatureOperation extends Operation {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
 		}
 		feature.voteExistence(vote, userid);
+		DaoUtils.getFeatureDao().update(feature);
 		if (vote.equals(false)) {
 			List<Relationship> rels = DaoUtils.getFeatureDao().getInvolvedRelationships(featureId);
 			if (rels != null) {
@@ -131,7 +132,6 @@ public class FeatureOperation extends Operation {
 			}
 			checkImplyNoToFeatureAttributes(feature);
 		}
-		DaoUtils.getFeatureDao().update(feature);
 		return this;
 	}
 	

@@ -12,8 +12,8 @@ import org.apache.mina.common.IoHandlerAdapter;
 import org.apache.mina.common.IoSession;
 
 import collab.fm.server.bean.*;
-import collab.fm.server.bean.json.Request;
-import collab.fm.server.bean.json.Response;
+import collab.fm.server.bean.protocol.Request;
+import collab.fm.server.bean.protocol.Response;
 
 /**
  *  ThreadSafe: YES

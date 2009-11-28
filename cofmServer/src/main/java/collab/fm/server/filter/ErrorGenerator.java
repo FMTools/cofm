@@ -2,8 +2,8 @@ package collab.fm.server.filter;
 
 import org.apache.log4j.Logger;
 
-import collab.fm.server.bean.json.Request;
-import collab.fm.server.bean.json.Response;
+import collab.fm.server.bean.protocol.Request;
+import collab.fm.server.bean.protocol.Response;
 
 /**
  * Generate error values for request and response deliberately.
