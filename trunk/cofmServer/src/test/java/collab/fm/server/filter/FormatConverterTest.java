@@ -8,7 +8,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 import org.junit.*;
 
-import collab.fm.server.util.BeanUtils;
+import collab.fm.server.util.BeanUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.bean.*;
 import collab.fm.server.bean.entity.User;
@@ -37,7 +37,7 @@ public class FormatConverterTest {
 		map.put("leftFeatureId", 1L);
 		map.put("rightFeatureId", 2L);
 		try {
-		Operation op = BeanUtils.mapToBean(BinaryRelationshipOperation.class, map);
+		Operation op = BeanUtil.mapToBean(BinaryRelationshipOperation.class, map);
 		
 		Request req = new Request();
 		req.setAddress("123.123.123.123");
@@ -46,7 +46,7 @@ public class FormatConverterTest {
 		req.setUser("Mark");
 		req.setData(op);
 		
-		String originData = BeanUtils.beanToJson(req, new String[] {"address"});
+		String originData = BeanUtil.beanToJson(req, new String[] {"address"});
 		
 		Request originReq = new Request();
 		originReq.setAddress(req.getAddress());

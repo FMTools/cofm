@@ -15,7 +15,7 @@ import collab.fm.server.bean.protocol.Operation;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.controller.BasicController;
 import collab.fm.server.controller.Controller;
-import collab.fm.server.util.BeanUtils;
+import collab.fm.server.util.BeanUtil;
 import collab.fm.server.util.Resources;
 
 public class CommitActionTest {
@@ -33,10 +33,10 @@ public class CommitActionTest {
 		map.put("leftFeatureId", 1L);
 		map.put("rightFeatureId", 2L);
 		try {
-			Operation op = BeanUtils.mapToBean(
+			Operation op = BeanUtil.mapToBean(
 					BinaryRelationshipOperation.class, map);
 
-			String opJson = BeanUtils.beanToJson(op);
+			String opJson = BeanUtil.beanToJson(op);
 
 			logger.debug("<id=" + relationshipId + "> " + opJson);
 

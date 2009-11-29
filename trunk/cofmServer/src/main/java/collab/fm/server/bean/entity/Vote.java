@@ -15,22 +15,32 @@ public class Vote<T> {
 		
 	}
 	
-	public Set<Long> getSupporters() {
-		return Collections.unmodifiableSet(supporters);
+	private Set<Long> getSupportersInternal() {
+		//return Collections.unmodifiableSet(supporters);
+		return supporters;
 	}
 
-	public void setSupporters(Set<Long> supporters) {
+	private void setSupportersInternal(Set<Long> supporters) {
 		this.supporters = supporters;
 	}
 
-	public Set<Long> getOpponents() {
-		return Collections.unmodifiableSet(opponents);
+	private Set<Long> getOpponentsInternal() {
+		//return Collections.unmodifiableSet(opponents);
+		return opponents;
 	}
 
-	public void setOpponents(Set<Long> opponents) {
+	private void setOpponentsInternal(Set<Long> opponents) {
 		this.opponents = opponents;
 	}
-
+	
+	public Set<Long> getSupporters() {
+		return Collections.unmodifiableSet(getSupportersInternal());
+	}
+	
+	public Set<Long> getOpponents() {
+		return Collections.unmodifiableSet(getOpponentsInternal());
+	}
+	
 	public Vote(T value) {
 		setValue(value);
 	}

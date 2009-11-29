@@ -8,7 +8,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import collab.fm.server.bean.protocol.Operation;
-import collab.fm.server.util.BeanUtils;
+import collab.fm.server.util.BeanUtil;
 
 public class OperationTest {
 
@@ -19,7 +19,7 @@ public class OperationTest {
 		map.put("vote", true);
 		map.put("userid", 100L);
 		try {
-		Operation op = BeanUtils.mapToBean(Operation.class, map);
+		Operation op = BeanUtil.mapToBean(Operation.class, map);
 		assertEquals("Mark", op.getName());
 	    } catch (Exception e) {
 			assertTrue(false);

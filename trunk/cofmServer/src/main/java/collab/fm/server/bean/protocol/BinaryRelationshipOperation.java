@@ -6,7 +6,7 @@ import java.util.List;
 import collab.fm.server.bean.entity.BinaryRelationship;
 import collab.fm.server.bean.entity.Feature;
 import collab.fm.server.bean.entity.Relationship;
-import collab.fm.server.persistence.DaoUtils;
+import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.BeanPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
@@ -62,21 +62,21 @@ public class BinaryRelationshipOperation extends Operation {
 			relation.setType(type);
 			relation.setLeftFeatureId(leftFeatureId);
 			relation.setRightFeatureId(rightFeatureId);
-			if (DaoUtils.getRelationshipDao().getByExample(relation, false) != null) {
+			if (DaoUtil.getRelationshipDao().getByExample(relation, false) != null) {
 				throw new InvalidOperationException("Relationship '" + leftFeatureId + " " + type + " " + rightFeatureId + "' already existed.");
 			}
 			relation.voteExistence(true, userid);
-			relationshipId = DaoUtils.getRelationshipDao().save(relation);
-			Feature left = DaoUtils.getFeatureDao().getById(leftFeatureId);
-			Feature right = DaoUtils.getFeatureDao().getById(rightFeatureId);
+			relationshipId = DaoUtil.getRelationshipDao().save(relation);
+			Feature left = DaoUtil.getFeatureDao().getById(leftFeatureId);
+			Feature right = DaoUtil.getFeatureDao().getById(rightFeatureId);
 			checkImplyYesToInvolvedFeatures(Arrays.asList(new Feature[] {left, right}));
 		} else {
-			Relationship relation = DaoUtils.getRelationshipDao().getById(relationshipId);
+			Relationship relation = DaoUtil.getRelationshipDao().getById(relationshipId);
 			if (relation == null) {
 				throw new InvalidOperationException("No relationship has ID: " + relationshipId);
 			}
 			relation.voteExistence(vote, userid);
-			DaoUtils.getRelationshipDao().update(relation);
+			DaoUtil.getRelationshipDao().update(relation);
 			checkImplyYesToInvolvedFeatures(null);
 		}
 		return this;
@@ -85,13 +85,13 @@ public class BinaryRelationshipOperation extends Operation {
 	private void checkImplyYesToInvolvedFeatures(List<Feature> features) throws BeanPersistenceException {
 		if (vote.equals(true)) {
 			if (features == null) {
-				features = DaoUtils.getRelationshipDao().getInvolvedFeatures(relationshipId);
+				features = DaoUtil.getRelationshipDao().getInvolvedFeatures(relationshipId);
 			}
 			if (features != null) {
 				for (Feature feature: features) {
 					feature.voteExistence(true, userid);
 				}
-				DaoUtils.getFeatureDao().updateAll(features);
+				DaoUtil.getFeatureDao().updateAll(features);
 			}
 		}
 	}

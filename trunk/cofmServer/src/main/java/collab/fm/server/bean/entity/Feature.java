@@ -134,32 +134,40 @@ public class Feature {
 	public Vote<Boolean> getExistence() {
 		return existence;
 	}
-
-	public void setExistence(Vote<Boolean> existence) {
-		this.existence = existence;
-	}
-
+	
 	public Vote<Boolean> getOptionality() {
 		return optionality;
 	}
 
-	public void setOptionality(Vote<Boolean> optionality) {
+	public Collection<Vote<String>> getNames() {
+		return Collections.unmodifiableCollection(getNamesInternal());
+	}
+	
+	public Collection<Vote<String>> getDescriptions() {
+		return Collections.unmodifiableCollection(getDescriptionsInternal());
+	}
+	
+	private void setExistence(Vote<Boolean> existence) {
+		this.existence = existence;
+	}
+
+	private void setOptionality(Vote<Boolean> optionality) {
 		this.optionality = optionality;
 	}
 
-	public Collection<Vote<String>> getNames() {
-		return Collections.unmodifiableCollection(names);
+	private Collection<Vote<String>> getNamesInternal() {
+		return names;
 	}
 
-	public void setNames(Collection<Vote<String>> names) {
+	private void setNamesInternal(Collection<Vote<String>> names) {
 		this.names = names;
 	}
 
-	public Collection<Vote<String>> getDescriptions() {
-		return Collections.unmodifiableCollection(descriptions);
+	private Collection<Vote<String>> getDescriptionsInternal() {
+		return descriptions;
 	}
 
-	public void setDescriptions(Collection<Vote<String>> descriptions) {
+	private void setDescriptionsInternal(Collection<Vote<String>> descriptions) {
 		this.descriptions = descriptions;
 	}
 	

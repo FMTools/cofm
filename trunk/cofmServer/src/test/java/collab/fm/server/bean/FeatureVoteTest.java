@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import collab.fm.server.bean.entity.Feature;
-import collab.fm.server.util.BeanUtils;
+import collab.fm.server.util.BeanUtil;
 
 public class FeatureVoteTest {
 	
@@ -36,7 +36,7 @@ public class FeatureVoteTest {
 		
 		feat.voteDescription("DDDDD", true, 3L);
 		try {
-		logger.info(BeanUtils.beanToJson(feat));
+		logger.info(BeanUtil.beanToJson(feat));
 		} catch (Exception e) {
 			assertTrue(false);
 		}

@@ -9,11 +9,11 @@
   	</id>
   	
   	<component name="existence" class="Vote">
-  		<set name="supporters" table="FeatureSupporter">
+  		<set name="supportersInternal" table="FeatureSupporter">
   			<key column="featureId"></key>
   			<element type="long" column="supporter" not-null="true"></element>
   		</set>
-  		<set name="opponents" table="FeatureOpponent">
+  		<set name="opponentsInternal" table="FeatureOpponent">
   			<key column="featureId"></key>
   			<element type="long" column="opponent" not-null="true"></element>
   		</set>

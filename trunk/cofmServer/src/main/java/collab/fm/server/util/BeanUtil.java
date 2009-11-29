@@ -14,9 +14,9 @@ import org.apache.log4j.Logger;
 import collab.fm.server.util.exception.BeanConvertException;
 import collab.fm.server.util.exception.JsonConvertException;
 
-public final class BeanUtils {
+public final class BeanUtil {
 	
-	static Logger logger = Logger.getLogger(BeanUtils.class);
+	static Logger logger = Logger.getLogger(BeanUtil.class);
 	
 	public static <T> T mapToBean(Class<T> beanClass, Map<String, Object> map)
 		throws BeanConvertException {

@@ -1,6 +1,10 @@
-package collab.fm.server.persistence;
+package collab.fm.server.util;
 
-public class DaoUtils {
+import collab.fm.server.persistence.DaoFactory;
+import collab.fm.server.persistence.FeatureDao;
+import collab.fm.server.persistence.RelationshipDao;
+
+public class DaoUtil {
 	
 	private static DaoFactory factory = DaoFactory.getFactory();
 	
@@ -11,4 +15,5 @@ public class DaoUtils {
 	public static RelationshipDao getRelationshipDao() {
 		return factory.getRelationshipDao();
 	}
+	
 }
