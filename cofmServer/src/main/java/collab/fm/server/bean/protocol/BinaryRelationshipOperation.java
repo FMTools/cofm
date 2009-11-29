@@ -65,7 +65,7 @@ public class BinaryRelationshipOperation extends Operation {
 			if (DaoUtils.getRelationshipDao().getByExample(relation, false) != null) {
 				throw new InvalidOperationException("Relationship '" + leftFeatureId + " " + type + " " + rightFeatureId + "' already existed.");
 			}
-
+			relation.voteExistence(true, userid);
 			relationshipId = DaoUtils.getRelationshipDao().save(relation);
 			Feature left = DaoUtils.getFeatureDao().getById(leftFeatureId);
 			Feature right = DaoUtils.getFeatureDao().getById(rightFeatureId);

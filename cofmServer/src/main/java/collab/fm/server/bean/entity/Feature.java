@@ -5,12 +5,13 @@ import java.util.*;
 
 public class Feature {
 	
+	//TODO: further mapping needs to remove the 'transient' keywords.
 	private Long id;
 	
 	private Vote<Boolean> existence = new Vote<Boolean>(Boolean.TRUE);
-	private Vote<Boolean> optionality = new Vote<Boolean>(Boolean.TRUE);
-	private List<Vote<String>> names = new LinkedList<Vote<String>>();
-	private List<Vote<String>> descriptions = new LinkedList<Vote<String>>();
+	transient private Vote<Boolean> optionality = new Vote<Boolean>(Boolean.TRUE);
+	transient private Collection<Vote<String>> names = new ArrayList<Vote<String>>();
+	transient private Collection<Vote<String>> descriptions = new ArrayList<Vote<String>>();
 	
 	public Feature() {
 	
@@ -53,7 +54,7 @@ public class Feature {
 	}
 	
 	public void voteName(String name, Boolean support, Long userid) {
-		voteList(names, name, support, userid);
+		voteOneInCollection(names, name, support, userid);
 	}
 	
 	public void voteAllDescription(boolean support, Long userid) {
@@ -61,14 +62,14 @@ public class Feature {
 	}
 	
 	public void voteDescription(String des, Boolean support, Long userid) {
-		voteList(descriptions, des, support, userid);
+		voteOneInCollection(descriptions, des, support, userid);
 	}
 	
 	private void voteBool(Vote<Boolean> field, Boolean val, Long userid) {
 		field.vote(val, userid);
 	}
 	
-	private <T> void voteList(List<Vote<T>> field, T val, boolean support, Long userid) {
+	private <T> void voteOneInCollection(Collection<Vote<T>> field, T val, boolean support, Long userid) {
 		Vote<T> theVote = new Vote<T>(val);
 		for (Vote<T> v: field) {
 			if (theVote.equals(v)) {
@@ -83,7 +84,7 @@ public class Feature {
 		}
 	}
 	
-	private <T> void voteAll(List<Vote<T>> field, boolean support, Long userid) {
+	private <T> void voteAll(Collection<Vote<T>> field, boolean support, Long userid) {
 		for (Vote<T> v: field) {
 			v.vote(support, userid);
 		}
@@ -146,19 +147,19 @@ public class Feature {
 		this.optionality = optionality;
 	}
 
-	public List<Vote<String>> getNames() {
-		return Collections.unmodifiableList(names);
+	public Collection<Vote<String>> getNames() {
+		return Collections.unmodifiableCollection(names);
 	}
 
-	public void setNames(List<Vote<String>> names) {
+	public void setNames(Collection<Vote<String>> names) {
 		this.names = names;
 	}
 
-	public List<Vote<String>> getDescriptions() {
-		return Collections.unmodifiableList(descriptions);
+	public Collection<Vote<String>> getDescriptions() {
+		return Collections.unmodifiableCollection(descriptions);
 	}
 
-	public void setDescriptions(List<Vote<String>> descriptions) {
+	public void setDescriptions(Collection<Vote<String>> descriptions) {
 		this.descriptions = descriptions;
 	}
 	
