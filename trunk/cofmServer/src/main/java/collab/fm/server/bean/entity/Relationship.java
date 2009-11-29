@@ -8,7 +8,7 @@ public class Relationship {
 	public Relationship() {
 		
 	}
-	
+
 	public void voteExistence(boolean support, Long userid) {
 		existence.vote(support, userid);
 	}

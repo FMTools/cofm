@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="collab.fm.server.bean.entity">
+  <class name="Feature" table="Feature">
+  	<id name="id" column="featureId" type="long">
+  		<generator class="native"></generator>
+  	</id>
+  	
+  	<component name="existence" class="Vote">
+  		<set name="supporters" table="FeatureSupporter">
+  			<key column="featureId"></key>
+  			<element type="long" column="supporter" not-null="true"></element>
+  		</set>
+  		<set name="opponents" table="FeatureOpponent">
+  			<key column="featureId"></key>
+  			<element type="long" column="opponent" not-null="true"></element>
+  		</set>
+  	</component>
+  </class>
+</hibernate-mapping>

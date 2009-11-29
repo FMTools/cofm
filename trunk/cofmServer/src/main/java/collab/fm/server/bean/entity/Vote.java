@@ -1,33 +1,49 @@
 package collab.fm.server.bean.entity;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 
 public class Vote<T> {
 	
 	private T value;
-	private Set<Long> support = new TreeSet<Long>(); // Set of User ID
-	private Set<Long> against = new TreeSet<Long>(); // Set of User ID
+	private Set<Long> supporters = new HashSet<Long>(); // Set of User ID
+	private Set<Long> opponents = new HashSet<Long>(); // Set of User ID
 	
 	public Vote() {
 		
 	}
 	
+	public Set<Long> getSupporters() {
+		return Collections.unmodifiableSet(supporters);
+	}
+
+	public void setSupporters(Set<Long> supporters) {
+		this.supporters = supporters;
+	}
+
+	public Set<Long> getOpponents() {
+		return Collections.unmodifiableSet(opponents);
+	}
+
+	public void setOpponents(Set<Long> opponents) {
+		this.opponents = opponents;
+	}
+
 	public Vote(T value) {
 		setValue(value);
 	}
 	
 	private void voteYes(Long userid) {
 		// A specific user either support or against the value
-		support.add(userid);
-		against.remove(userid);
+		supporters.add(userid);
+		opponents.remove(userid);
 	}
 	
 	private void voteNo(Long userid) {
-		support.remove(userid);
-		against.add(userid);
+		supporters.remove(userid);
+		opponents.add(userid);
 	}
 	
 	public void vote(boolean support, Long userid) {
@@ -46,22 +62,6 @@ public class Vote<T> {
 		this.value = value;
 	}
 	
-	public void setSupport(Set<Long> support) {
-		this.support = support;
-	}
-
-	public void setAgainst(Set<Long> against) {
-		this.against = against;
-	}
-
-	public Set<Long> getSupport() {
-		return Collections.unmodifiableSet(support);
-	}
-	
-	public Set<Long> getAgainst() {
-		return Collections.unmodifiableSet(against);
-	}
-	
 	@Override
 	public boolean equals(Object obj) {
 		try {
@@ -73,6 +73,6 @@ public class Vote<T> {
 
 	@Override
 	public String toString() {
-		return value.toString() + "(" + support.toString() + "/" + against.toString() + ")"; 
+		return value.toString() + "(" + supporters.toString() + "/" + opponents.toString() + ")"; 
 	}
 }
