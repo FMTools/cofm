@@ -6,7 +6,7 @@ import java.util.Map;
 
 import javax.naming.OperationNotSupportedException;
 
-import collab.fm.server.util.BeanUtils;
+import collab.fm.server.util.BeanUtil;
 import collab.fm.server.util.exception.BeanPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 

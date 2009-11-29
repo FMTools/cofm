@@ -12,7 +12,7 @@ import collab.fm.server.bean.*;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.BeanUtils;
+import collab.fm.server.util.BeanUtil;
 
 public class FormatConverter extends Filter {
 
@@ -27,7 +27,7 @@ public class FormatConverter extends Filter {
 		try {
 			// json to Request, Request.data needs further identification
 			String json = (String)request.getData();
-			Request result = BeanUtils.jsonToBean(json, Request.class, null);
+			Request result = BeanUtil.jsonToBean(json, Request.class, null);
 			result.setAddress(request.getAddress());
 			return result;
 		} catch (Exception e){
@@ -42,7 +42,7 @@ public class FormatConverter extends Filter {
 	protected Response doFilterResponse(Response response) {
 		try {
 			// Response to JSON string
-			String json = BeanUtils.beanToJson(response.getBody());
+			String json = BeanUtil.beanToJson(response.getBody());
 			response.setBody(json);
 			return response;
 		} catch (Exception e) {

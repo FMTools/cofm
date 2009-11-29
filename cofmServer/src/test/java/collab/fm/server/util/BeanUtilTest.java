@@ -11,9 +11,9 @@ import collab.fm.server.bean.protocol.BinaryRelationshipOperation;
 import collab.fm.server.bean.protocol.Operation;
 import collab.fm.server.bean.protocol.Response;
 
-public class BeanUtilsTest {
+public class BeanUtilTest {
 
-	static Logger logger = Logger.getLogger(BeanUtilsTest.class);
+	static Logger logger = Logger.getLogger(BeanUtilTest.class);
 	
 	@Test
 	public void testBeanFromMap() {
@@ -24,7 +24,7 @@ public class BeanUtilsTest {
 		map.put("leftFeatureId", 1L);
 		map.put("rightFeatureId", 2L);
 		try {
-		Operation op = BeanUtils.mapToBean(BinaryRelationshipOperation.class, map);
+		Operation op = BeanUtil.mapToBean(BinaryRelationshipOperation.class, map);
 		logger.debug(op.toString());
 		} catch (Exception e) {
 			assertTrue(false);
@@ -51,14 +51,14 @@ public class BeanUtilsTest {
 		rsp.setBody(body);
 		rsp.setType(Response.TYPE_BROADCAST_FORWARD);
 		try {
-		String json = BeanUtils.beanToJson(rsp);
+		String json = BeanUtil.beanToJson(rsp);
 		//logger.info(json);
 		//---------------------------------------------
 		// JSON to Response
 		Map<String, Class> map = new HashMap<String, Class>();
 		map.put("body", Response.Body.class);
 		map.put("source", Response.Body.Source.class);
-		Response rsp2 = BeanUtils.jsonToBean(json, Response.class, map);
+		Response rsp2 = BeanUtil.jsonToBean(json, Response.class, map);
 		
 		assertEquals(rsp.getTargets(), rsp2.getTargets());
 		} catch (Exception e) {
@@ -77,16 +77,16 @@ public class BeanUtilsTest {
 		b3.setKey("key 3");
 		b3.setValue(b2);
 		try {
-		String json = BeanUtils.beanToJson(b3);
+		String json = BeanUtil.beanToJson(b3);
 		//logger.info(json);
 		
 		// Step 1: json to bean3, typeof value == DynaBean
-		Bean3 bean = BeanUtils.jsonToBean(json, Bean3.class, null);
+		Bean3 bean = BeanUtil.jsonToBean(json, Bean3.class, null);
 		
 		// Step 2: bean3.value(DynaBean) to Bean2
 		Map<String, Class> map = new HashMap<String, Class>();
 		map.put("data", Bean1.class);
-		Bean2 bean2 = BeanUtils.jsonToBean(bean.getValue(), Bean2.class, map);
+		Bean2 bean2 = BeanUtil.jsonToBean(bean.getValue(), Bean2.class, map);
 		
 		assertEquals(b3.getKey(), bean.getKey());
 		assertEquals(b2.getId(), bean2.getId());

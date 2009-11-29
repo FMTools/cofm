@@ -13,7 +13,7 @@ import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.filter.*;
 import collab.fm.server.action.Action;
-import collab.fm.server.util.BeanUtils;
+import collab.fm.server.util.BeanUtil;
 import collab.fm.server.util.exception.JsonConvertException;
 
 public abstract class Controller {
@@ -49,14 +49,14 @@ public abstract class Controller {
 		
 		if (filteredRequest == null) {
 			try {
-			    getLogger().debug("Forwarded to doBadRequest: " + BeanUtils.beanToJson(request));
+			    getLogger().debug("Forwarded to doBadRequest: " + BeanUtil.beanToJson(request));
 			} catch (JsonConvertException e) {
 				//ignore it
 			}
 			rawResponse = doBadRequest(request);
 		} else {
 			try {
-				getLogger().debug("Forwarded to doRequest: " + BeanUtils.beanToJson(filteredRequest));
+				getLogger().debug("Forwarded to doRequest: " + BeanUtil.beanToJson(filteredRequest));
 			} catch (JsonConvertException e) {
 				//ignore
 			}

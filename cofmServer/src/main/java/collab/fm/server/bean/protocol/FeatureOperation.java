@@ -10,8 +10,8 @@ import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.entity.Feature;
 import collab.fm.server.bean.entity.Relationship;
-import collab.fm.server.persistence.DaoUtils;
 import collab.fm.server.persistence.FeatureDao;
+import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.BeanPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
@@ -79,24 +79,24 @@ public class FeatureOperation extends Operation {
 	}
 	
 	private Operation applyAddDes() throws BeanPersistenceException, InvalidOperationException {
-		Feature feature = DaoUtils.getFeatureDao().getById(featureId);
+		Feature feature = DaoUtil.getFeatureDao().getById(featureId);
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
 		}
 		feature.voteDescription(value, vote, userid);
 		checkImplyYesToFeature(feature);
-		DaoUtils.getFeatureDao().update(feature);
+		DaoUtil.getFeatureDao().update(feature);
 		return this;
 	}
 	
 	private Operation applyAddName() throws BeanPersistenceException, InvalidOperationException {
-		Feature feature = DaoUtils.getFeatureDao().getById(featureId);
+		Feature feature = DaoUtil.getFeatureDao().getById(featureId);
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
 		}
 		feature.voteName(value, vote, userid);
 		checkImplyYesToFeature(feature);
-		DaoUtils.getFeatureDao().update(feature);
+		DaoUtil.getFeatureDao().update(feature);
 		return this;
 	}
 	
@@ -108,27 +108,27 @@ public class FeatureOperation extends Operation {
 			// Check if a feature with same name has already existed.
 			Feature featureWithSameName = new Feature();
 			featureWithSameName.voteName(value, vote, userid);
-			if (DaoUtils.getFeatureDao().getByExample(featureWithSameName, false) != null) {
+			if (DaoUtil.getFeatureDao().getByExample(featureWithSameName, false) != null) {
 				throw new InvalidOperationException("Feature '" + value + "' already existed.");
 			}
 			// Now save the new feature, which will return the generated feature ID
-			featureId = DaoUtils.getFeatureDao().save(featureWithSameName);
+			featureId = DaoUtil.getFeatureDao().save(featureWithSameName);
 			checkImplyYesToFeature(featureWithSameName);
 			return this;
 		}
-		Feature feature = DaoUtils.getFeatureDao().getById(featureId);
+		Feature feature = DaoUtil.getFeatureDao().getById(featureId);
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
 		}
 		feature.voteExistence(vote, userid);
-		DaoUtils.getFeatureDao().update(feature);
+		DaoUtil.getFeatureDao().update(feature);
 		if (vote.equals(false)) {
-			List<Relationship> rels = DaoUtils.getFeatureDao().getInvolvedRelationships(featureId);
+			List<Relationship> rels = DaoUtil.getFeatureDao().getInvolvedRelationships(featureId);
 			if (rels != null) {
 				for (Relationship rel: rels) {
 					rel.voteExistence(false, userid);
 				}
-				DaoUtils.getRelationshipDao().updateAll(rels);
+				DaoUtil.getRelationshipDao().updateAll(rels);
 			}
 			checkImplyNoToFeatureAttributes(feature);
 		}
@@ -136,13 +136,13 @@ public class FeatureOperation extends Operation {
 	}
 	
 	private Operation applySetOpt() throws BeanPersistenceException, InvalidOperationException {
-		Feature feature = DaoUtils.getFeatureDao().getById(featureId);
+		Feature feature = DaoUtil.getFeatureDao().getById(featureId);
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
 		}
 		feature.voteOptionality(vote, userid);
 		feature.voteExistence(true, userid); // Always implies a YES to feature
-		DaoUtils.getFeatureDao().update(feature);
+		DaoUtil.getFeatureDao().update(feature);
 		return this;
 	}
 	

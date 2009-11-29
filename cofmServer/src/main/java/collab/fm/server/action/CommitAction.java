@@ -11,7 +11,7 @@ import collab.fm.server.bean.protocol.FeatureOperation;
 import collab.fm.server.bean.protocol.Operation;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
-import collab.fm.server.util.BeanUtils;
+import collab.fm.server.util.BeanUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.controller.*;
 
@@ -37,9 +37,9 @@ public class CommitAction extends Action {
 	
 	private Operation getOperation(Request req) {
 		try {
-			Operation abstractOp = BeanUtils.jsonToBean(req.getData(), Operation.class, null);
+			Operation abstractOp = BeanUtil.jsonToBean(req.getData(), Operation.class, null);
 			Class<? extends Operation> concreteOpClass = opNameClassMap.get(abstractOp.getName());
-			return BeanUtils.jsonToBean(req.getData(), concreteOpClass, null);
+			return BeanUtil.jsonToBean(req.getData(), concreteOpClass, null);
 		} catch (Exception e) {
 			logger.warn("Bad operation.", e);
 			return null;
