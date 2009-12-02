@@ -3,16 +3,16 @@ package collab.fm.server.bean.entity;
 import java.util.*;
 
 
-public class Feature {
+public class Feature implements Votable {
 	
 	//TODO: further mapping needs to remove the 'transient' keywords.
 	private Long id;
 	
-	private Vote<Boolean> existence = new Vote<Boolean>(Boolean.TRUE);
-	transient private Vote<Boolean> optionality = new Vote<Boolean>(Boolean.TRUE);
-	transient private Collection<Vote<String>> names = new ArrayList<Vote<String>>();
-	transient private Collection<Vote<String>> descriptions = new ArrayList<Vote<String>>();
-	
+	private Vote existence = new Vote();
+	private Vote optionality = new Vote();
+	private Collection<? extends Votable> names = new ArrayList<FeatureName>();
+	private Collection<? extends Votable> descriptions = new ArrayList<FeatureDescription>();
+		
 	public Feature() {
 	
 	}
@@ -41,54 +41,55 @@ public class Feature {
 		return toValue(descriptions).toArray(new String[0]);
 	}*/
 	
-	public void voteExistence(Boolean val, Long userid) {
-		voteBool(existence, val, userid);
+	public void vote(boolean yes, Long userid) {
+		existence.vote(yes, userid);
 	}
 	
-	public void voteOptionality(Boolean val, Long userid) {
-		voteBool(optionality, val, userid);
+	public void voteOptionality(boolean yes, Long userid) {
+		optionality.vote(yes, userid);
 	}
 	
-	public void voteAllName(boolean support, Long userid) {
-		voteAll(names, support, userid);
+	public void voteAllName(boolean yes, Long userid) {
+		voteAll(names, yes, userid);
 	}
 	
-	public void voteName(String name, Boolean support, Long userid) {
-		voteOneInCollection(names, name, support, userid);
+	public void voteName(String name, boolean yes, Long userid) {
+		FeatureName n = new FeatureName(name);
+		voteOrAdd(names, n, yes, userid);
 	}
 	
-	public void voteAllDescription(boolean support, Long userid) {
-		voteAll(descriptions, support, userid);
+	public void voteAllDescription(boolean yes, Long userid) {
+		voteAll(descriptions, yes, userid);
 	}
 	
-	public void voteDescription(String des, Boolean support, Long userid) {
-		voteOneInCollection(descriptions, des, support, userid);
+	public void voteDescription(String des, boolean yes, Long userid) {
+		FeatureDescription d = new FeatureDescription(des);
+		voteOrAdd(descriptions, d, yes, userid);
 	}
 	
-	private void voteBool(Vote<Boolean> field, Boolean val, Long userid) {
-		field.vote(val, userid);
-	}
-	
-	private <T> void voteOneInCollection(Collection<Vote<T>> field, T val, boolean support, Long userid) {
-		Vote<T> theVote = new Vote<T>(val);
-		for (Vote<T> v: field) {
-			if (theVote.equals(v)) {
-				v.vote(support, userid);
+	@SuppressWarnings("unchecked")
+	private void voteOrAdd(Collection field, Votable val, boolean yes, Long userid) {
+		// If existed then vote
+		for (Object obj: field) {
+			Votable v = (Votable)obj;
+			if (v.valueEquals(val)) {
+				v.vote(yes, userid);
 				return;
 			}
 		}
-		// If we reach here, that means "val" is not existed yet.
-		if (support) { // vote 'NO' to a nonexistent value is nonsense.
-			theVote.vote(true, userid);
-			field.add(theVote);
+		// If not existed then add and vote yes
+		if (yes) { // vote 'NO' to a nonexistent value is nonsense.
+			val.vote(true, userid);
+			field.add(val);
 		}
 	}
 	
-	private <T> void voteAll(Collection<Vote<T>> field, boolean support, Long userid) {
-		for (Vote<T> v: field) {
-			v.vote(support, userid);
+	private void voteAll(Collection<? extends Votable> field, boolean yes, Long userid) {
+		for (Votable v: field) {
+			v.vote(yes, userid);
 		}
 	}
+	
 	/*private <T> void vote(boolean supportAtMostOne, List<Votable<T>> field, T val, boolean support, int userid) {
 		TreeSet<Integer> otherValSupporters = null;
 		Votable<T> theVal = new Votable<T>(val);
@@ -131,44 +132,50 @@ public class Feature {
 			   ",\n\tName: " + names.toString() + "\n}";
 	}
 
-	public Vote<Boolean> getExistence() {
+	public Vote getExistence() {
 		return existence;
 	}
-	
-	public Vote<Boolean> getOptionality() {
-		return optionality;
-	}
 
-	public Collection<Vote<String>> getNames() {
-		return Collections.unmodifiableCollection(getNamesInternal());
-	}
-	
-	public Collection<Vote<String>> getDescriptions() {
-		return Collections.unmodifiableCollection(getDescriptionsInternal());
-	}
-	
-	private void setExistence(Vote<Boolean> existence) {
+	private void setExistence(Vote existence) {
 		this.existence = existence;
 	}
 
-	private void setOptionality(Vote<Boolean> optionality) {
+	public Vote getOptionality() {
+		return optionality;
+	}
+
+	private void setOptionality(Vote optionality) {
 		this.optionality = optionality;
 	}
 
-	private Collection<Vote<String>> getNamesInternal() {
+	public Collection<? extends Votable> getNames() {
+		return Collections.unmodifiableCollection(getNamesInternal());
+	}
+	
+	private Collection<? extends Votable> getNamesInternal() {
 		return names;
 	}
-
-	private void setNamesInternal(Collection<Vote<String>> names) {
+	
+	private void setNamesInternal(Collection<? extends Votable> names) {
 		this.names = names;
 	}
 
-	private Collection<Vote<String>> getDescriptionsInternal() {
-		return descriptions;
+	public Collection<? extends Votable> getDescriptions() {
+		return Collections.unmodifiableCollection(getDescriptionsInternal());
 	}
 
-	private void setDescriptionsInternal(Collection<Vote<String>> descriptions) {
+	private Collection<? extends Votable> getDescriptionsInternal() {
+		return descriptions;
+	}
+	
+	private void setDescriptionsInternal(Collection<? extends Votable> descriptions) {
 		this.descriptions = descriptions;
 	}
+
+	public boolean valueEquals(Votable v) {
+		throw new UnsupportedOperationException();
+	}
+
+
 	
 }

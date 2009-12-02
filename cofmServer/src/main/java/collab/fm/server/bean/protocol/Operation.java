@@ -20,8 +20,9 @@ public class Operation {
 		
 	}
 	
-	protected boolean isFieldValid() {
-		return name != null && vote != null && userid != null;
+	public boolean valid() {
+		// IMPORTANT: always check userId in the subclass
+		return name != null && vote != null;
 	}
 	
 	/**

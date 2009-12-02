@@ -25,8 +25,8 @@ public class FeatureVoteTest {
 		Feature feat = new Feature();
 		feat.setId(1L);
 		
-		feat.voteExistence(true, 1L);
-		feat.voteExistence(false, 2L);
+		feat.vote(true, 1L);
+		feat.vote(false, 2L);
 		
 		feat.voteName("rootFeat", true, 1L);
 		feat.voteName("root", true, 2L);

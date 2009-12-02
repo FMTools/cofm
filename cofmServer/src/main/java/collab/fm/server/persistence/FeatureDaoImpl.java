@@ -26,11 +26,6 @@ public class FeatureDaoImpl extends GenericDaoImpl<Feature, Long> implements Fea
 		return null;
 	}
 
-	public Feature getById(Long id) throws BeanPersistenceException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	public List<Long> saveAll(List<Feature> entities)
 			throws BeanPersistenceException {
 		// TODO Auto-generated method stub
@@ -46,6 +41,11 @@ public class FeatureDaoImpl extends GenericDaoImpl<Feature, Long> implements Fea
 			throws BeanPersistenceException {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public Class<Feature> getEntityClass() {
+		return Feature.class;
 	}
 
 }

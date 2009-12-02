@@ -27,16 +27,6 @@ public class HibernateUtil {
 		return getSessionFactory().getCurrentSession();
 	}
 	
-	public static void openSession() {
-		getSessionFactory().openSession();
-		logger.debug("New session opened.");
-	}
-	
-	public static void closeCurrentSession() {
-		getSessionFactory().getCurrentSession().close();
-		logger.debug("Session closed.");
-	}
-	
 	public static void shutdown() {
 		getSessionFactory().close();
 	}

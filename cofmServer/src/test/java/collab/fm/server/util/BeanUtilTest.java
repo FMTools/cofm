@@ -6,7 +6,6 @@ import org.apache.log4j.Logger;
 import org.junit.*;
 import static org.junit.Assert.*;
 
-import collab.fm.server.bean.*;
 import collab.fm.server.bean.protocol.BinaryRelationshipOperation;
 import collab.fm.server.bean.protocol.Operation;
 import collab.fm.server.bean.protocol.Response;
@@ -31,41 +30,6 @@ public class BeanUtilTest {
 		}
 	}
 	
-	
-	@Test
-	public void testResponseJsonBidirectionCast() {
-		// Response to JSON
-		Response rsp = new Response();
-		Response.Body body = new Response.Body();
-		Response.Body.Source src = new Response.Body.Source();
-		
-		src.setAddress("123.123.123.1");
-		src.setId(1L);
-		src.setName(Resources.REQ_COMMIT);
-		src.setUser("mark");
-		
-		body.setStatus(Resources.RSP_DENIED);
-		body.setSource(src);
-		body.setData("String Data");
-		
-		rsp.setBody(body);
-		rsp.setType(Response.TYPE_BROADCAST_FORWARD);
-		try {
-		String json = BeanUtil.beanToJson(rsp);
-		//logger.info(json);
-		//---------------------------------------------
-		// JSON to Response
-		Map<String, Class> map = new HashMap<String, Class>();
-		map.put("body", Response.Body.class);
-		map.put("source", Response.Body.Source.class);
-		Response rsp2 = BeanUtil.jsonToBean(json, Response.class, map);
-		
-		assertEquals(rsp.getTargets(), rsp2.getTargets());
-		} catch (Exception e) {
-			assertTrue(false);
-		}
-	}
-		
 	@Test
 	public void testNestedBeanJsonBidirectionCast() {
 		Bean1 b1 = new Bean1();

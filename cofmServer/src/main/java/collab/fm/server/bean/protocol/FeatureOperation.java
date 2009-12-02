@@ -49,7 +49,7 @@ public class FeatureOperation extends Operation {
 	}
 	
 	public Operation apply() throws BeanPersistenceException, InvalidOperationException {
-		if (!isFieldValid()) {
+		if (!valid()) {
 			throw new InvalidOperationException("Invalid op fields.");
 		}
 		if (Resources.OP_ADD_DES.equals(name)) {
@@ -64,8 +64,8 @@ public class FeatureOperation extends Operation {
 		throw new InvalidOperationException("Invalid op name: " + name);
 	}
 	
-	protected boolean isFieldValid() {
-		if (super.isFieldValid()) {
+	public boolean valid() {
+		if (super.valid() && userid != null) {
 			if (Resources.OP_CREATE_FEATURE.equals(name)) {
 				if (vote.equals(false)) {
 					return featureId != null;
@@ -120,13 +120,13 @@ public class FeatureOperation extends Operation {
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
 		}
-		feature.voteExistence(vote, userid);
+		feature.vote(vote, userid);
 		DaoUtil.getFeatureDao().update(feature);
 		if (vote.equals(false)) {
 			List<Relationship> rels = DaoUtil.getFeatureDao().getInvolvedRelationships(featureId);
 			if (rels != null) {
 				for (Relationship rel: rels) {
-					rel.voteExistence(false, userid);
+					rel.vote(false, userid);
 				}
 				DaoUtil.getRelationshipDao().updateAll(rels);
 			}
@@ -141,14 +141,14 @@ public class FeatureOperation extends Operation {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
 		}
 		feature.voteOptionality(vote, userid);
-		feature.voteExistence(true, userid); // Always implies a YES to feature
+		feature.vote(true, userid); // Always implies a YES to feature
 		DaoUtil.getFeatureDao().update(feature);
 		return this;
 	}
 	
 	private void checkImplyYesToFeature(Feature feature) {
 		if (vote.equals(true)) {
-			feature.voteExistence(true, userid);
+			feature.vote(true, userid);
 		}
 	}
 	

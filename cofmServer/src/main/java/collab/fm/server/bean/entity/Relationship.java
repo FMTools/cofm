@@ -1,18 +1,14 @@
 package collab.fm.server.bean.entity;
 
-public class Relationship {
+public class Relationship implements Votable{
 	
 	protected Long id;
-	protected Vote<Boolean> existence = new Vote<Boolean>(Boolean.TRUE);
+	protected Vote existence = new Vote();
 	
 	public Relationship() {
 		
 	}
 
-	public void voteExistence(boolean support, Long userid) {
-		existence.vote(support, userid);
-	}
-	
 	public Long getId() {
 		return id;
 	}
@@ -21,11 +17,19 @@ public class Relationship {
 		this.id = id;
 	}
 
-	public Vote<Boolean> getExistence() {
+	public Vote getExistence() {
 		return existence;
 	}
 
-	public void setExistence(Vote<Boolean> existence) {
+	public void setExistence(Vote existence) {
 		this.existence = existence;
+	}
+
+	public boolean valueEquals(Votable v) {
+		return true;
+	}
+
+	public void vote(boolean yes, Long userid) {
+		existence.vote(yes, userid);		
 	}
 }

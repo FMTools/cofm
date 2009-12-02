@@ -38,11 +38,9 @@ public class Server {
 				new ProtocolCodecFilter(
 						new TextLineEncoder(Charset.forName("UTF-8"), new LineDelimiter(Response.TERMINATOR)),
 						new TextLineDecoder(Charset.forName("UTF-8"), new LineDelimiter(Request.TERMINATOR))));
-		//TODO: setup controller
-		Controller controller = null; 
 		///~
 		try {
-			acceptor.bind(new InetSocketAddress(PORT), new EventHandler(controller));
+			acceptor.bind(new InetSocketAddress(PORT), new EventHandler());
 		} catch (IOException e) {
 			e.printStackTrace();
 			acceptor.unbindAll();

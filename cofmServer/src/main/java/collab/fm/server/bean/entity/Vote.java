@@ -4,33 +4,33 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 
-public class Vote<T> {
+
+public class Vote {
 	
-	private T value;
-	private Set<Long> supporters = new HashSet<Long>(); // Set of User ID
-	private Set<Long> opponents = new HashSet<Long>(); // Set of User ID
+	static Logger logger = Logger.getLogger(Vote.class);
+	
+	private Set<Long> supporters = new HashSet<Long>(); 
+	private Set<Long> opponents = new HashSet<Long>(); 
 	
 	public Vote() {
-		
 	}
 	
 	private Set<Long> getSupportersInternal() {
-		//return Collections.unmodifiableSet(supporters);
 		return supporters;
 	}
 
-	private void setSupportersInternal(Set<Long> supporters) {
-		this.supporters = supporters;
+	private void setSupportersInternal(Set<Long> theSupporters) {
+		this.supporters = theSupporters;
 	}
 
 	private Set<Long> getOpponentsInternal() {
-		//return Collections.unmodifiableSet(opponents);
 		return opponents;
 	}
 
-	private void setOpponentsInternal(Set<Long> opponents) {
-		this.opponents = opponents;
+	private void setOpponentsInternal(Set<Long> theOpponents) {
+		this.opponents = theOpponents;
 	}
 	
 	public Set<Long> getSupporters() {
@@ -41,41 +41,33 @@ public class Vote<T> {
 		return Collections.unmodifiableSet(getOpponentsInternal());
 	}
 	
-	public Vote(T value) {
-		setValue(value);
-	}
-	
-	private void voteYes(Long userid) {
+	public void voteYes(Long userid) {
 		// A specific user either support or against the value
-		supporters.add(userid);
-		opponents.remove(userid);
+		getSupportersInternal().add(userid);
+		getOpponentsInternal().remove(userid);
 	}
 	
-	private void voteNo(Long userid) {
-		supporters.remove(userid);
-		opponents.add(userid);
+	public void voteNo(Long userid) {
+		getSupportersInternal().remove(userid);
+		getOpponentsInternal().add(userid);
 	}
 	
-	public void vote(boolean support, Long userid) {
-		if (support) {
+	public void vote(boolean yes, Long userid) {
+		if (yes) {
 			voteYes(userid);
 		} else {
 			voteNo(userid);
 		}
 	}
 	
-	public T getValue() {
-		return value;
-	}
-
-	public void setValue(T value) { 
-		this.value = value;
-	}
-	
 	@Override
 	public boolean equals(Object obj) {
 		try {
-			return value.equals(((Vote<?>)obj).getValue());
+			if (this == obj) return true;
+			if (!(obj instanceof Vote)) return false;
+			final Vote that = (Vote)obj;
+			return getSupportersInternal().equals(that.getSupporters()) &&
+				getOpponentsInternal().equals(that.getOpponents());
 		} catch (Exception e) {
 			return false;
 		}
@@ -83,6 +75,6 @@ public class Vote<T> {
 
 	@Override
 	public String toString() {
-		return value.toString() + "(" + supporters.toString() + "/" + opponents.toString() + ")"; 
+		return "(" + getSupportersInternal().toString() + "/" + getOpponentsInternal().toString() + ")"; 
 	}
 }

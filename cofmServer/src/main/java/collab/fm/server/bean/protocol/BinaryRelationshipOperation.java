@@ -3,6 +3,8 @@ package collab.fm.server.bean.protocol;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import collab.fm.server.bean.entity.BinaryRelationship;
 import collab.fm.server.bean.entity.Feature;
 import collab.fm.server.bean.entity.Relationship;
@@ -23,6 +25,8 @@ import collab.fm.server.util.exception.InvalidOperationException;
  *
  */
 public class BinaryRelationshipOperation extends Operation {
+	
+	static Logger logger = Logger.getLogger(BinaryRelationshipOperation.class);
 
 	/**
 	 * A null relationshipId means a new relationship is created.
@@ -42,15 +46,16 @@ public class BinaryRelationshipOperation extends Operation {
 			Resources.BIN_REL_REQUIRES.equals(type);
 	}
 	
-	protected boolean isFieldValid() {
-		if (super.isFieldValid()) {
+	public boolean valid() {
+		logger.debug("check BinaryRelationshipOperation is valid.");
+		if (super.valid() && userid != null) {
 			return isTypeValid() && leftFeatureId != null && rightFeatureId != null;
 		}
 		return false;
 	}
 	
 	public Operation apply() throws BeanPersistenceException, InvalidOperationException {
-		if (!isFieldValid()) {
+		if (!valid()) {
 			throw new InvalidOperationException("Invalid op fields.");
 		}
 		if (relationshipId == null) {
@@ -65,7 +70,7 @@ public class BinaryRelationshipOperation extends Operation {
 			if (DaoUtil.getRelationshipDao().getByExample(relation, false) != null) {
 				throw new InvalidOperationException("Relationship '" + leftFeatureId + " " + type + " " + rightFeatureId + "' already existed.");
 			}
-			relation.voteExistence(true, userid);
+			relation.vote(true, userid);
 			relationshipId = DaoUtil.getRelationshipDao().save(relation);
 			Feature left = DaoUtil.getFeatureDao().getById(leftFeatureId);
 			Feature right = DaoUtil.getFeatureDao().getById(rightFeatureId);
@@ -75,7 +80,7 @@ public class BinaryRelationshipOperation extends Operation {
 			if (relation == null) {
 				throw new InvalidOperationException("No relationship has ID: " + relationshipId);
 			}
-			relation.voteExistence(vote, userid);
+			relation.vote(vote, userid);
 			DaoUtil.getRelationshipDao().update(relation);
 			checkImplyYesToInvolvedFeatures(null);
 		}
@@ -89,7 +94,7 @@ public class BinaryRelationshipOperation extends Operation {
 			}
 			if (features != null) {
 				for (Feature feature: features) {
-					feature.voteExistence(true, userid);
+					feature.vote(true, userid);
 				}
 				DaoUtil.getFeatureDao().updateAll(features);
 			}

@@ -8,11 +8,13 @@ import org.apache.log4j.Logger;
 import collab.fm.server.bean.*;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
+import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.util.Resources;
+import collab.fm.server.util.exception.FilterException;
 
-public class AccessController extends Filter {
+public class AccessValidator extends Filter {
 	
-	static Logger logger = Logger.getLogger(AccessController.class);
+	static Logger logger = Logger.getLogger(AccessValidator.class);
 	
 	private static final String[] restricted = {
 		Resources.REQ_COMMIT,
@@ -24,12 +26,30 @@ public class AccessController extends Filter {
 	private ConcurrentHashMap<String, String> loginUsers = 
 		new ConcurrentHashMap<String, String>();
 	
-	public AccessController(String filterName) {
-		super(filterName);
-		// TODO Auto-generated constructor stub
-	}
+	
 
 	@Override
+	protected void doForwardFilter(Request req, ResponseGroup rg)
+			throws FilterException {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	protected void doBackwardFilter(Request req, ResponseGroup rg)
+			throws FilterException {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	protected FilterException onFilterError(Request req, ResponseGroup rg,
+			Throwable t) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
+	/*@Override
 	protected Request doFilterRequest(Request request) {
 		try {
 			if (isRestricted(request.getName())) {
@@ -66,7 +86,7 @@ public class AccessController extends Filter {
 					MessageFormat.format(Resources.MSG_ERROR_EXCEPTION, e.getMessage()), e);
 			return null;
 		}
-	}
+	}*/
 
 	private boolean isRestricted(String name) {
 		for (int i = 0; i < restricted.length; i++) {
@@ -75,11 +95,6 @@ public class AccessController extends Filter {
 			}
 		}
 		return false;
-	}
-
-	@Override
-	protected Logger getLogger() {
-		return logger;
 	}
 	
 }

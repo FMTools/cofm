@@ -1,46 +1,26 @@
 package collab.fm.server.filter;
 
-import org.apache.log4j.Logger;
-
-import collab.fm.server.bean.*;
-import collab.fm.server.bean.protocol.Filterable;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
+import collab.fm.server.bean.protocol.ResponseGroup;
+import collab.fm.server.util.Resources;
+import collab.fm.server.util.exception.FilterException;
 
 public abstract class Filter {
-	protected final String name;
 	
-	public Filter(String filterName) {
-		name = filterName;
+	public void doFilter(Request req, ResponseGroup rg, FilterChain chain) throws FilterException {
+		try {
+			doForwardFilter(req, rg);
+			chain.doNextFilter(req, rg);
+			doBackwardFilter(req, rg);
+		} catch (FilterException fe) {
+			FilterException details = onFilterError(req, rg, fe);
+			if (details == null) details = fe;
+			throw details;
+		}
 	}
 	
-	public Request filterRequest(Request request) {
-		request.latestFilter(name);
-		return doFilterRequest(request);
-	}
-	
-	public Response filterResponse(Response response) {
-		response.latestFilter(name);
-		return doFilterResponse(response);
-	}
-	
-	protected void onFilterError(Filterable filtee, String error, String msg) {
-		getLogger().info("Filter failure(" + error + "): " + msg);
-		filtee.filterError(error);
-		filtee.filterMessage(msg);
-	}
-	
-	protected void onFilterError(Filterable filtee, String error, String msg, Throwable t) {
-		getLogger().info("Filter failure(" + error + "): " + msg, t);
-		filtee.filterError(error);
-		filtee.filterMessage(msg);
-	}
-	
-	protected abstract Request doFilterRequest(Request request);
-	protected abstract Response doFilterResponse(Response response);
-	protected abstract Logger getLogger();
-	
-	public String getName() {
-		return name;
-	}
+	protected abstract void doForwardFilter(Request req, ResponseGroup rg) throws FilterException;
+	protected abstract void doBackwardFilter(Request req, ResponseGroup rg) throws FilterException;
+	protected abstract FilterException onFilterError(Request req, ResponseGroup rg, Throwable t);	
 }
