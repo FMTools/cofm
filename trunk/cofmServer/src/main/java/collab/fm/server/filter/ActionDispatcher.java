@@ -1,38 +1,39 @@
 package collab.fm.server.filter;
 
-import org.apache.log4j.Logger;
+import java.util.HashMap;
+import java.util.Map;
 
 import collab.fm.server.bean.protocol.Request;
-import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.util.exception.FilterException;
+import collab.fm.server.action.Action;
 
-/**
- * Generate error values for request and response deliberately.
- * This filter is often placed between ResponseValidator and RequestValidator,
- * which means Actions will receive requests with correct format but wrong values, 
- * and/or clients will receive responses like that.
- * Useful for testing.
- * 
- * @author Yi Li
- *
- */
-public class ErrorGenerator extends Filter {
+public class ActionDispatcher extends Filter {
+
+	private Map<String, Action> reqActionMap = new HashMap<String, Action>();
 	
-	static Logger logger = Logger.getLogger(ErrorGenerator.class);
-
+	public void registerAction(String[] requestNames, Action action) {
+		for (String name: requestNames) {
+		    reqActionMap.put(name, action);
+		}
+	}
+	
+	public ActionDispatcher() {
+		
+	}
+	
 	@Override
 	protected void doBackwardFilter(Request req, ResponseGroup rg)
 			throws FilterException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	protected void doForwardFilter(Request req, ResponseGroup rg)
 			throws FilterException {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override

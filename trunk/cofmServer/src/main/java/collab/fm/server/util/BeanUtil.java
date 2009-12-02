@@ -98,6 +98,11 @@ public final class BeanUtil {
 		}
 	} 
 	
+	public static <T> T jsonToBean(Object srcJson, Class<T> beanClass, Map<String, Class> clsMap) 
+		throws BeanConvertException {
+		return jsonToBean(srcJson, beanClass, clsMap, null);
+	}
+	
 	/**
 	 * Convert a JSON string to a Java bean.
 	 * @param srcJson
@@ -106,10 +111,12 @@ public final class BeanUtil {
 	 * 		The class of the Java Bean
 	 * @param clsMap
 	 * 		If a field, whether nested or not, of the bean is of a class type (not of a primitive type), 
-	 * 		then its class must be listed in the map. 
+	 * 		then its class must be listed in the map.
+	 * @param fields
+	 * 		Keep the fields only. 
 	 * @return The bean
 	 */
-	public static <T> T jsonToBean(Object srcJson, Class<T> beanClass, Map<String, Class> clsMap) 
+	public static <T> T jsonToBean(Object srcJson, Class<T> beanClass, Map<String, Class> clsMap, final String[] fields) 
 		throws BeanConvertException {
 		try {
 			JSON json = JSONSerializer.toJSON(srcJson);
@@ -118,6 +125,19 @@ public final class BeanUtil {
 			if (clsMap != null) {
 				cfg.setClassMap(clsMap);
 			}
+			if (fields != null) {
+				cfg.setJavaPropertyFilter(new PropertyFilter() {
+					public boolean apply(Object source, String name, Object value) {
+						for (String field: fields) {
+							if (field.equals(name)) {
+								return false;
+							}
+						}
+						return true;
+					}
+				});
+			}
+
 			return beanClass.cast(JSONSerializer.toJava(json, cfg));
 		} catch (Exception e) {
 			throw new BeanConvertException("Convert json to bean failed.", e);

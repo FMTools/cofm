@@ -24,7 +24,6 @@ public class Resources {
 	
 	public static final String RSP_SUCCESS = get("rsp.success");
 	public static final String RSP_FORWARD = get("rsp.forward");
-	public static final String RSP_DENIED = get("rsp.denied");
 	public static final String RSP_ERROR = get("rsp.error");
 
 	public static final String OP_ADD_NAME = get("op.addName");

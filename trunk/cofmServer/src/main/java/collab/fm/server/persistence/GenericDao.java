@@ -5,11 +5,13 @@ import java.util.List;
 
 import collab.fm.server.util.exception.BeanPersistenceException;
 
-public interface GenericDao<BeanType, IdType> {
+public interface GenericDao<EntityType, IdType> {
 	
-	public BeanType getById(IdType id) throws BeanPersistenceException;
+	public abstract Class<EntityType> getEntityClass();
 	
-	public List<BeanType> getAll() throws BeanPersistenceException;
+	public EntityType getById(IdType id) throws BeanPersistenceException;
+	
+	public List<EntityType> getAll() throws BeanPersistenceException;
 	
 	/**
 	 * 
@@ -17,7 +19,7 @@ public interface GenericDao<BeanType, IdType> {
 	 * @param like true if similarity comparison, false if exactly comparison.
 	 * @return null if nothing matches
 	 */
-	public List<BeanType> getByExample(BeanType example, boolean like) throws BeanPersistenceException;
+	public List<EntityType> getByExample(EntityType example, boolean like) throws BeanPersistenceException;
 	
 	/**
 	 * Save entity into database, where the entity should not exist in the database before.
@@ -25,7 +27,7 @@ public interface GenericDao<BeanType, IdType> {
 	 * @return
 	 * @throws BeanPersistenceException
 	 */
-	public IdType save(BeanType entity) throws BeanPersistenceException;
+	public IdType save(EntityType entity) throws BeanPersistenceException;
 	
 	/**
 	 * Save an ordered list of entities into database, where these entities should not exist before.<br/>
@@ -35,14 +37,14 @@ public interface GenericDao<BeanType, IdType> {
 	 * @return The generated ID of entities, with the same order in the entity list.
 	 * @throws BeanPersistenceException
 	 */
-	public List<IdType> saveAll(List<BeanType> entities) throws BeanPersistenceException;
+	public List<IdType> saveAll(List<EntityType> entities) throws BeanPersistenceException;
 	
 	/**
 	 * Update a persisted object.
 	 * @param entity
 	 * @throws BeanPersistenceException
 	 */
-	public void update(BeanType entity) throws BeanPersistenceException;
+	public void update(EntityType entity) throws BeanPersistenceException;
 	
 	/**
 	 * Update all entities in the collection (which means the persistence is unordered). <br/>
@@ -50,6 +52,6 @@ public interface GenericDao<BeanType, IdType> {
 	 * @param entities
 	 * @throws BeanPersistenceException
 	 */
-	public void updateAll(Collection<BeanType> entities) throws BeanPersistenceException;
+	public void updateAll(Collection<EntityType> entities) throws BeanPersistenceException;
 	
 }

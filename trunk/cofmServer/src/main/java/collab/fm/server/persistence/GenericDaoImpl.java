@@ -13,61 +13,61 @@ import collab.fm.server.util.exception.BeanPersistenceException;
  * Generic DAO Hibernate implementation.
  * @author Yi Li
  *
- * @param <BeanType>
+ * @param <EntityType>
  * @param <IdType>
  */
-public class GenericDaoImpl<BeanType, IdType> implements GenericDao<BeanType, IdType> {
+public abstract class GenericDaoImpl<EntityType, IdType> implements GenericDao<EntityType, IdType> {
 
 	static Logger logger = Logger.getLogger(GenericDaoImpl.class);
 	
-	public List<BeanType> getAll() throws BeanPersistenceException {
+	public abstract Class<EntityType> getEntityClass();
+	
+	public List<EntityType> getAll() throws BeanPersistenceException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public List<BeanType> getByExample(BeanType example, boolean like)
+	public List<EntityType> getByExample(EntityType example, boolean like)
 			throws BeanPersistenceException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public BeanType getById(IdType id) throws BeanPersistenceException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public IdType save(BeanType entity) throws BeanPersistenceException {
+	public EntityType getById(IdType id) throws BeanPersistenceException {
 		try {
-		Session session = HibernateUtil.getCurrentSession();
-		session.beginTransaction();
-		
-		IdType id = (IdType)session.save(entity);
-		
-		session.getTransaction().commit();
-		return id;
-		} catch (RuntimeException ex) {
-			try {
-				HibernateUtil.getCurrentSession().getTransaction().rollback();
-			} catch (RuntimeException rbEx) {
-				logger.error("Couldn't roll back transaction.", rbEx);
-			}
-			logger.error("Couldn't save entity.", ex);
-			throw new BeanPersistenceException("Couldn't save entity.", ex);
+			return (EntityType) HibernateUtil.getCurrentSession().get(getEntityClass(), (Serializable) id);
+		} catch (RuntimeException e) {
+			logger.info("Get by ID failed. (ID=" + id + ")", e);
+			throw new BeanPersistenceException("Get by ID failed. (ID=" + id + ")", e);
 		}
 	}
 
-	public List<IdType> saveAll(List<BeanType> entities)
+	public IdType save(EntityType entity) throws BeanPersistenceException {
+		try {
+			Session session = HibernateUtil.getCurrentSession();
+						
+			IdType id = (IdType)session.save(entity);
+			
+			session.flush();
+			return id;
+		} catch (RuntimeException e) {
+			logger.error("Couldn't save entity", e);
+			throw new BeanPersistenceException("Couldn't save entity", e);
+		}
+	}
+
+	public List<IdType> saveAll(List<EntityType> entities)
 			throws BeanPersistenceException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public void update(BeanType entity) throws BeanPersistenceException {
+	public void update(EntityType entity) throws BeanPersistenceException {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void updateAll(Collection<BeanType> entities)
+	public void updateAll(Collection<EntityType> entities)
 			throws BeanPersistenceException {
 		// TODO Auto-generated method stub
 		

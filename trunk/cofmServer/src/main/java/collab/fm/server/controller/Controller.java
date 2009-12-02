@@ -11,86 +11,101 @@ import org.apache.log4j.Logger;
 import collab.fm.server.bean.*;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
+import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.filter.*;
 import collab.fm.server.action.Action;
 import collab.fm.server.util.BeanUtil;
+import collab.fm.server.util.ProtocolUtil;
+import collab.fm.server.util.Resources;
+import collab.fm.server.util.exception.FilterException;
 import collab.fm.server.util.exception.JsonConvertException;
+import collab.fm.server.util.exception.ProtocolInterpretException;
 
-public abstract class Controller {
+public class Controller {
 	
-	public static final String BAD_REQUEST = "bad_request";
-	public static final String BAD_RESPONSE = "bad_response";
+	static Logger logger = Logger.getLogger(Controller.class);
 	
-	protected List<Filter> filterChain = new ArrayList<Filter>();
+	private static Controller controller = new Controller();
 	
-	protected ConcurrentHashMap<String, Action> eventMap = new ConcurrentHashMap<String, Action>();
+	private Filter accessValidator = new AccessValidator();
+	private Filter actionDispatcher = new ActionDispatcher();
+	private Filter hibernateSessionFilter = new HibernateSessionFilter();
 	
-	public void registerAction(String event, Action a) {
-		if (isInterestedEvent(event)) {
-			eventMap.put(event, a);
-		}
+	public static Controller instance() {
+		return controller;
 	}
 	
-	public void addFilter(Filter filter) {
-		filterChain.add(filter);
+	public Controller() {
+		
 	}
 	
-	public List<Response> handleRequest(Request request) {
-		Request filteredRequest = null;
-		List<Response> rawResponse = null;
-		
-		for (ListIterator<Filter> li = filterChain.listIterator(0); li.hasNext();) {
-			Filter filter = li.next();
-			if ((filteredRequest = filter.filterRequest(request)) == null) {
-				break;
-			}
-			request = filteredRequest;
-		}
-		
-		if (filteredRequest == null) {
+	public void registerAction(String[] names, Action action) {
+		((ActionDispatcher)this.actionDispatcher).registerAction(names, action);
+	}
+	
+	public ResponseGroup execute(String message, String sourceAddress) {
+		Request req = null;
+		ResponseGroup rg = new ResponseGroup();
+		try {
+			// 1. Build request from message (a JSON string actually)
+			req = ProtocolUtil.jsonToRequest(message);
+			req.setAddress(sourceAddress);
+			
+			// 2. Build a chain to process the request
+			FilterChain chain = buildChain(req.getName());
+			
+			chain.doNextFilter(req, rg);
+			convertResponsesToJson(rg);
+			
+		} catch (Exception e) {
+			logger.warn("Couldn't process request: '" + message + "'.", e);
+			reportErrorToRequester(req, rg, e);
 			try {
-			    getLogger().debug("Forwarded to doBadRequest: " + BeanUtil.beanToJson(request));
-			} catch (JsonConvertException e) {
-				//ignore it
-			}
-			rawResponse = doBadRequest(request);
-		} else {
-			try {
-				getLogger().debug("Forwarded to doRequest: " + BeanUtil.beanToJson(filteredRequest));
-			} catch (JsonConvertException e) {
-				//ignore
-			}
-			rawResponse = doRequest(filteredRequest);
-		}
-		
-		if (rawResponse == null) {
-			return null;
-		}
-		
-		List<Response> filteredResponse = new LinkedList<Response>();
-		for (Response rsp: rawResponse) {
-			Response frsp = null;
-			for (ListIterator<Filter> li = filterChain.listIterator(filterChain.size()); li.hasPrevious();) {
-				Filter filter = li.previous();
-				if ((frsp = filter.filterResponse(rsp)) == null) {
-					break;
-				}
-				rsp = frsp;
-			}
-			if (frsp == null) {
-				doBadResponse(rsp);
-			} else {
-				filteredResponse.add(frsp);
+				convertResponsesToJson(rg);
+			} catch (Exception ex) {
+				logger.fatal("Internal error in Controller.execute: should never happen.", ex);
+				throw new RuntimeException("Fatal: should never reach here.", ex);
 			}
 		}
-		
-		
-		return filteredResponse;
+		return rg;
 	}
 	
-	protected abstract boolean isInterestedEvent(String name);
-	protected abstract List<Response> doBadRequest(Request req);
-	protected abstract List<Response> doRequest(Request req);
-	protected abstract void doBadResponse(Response rsp);
-	protected abstract Logger getLogger();
+	private FilterChain buildChain(String requestName) {
+		FilterChain chain = new FilterChain();
+		chain.addFilter(accessValidator);
+		if (needDatabaseAccess(requestName)) {
+			chain.addFilter(hibernateSessionFilter);
+		}
+		chain.addFilter(actionDispatcher);
+		return chain;
+	}
+	
+	private boolean needDatabaseAccess(String requestName) {
+		//TODO: 
+		return true;
+	}
+	
+	private void reportErrorToRequester(Request req, ResponseGroup rg, Exception details) {
+		// Disallow multicast and broadcast
+		rg.setBroadcast(null);
+		rg.setPeer(null);
+		rg.setTargets(null);
+		
+		Response rsp = new Response();
+		rsp.setMessage(details.getMessage());
+		rsp.setName(Resources.RSP_ERROR);
+		if (req != null) {
+			rsp.setRequesterId(req.getRequesterId());
+			rsp.setRequestId(req.getId());
+			rsp.setRequestName(req.getName());
+		}
+		rg.setBack(rsp);
+	}
+	
+	private void convertResponsesToJson(ResponseGroup rg) throws ProtocolInterpretException {
+		rg.setJsonBack(ProtocolUtil.ResponseToJson(rg.getBack()));
+		rg.setJsonBroadcast(ProtocolUtil.ResponseToJson(rg.getBroadcast()));
+		rg.setJsonPeer(ProtocolUtil.ResponseToJson(rg.getPeer()));
+	}
+	
 }

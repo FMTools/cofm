@@ -1,8 +1,5 @@
 package collab.fm.server.bean.entity;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 public class BinaryRelationship extends Relationship {
 	
 	private String type;
