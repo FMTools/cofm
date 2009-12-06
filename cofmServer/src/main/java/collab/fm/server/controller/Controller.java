@@ -25,11 +25,19 @@ public class Controller {
 	
 	static Logger logger = Logger.getLogger(Controller.class);
 	
+	private static final String[] databaseAccessRequests = {
+		Resources.REQ_COMMIT,
+		Resources.REQ_LOGIN,
+		Resources.REQ_REGISTER,
+		Resources.REQ_UPDATE
+	};
+	
 	private static Controller controller = new Controller();
 	
 	private Filter accessValidator = new AccessValidator();
 	private Filter actionDispatcher = new ActionDispatcher();
 	private Filter hibernateSessionFilter = new HibernateSessionFilter();
+	private Filter protocolFilter = new ProtocolFilter();
 	
 	public static Controller instance() {
 		return controller;
@@ -58,8 +66,8 @@ public class Controller {
 			convertResponsesToJson(rg);
 			
 		} catch (Exception e) {
-			logger.warn("Couldn't process request: '" + message + "'.", e);
-			reportErrorToRequester(req, rg, e);
+			logger.warn("Couldn't process request: " + req.getLastError(), e);
+			reportErrorToRequester(req, rg);
 			try {
 				convertResponsesToJson(rg);
 			} catch (Exception ex) {
@@ -72,6 +80,7 @@ public class Controller {
 	
 	private FilterChain buildChain(String requestName) {
 		FilterChain chain = new FilterChain();
+		chain.addFilter(protocolFilter);
 		chain.addFilter(accessValidator);
 		if (needDatabaseAccess(requestName)) {
 			chain.addFilter(hibernateSessionFilter);
@@ -81,18 +90,22 @@ public class Controller {
 	}
 	
 	private boolean needDatabaseAccess(String requestName) {
-		//TODO: 
-		return true;
+		for (String name: databaseAccessRequests) {
+			if (name.equals(requestName)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
-	private void reportErrorToRequester(Request req, ResponseGroup rg, Exception details) {
+	private void reportErrorToRequester(Request req, ResponseGroup rg) {
 		// Disallow multicast and broadcast
 		rg.setBroadcast(null);
 		rg.setPeer(null);
 		rg.setTargets(null);
 		
 		Response rsp = new Response();
-		rsp.setMessage(details.getMessage());
+		rsp.setMessage(req.getLastError());
 		rsp.setName(Resources.RSP_ERROR);
 		if (req != null) {
 			rsp.setRequesterId(req.getRequesterId());

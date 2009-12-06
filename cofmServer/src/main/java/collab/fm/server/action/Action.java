@@ -20,11 +20,13 @@ public abstract class Action {
 	}
 	
 	/**
-	 * Business logic executed here.
+	 * Business logic executed here. <br/>
+	 * NOTE: Don't need to report error in Actions.
 	 * @param req
 	 * @param rg
+	 * @return TODO
 	 * @throws ActionException
 	 */
-	public abstract void execute(Request req, ResponseGroup rg) throws ActionException;
+	public abstract boolean execute(Request req, ResponseGroup rg) throws ActionException;
 	
 }

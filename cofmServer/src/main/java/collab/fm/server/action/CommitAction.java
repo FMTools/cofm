@@ -29,21 +29,23 @@ public class CommitAction extends Action {
 	}
 
 	@Override
-	public void execute(Request req, ResponseGroup rg) throws ActionException {
+	public boolean execute(Request req, ResponseGroup rg) throws ActionException {
 		try {
-			Operation op = ((CommitRequest)req).getOperation().apply();
+			List<Operation> ops = ((CommitRequest)req).getOperation().apply();
 			
 			CommitResponse cr = new CommitResponse();
 			cr.setName(Resources.RSP_SUCCESS);
-			cr.addOperation(op);
+			cr.addOperations(ops);
 			
 			CommitResponse cr2 = new CommitResponse();
 			cr.setName(Resources.RSP_FORWARD);
-			cr.addOperation(op);
+			cr.addOperations(ops);
 			
 			rg.setBack(cr);
 			rg.setBroadcast(cr2);
 			rg.setPeer(null);
+			
+			return true;
 		} catch (Exception e) {
 			logger.warn("Execution failed.", e);
 			throw new ActionException("Action execution failed."); 

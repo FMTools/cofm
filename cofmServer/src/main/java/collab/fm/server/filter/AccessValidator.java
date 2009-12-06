@@ -1,11 +1,9 @@
 package collab.fm.server.filter;
 
-import java.text.MessageFormat;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
-import collab.fm.server.bean.*;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
@@ -23,70 +21,49 @@ public class AccessValidator extends Filter {
 		Resources.REQ_LOGOUT
 	};
 	
-	private ConcurrentHashMap<String, String> loginUsers = 
-		new ConcurrentHashMap<String, String>();
+	private static ConcurrentHashMap<Long, String> loginUsers = new ConcurrentHashMap<Long, String>();
 	
-	
-
 	@Override
-	protected void doForwardFilter(Request req, ResponseGroup rg)
+	protected boolean doForwardFilter(Request req, ResponseGroup rg)
 			throws FilterException {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	protected void doBackwardFilter(Request req, ResponseGroup rg)
-			throws FilterException {
-		// TODO Auto-generated method stub
-		
-	}
-	
-	@Override
-	protected FilterException onFilterError(Request req, ResponseGroup rg,
-			Throwable t) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	
-	/*@Override
-	protected Request doFilterRequest(Request request) {
 		try {
-			if (isRestricted(request.getName())) {
-				String address = loginUsers.get(request.getUser());
-				if (address == null || !address.equals(request.getAddress())) {
-					onFilterError(request, Resources.REQ_ERROR_AUTHORITY,
-							Resources.MSG_ERROR_USER_DENIED);
-					return null;
+			if (isRestricted(req.getName())) {
+				String address = loginUsers.get(req.getRequesterId());
+				if (address == null || !address.equals(req.getAddress())) {
+					req.setLastError(Resources.MSG_ERROR_USER_DENIED);
+					return false;
 				}
 			}
-			if (Resources.REQ_LOGOUT.equals(request.getName())) {
-				loginUsers.remove(request.getUser());
+			if (Resources.REQ_LOGOUT.equals(req.getName())) {
+				loginUsers.remove(req.getRequesterId());
 			}
-			return request;
+			return true;
 		} catch (Exception e) {
-			onFilterError(request, Resources.REQ_ERROR_FORMAT,
-					MessageFormat.format(Resources.MSG_ERROR_EXCEPTION, e.getMessage()), e);
-			return null;
+			logger.error("Exception caught.", e);
+			throw new FilterException(e);
+		}	
+	}
+	
+	@Override
+	protected boolean doBackwardFilter(Request req, ResponseGroup rg)
+			throws FilterException {
+		try {
+			Response rsp = rg.getBack();
+			if (rsp == null) {
+				return true;
+			}
+			if (Resources.RSP_SUCCESS.equals(rsp.getName()) &&
+					Resources.REQ_LOGIN.equals(req.getName())) {
+				// successful login
+				loginUsers.put(req.getRequesterId(), req.getAddress());
+			}
+			return true;
+		} catch (Exception e) {
+			logger.error("Exception caught.", e);
+			throw new FilterException(e);
 		}
 	}
 
-	@Override
-	protected Response doFilterResponse(Response response) {
-		try {
-			Response.Body body = (Response.Body)response.getBody();
-			if (Resources.RSP_SUCCESS.equals(body.getStatus()) &&
-					Resources.REQ_LOGIN.equals(body.getSource().getName())) {
-				// successful login
-				loginUsers.put(body.getSource().getUser(), body.getSource().getAddress());
-			}
-			return response;
-		} catch (Exception e) {
-			onFilterError(response, Resources.RSP_ERROR_FORMAT,
-					MessageFormat.format(Resources.MSG_ERROR_EXCEPTION, e.getMessage()), e);
-			return null;
-		}
-	}*/
 
 	private boolean isRestricted(String name) {
 		for (int i = 0; i < restricted.length; i++) {

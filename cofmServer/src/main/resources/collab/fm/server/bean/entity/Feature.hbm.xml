@@ -18,5 +18,28 @@
   			<element type="long" column="opponent" not-null="true"></element>
   		</set>
   	</component>
+  	
+  	<component name="optionality" class="Vote">
+  		<set name="supportersInternal" table="FeatureOptionalSupporter">
+  			<key column="featureId"></key>
+  			<element type="long" column="supporter" not-null="true"></element>
+  		</set>
+  		<set name="opponentsInternal" table="FeatureOptionalOpponent">
+  			<key column="featureId"></key>
+  			<element type="long" column="opponent" not-null="true"></element>
+  		</set>
+  	</component>
+  	
+  	<!-- One-to-many association to FeatureName -->
+  	<set name="namesInternal" table="FeaturePossibleName" cascade="persist, merge, save-update">
+  		<key column="featureId"></key>
+  		<many-to-many class="FeatureName" column="nameId" unique="true"></many-to-many>
+  	</set>
+  	
+  	<!-- One-to-many association to FeatureDescription -->
+  	<set name="descriptionsInternal" table="FeaturePossibleDescription" cascade="persist, merge, save-update">
+  		<key column="featureId"></key>
+  		<many-to-many class="FeatureDescription" column="descriptionId" unique="true"></many-to-many>
+  	</set>
   </class>
 </hibernate-mapping>

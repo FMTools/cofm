@@ -20,6 +20,12 @@ public class Operation {
 		
 	}
 	
+	protected void copyTo(Operation target) {
+		target.setName(this.getName());
+		target.setVote(this.getVote());
+		target.setUserid(this.getUserid());
+	}
+	
 	public boolean valid() {
 		// IMPORTANT: always check userId in the subclass
 		return name != null && vote != null;
@@ -39,8 +45,8 @@ public class Operation {
 	 * @throws InvalidOperationException If the operation can't be analyzed and applied correctly. 
 	 * @throws OperationNotSupportedException 
 	 */
-	public Operation apply() throws BeanPersistenceException, InvalidOperationException, OperationNotSupportedException {
-		throw new OperationNotSupportedException();
+	public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException {
+		return null;
 	}
 	
 	public String toString() {

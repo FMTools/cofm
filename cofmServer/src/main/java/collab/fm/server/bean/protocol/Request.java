@@ -8,6 +8,8 @@ public class Request {
 	protected String address;
 	protected Long requesterId; // The user id of the requester
 	
+	protected String lastError = "error"; 
+
 	public Request() {
 		
 	}
@@ -19,6 +21,14 @@ public class Request {
 	
 	public String toString() {
 		return id + " " + name + " " + address + " " + requesterId;
+	}
+	
+	public String getLastError() {
+		return lastError;
+	}
+
+	public void setLastError(String lastError) {
+		this.lastError = lastError;
 	}
 	
 	public Long getId() {

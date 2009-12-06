@@ -19,5 +19,7 @@
         <property name="current_session_context_class">thread</property>
         
         <mapping resource="collab/fm/server/bean/entity/Feature.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/entity/FeatureName.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/entity/FeatureDescription.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>

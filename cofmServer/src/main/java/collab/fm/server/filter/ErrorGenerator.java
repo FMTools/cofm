@@ -22,24 +22,18 @@ public class ErrorGenerator extends Filter {
 	static Logger logger = Logger.getLogger(ErrorGenerator.class);
 
 	@Override
-	protected void doBackwardFilter(Request req, ResponseGroup rg)
+	protected boolean doBackwardFilter(Request req, ResponseGroup rg)
 			throws FilterException {
+				return false;
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	protected void doForwardFilter(Request req, ResponseGroup rg)
+	protected boolean doForwardFilter(Request req, ResponseGroup rg)
 			throws FilterException {
+				return false;
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
-	protected FilterException onFilterError(Request req, ResponseGroup rg,
-			Throwable t) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
