@@ -30,6 +30,7 @@ public class Resources {
 	public static final String OP_ADD_DES = get("op.addDes");
 	public static final String OP_SET_OPT = get("op.setOpt");
 	public static final String OP_CREATE_FEATURE = get("op.createFeature");
+	public static final String OP_CREATE_RELATIONSHIP = get("op.createRelationship");
 	public static final String OP_CREATE_BINARY_RELATIONSHIP = get("op.createBinaryRelationship");
 	
 	public static final String BIN_REL_REFINES = get("binrel.refines");

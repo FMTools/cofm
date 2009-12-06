@@ -25,4 +25,8 @@ public class CommitResponse extends Response {
 		operations.add(op);
 	}
 	
+	public void addOperations(List<Operation> ops) {
+		operations.addAll(ops);
+	}
+	
 }

@@ -10,8 +10,8 @@ public class Feature implements Votable {
 	
 	private Vote existence = new Vote();
 	private Vote optionality = new Vote();
-	private Collection<? extends Votable> names = new ArrayList<FeatureName>();
-	private Collection<? extends Votable> descriptions = new ArrayList<FeatureDescription>();
+	private Set<? extends Votable> names = new HashSet<FeatureName>();
+	private Set<? extends Votable> descriptions = new HashSet<FeatureDescription>();
 		
 	public Feature() {
 	
@@ -68,11 +68,11 @@ public class Feature implements Votable {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void voteOrAdd(Collection field, Votable val, boolean yes, Long userid) {
+	private void voteOrAdd(Set field, Votable val, boolean yes, Long userid) {
 		// If existed then vote
 		for (Object obj: field) {
 			Votable v = (Votable)obj;
-			if (v.valueEquals(val)) {
+			if (v.equals(val)) {
 				v.vote(yes, userid);
 				return;
 			}
@@ -84,7 +84,7 @@ public class Feature implements Votable {
 		}
 	}
 	
-	private void voteAll(Collection<? extends Votable> field, boolean yes, Long userid) {
+	private void voteAll(Set<? extends Votable> field, boolean yes, Long userid) {
 		for (Votable v: field) {
 			v.vote(yes, userid);
 		}
@@ -126,10 +126,11 @@ public class Feature implements Votable {
 
 	@Override
 	public String toString() {
-		return "Feature: {\n\tId: " + id + 
+		return "{\n\tId: " + id + 
 			   ",\n\tExistence: " + existence.toString() +
 			   ",\n\tOptionality: " + optionality.toString() +
-			   ",\n\tName: " + names.toString() + "\n}";
+			   ",\n\tName: " + names.toString() + 
+			   ",\n\tDescription:" + descriptions.toString() + "\n}";
 	}
 
 	public Vote getExistence() {
@@ -148,31 +149,31 @@ public class Feature implements Votable {
 		this.optionality = optionality;
 	}
 
-	public Collection<? extends Votable> getNames() {
-		return Collections.unmodifiableCollection(getNamesInternal());
+	public Set<? extends Votable> getNames() {
+		return Collections.unmodifiableSet(getNamesInternal());
 	}
 	
-	private Collection<? extends Votable> getNamesInternal() {
+	private Set<? extends Votable> getNamesInternal() {
 		return names;
 	}
 	
-	private void setNamesInternal(Collection<? extends Votable> names) {
+	private void setNamesInternal(Set<? extends Votable> names) {
 		this.names = names;
 	}
 
-	public Collection<? extends Votable> getDescriptions() {
-		return Collections.unmodifiableCollection(getDescriptionsInternal());
+	public Set<? extends Votable> getDescriptions() {
+		return Collections.unmodifiableSet(getDescriptionsInternal());
 	}
 
-	private Collection<? extends Votable> getDescriptionsInternal() {
+	private Set<? extends Votable> getDescriptionsInternal() {
 		return descriptions;
 	}
 	
-	private void setDescriptionsInternal(Collection<? extends Votable> descriptions) {
+	private void setDescriptionsInternal(Set<? extends Votable> descriptions) {
 		this.descriptions = descriptions;
 	}
 
-	public boolean valueEquals(Votable v) {
+	public boolean equals(Votable v) {
 		throw new UnsupportedOperationException();
 	}
 

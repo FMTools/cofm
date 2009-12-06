@@ -1,12 +1,16 @@
 package collab.fm.server.filter;
 
+import org.apache.log4j.Logger;
+
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.util.exception.FilterException;
 
-public class ProtocolValidator extends Filter {
+public class ProtocolFilter extends Filter {
 
+	static Logger logger = Logger.getLogger(ProtocolFilter.class);
+	
 	private void writeSource(Request req, Response rsp) {
 		if (rsp != null) {
 			rsp.setRequesterId(req.getRequesterId());
@@ -16,26 +20,25 @@ public class ProtocolValidator extends Filter {
 	}
 	
 	@Override
-	protected void doBackwardFilter(Request req, ResponseGroup rg)
+	protected boolean doBackwardFilter(Request req, ResponseGroup rg)
 			throws FilterException {
 		// Ensure the source information has been added to responses
-		writeSource(req, rg.getBack());
-		writeSource(req, rg.getBroadcast());
-		writeSource(req, rg.getPeer());
+		try {
+			writeSource(req, rg.getBack());
+			writeSource(req, rg.getBroadcast());
+			writeSource(req, rg.getPeer());
+			return true;
+		} catch (Exception e) {
+			logger.error("Couldn't write source.", e);
+			throw new FilterException("Couldn't write source.", e);
+		}
 	}
 
 	@Override
-	protected void doForwardFilter(Request req, ResponseGroup rg)
+	protected boolean doForwardFilter(Request req, ResponseGroup rg)
 			throws FilterException {
-		// do nothing now
-		
-	}
-
-	@Override
-	protected FilterException onFilterError(Request req, ResponseGroup rg,
-			Throwable t) {
-		// TODO Auto-generated method stub
-		return null;
+		// Do nothing now
+		return true;
 	}
 
 }

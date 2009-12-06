@@ -24,15 +24,10 @@ import collab.fm.server.util.exception.InvalidOperationException;
  * @author Yi Li
  *
  */
-public class BinaryRelationshipOperation extends Operation {
+public class BinaryRelationshipOperation extends RelationshipOperation {
 	
 	static Logger logger = Logger.getLogger(BinaryRelationshipOperation.class);
 
-	/**
-	 * A null relationshipId means a new relationship is created.
-	 */
-	private Long relationshipId;
-	private String type; // relationship type
 	private Long leftFeatureId;
 	private Long rightFeatureId;
 	
@@ -40,21 +35,42 @@ public class BinaryRelationshipOperation extends Operation {
 		
 	}
 	
-	private boolean isTypeValid() {
+	@Override
+	public List<Feature> declaredInvolvedFeatures() {
+		try {
+			if (leftFeatureId != null && rightFeatureId != null) {
+				Feature left = DaoUtil.getFeatureDao().getById(leftFeatureId, false);
+				Feature right = DaoUtil.getFeatureDao().getById(rightFeatureId, false);
+				return Arrays.asList(new Feature[] {left, right});
+			}
+			return null;
+		} catch (Exception e) {
+			logger.error("Couldn't get declared involved features", e);
+			return null;
+		}
+	}
+	
+	public Operation clone() {
+		BinaryRelationshipOperation op = new BinaryRelationshipOperation();
+		this.copyTo(op);
+		return op;
+	}
+	
+	protected void copyTo(BinaryRelationshipOperation op) {
+		super.copyTo(op);
+		op.setRelationshipId(this.getRelationshipId());
+		op.setLeftFeatureId(this.getLeftFeatureId());
+		op.setRightFeatureId(this.getRightFeatureId());
+		op.setType(this.getType());
+	}
+	
+	protected boolean typeValid() {
 		return Resources.BIN_REL_EXCLUDES.equals(type) ||
 			Resources.BIN_REL_REFINES.equals(type) ||
 			Resources.BIN_REL_REQUIRES.equals(type);
 	}
 	
-	public boolean valid() {
-		logger.debug("check BinaryRelationshipOperation is valid.");
-		if (super.valid() && userid != null) {
-			return isTypeValid() && leftFeatureId != null && rightFeatureId != null;
-		}
-		return false;
-	}
-	
-	public Operation apply() throws BeanPersistenceException, InvalidOperationException {
+	public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException {
 		if (!valid()) {
 			throw new InvalidOperationException("Invalid op fields.");
 		}
@@ -71,34 +87,21 @@ public class BinaryRelationshipOperation extends Operation {
 				throw new InvalidOperationException("Relationship '" + leftFeatureId + " " + type + " " + rightFeatureId + "' already existed.");
 			}
 			relation.vote(true, userid);
-			relationshipId = DaoUtil.getRelationshipDao().save(relation);
-			Feature left = DaoUtil.getFeatureDao().getById(leftFeatureId);
-			Feature right = DaoUtil.getFeatureDao().getById(rightFeatureId);
-			checkImplyYesToInvolvedFeatures(Arrays.asList(new Feature[] {left, right}));
-		} else {
-			Relationship relation = DaoUtil.getRelationshipDao().getById(relationshipId);
-			if (relation == null) {
-				throw new InvalidOperationException("No relationship has ID: " + relationshipId);
-			}
-			relation.vote(vote, userid);
-			DaoUtil.getRelationshipDao().update(relation);
-			checkImplyYesToInvolvedFeatures(null);
+			relation = (BinaryRelationship)DaoUtil.getRelationshipDao().save(relation);
+			relationshipId = relation.getId();
+			
+			return ImplicitVoteOperation.makeOperation(this, null).apply();
+		} 
+		Relationship relation = DaoUtil.getRelationshipDao().getById(
+				relationshipId, false);
+		if (relation == null) {
+			throw new InvalidOperationException("No relationship has ID: "
+					+ relationshipId);
 		}
-		return this;
-	}
-	
-	private void checkImplyYesToInvolvedFeatures(List<Feature> features) throws BeanPersistenceException {
-		if (vote.equals(true)) {
-			if (features == null) {
-				features = DaoUtil.getRelationshipDao().getInvolvedFeatures(relationshipId);
-			}
-			if (features != null) {
-				for (Feature feature: features) {
-					feature.vote(true, userid);
-				}
-				DaoUtil.getFeatureDao().updateAll(features);
-			}
-		}
+		relation.vote(vote, userid);
+		DaoUtil.getRelationshipDao().save(relation);
+
+		return ImplicitVoteOperation.makeOperation(this, null).apply();
 	}
 	
 	public String toString() {
@@ -121,20 +124,4 @@ public class BinaryRelationshipOperation extends Operation {
 		this.rightFeatureId = rightFeatureId;
 	}
 	
-	public Long getRelationshipId() {
-		return relationshipId;
-	}
-
-	public void setRelationshipId(Long relationshipId) {
-		this.relationshipId = relationshipId;
-	}
-	
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
 }

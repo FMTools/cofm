@@ -3,13 +3,18 @@ package collab.fm.server.filter;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.ResponseGroup;
+import collab.fm.server.util.exception.ActionException;
 import collab.fm.server.util.exception.FilterException;
 import collab.fm.server.action.Action;
 
 public class ActionDispatcher extends Filter {
 
+	static Logger logger = Logger.getLogger(ActionDispatcher.class);
+	
 	private Map<String, Action> reqActionMap = new HashMap<String, Action>();
 	
 	public void registerAction(String[] requestNames, Action action) {
@@ -23,24 +28,23 @@ public class ActionDispatcher extends Filter {
 	}
 	
 	@Override
-	protected void doBackwardFilter(Request req, ResponseGroup rg)
+	protected boolean doBackwardFilter(Request req, ResponseGroup rg)
 			throws FilterException {
-		// TODO Auto-generated method stub
-
+		// Do nothing now
+		return true;
 	}
 
 	@Override
-	protected void doForwardFilter(Request req, ResponseGroup rg)
+	protected boolean doForwardFilter(Request req, ResponseGroup rg)
 			throws FilterException {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	protected FilterException onFilterError(Request req, ResponseGroup rg,
-			Throwable t) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			Action action = reqActionMap.get(req.getName());
+			return action.execute(req, rg);
+		} catch (ActionException ae) {
+			req.setLastError("ActionException: " + ae.getMessage());
+			logger.error("Action failed.", ae);
+			throw new FilterException(ae);
+		}
 	}
 
 }

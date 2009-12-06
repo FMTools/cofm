@@ -1,6 +1,7 @@
 package collab.fm.server.persistence;
 
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.List;
 
@@ -16,11 +17,20 @@ import collab.fm.server.util.exception.BeanPersistenceException;
  * @param <EntityType>
  * @param <IdType>
  */
-public abstract class GenericDaoImpl<EntityType, IdType> implements GenericDao<EntityType, IdType> {
+public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> implements GenericDao<EntityType, IdType> {
 
 	static Logger logger = Logger.getLogger(GenericDaoImpl.class);
 	
-	public abstract Class<EntityType> getEntityClass();
+	private Class<EntityType> entityClass;
+	
+	public GenericDaoImpl() {
+		entityClass = (Class<EntityType>) 
+			((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
+	}
+	
+	public Class<EntityType> getEntityClass() {
+		return entityClass;
+	}
 	
 	public List<EntityType> getAll() throws BeanPersistenceException {
 		// TODO Auto-generated method stub
@@ -33,44 +43,36 @@ public abstract class GenericDaoImpl<EntityType, IdType> implements GenericDao<E
 		return null;
 	}
 
-	public EntityType getById(IdType id) throws BeanPersistenceException {
+	public EntityType getById(IdType id, boolean lock) throws BeanPersistenceException {
 		try {
-			return (EntityType) HibernateUtil.getCurrentSession().get(getEntityClass(), (Serializable) id);
+			if (lock) {
+				return (EntityType) HibernateUtil.getCurrentSession().get(getEntityClass(), id, LockMode.UPGRADE);
+			} else {
+				return (EntityType) HibernateUtil.getCurrentSession().get(getEntityClass(), id);
+			}
 		} catch (RuntimeException e) {
 			logger.info("Get by ID failed. (ID=" + id + ")", e);
 			throw new BeanPersistenceException("Get by ID failed. (ID=" + id + ")", e);
 		}
 	}
 
-	public IdType save(EntityType entity) throws BeanPersistenceException {
+	public EntityType save(EntityType entity) throws BeanPersistenceException {
 		try {
 			Session session = HibernateUtil.getCurrentSession();
 						
-			IdType id = (IdType)session.save(entity);
+			session.saveOrUpdate(entity);
 			
-			session.flush();
-			return id;
+			return entity;
 		} catch (RuntimeException e) {
 			logger.error("Couldn't save entity", e);
 			throw new BeanPersistenceException("Couldn't save entity", e);
 		}
 	}
 
-	public List<IdType> saveAll(List<EntityType> entities)
+	public List<EntityType> saveAll(List<EntityType> entities)
 			throws BeanPersistenceException {
 		// TODO Auto-generated method stub
 		return null;
-	}
-
-	public void update(EntityType entity) throws BeanPersistenceException {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void updateAll(Collection<EntityType> entities)
-			throws BeanPersistenceException {
-		// TODO Auto-generated method stub
-		
 	}
 
 }

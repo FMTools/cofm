@@ -26,7 +26,8 @@ public class RegisterAction extends Action {
 	}
 
 	@Override
-	public void execute(Request req, ResponseGroup rg) throws ActionException {
+	public boolean execute(Request req, ResponseGroup rg) throws ActionException {
+		return false;
 		// TODO Auto-generated method stub
 		
 	}

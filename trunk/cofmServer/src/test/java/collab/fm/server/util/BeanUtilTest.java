@@ -6,13 +6,16 @@ import org.apache.log4j.Logger;
 import org.junit.*;
 import static org.junit.Assert.*;
 
-import collab.fm.server.bean.protocol.BinaryRelationshipOperation;
-import collab.fm.server.bean.protocol.Operation;
-import collab.fm.server.bean.protocol.Response;
+import collab.fm.server.bean.protocol.*;
 
 public class BeanUtilTest {
 
 	static Logger logger = Logger.getLogger(BeanUtilTest.class);
+	
+	@Test
+	public void testOperationsJsonBidirectionCast() {
+			
+	}
 	
 	@Test
 	public void testBeanFromMap() {

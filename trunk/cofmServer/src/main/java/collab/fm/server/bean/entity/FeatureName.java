@@ -6,24 +6,33 @@ public class FeatureName implements Votable {
 	private String name;
 	private Vote vote = new Vote();
 	
-	public FeatureName() {
+	private FeatureName() {
 		
+	}
+
+	public FeatureName(String name) {
+		setName(name);
+	}
+	
+	public FeatureName(String name, boolean yes, Long userid) {
+		setName(name);
+		vote(yes, userid);
 	}
 	
 	public String toString() {
 		return name + vote.toString();
 	}
 	
-	public FeatureName(String name) {
-		setName(name);
-	}
-	
-	public boolean valueEquals(Votable v) {
+	public boolean equals(Votable v) {
 		if (this == v) return true;
 		if (this == null || v == null) return false;
 		if (!(v instanceof FeatureName)) return false;
 		final FeatureName that = (FeatureName) v;
 		return getName().equals(that.getName()); 
+	}
+	
+	public int hashCode() {
+		return getName().hashCode();
 	}
 	
 	public void vote(boolean yes, Long userid) {

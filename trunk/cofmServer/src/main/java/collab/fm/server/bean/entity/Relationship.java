@@ -25,7 +25,7 @@ public class Relationship implements Votable{
 		this.existence = existence;
 	}
 
-	public boolean valueEquals(Votable v) {
+	public boolean equals(Votable v) {
 		return true;
 	}
 
