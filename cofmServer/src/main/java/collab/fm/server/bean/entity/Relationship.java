@@ -4,6 +4,7 @@ public class Relationship implements Votable{
 	
 	protected Long id;
 	protected Vote existence = new Vote();
+	protected String type;
 	
 	public Relationship() {
 		
@@ -31,5 +32,13 @@ public class Relationship implements Votable{
 
 	public void vote(boolean yes, Long userid) {
 		existence.vote(yes, userid);		
+	}
+	
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 }

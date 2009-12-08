@@ -13,7 +13,7 @@ import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.filter.*;
-import collab.fm.server.action.Action;
+import collab.fm.server.action.*;
 import collab.fm.server.util.BeanUtil;
 import collab.fm.server.util.ProtocolUtil;
 import collab.fm.server.util.Resources;
@@ -34,17 +34,18 @@ public class Controller {
 	
 	private static Controller controller = new Controller();
 	
-	private Filter accessValidator = new AccessValidator();
-	private Filter actionDispatcher = new ActionDispatcher();
-	private Filter hibernateSessionFilter = new HibernateSessionFilter();
-	private Filter protocolFilter = new ProtocolFilter();
+	private Filter accessValidator;
+	private Filter actionDispatcher;
+	private Filter protocolFilter;
 	
 	public static Controller instance() {
 		return controller;
 	}
 	
-	public Controller() {
-		
+	private Controller() {
+		accessValidator = new AccessValidator();
+		actionDispatcher = new ActionDispatcher();
+		protocolFilter = new ProtocolFilter();
 	}
 	
 	public void registerAction(String[] names, Action action) {
@@ -83,7 +84,8 @@ public class Controller {
 		chain.addFilter(protocolFilter);
 		chain.addFilter(accessValidator);
 		if (needDatabaseAccess(requestName)) {
-			chain.addFilter(hibernateSessionFilter);
+			// Session per request
+			chain.addFilter(new HibernateSessionFilter());
 		}
 		chain.addFilter(actionDispatcher);
 		return chain;

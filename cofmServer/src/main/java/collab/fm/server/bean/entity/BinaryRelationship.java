@@ -2,7 +2,6 @@ package collab.fm.server.bean.entity;
 
 public class BinaryRelationship extends Relationship {
 	
-	private String type;
 	private Long leftFeatureId;
 	private Long rightFeatureId;
 	
@@ -22,11 +21,5 @@ public class BinaryRelationship extends Relationship {
 	public void setRightFeatureId(Long rightFeatureId) {
 		this.rightFeatureId = rightFeatureId;
 	}
-	public String getType() {
-		return type;
-	}
 
-	public void setType(String type) {
-		this.type = type;
-	}
 }
