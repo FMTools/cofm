@@ -9,14 +9,18 @@ import collab.fm.server.util.exception.FilterException;
 public abstract class Filter {
 	
 	public void doFilter(Request req, ResponseGroup rg, FilterChain chain) throws FilterException {
-		if (!doForwardFilter(req, rg)) {
-			throw new FilterException("Forward-filter failed: ");
-		}
-		
-		chain.doNextFilter(req, rg);
-		
-		if (!doBackwardFilter(req, rg)) {
-			throw new FilterException("Backward-filter failed: ");
+		try {
+			if (!doForwardFilter(req, rg)) {
+				throw new FilterException("Forward-filter failed: ");
+			}
+			
+			chain.doNextFilter(req, rg);
+			
+			if (!doBackwardFilter(req, rg)) {
+				throw new FilterException("Backward-filter failed: ");
+			}
+		} catch (Exception e) {
+			throw onError(req, rg, e);
 		}
 	}
 	
@@ -37,4 +41,8 @@ public abstract class Filter {
 	 * @throws FilterException
 	 */
 	protected abstract boolean doBackwardFilter(Request req, ResponseGroup rg) throws FilterException;
+	
+	protected FilterException onError(Request req, ResponseGroup rg, Exception e) {
+		return new FilterException(e);
+	}
 }
