@@ -2,8 +2,8 @@ package collab.fm.server.bean.entity;
 
 public class User {
 	private Long id;
-	
 	private String name;
+	private String password;
 	
 	public User() {
 		
@@ -20,5 +20,13 @@ public class User {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
 	}
 }

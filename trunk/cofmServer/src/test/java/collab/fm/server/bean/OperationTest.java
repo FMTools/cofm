@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import collab.fm.server.bean.protocol.FeatureOperation;
-import collab.fm.server.bean.protocol.Operation;
+import collab.fm.server.bean.operation.FeatureOperation;
+import collab.fm.server.bean.operation.Operation;
 import collab.fm.server.util.BeanUtil;
 
 public class OperationTest {

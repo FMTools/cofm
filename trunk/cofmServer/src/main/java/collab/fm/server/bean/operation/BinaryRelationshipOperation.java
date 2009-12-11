@@ -1,4 +1,4 @@
-package collab.fm.server.bean.protocol;
+package collab.fm.server.bean.operation;
 
 import java.util.Arrays;
 import java.util.List;
@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import collab.fm.server.bean.entity.BinaryRelationship;
 import collab.fm.server.bean.entity.Feature;
 import collab.fm.server.bean.entity.Relationship;
+import collab.fm.server.bean.protocol.RelationshipOperation;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.BeanPersistenceException;

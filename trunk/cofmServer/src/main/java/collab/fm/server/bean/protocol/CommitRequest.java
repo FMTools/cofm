@@ -2,6 +2,8 @@ package collab.fm.server.bean.protocol;
 
 import org.apache.log4j.Logger;
 
+import collab.fm.server.bean.operation.Operation;
+
 public class CommitRequest extends Request {
 	
 	static Logger logger = Logger.getLogger(CommitRequest.class);

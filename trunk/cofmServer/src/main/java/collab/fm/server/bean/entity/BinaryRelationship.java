@@ -8,6 +8,10 @@ public class BinaryRelationship extends Relationship {
 	public BinaryRelationship() {
 		
 	}
+	
+	public String toString() {
+		return super.toString() + " left=" + leftFeatureId + " right=" + rightFeatureId;
+	}
 
 	public Long getLeftFeatureId() {
 		return leftFeatureId;

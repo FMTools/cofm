@@ -34,8 +34,9 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 	}
 	
 	public List getAll() throws BeanPersistenceException {
-		// TODO Auto-generated method stub
-		return null;
+		Criteria crit = HibernateUtil.getCurrentSession().createCriteria(getEntityClass());
+		List result = crit.list();
+		return result.isEmpty() ? null : result;
 	}
 	
 	public List getByExample(EntityType example, String... excludeProperties) throws BeanPersistenceException {
@@ -45,7 +46,8 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 			ex.excludeProperty(property);
 		}
 		crit.add(ex);
-		return crit.list();
+		List result = crit.list();
+		return result.isEmpty() ? null : result;
 	}
 	
 	public EntityType getById(IdType id, boolean lock) throws BeanPersistenceException {

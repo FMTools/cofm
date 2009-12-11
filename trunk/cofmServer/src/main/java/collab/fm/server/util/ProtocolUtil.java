@@ -6,10 +6,10 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import collab.fm.server.bean.protocol.BinaryRelationshipOperation;
+import collab.fm.server.bean.operation.BinaryRelationshipOperation;
+import collab.fm.server.bean.operation.FeatureOperation;
+import collab.fm.server.bean.operation.Operation;
 import collab.fm.server.bean.protocol.CommitRequest;
-import collab.fm.server.bean.protocol.FeatureOperation;
-import collab.fm.server.bean.protocol.Operation;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.util.exception.ProtocolInterpretException;

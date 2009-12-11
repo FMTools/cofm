@@ -1,4 +1,4 @@
-package collab.fm.server.bean.protocol;
+package collab.fm.server.bean.operation;
 
 import java.lang.reflect.Field;
 import java.util.List;

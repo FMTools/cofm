@@ -6,6 +6,8 @@ import org.apache.log4j.Logger;
 import org.junit.*;
 import static org.junit.Assert.*;
 
+import collab.fm.server.bean.operation.BinaryRelationshipOperation;
+import collab.fm.server.bean.operation.Operation;
 import collab.fm.server.bean.protocol.*;
 
 public class BeanUtilTest {
