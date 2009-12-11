@@ -30,7 +30,9 @@
   		</set>
   	</component>
   	
-  	<!-- One-to-many association to FeatureName -->
+  	<!-- One-to-many association to FeatureName.
+  	   Note that we don't want to cascade the deleting operation. 
+  	-->
   	<set name="namesInternal" table="FeaturePossibleName" cascade="persist, merge, save-update">
   		<key column="featureId"></key>
   		<many-to-many class="FeatureName" column="nameId" unique="true"></many-to-many>
@@ -41,5 +43,16 @@
   		<key column="featureId"></key>
   		<many-to-many class="FeatureDescription" column="descriptionId" unique="true"></many-to-many>
   	</set>
+  	
+  	<!-- Many-to-many association to Relationship
+  	  Use 'inverse=true' to indicate that the client code should never call feature.addRelationship()
+  	  directly. Actually, the ONLY callers of feature.addRelationship() are subclasses of Relationship.
+  	  See BinaryRelationship.setFeatures() for more details.
+  	-->
+  	<set inverse="true" name="relationshipsInternal" table="FeatureRelationshipInvolvement">
+  		<key column="featureId"></key>
+  		<many-to-many column="relationshipId" class="Relationship"></many-to-many>
+  	</set>
+  	
   </class>
 </hibernate-mapping>

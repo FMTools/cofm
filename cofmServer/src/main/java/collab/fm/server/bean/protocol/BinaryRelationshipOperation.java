@@ -35,21 +35,6 @@ public class BinaryRelationshipOperation extends RelationshipOperation {
 		
 	}
 	
-	@Override
-	public List<Feature> declaredInvolvedFeatures() {
-		try {
-			if (leftFeatureId != null && rightFeatureId != null) {
-				Feature left = DaoUtil.getFeatureDao().getById(leftFeatureId, false);
-				Feature right = DaoUtil.getFeatureDao().getById(rightFeatureId, false);
-				return Arrays.asList(new Feature[] {left, right});
-			}
-			return null;
-		} catch (Exception e) {
-			logger.error("Couldn't get declared involved features", e);
-			return null;
-		}
-	}
-	
 	public Operation clone() {
 		BinaryRelationshipOperation op = new BinaryRelationshipOperation();
 		this.copyTo(op);
@@ -83,15 +68,21 @@ public class BinaryRelationshipOperation extends RelationshipOperation {
 			relation.setType(type);
 			relation.setLeftFeatureId(leftFeatureId);
 			relation.setRightFeatureId(rightFeatureId);
-			if (DaoUtil.getRelationshipDao().getByExample(relation, false) != null) {
-				throw new InvalidOperationException("Relationship '" + leftFeatureId + " " + type + " " + rightFeatureId + "' already existed.");
+			List sameRelations = DaoUtil.getRelationshipDao().getByExample(relation); 
+			if (sameRelations != null) {
+				relation = (BinaryRelationship)sameRelations.get(0);
+			} else {
+				// CREATE A NEW BINARY RELATIONSHIP HERE
+				relation.setFeatures(DaoUtil.getFeatureDao().getById(leftFeatureId, false),
+						DaoUtil.getFeatureDao().getById(rightFeatureId, false));
 			}
 			relation.vote(true, userid);
 			relation = (BinaryRelationship)DaoUtil.getRelationshipDao().save(relation);
 			relationshipId = relation.getId();
 			
-			return ImplicitVoteOperation.makeOperation(this, null).apply();
+			return ImplicitVoteOperation.makeOperation(this, relation).apply();
 		} 
+		
 		Relationship relation = DaoUtil.getRelationshipDao().getById(
 				relationshipId, false);
 		if (relation == null) {

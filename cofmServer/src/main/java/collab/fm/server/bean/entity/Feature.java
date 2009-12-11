@@ -12,7 +12,9 @@ public class Feature implements Votable {
 	private Vote optionality = new Vote();
 	private Set<? extends Votable> names = new HashSet<FeatureName>();
 	private Set<? extends Votable> descriptions = new HashSet<FeatureDescription>();
-		
+	
+	private Set<Relationship> relationships = new HashSet<Relationship>();
+	
 	public Feature() {
 	
 	}
@@ -40,6 +42,14 @@ public class Feature implements Votable {
 	public String[] descriptions() {
 		return toValue(descriptions).toArray(new String[0]);
 	}*/
+	
+	/**
+	 * NOTE: never call this method directly, unless it is a subclass of Relationship.
+	 * See BinaryRelationship.setFeatures(left, right) for an example. 
+	 */
+	public void addRelationship(Relationship r) {
+		this.relationships.add(r);
+	}
 	
 	public void vote(boolean yes, Long userid) {
 		existence.vote(yes, userid);
@@ -172,11 +182,21 @@ public class Feature implements Votable {
 	private void setDescriptionsInternal(Set<? extends Votable> descriptions) {
 		this.descriptions = descriptions;
 	}
+	
+	public Set<Relationship> getRelationships() {
+		return Collections.unmodifiableSet(getRelationshipsInternal());
+	}
 
+	private void setRelationshipsInternal(Set<Relationship> relationships) {
+		this.relationships = relationships;
+	}
+
+	private Set<Relationship> getRelationshipsInternal() {
+		return relationships;
+	}
+	
 	public boolean equals(Votable v) {
 		throw new UnsupportedOperationException();
 	}
-
-
 	
 }

@@ -62,14 +62,14 @@ public class FeatureDaoImplTest {
 			feature2 = dao.save(feature2);
 			assertTrue(false);
 		} catch (BeanPersistenceException e) {
-			logger.info("Couldn't save samething twice.");
+			//logger.info("Couldn't save samething twice.");
 			assertTrue(true);
 			
 		}
 	}
 	
 	@Test
-	public void testGetAfterSave() {
+	public void testGetByIdAfterSave() {
 		try {
 			Feature feature = new Feature();
 			feature.vote(true, 10L);
@@ -89,10 +89,39 @@ public class FeatureDaoImplTest {
 	}
 	
 	@Test
-	public void testGetNull() {
+	public void testGetNullById() {
 		try {
 			assertNull(dao.getById(1000L, false));
 		} catch (BeanPersistenceException e) {
+			logger.error(e);
+			assertTrue(false);
+		}
+	}
+	
+	@Test 
+	public void testGetByName() {
+		try {
+			Feature feature = new Feature();
+			feature.voteName("QueryMe", true, 1L);
+			feature = dao.save(feature);
+			
+			Feature another = new Feature();
+			another.voteName("Another", true, 3L);
+			dao.save(another);
+			
+			Feature me = dao.getByName("QueryMe");
+			assertEquals(feature.getId(), me.getId());
+		} catch (Exception e) {
+			logger.error(e);
+			assertTrue(false);
+		}
+	}
+	
+	@Test
+	public void testGetNullByName() {
+		try {
+			assertNull(dao.getByName("IamNotHere"));
+		} catch (Exception e) {
 			logger.error(e);
 			assertTrue(false);
 		}

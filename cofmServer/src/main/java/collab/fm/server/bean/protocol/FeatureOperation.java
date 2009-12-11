@@ -123,12 +123,11 @@ public class FeatureOperation extends Operation {
 				throw new InvalidOperationException("Invalid vote: NO to inexisted feature.");
 			}
 			// Check if a feature with same name has already existed.
-			Feature featureWithSameName = new Feature();
-			featureWithSameName.voteName(value, vote, userid);
-			if (DaoUtil.getFeatureDao().getByExample(featureWithSameName, false) != null) {
-				throw new InvalidOperationException("Feature '" + value + "' already existed.");
+			Feature featureWithSameName = DaoUtil.getFeatureDao().getByName(value);
+			if (featureWithSameName == null) {
+				featureWithSameName = new Feature();
 			}
-			// Now save the new feature, which will return the generated feature ID
+			featureWithSameName.voteName(value, vote, userid);
 			featureWithSameName.vote(true, userid);
 			featureWithSameName = DaoUtil.getFeatureDao().save(featureWithSameName);
 			featureId = featureWithSameName.getId();

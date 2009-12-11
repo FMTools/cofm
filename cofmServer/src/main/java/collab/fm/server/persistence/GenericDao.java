@@ -17,15 +17,9 @@ public interface GenericDao<EntityType, IdType> {
 	 */
 	public EntityType getById(IdType id, boolean lock) throws BeanPersistenceException;
 	
-	public List<EntityType> getAll() throws BeanPersistenceException;
+	public List getAll() throws BeanPersistenceException;
 	
-	/**
-	 * 
-	 * @param example
-	 * @param like true if similarity comparison, false if exactly comparison.
-	 * @return null if nothing matches
-	 */
-	public List<EntityType> getByExample(EntityType example, boolean like) throws BeanPersistenceException;
+	public List getByExample(EntityType example, String... excludeProperties) throws BeanPersistenceException;
 	
 	/**
 	 * Save entity into database.

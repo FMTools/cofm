@@ -16,7 +16,6 @@ public abstract class RelationshipOperation extends Operation {
 	 */
 	protected String type; 
 	
-	public abstract List<Feature> declaredInvolvedFeatures();
 	protected abstract boolean typeValid();
 	
 	public boolean valid() {
