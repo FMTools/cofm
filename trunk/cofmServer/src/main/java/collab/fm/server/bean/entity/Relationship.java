@@ -1,10 +1,16 @@
 package collab.fm.server.bean.entity;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 public class Relationship implements Votable{
 	
 	protected Long id;
 	protected Vote existence = new Vote();
 	protected String type;
+	
+	protected Set<Feature> features = new HashSet<Feature>();
 	
 	public Relationship() {
 		
@@ -40,5 +46,25 @@ public class Relationship implements Votable{
 
 	public void setType(String type) {
 		this.type = type;
+	}
+	
+	public Set<Feature> getFeatures() {
+		return Collections.unmodifiableSet(getFeaturesInternal());
+	}
+
+	protected void setFeaturesInternal(Set<Feature> features) {
+		this.features = features;
+	}
+
+	protected Set<Feature> getFeaturesInternal() {
+		return this.features;
+	}
+	
+	protected void addFeature(Feature feature) {
+		features.add(feature);
+	}
+	
+	protected void reset() {
+		features.clear();
 	}
 }

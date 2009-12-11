@@ -8,5 +8,6 @@ import collab.fm.server.util.exception.BeanPersistenceException;
 
 public interface FeatureDao extends GenericDao<Feature, Long> {
 
-	public List<Relationship> getInvolvedRelationships(Long id) throws BeanPersistenceException;
+	public Feature getByName(String name) throws BeanPersistenceException;
+	
 }

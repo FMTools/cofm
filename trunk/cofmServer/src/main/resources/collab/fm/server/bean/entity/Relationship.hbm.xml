@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="collab.fm.server.bean.entity">
+  <class name="Relationship" table="Relationship">
+  	<id name="id" column="relationshipId" type="long">
+  		<generator class="native"></generator>
+  	</id>
+  	
+  	<component name="existence" class="Vote">
+  		<set name="supportersInternal" table="RelationshipSupporter">
+  			<key column="relationshipId"></key>
+  			<element type="long" column="supporter" not-null="true"></element>
+  		</set>
+  		<set name="opponentsInternal" table="RelationshipOpponent">
+  			<key column="relationshipId"></key>
+  			<element type="long" column="opponent" not-null="true"></element>
+  		</set>
+  	</component>
+  	
+  	<property name="type" type="string" column="type"></property>
+  	
+  	<!-- Many-to-many association to Feature -->
+  	<set name="featuresInternal" table="FeatureRelationshipInvolvement">
+  		<key column="relationshipId"></key>
+  		<many-to-many column="featureId" class="Feature"></many-to-many>
+  	</set>
+  	<!-- Subclasses -->
+  	<joined-subclass name="BinaryRelationship" table="BinaryRelationship">
+  		<key column="binaryRelationshipId"></key>
+  		<property name="leftFeatureId" column="leftFeatureId" type="long"></property>
+  		<property name="rightFeatureId" column="rightFeatureId" type="long"></property>
+  	</joined-subclass>
+  </class>
+</hibernate-mapping>

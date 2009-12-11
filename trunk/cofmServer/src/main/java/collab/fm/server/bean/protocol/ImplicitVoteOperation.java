@@ -2,6 +2,7 @@ package collab.fm.server.bean.protocol;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import collab.fm.server.bean.entity.Feature;
 import collab.fm.server.bean.entity.Relationship;
@@ -88,12 +89,9 @@ public class ImplicitVoteOperation extends Operation {
 					
 					Feature feature = (Feature)sourceObject;
 					// Handle rule 1
-					List<Relationship> rels = DaoUtil.getFeatureDao().getInvolvedRelationships(feature.getId());
-					if (rels != null) {
-						for (Relationship rel: rels) {
-							rel.vote(false, sourceOp.getUserid());
-						}
-						DaoUtil.getRelationshipDao().saveAll(rels);
+					for (Relationship rel : feature.getRelationships()) {
+						rel.vote(false, sourceOp.getUserid());
+						DaoUtil.getRelationshipDao().save(rel);
 					}
 					
 					// Handle rule 3
@@ -102,11 +100,11 @@ public class ImplicitVoteOperation extends Operation {
 					DaoUtil.getFeatureDao().save(feature);
 					
 					// Construct forwarded implicit operations, note that rule 3 don't have to be forwarded.
-					if (rels == null) {
+					if (feature.getRelationships().size() <= 0) {
 						return null;  // nothing to forward
 					}
 					targetIds = new ArrayList<Long>();
-					for (Relationship rel: rels) {
+					for (Relationship rel: feature.getRelationships()) {
 						targetIds.add(rel.getId());
 					}
 					List<Operation> result = new ArrayList<Operation>();
@@ -175,22 +173,15 @@ public class ImplicitVoteOperation extends Operation {
 					setBasicInfo(Resources.OP_CREATE_FEATURE, true, sourceOp.getUserid());
 					
 					// Handle rule 2
-					RelationshipOperation op = (RelationshipOperation)sourceOp;
-					List<Feature> features = op.declaredInvolvedFeatures();
-					if (features == null) {
-						features = DaoUtil.getRelationshipDao().getInvolvedFeatures(op.getRelationshipId());
-					}
-					if (features == null) {
-						return null;
-					}
+					Relationship rel = (Relationship)sourceObject;
 					
 					targetIds = new ArrayList<Long>();
-					for (Feature feature: features) {
+					for (Feature feature: rel.getFeatures()) {
 						feature.vote(true, userid);
+						DaoUtil.getFeatureDao().save(feature);
 						// Forward the implicit votes
 						targetIds.add(feature.getId());
 					}
-					DaoUtil.getFeatureDao().saveAll(features);
 					
 					List<Operation> result = new ArrayList<Operation>();
 					result.add(this.clone());

@@ -21,5 +21,16 @@ public class BinaryRelationship extends Relationship {
 	public void setRightFeatureId(Long rightFeatureId) {
 		this.rightFeatureId = rightFeatureId;
 	}
-
+	
+	public void setFeatures(Feature left, Feature right) {
+		reset();
+		setLeftFeatureId(left.getId());
+		setRightFeatureId(right.getId());
+		addFeature(left);
+		addFeature(right);
+		
+		// Maintain the many-to-many association between Feature and Relationship
+		left.addRelationship(this);
+		right.addRelationship(this);
+	}
 }

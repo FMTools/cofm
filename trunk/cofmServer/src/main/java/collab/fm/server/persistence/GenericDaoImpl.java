@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.hibernate.*;
+import org.hibernate.criterion.Example;
 
 import collab.fm.server.util.exception.BeanPersistenceException;
 
@@ -32,17 +33,21 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 		return entityClass;
 	}
 	
-	public List<EntityType> getAll() throws BeanPersistenceException {
+	public List getAll() throws BeanPersistenceException {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	public List<EntityType> getByExample(EntityType example, boolean like)
-			throws BeanPersistenceException {
-		// TODO Auto-generated method stub
-		return null;
+	
+	public List getByExample(EntityType example, String... excludeProperties) throws BeanPersistenceException {
+		Criteria crit = HibernateUtil.getCurrentSession().createCriteria(getEntityClass());
+		Example ex = Example.create(example);
+		for (String property: excludeProperties) {
+			ex.excludeProperty(property);
+		}
+		crit.add(ex);
+		return crit.list();
 	}
-
+	
 	public EntityType getById(IdType id, boolean lock) throws BeanPersistenceException {
 		try {
 			if (lock) {

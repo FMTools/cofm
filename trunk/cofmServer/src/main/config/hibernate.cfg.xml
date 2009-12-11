@@ -21,5 +21,6 @@
         <mapping resource="collab/fm/server/bean/entity/Feature.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/entity/FeatureName.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/entity/FeatureDescription.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/entity/Relationship.hbm.xml"/>
     </session-factory>
 </hibernate-configuration>
