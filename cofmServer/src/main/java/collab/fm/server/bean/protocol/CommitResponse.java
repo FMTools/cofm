@@ -2,6 +2,8 @@ package collab.fm.server.bean.protocol;
 
 import java.util.List;
 
+import collab.fm.server.bean.operation.Operation;
+
 public class CommitResponse extends Response {
 	
 	private List<Operation> operations;

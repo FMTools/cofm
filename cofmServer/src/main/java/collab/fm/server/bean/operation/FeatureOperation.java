@@ -1,4 +1,4 @@
-package collab.fm.server.bean.protocol;
+package collab.fm.server.bean.operation;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

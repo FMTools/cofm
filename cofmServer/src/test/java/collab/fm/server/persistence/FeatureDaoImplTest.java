@@ -5,6 +5,7 @@ import org.hibernate.FlushMode;
 import org.junit.*;
 
 import collab.fm.server.bean.entity.Feature;
+import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.exception.BeanPersistenceException;
 import static org.junit.Assert.*;
 
@@ -12,7 +13,7 @@ public class FeatureDaoImplTest {
 
 	static Logger logger = Logger.getLogger(FeatureDaoImplTest.class);
 	
-	private static FeatureDao dao = new FeatureDaoImpl();
+	private static FeatureDao dao = DaoUtil.getFeatureDao();
 	
 	@BeforeClass
 	public static void beginSession() {

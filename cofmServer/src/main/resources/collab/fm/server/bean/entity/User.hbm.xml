@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="collab.fm.server.bean.entity">
+<class name="User" table="ToolUser"> <!-- We should avoid table name "User" because it's a reserved word in some databases -->
+	<id name="id" column="userId" type="long">
+		<generator class="native"></generator>
+	</id>
+	
+	<property name="name" column="userName" type="string"></property>
+	<property name="password" column="userPassword" type="string"></property>
+</class>
+</hibernate-mapping>

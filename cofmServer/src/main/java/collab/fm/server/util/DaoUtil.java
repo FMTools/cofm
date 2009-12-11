@@ -3,17 +3,19 @@ package collab.fm.server.util;
 import collab.fm.server.persistence.DaoFactory;
 import collab.fm.server.persistence.FeatureDao;
 import collab.fm.server.persistence.RelationshipDao;
+import collab.fm.server.persistence.UserDao;
 
 public class DaoUtil {
 	
-	private static DaoFactory factory = DaoFactory.getFactory();
-	
 	public static FeatureDao getFeatureDao() {
-		return factory.getFeatureDao();
+		return DaoFactory.getFactory().getFeatureDao();
 	}
 	
 	public static RelationshipDao getRelationshipDao() {
-		return factory.getRelationshipDao();
+		return DaoFactory.getFactory().getRelationshipDao();
 	}
 	
+	public static UserDao getUserDao() {
+		return DaoFactory.getFactory().getUserDao();
+	}
 }

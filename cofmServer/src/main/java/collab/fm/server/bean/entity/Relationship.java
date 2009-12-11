@@ -16,6 +16,9 @@ public class Relationship implements Votable{
 		
 	}
 
+	public String toString() {
+		return "id=" + id + " type=" + type;
+	}
 	public Long getId() {
 		return id;
 	}
