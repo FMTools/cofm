@@ -16,8 +16,7 @@ public class RelationshipDaoImpl extends GenericDaoImpl<Relationship, Long>
 	public List getByExample(Relationship example, String... excludeProperties)
 			throws BeanPersistenceException {
 		// By default, we exclude these 3 properties.
-		if (excludeProperties == null) {
-			logger.debug("Default query.");
+		if (excludeProperties.length == 0) {
 			return super.getByExample(example, "id", "existence", "features");
 		}
 		return super.getByExample(example, excludeProperties);

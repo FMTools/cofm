@@ -10,6 +10,7 @@ import collab.fm.server.bean.operation.BinaryRelationshipOperation;
 import collab.fm.server.bean.operation.FeatureOperation;
 import collab.fm.server.bean.operation.Operation;
 import collab.fm.server.bean.protocol.CommitRequest;
+import collab.fm.server.bean.protocol.LoginRequest;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.util.exception.ProtocolInterpretException;
@@ -20,14 +21,19 @@ public class ProtocolUtil {
 	
 	private static Map<String, String> requestHandlerMap = new HashMap<String, String>();
 	
+	private static Map<String, Class<? extends Request>> requestClassMap = 
+		new HashMap<String, Class<? extends Request>>();
+	
 	private static Map<String, Class<? extends Operation>> opNameClassMap = 
 		new HashMap<String, Class<? extends Operation>>();
 	
 	static {
 		requestHandlerMap.put(Resources.REQ_COMMIT, "doCommitRequest");
+		requestHandlerMap.put(Resources.REQ_LOGIN, "doGenericRequest");
 
-		opNameClassMap.put(Resources.OP_CREATE_BINARY_RELATIONSHIP, BinaryRelationshipOperation.class);
+		requestClassMap.put(Resources.REQ_LOGIN, LoginRequest.class);
 		
+		opNameClassMap.put(Resources.OP_CREATE_BINARY_RELATIONSHIP, BinaryRelationshipOperation.class);
 		opNameClassMap.put(Resources.OP_ADD_DES, FeatureOperation.class);
 		opNameClassMap.put(Resources.OP_ADD_NAME, FeatureOperation.class);
 		opNameClassMap.put(Resources.OP_CREATE_FEATURE, FeatureOperation.class);
@@ -59,16 +65,35 @@ public class ProtocolUtil {
 				
 			}
 			// 2. Convert to a concrete request class according to the request name.
-			String handlerName = requestHandlerMap.get(abstractReq.getName());
-			if (handlerName == null) {
+			String handlerInfo = requestHandlerMap.get(abstractReq.getName());
+			if (handlerInfo == null) {
 				throw new ProtocolInterpretException("Invalid request name.");
 			}
-			Method handler = ProtocolUtil.class.getDeclaredMethod(handlerName, Request.class, String.class);
+			Method handler = ProtocolUtil.class.getDeclaredMethod(handlerInfo, Request.class, String.class);
 			return (Request)handler.invoke(null, abstractReq, json);
 		} catch (Exception e) {
 			logger.warn("Json to Request failed.", e);
 			throw new ProtocolInterpretException(e);
 		}		
+	}
+	
+	@SuppressWarnings("unused")
+	private static Request doGenericRequest(Request req, String json) throws ProtocolInterpretException {
+		try {
+			Class<? extends Request> concretRequestClass = requestClassMap.get(req.getName());
+			
+			Request result = BeanUtil.jsonToBean(json, concretRequestClass, null);
+			if (!result.valid()) {
+				throw new ProtocolInterpretException("Invalid request JSON string. (request='" + concretRequestClass.toString() + "')");
+			}
+			result.setId(req.getId());
+			result.setName(req.getName());
+			result.setRequesterId(req.getRequesterId());
+			return result;
+		} catch (Exception e) {
+			logger.warn(e);
+			throw new ProtocolInterpretException(e);
+		}
 	}
 	
 	@SuppressWarnings("unused")

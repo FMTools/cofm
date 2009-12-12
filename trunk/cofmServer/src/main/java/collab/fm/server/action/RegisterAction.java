@@ -22,7 +22,6 @@ public class RegisterAction extends Action {
 	
 	public RegisterAction() {
 		super(new String[]{Resources.REQ_REGISTER});
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override

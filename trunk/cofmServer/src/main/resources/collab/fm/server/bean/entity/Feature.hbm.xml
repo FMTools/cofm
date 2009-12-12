@@ -8,6 +8,8 @@
   		<generator class="native"></generator>
   	</id>
   	
+  	<version name="version" access="field" column="entityVersion"></version>
+  	
   	<component name="existence" class="Vote">
   		<set name="supportersInternal" table="FeatureSupporter">
   			<key column="featureId"></key>

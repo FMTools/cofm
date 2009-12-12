@@ -6,27 +6,56 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.*;
+import collab.fm.server.bean.entity.User;
+import collab.fm.server.bean.protocol.LoginRequest;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.persistence.*;
+import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.ActionException;
+import collab.fm.server.util.exception.BeanPersistenceException;
 import collab.fm.server.controller.*;
 
 
 public class LoginAction extends Action {
 
-	public LoginAction(String[] interestedEvents) {
+	static Logger logger = Logger.getLogger(LoginAction.class);
+	
+	public LoginAction() {
 		super(new String[] { Resources.REQ_LOGIN });
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
 	public boolean execute(Request req, ResponseGroup rg) throws ActionException {
-		return false;
-		// TODO Auto-generated method stub
+		try {
+			LoginRequest lr = (LoginRequest)req;
+			Response rsp = new Response();
+			
+			User example = new User();
+			example.setName(lr.getUser());
+			example.setPassword(lr.getPwd());
 		
+			List<User> user = DaoUtil.getUserDao().getByExample(example);
+			
+			if (user == null) {
+				rsp.setMessage(Resources.MSG_ERROR_USER_LOGIN_FAILED);
+				rsp.setName(Resources.RSP_ERROR);
+			} else {
+				rsp.setRequesterId(user.get(0).getId());
+				rsp.setName(Resources.RSP_SUCCESS);
+			}
+			
+			rg.setBack(rsp);
+			rg.setBroadcast(null);
+			rg.setPeer(null);
+			
+			return true;
+		} catch (Exception e) {
+			logger.warn("Couldn't login.", e);
+			throw new ActionException("Login failed.", e);
+		}
 	}
 	
 }

@@ -1,6 +1,9 @@
 package collab.fm.server.bean.entity;
 
 public class User {
+	
+	private int version;
+	
 	private Long id;
 	private String name;
 	private String password;

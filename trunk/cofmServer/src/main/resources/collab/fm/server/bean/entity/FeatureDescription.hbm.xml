@@ -7,7 +7,7 @@
   	<id name="id" type="long" column="descriptionId">
   		<generator class="native"></generator>
   	</id>
-  	
+  	<version name="version" access="field" column="entityVersion"></version>
   	<property name="value" type="string" column="description"></property>
   	
   	<component name="vote" class="Vote">

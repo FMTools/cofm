@@ -34,20 +34,30 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 	}
 	
 	public List getAll() throws BeanPersistenceException {
-		Criteria crit = HibernateUtil.getCurrentSession().createCriteria(getEntityClass());
-		List result = crit.list();
-		return result.isEmpty() ? null : result;
+		try {
+			Criteria crit = HibernateUtil.getCurrentSession().createCriteria(getEntityClass());
+			List result = crit.list();
+			return result.isEmpty() ? null : result;
+		} catch (RuntimeException e) {
+			logger.warn("Couldn't get all.", e);
+			throw new BeanPersistenceException(e);
+		}
 	}
 	
 	public List getByExample(EntityType example, String... excludeProperties) throws BeanPersistenceException {
-		Criteria crit = HibernateUtil.getCurrentSession().createCriteria(getEntityClass());
-		Example ex = Example.create(example);
-		for (String property: excludeProperties) {
-			ex.excludeProperty(property);
+		try {
+			Criteria crit = HibernateUtil.getCurrentSession().createCriteria(getEntityClass());
+			Example ex = Example.create(example);
+			for (String property: excludeProperties) {
+				ex.excludeProperty(property);
+			}
+			crit.add(ex);
+			List result = crit.list();
+			return result.isEmpty() ? null : result;
+		} catch (RuntimeException e) {
+			logger.warn("Couldn't get by example.", e);
+			throw new BeanPersistenceException(e);
 		}
-		crit.add(ex);
-		List result = crit.list();
-		return result.isEmpty() ? null : result;
 	}
 	
 	public EntityType getById(IdType id, boolean lock) throws BeanPersistenceException {
@@ -58,8 +68,8 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 				return (EntityType) HibernateUtil.getCurrentSession().get(getEntityClass(), id);
 			}
 		} catch (RuntimeException e) {
-			logger.info("Get by ID failed. (ID=" + id + ")", e);
-			throw new BeanPersistenceException("Get by ID failed. (ID=" + id + ")", e);
+			logger.warn("Get by ID failed. (ID=" + id + ")", e);
+			throw new BeanPersistenceException(e);
 		}
 	}
 
@@ -71,8 +81,8 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 			
 			return entity;
 		} catch (RuntimeException e) {
-			logger.error("Couldn't save entity", e);
-			throw new BeanPersistenceException("Couldn't save entity", e);
+			logger.warn("Couldn't save entity", e);
+			throw new BeanPersistenceException(e);
 		}
 	}
 
