@@ -34,18 +34,25 @@ public class Controller {
 	
 	private static Controller controller = new Controller();
 	
-	private Filter accessValidator;
-	private Filter actionDispatcher;
-	private Filter protocolFilter;
+	private static List<Action> actions = new ArrayList<Action>();
+	
+	private Filter accessValidator = new AccessValidator();
+	private Filter actionDispatcher = new ActionDispatcher();
+	private Filter protocolFilter = new ProtocolFilter();
 	
 	public static Controller instance() {
 		return controller;
 	}
 	
+	public static void init() {
+		actions.add(new CommitAction());
+		actions.add(new LoginAction());
+		actions.add(new RegisterAction());
+		actions.add(new UpdateAction());
+	}
+	
 	private Controller() {
-		accessValidator = new AccessValidator();
-		actionDispatcher = new ActionDispatcher();
-		protocolFilter = new ProtocolFilter();
+
 	}
 	
 	public void registerAction(String[] names, Action action) {

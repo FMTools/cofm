@@ -1,9 +1,8 @@
-package collab.fm.server.bean.protocol;
+package collab.fm.server.bean.operation;
 
 import java.util.List;
 
 import collab.fm.server.bean.entity.Feature;
-import collab.fm.server.bean.operation.Operation;
 
 public abstract class RelationshipOperation extends Operation {
 	

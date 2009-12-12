@@ -3,6 +3,7 @@ package collab.fm.server.bean.protocol;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.operation.Operation;
+import collab.fm.server.util.Resources;
 
 public class CommitRequest extends Request {
 	
@@ -18,7 +19,8 @@ public class CommitRequest extends Request {
 		logger.debug("check CommitRequest is valid.");
 		
 		if (super.valid()) {
-			return operation != null && operation.valid();
+			return Resources.REQ_COMMIT.equals(name) && 
+				requesterId != null && operation != null && operation.valid();
 		}
 		return false;
 	}

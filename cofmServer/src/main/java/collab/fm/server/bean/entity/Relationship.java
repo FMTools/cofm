@@ -6,6 +6,7 @@ import java.util.Set;
 
 public class Relationship implements Votable{
 	
+	protected int version;
 	protected Long id;
 	protected Vote existence = new Vote();
 	protected String type;

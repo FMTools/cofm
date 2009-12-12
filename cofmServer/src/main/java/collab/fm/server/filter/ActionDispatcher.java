@@ -39,7 +39,10 @@ public class ActionDispatcher extends Filter {
 			throws FilterException {
 		try {
 			Action action = reqActionMap.get(req.getName());
-			return action.execute(req, rg);
+			if (action != null) {
+				return action.execute(req, rg);
+			}
+			return true; 
 		} catch (ActionException ae) {
 			req.setLastError("ActionException: " + ae.getMessage());
 			logger.error("Action failed.", ae);

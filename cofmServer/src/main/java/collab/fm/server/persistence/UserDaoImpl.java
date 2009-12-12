@@ -12,9 +12,9 @@ public class UserDaoImpl extends GenericDaoImpl<User, Long> implements UserDao {
 						"where user.name = :uName")
 				.setString("uName", name)
 				.uniqueResult();
-		} catch(Exception e) {
-			logger.error("Couldn't get by name.", e);
-			return null;
+		} catch(RuntimeException e) {
+			logger.warn("Couldn't get by name.", e);
+			throw new BeanPersistenceException(e);
 		}
 	}
 }

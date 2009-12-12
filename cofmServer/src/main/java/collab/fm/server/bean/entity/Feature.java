@@ -5,7 +5,8 @@ import java.util.*;
 
 public class Feature implements Votable {
 	
-	//TODO: further mapping needs to remove the 'transient' keywords.
+	private int version;
+	
 	private Long id;
 	
 	private Vote existence = new Vote();
@@ -197,6 +198,5 @@ public class Feature implements Votable {
 	
 	public boolean equals(Votable v) {
 		throw new UnsupportedOperationException();
-	}
-	
+	}	
 }

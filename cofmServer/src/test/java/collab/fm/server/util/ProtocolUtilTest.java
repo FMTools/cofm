@@ -15,6 +15,44 @@ public class ProtocolUtilTest {
 
 	static Logger logger = Logger.getLogger(ProtocolUtilTest.class);
 	
+	@Test 
+	public void testLoginRequest() {
+		LoginRequest lr = new LoginRequest();
+		lr.setId(1L);
+		lr.setName(Resources.REQ_LOGIN);
+		lr.setUser("Lao Yi");
+		lr.setPwd("WWWWWWWW");
+		
+		try {
+			String json = BeanUtil.beanToJson(lr);
+			logger.debug(json);
+			
+			Request req = ProtocolUtil.jsonToRequest(json);
+			assertTrue(req instanceof LoginRequest);
+			assertNull(req.getRequesterId());
+		} catch (Exception e) {
+			logger.info(e);
+			assertTrue(false);
+		}
+	}
+	
+	@Test
+	public void testGenericResponse() {
+		Response r = new Response();
+		r.setMessage("haha");
+		r.setName(Resources.RSP_SUCCESS);
+		r.setRequesterId(1L);
+		r.setRequestId(10L);
+		r.setRequestName(Resources.REQ_CONNECT);
+		
+		try {
+			logger.info(ProtocolUtil.ResponseToJson(r));
+		} catch (Exception e) {
+			logger.info(e);
+			assertTrue(false);
+		}
+	}
+	
 	@Test
 	public void testCommitRequestWithMinimalValidInput() {
 		// 1. Construct a minimal valid JSON string from an object

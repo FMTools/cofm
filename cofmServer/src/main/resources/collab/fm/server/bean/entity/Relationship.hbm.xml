@@ -7,7 +7,7 @@
   	<id name="id" column="relationshipId" type="long">
   		<generator class="native"></generator>
   	</id>
-  	
+  	<version name="version" access="field" column="entityVersion"></version>
   	<component name="existence" class="Vote">
   		<set name="supportersInternal" table="RelationshipSupporter">
   			<key column="relationshipId"></key>

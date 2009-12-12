@@ -2,6 +2,8 @@ package collab.fm.server.bean.entity;
 
 public class FeatureDescription implements Votable {
 
+	private int version;
+	
 	private Long id;
 	private String value;
 	private Vote vote = new Vote();
@@ -57,6 +59,5 @@ public class FeatureDescription implements Votable {
 	public void setVote(Vote vote) {
 		this.vote = vote;
 	}
-	
 	
 }
