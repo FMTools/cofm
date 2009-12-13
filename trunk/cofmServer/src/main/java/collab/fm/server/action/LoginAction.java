@@ -37,13 +37,13 @@ public class LoginAction extends Action {
 			example.setName(lr.getUser());
 			example.setPassword(lr.getPwd());
 		
-			List<User> user = DaoUtil.getUserDao().getByExample(example);
+			User user = DaoUtil.getUserDao().checkThenGet(example);
 			
 			if (user == null) {
 				rsp.setMessage(Resources.MSG_ERROR_USER_LOGIN_FAILED);
 				rsp.setName(Resources.RSP_ERROR);
 			} else {
-				rsp.setRequesterId(user.get(0).getId());
+				rsp.setRequesterId(user.getId());
 				rsp.setName(Resources.RSP_SUCCESS);
 			}
 			

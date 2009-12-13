@@ -35,11 +35,11 @@ public class CommitAction extends Action {
 			
 			CommitResponse cr = new CommitResponse();
 			cr.setName(Resources.RSP_SUCCESS);
-			cr.addOperations(ops);
+			cr.setOperations(ops);
 			
 			CommitResponse cr2 = new CommitResponse();
-			cr.setName(Resources.RSP_FORWARD);
-			cr.addOperations(ops);
+			cr2.setName(Resources.RSP_FORWARD);
+			cr2.setOperations(ops);
 			
 			rg.setBack(cr);
 			rg.setBroadcast(cr2);

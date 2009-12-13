@@ -5,4 +5,5 @@ import collab.fm.server.util.exception.BeanPersistenceException;
 
 public interface UserDao extends GenericDao<User, Long> {
 	public User getByName(String name) throws BeanPersistenceException;
+	public User checkThenGet(User user) throws BeanPersistenceException;
 }

@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import collab.fm.server.bean.operation.BinaryRelationshipOperation;
 import collab.fm.server.bean.operation.FeatureOperation;
 import collab.fm.server.bean.operation.Operation;
+import collab.fm.server.bean.operation.RelationshipOperation;
 import collab.fm.server.bean.protocol.CommitRequest;
 import collab.fm.server.bean.protocol.LoginRequest;
 import collab.fm.server.bean.protocol.Request;
@@ -27,17 +28,24 @@ public class ProtocolUtil {
 	private static Map<String, Class<? extends Operation>> opNameClassMap = 
 		new HashMap<String, Class<? extends Operation>>();
 	
+	private static Map<String, Class<? extends RelationshipOperation>> relTypeClassMap = 
+		new HashMap<String, Class<? extends RelationshipOperation>>();
+	
 	static {
 		requestHandlerMap.put(Resources.REQ_COMMIT, "doCommitRequest");
 		requestHandlerMap.put(Resources.REQ_LOGIN, "doGenericRequest");
 
 		requestClassMap.put(Resources.REQ_LOGIN, LoginRequest.class);
 		
-		opNameClassMap.put(Resources.OP_CREATE_BINARY_RELATIONSHIP, BinaryRelationshipOperation.class);
+		opNameClassMap.put(Resources.OP_CREATE_RELATIONSHIP, RelationshipOperation.class);
 		opNameClassMap.put(Resources.OP_ADD_DES, FeatureOperation.class);
 		opNameClassMap.put(Resources.OP_ADD_NAME, FeatureOperation.class);
 		opNameClassMap.put(Resources.OP_CREATE_FEATURE, FeatureOperation.class);
 		opNameClassMap.put(Resources.OP_SET_OPT, FeatureOperation.class);
+		
+		relTypeClassMap.put(Resources.BIN_REL_EXCLUDES, BinaryRelationshipOperation.class);
+		relTypeClassMap.put(Resources.BIN_REL_REFINES, BinaryRelationshipOperation.class);
+		relTypeClassMap.put(Resources.BIN_REL_REQUIRES, BinaryRelationshipOperation.class);
 	}
 	
 	public static String ResponseToJson(Response rsp) throws ProtocolInterpretException {
@@ -116,7 +124,13 @@ public class ProtocolUtil {
 			// 3. Re-convert to CommitRequest with concrete operation
 			OperationHolder holder = BeanUtil.jsonToBean(json, OperationHolder.class, null, 
 					new String[] { "operation" });
-			result.setOperation(BeanUtil.jsonToBean(holder.getOperation(), concreteOpClass, null)); 
+			Operation concreteOp = BeanUtil.jsonToBean(holder.getOperation(), concreteOpClass, null);
+			if (Resources.OP_CREATE_RELATIONSHIP.equals(concreteOp.getName())) {
+				Class<? extends RelationshipOperation> relOpClass 
+					= relTypeClassMap.get(((RelationshipOperation)concreteOp).getType());
+				concreteOp = BeanUtil.jsonToBean(holder.getOperation(), relOpClass, null);
+			}
+			result.setOperation(concreteOp); 
 			
 			// 4. Set other infomation from the abstract request.
 			result.setId(req.getId());

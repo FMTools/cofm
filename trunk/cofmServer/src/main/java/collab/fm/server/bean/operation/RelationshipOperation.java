@@ -4,7 +4,7 @@ import java.util.List;
 
 import collab.fm.server.bean.entity.Feature;
 
-public abstract class RelationshipOperation extends Operation {
+public class RelationshipOperation extends Operation {
 	
 	/**
 	 * A null relationshipId means a new relationship is created.
@@ -16,11 +16,9 @@ public abstract class RelationshipOperation extends Operation {
 	 */
 	protected String type; 
 	
-	protected abstract boolean typeValid();
-	
 	public boolean valid() {
-		if (super.valid() && userid != null) {
-			return typeValid();
+		if (super.valid()) {
+			return userid != null;
 		}
 		return false;
 	}

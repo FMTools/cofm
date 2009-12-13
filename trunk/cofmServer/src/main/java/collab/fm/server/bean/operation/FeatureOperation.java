@@ -135,6 +135,7 @@ public class FeatureOperation extends Operation {
 		}
 		
 		Feature feature = DaoUtil.getFeatureDao().getById(featureId, false);
+		feature.vote(vote, userid);
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
 		}

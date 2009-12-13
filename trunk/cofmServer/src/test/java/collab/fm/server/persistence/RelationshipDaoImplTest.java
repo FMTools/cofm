@@ -91,22 +91,14 @@ public class RelationshipDaoImplTest {
 			
 			assertTrue(rDao.getByExample(example).size()==1);
 			
-			BinaryRelationship another = new BinaryRelationship();
-			another.setType(br.getType());
-			Iterator<Feature> it = br.getFeatures().iterator();
-			Feature left = it.next();
-			Feature right = it.next();
-			another.setFeatures(left, right);
-			
-			assertTrue(rDao.getByExample(another).size()==1);
-			
 			BinaryRelationship bad = new BinaryRelationship();
 			bad.setType("Invalid_Type");
-			bad.setFeatures(left, right);
+			bad.setLeftFeatureId(br.getLeftFeatureId());
+			bad.setRightFeatureId(br.getRightFeatureId());
 			
 			assertNull(rDao.getByExample(bad));
 		} catch(Exception e) {
-			logger.error(e);
+			logger.error("Couldn't get by example.", e);
 			assertTrue(false);
 		}
 	}

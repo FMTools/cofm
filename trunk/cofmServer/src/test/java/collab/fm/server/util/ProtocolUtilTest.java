@@ -64,7 +64,7 @@ public class ProtocolUtilTest {
 		// The relationshipId and userId are not always required.
 		brop.setLeftFeatureId(1L);
 		brop.setRightFeatureId(3L);
-		brop.setName(Resources.OP_CREATE_BINARY_RELATIONSHIP);
+		brop.setName(Resources.OP_CREATE_RELATIONSHIP);
 		brop.setType(Resources.BIN_REL_REFINES);
 		brop.setVote(true);
 		
@@ -92,7 +92,7 @@ public class ProtocolUtilTest {
 		// 1. Create some operations
 		BinaryRelationshipOperation op1 = new BinaryRelationshipOperation();
 		op1.setLeftFeatureId(1L);
-		op1.setName(Resources.OP_CREATE_BINARY_RELATIONSHIP);
+		op1.setName(Resources.OP_CREATE_RELATIONSHIP);
 		op1.setRelationshipId(20L);
 		op1.setRightFeatureId(5L);
 		op1.setType(Resources.BIN_REL_EXCLUDES);

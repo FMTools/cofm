@@ -44,7 +44,7 @@ public class FeatureDaoImplTest {
 		}
 	}
 	
-	@Test
+	@Test @Ignore
 	public void testSaveValueTwice() {
 		Feature feature = new Feature();
 		feature.vote(false, 2L);
