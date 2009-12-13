@@ -23,7 +23,7 @@ public class FeatureDaoImpl extends GenericDaoImpl<Feature, Long> implements Fea
 				.setString("fname", name)
 				.uniqueResult();	
 		} catch (Exception e) {
-			logger.error("Query failed.", e);
+			logger.warn("Query failed.", e);
 			throw new BeanPersistenceException("Query failed.", e);
 		}
 	}

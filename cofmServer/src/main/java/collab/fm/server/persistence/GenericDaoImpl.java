@@ -44,22 +44,6 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 		}
 	}
 	
-	public List getByExample(EntityType example, String... excludeProperties) throws BeanPersistenceException {
-		try {
-			Criteria crit = HibernateUtil.getCurrentSession().createCriteria(getEntityClass());
-			Example ex = Example.create(example);
-			for (String property: excludeProperties) {
-				ex.excludeProperty(property);
-			}
-			crit.add(ex);
-			List result = crit.list();
-			return result.isEmpty() ? null : result;
-		} catch (RuntimeException e) {
-			logger.warn("Couldn't get by example.", e);
-			throw new BeanPersistenceException(e);
-		}
-	}
-	
 	public EntityType getById(IdType id, boolean lock) throws BeanPersistenceException {
 		try {
 			if (lock) {

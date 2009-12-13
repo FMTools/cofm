@@ -19,8 +19,6 @@ public interface GenericDao<EntityType, IdType> {
 	
 	public List getAll() throws BeanPersistenceException;
 	
-	public List getByExample(EntityType example, String... excludeProperties) throws BeanPersistenceException;
-	
 	/**
 	 * Save entity into database.
 	 * @param entity

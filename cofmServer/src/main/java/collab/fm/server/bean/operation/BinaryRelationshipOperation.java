@@ -1,5 +1,6 @@
 package collab.fm.server.bean.operation;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -49,16 +50,12 @@ public class BinaryRelationshipOperation extends RelationshipOperation {
 		op.setType(this.getType());
 	}
 	
-	protected boolean typeValid() {
-		return Resources.BIN_REL_EXCLUDES.equals(type) ||
-			Resources.BIN_REL_REFINES.equals(type) ||
-			Resources.BIN_REL_REQUIRES.equals(type);
-	}
-	
 	public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException {
+		
 		if (!valid()) {
 			throw new InvalidOperationException("Invalid op fields.");
 		}
+		List<Operation> result = null;
 		if (relationshipId == null) {
 			if (vote.equals(false)) {
 				throw new InvalidOperationException("Invalid vote: NO to inexisted relationship.");
@@ -80,19 +77,25 @@ public class BinaryRelationshipOperation extends RelationshipOperation {
 			relation = (BinaryRelationship)DaoUtil.getRelationshipDao().save(relation);
 			relationshipId = relation.getId();
 			
-			return ImplicitVoteOperation.makeOperation(this, relation).apply();
-		} 
+			result = ImplicitVoteOperation.makeOperation(this, relation).apply();
+		} else {
 		
-		Relationship relation = DaoUtil.getRelationshipDao().getById(
-				relationshipId, false);
-		if (relation == null) {
-			throw new InvalidOperationException("No relationship has ID: "
-					+ relationshipId);
+			Relationship relation = DaoUtil.getRelationshipDao().getById(
+					relationshipId, false);
+			if (relation == null) {
+				throw new InvalidOperationException("No relationship has ID: "
+						+ relationshipId);
+			}
+			relation.vote(vote, userid);
+			DaoUtil.getRelationshipDao().save(relation);
+	
+			result = ImplicitVoteOperation.makeOperation(this, null).apply();
 		}
-		relation.vote(vote, userid);
-		DaoUtil.getRelationshipDao().save(relation);
-
-		return ImplicitVoteOperation.makeOperation(this, null).apply();
+		if (result == null) {
+			result = new ArrayList<Operation>();
+		}
+		result.add(this.clone());
+		return result;
 	}
 	
 	public String toString() {
