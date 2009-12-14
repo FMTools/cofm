@@ -13,6 +13,7 @@ import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.BeanPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
+import collab.fm.server.util.exception.StaleDataException;
 
 /**
  * TODO: Origin vote and implicit votes should be transactional. <br/>
@@ -50,7 +51,7 @@ public class BinaryRelationshipOperation extends RelationshipOperation {
 		op.setType(this.getType());
 	}
 	
-	public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException {
+	public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
 		
 		if (!valid()) {
 			throw new InvalidOperationException("Invalid op fields.");

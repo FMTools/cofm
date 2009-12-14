@@ -16,6 +16,7 @@ import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.BeanPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
+import collab.fm.server.util.exception.StaleDataException;
 
 /**
  * TODO: Origin vote and implicit votes should be transactional. <br/>
@@ -55,7 +56,7 @@ public class FeatureOperation extends Operation {
 		return op;
 	}
 	
-	public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException {
+	public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
 		if (!valid()) {
 			throw new InvalidOperationException("Invalid op fields.");
 		}
@@ -99,7 +100,7 @@ public class FeatureOperation extends Operation {
 		op.setValue(this.getValue());
 	}
 	
-	private List<Operation> applyAddDes() throws BeanPersistenceException, InvalidOperationException {
+	private List<Operation> applyAddDes() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
 		Feature feature = DaoUtil.getFeatureDao().getById(featureId, false);
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
@@ -108,7 +109,7 @@ public class FeatureOperation extends Operation {
 		return ImplicitVoteOperation.makeOperation(this, feature).apply();
 	}
 	
-	private List<Operation> applyAddName() throws BeanPersistenceException, InvalidOperationException {
+	private List<Operation> applyAddName() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
 		Feature feature = DaoUtil.getFeatureDao().getById(featureId, false);
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
@@ -117,7 +118,7 @@ public class FeatureOperation extends Operation {
 		return ImplicitVoteOperation.makeOperation(this, feature).apply();
 	}
 	
-	private List<Operation> applyCreateFeature() throws BeanPersistenceException, InvalidOperationException {
+	private List<Operation> applyCreateFeature() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
 		if (featureId == null) {
 			if (vote.equals(false)) {
 				throw new InvalidOperationException("Invalid vote: NO to inexisted feature.");
@@ -142,7 +143,7 @@ public class FeatureOperation extends Operation {
 		return ImplicitVoteOperation.makeOperation(this, feature).apply();
 	}
 	
-	private List<Operation> applySetOpt() throws BeanPersistenceException, InvalidOperationException {
+	private List<Operation> applySetOpt() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
 		Feature feature = DaoUtil.getFeatureDao().getById(featureId, false);
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);

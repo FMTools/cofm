@@ -59,7 +59,7 @@ public class CommitActionTest {
 		ResponseGroup rg = new ResponseGroup();
 	
 		try {
-			action.execute(req, rg);
+			action.doExecute(req, rg);
 			assertNotNull(rg.getBack());
 			assertTrue(rg.getBack() instanceof CommitResponse);
 			CommitResponse cr = (CommitResponse)rg.getBack();
@@ -97,7 +97,7 @@ public class CommitActionTest {
 			req.setOperation(op);
 			
 			ResponseGroup rg = new ResponseGroup();
-			action.execute(req, rg);
+			action.doExecute(req, rg);
 			
 			logger.info("------------- VOTE NO TO FEATURE -------------");
 			showResponse(rg.getBack());
@@ -147,7 +147,7 @@ public class CommitActionTest {
 			req.setOperation(op);
 			
 			ResponseGroup rg = new ResponseGroup();
-			action.execute(req, rg);
+			action.doExecute(req, rg);
 			
 			logger.info("------------- VOTE NO TO FEATURE (WITH RELATIONSHIP INVOLVED)-------------");
 			showResponse(rg.getBack());
@@ -185,7 +185,7 @@ public class CommitActionTest {
 			req.setOperation(op);
 			
 			ResponseGroup rg = new ResponseGroup();
-			action.execute(req, rg);
+			action.doExecute(req, rg);
 			
 			logger.info("------------- ADD NAME -------------");
 			showResponse(rg.getBack());
@@ -226,7 +226,7 @@ public class CommitActionTest {
 			req.setOperation(op);
 			
 			ResponseGroup rg = new ResponseGroup();
-			action.execute(req, rg);
+			action.doExecute(req, rg);
 			
 			logger.info("------------- VOTE NO TO NAME -------------");
 			showResponse(rg.getBack());
@@ -271,7 +271,7 @@ public class CommitActionTest {
 			req.setOperation(op);
 			
 			ResponseGroup rg = new ResponseGroup();
-			action.execute(req, rg);
+			action.doExecute(req, rg);
 			
 			logger.info("------------- CREATE NEW BINARY RELATIONSHIP -------------");
 			showResponse(rg.getBack());
@@ -326,7 +326,7 @@ public class CommitActionTest {
 			req.setOperation(op);
 			
 			ResponseGroup rg = new ResponseGroup();
-			action.execute(req, rg);
+			action.doExecute(req, rg);
 			
 			logger.info("------------- VOTE NO TO BINARY RELATIONSHIP -------------");
 			showResponse(rg.getBack());
