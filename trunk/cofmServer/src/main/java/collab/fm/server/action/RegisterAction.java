@@ -24,8 +24,7 @@ public class RegisterAction extends Action {
 		super(new String[]{Resources.REQ_REGISTER});
 	}
 
-	@Override
-	public boolean execute(Request req, ResponseGroup rg) throws ActionException {
+	protected boolean doExecute(Request req, ResponseGroup rg) throws ActionException {
 		return false;
 		// TODO Auto-generated method stub
 		

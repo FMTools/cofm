@@ -11,6 +11,7 @@ import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.persistence.*;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.ActionException;
+import collab.fm.server.util.exception.StaleDataException;
 import collab.fm.server.controller.*;
 
 public abstract class Action {
@@ -27,6 +28,26 @@ public abstract class Action {
 	 * @return TODO
 	 * @throws ActionException
 	 */
-	public abstract boolean execute(Request req, ResponseGroup rg) throws ActionException;
+	protected abstract boolean doExecute(Request req, ResponseGroup rg) throws ActionException, StaleDataException;
+	
+	public boolean execute(Request req, ResponseGroup rg) throws ActionException {
+		try {
+			return doExecute(req, rg);
+		} catch (StaleDataException sde) {
+			reportStaleData(req, rg);
+			return true;
+		} catch (ActionException ae) {
+			throw ae;
+		}
+	}
+	
+	protected void reportStaleData(Request req, ResponseGroup rg) {
+		Response r = new Response();
+		r.setName(Resources.RSP_STALE);
+		
+		rg.setBack(r);
+		rg.setBroadcast(null);
+		rg.setPeer(null);
+	}
 	
 }

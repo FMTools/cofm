@@ -26,8 +26,7 @@ public class UpdateAction extends Action {
 		// TODO Auto-generated constructor stub
 	}
 
-	@Override
-	public boolean execute(Request req, ResponseGroup rg) throws ActionException {
+	protected boolean doExecute(Request req, ResponseGroup rg) throws ActionException {
 		return false;
 		// TODO Auto-generated method stub
 		

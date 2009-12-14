@@ -7,6 +7,7 @@ import org.junit.*;
 import collab.fm.server.bean.entity.Feature;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.StaleDataException;
 import static org.junit.Assert.*;
 
 public class FeatureDaoImplTest {
@@ -41,6 +42,9 @@ public class FeatureDaoImplTest {
 			logger.error(e);
 			assertEquals("Shouldn't reach here", "");
 			
+		} catch (StaleDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -66,6 +70,9 @@ public class FeatureDaoImplTest {
 			//logger.info("Couldn't save samething twice.");
 			assertTrue(true);
 			
+		} catch (StaleDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -86,6 +93,9 @@ public class FeatureDaoImplTest {
 			logger.error("Get after save failed.", e);
 			assertTrue(false);
 			
+		} catch (StaleDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -96,6 +106,9 @@ public class FeatureDaoImplTest {
 		} catch (BeanPersistenceException e) {
 			logger.error(e);
 			assertTrue(false);
+		} catch (StaleDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	

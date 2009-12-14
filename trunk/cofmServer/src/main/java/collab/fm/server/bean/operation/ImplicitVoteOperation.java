@@ -10,6 +10,7 @@ import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.BeanPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
+import collab.fm.server.util.exception.StaleDataException;
 
 /**
  * Deduce the implicit votes on features or relationships, according to the following 5 rules: <br/>
@@ -82,7 +83,7 @@ public class ImplicitVoteOperation extends Operation {
 		/**
 		 * Rule 1 & 3: Vote NO on feature F -> Vote NO on involved relationships and attributes 
 		 */
-		public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException {
+		public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
 			try {
 				if (!sourceOp.getVote()) {
 					setBasicInfo(Resources.OP_CREATE_RELATIONSHIP, false, sourceOp.getUserid());
@@ -129,7 +130,7 @@ public class ImplicitVoteOperation extends Operation {
 		/**
 		 * Rule 4: Vote YES on feature F's attributes -> Vote YES on F
 		 */
-		public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException {
+		public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
 			try {
 				// Set_Optionality always imply a YES vote to feature.
 				if (sourceOp.getVote() || Resources.OP_SET_OPT.equals(sourceOp.getName())) {
@@ -167,7 +168,7 @@ public class ImplicitVoteOperation extends Operation {
 		/**
 		 * Rule 2: Vote YES on relationship R -> Vote YES on features involved in R
 		 */
-		public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException {
+		public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
 			try {
 				if (sourceOp.getVote()) {
 					setBasicInfo(Resources.OP_CREATE_FEATURE, true, sourceOp.getUserid());
@@ -198,7 +199,7 @@ public class ImplicitVoteOperation extends Operation {
 
 	@Override
 	public List<Operation> apply() throws BeanPersistenceException,
-			InvalidOperationException {
+			InvalidOperationException, StaleDataException {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -9,6 +9,7 @@ import javax.naming.OperationNotSupportedException;
 import collab.fm.server.util.BeanUtil;
 import collab.fm.server.util.exception.BeanPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
+import collab.fm.server.util.exception.StaleDataException;
 
 public class Operation {
 
@@ -45,7 +46,7 @@ public class Operation {
 	 * @throws InvalidOperationException If the operation can't be analyzed and applied correctly. 
 	 * @throws OperationNotSupportedException 
 	 */
-	public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException {
+	public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
 		return null;
 	}
 	

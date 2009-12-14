@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.StaleDataException;
 
 public interface GenericDao<EntityType, IdType> {
 	
@@ -15,9 +16,10 @@ public interface GenericDao<EntityType, IdType> {
 	 * @return null if no such ID existed.
 	 * @throws BeanPersistenceException
 	 */
-	public EntityType getById(IdType id, boolean lock) throws BeanPersistenceException;
+	public EntityType getById(IdType id, boolean lock) 
+		throws BeanPersistenceException, StaleDataException;
 	
-	public List getAll() throws BeanPersistenceException;
+	public List getAll() throws BeanPersistenceException, StaleDataException;
 	
 	/**
 	 * Save entity into database.
@@ -25,7 +27,7 @@ public interface GenericDao<EntityType, IdType> {
 	 * @return
 	 * @throws BeanPersistenceException
 	 */
-	public EntityType save(EntityType entity) throws BeanPersistenceException;
+	public EntityType save(EntityType entity) throws BeanPersistenceException, StaleDataException;
 	
 	/**
 	 * Save an ordered list of entities into database.<br/>
@@ -35,6 +37,6 @@ public interface GenericDao<EntityType, IdType> {
 	 * @return The generated ID of entities, with the same order in the entity list.
 	 * @throws BeanPersistenceException
 	 */
-	public List<EntityType> saveAll(List<EntityType> entities) throws BeanPersistenceException;
+	public List<EntityType> saveAll(List<EntityType> entities) throws BeanPersistenceException, StaleDataException;
 	
 }

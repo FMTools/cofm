@@ -6,8 +6,9 @@ import collab.fm.server.bean.entity.BinaryRelationship;
 import collab.fm.server.bean.entity.Feature;
 import collab.fm.server.bean.entity.Relationship;
 import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.StaleDataException;
 
 public interface RelationshipDao extends GenericDao<Relationship, Long> {
 	
-	public List<Relationship> getByExample(BinaryRelationship example) throws BeanPersistenceException;
+	public List<Relationship> getByExample(BinaryRelationship example) throws BeanPersistenceException, StaleDataException;
 }

@@ -17,6 +17,7 @@ import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.util.BeanUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.ActionException;
+import collab.fm.server.util.exception.StaleDataException;
 import collab.fm.server.controller.*;
 
 
@@ -28,8 +29,7 @@ public class CommitAction extends Action {
 		super(new String[] { Resources.REQ_COMMIT });
 	}
 
-	@Override
-	public boolean execute(Request req, ResponseGroup rg) throws ActionException {
+	protected boolean doExecute(Request req, ResponseGroup rg) throws ActionException, StaleDataException {
 		try {
 			List<Operation> ops = ((CommitRequest)req).getOperation().apply();
 			
@@ -46,6 +46,8 @@ public class CommitAction extends Action {
 			rg.setPeer(null);
 			
 			return true;
+		} catch (StaleDataException sde) {
+			throw sde;
 		} catch (Exception e) {
 			logger.warn("Execution failed.", e);
 			throw new ActionException("Action execution failed."); 
