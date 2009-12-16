@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<actionScriptProperties 
+        mainApplicationPath="Main.mxml" 
+        version="3"
+        >
+
+    <compiler 
+            additionalCompilerArguments="-locale en_US" 
+            copyDependentFiles="true" 
+            enableModuleDebug="true" 
+            generateAccessible="false" 
+            htmlExpressInstall="true" 
+            htmlGenerate="false" 
+            htmlHistoryManagement="true" 
+            htmlPlayerVersion="9.0.0" 
+            htmlPlayerVersionCheck="true" 
+            outputFolderPath="bin-debug" 
+            sourceFolderPath="src/main/flex" 
+            strict="true" 
+            useApolloConfig="false" 
+            verifyDigests="true" 
+            warn="true"
+            >
+
+        <compilerSourcePath>
+            <compilerSourcePathEntry 
+                    kind="1" 
+                    linkType="1" 
+                    path="src/main/flex"
+                    />
+            <compilerSourcePathEntry 
+                    kind="1" 
+                    linkType="1" 
+                    path="src/test/flex"
+                    />
+            <compilerSourcePathEntry 
+                    kind="1" 
+                    linkType="1" 
+                    path="src/main/resources"
+                    />
+        </compilerSourcePath>
+
+        <libraryPath
+                defaultLinkType="1">
+
+			<!-- artifact: com.adobe.as3corelib:as3corelib:0.92.1 -->
+            <libraryPathEntry 
+                    kind="3" 
+                    linkType="1" 
+                    path="D:/Program Files/Apache Software Foundation/Maven2.2.1/repo/com/adobe/as3corelib/as3corelib/0.92.1/as3corelib-0.92.1.swc"
+                    useDefaultLinkType="false"
+                    />
+
+			<!-- artifact: com.adobe.flex.framework:flex:3.2.0.3958 -->
+            <libraryPathEntry 
+                    kind="3" 
+                    linkType="1" 
+                    path="D:/Program Files/Apache Software Foundation/Maven2.2.1/repo/com/adobe/flex/framework/flex/3.2.0.3958/flex-3.2.0.3958.swc"
+                    sourcepath="${PROJECT_FRAMEWORKS}/projects/flex/src"
+                    useDefaultLinkType="false"
+                    />
+
+			<!-- artifact: com.adobe.flex.framework:framework:3.2.0.3958 -->
+            <libraryPathEntry 
+                    kind="3" 
+                    linkType="1" 
+                    path="D:/Program Files/Apache Software Foundation/Maven2.2.1/repo/com/adobe/flex/framework/framework/3.2.0.3958/framework-3.2.0.3958.swc"
+                    sourcepath="${PROJECT_FRAMEWORKS}/projects/framework/src"
+                    useDefaultLinkType="false"
+                    />
+
+			<!-- artifact: com.adobe.flex.framework:rpc:3.2.0.3958 -->
+            <libraryPathEntry 
+                    kind="3" 
+                    linkType="1" 
+                    path="D:/Program Files/Apache Software Foundation/Maven2.2.1/repo/com/adobe/flex/framework/rpc/3.2.0.3958/rpc-3.2.0.3958.swc"
+                    sourcepath="${PROJECT_FRAMEWORKS}/projects/rpc/src"
+                    useDefaultLinkType="false"
+                    />
+
+			<!-- artifact: com.adobe.flex.framework:utilities:3.2.0.3958 -->
+            <libraryPathEntry 
+                    kind="3" 
+                    linkType="1" 
+                    path="D:/Program Files/Apache Software Foundation/Maven2.2.1/repo/com/adobe/flex/framework/utilities/3.2.0.3958/utilities-3.2.0.3958.swc"
+                    sourcepath="${PROJECT_FRAMEWORKS}/projects/utilities/src"
+                    useDefaultLinkType="false"
+                    />
+
+			<!-- artifact: org.sonatype.flexmojos:flexmojos-unittest-support:3.3.0 -->
+            <libraryPathEntry 
+                    kind="3" 
+                    linkType="1" 
+                    path="D:/Program Files/Apache Software Foundation/Maven2.2.1/repo/org/sonatype/flexmojos/flexmojos-unittest-support/3.3.0/flexmojos-unittest-support-3.3.0.swc"
+                    useDefaultLinkType="false"
+                    />
+
+			<!-- artifact: com.adobe.flexunit:flexunit:0.85 -->
+            <libraryPathEntry 
+                    kind="3" 
+                    linkType="1" 
+                    path="D:/Program Files/Apache Software Foundation/Maven2.2.1/repo/com/adobe/flexunit/flexunit/0.85/flexunit-0.85.swc"
+                    useDefaultLinkType="false"
+                    />
+
+			<!-- artifact: org.funit:funit:0.50.0245 -->
+            <libraryPathEntry 
+                    kind="3" 
+                    linkType="1" 
+                    path="D:/Program Files/Apache Software Foundation/Maven2.2.1/repo/org/funit/funit/0.50.0245/funit-0.50.0245.swc"
+                    useDefaultLinkType="false"
+                    />
+
+			<!-- artifact: com.swirlyvision:swirly-vision:1.0 -->
+            <libraryPathEntry 
+                    kind="3" 
+                    linkType="1" 
+                    path="D:/Program Files/Apache Software Foundation/Maven2.2.1/repo/com/swirlyvision/swirly-vision/1.0/swirly-vision-1.0.swc"
+                    useDefaultLinkType="false"
+                    />
+
+			<!-- artifact: net.digitalprimates:fluint:v1 -->
+            <libraryPathEntry 
+                    kind="3" 
+                    linkType="1" 
+                    path="D:/Program Files/Apache Software Foundation/Maven2.2.1/repo/net/digitalprimates/fluint/v1/fluint-v1.swc"
+                    useDefaultLinkType="false"
+                    />
+
+			<!-- artifact: com.asunit:asunit:20071011 -->
+            <libraryPathEntry 
+                    kind="3" 
+                    linkType="1" 
+                    path="D:/Program Files/Apache Software Foundation/Maven2.2.1/repo/com/asunit/asunit/20071011/asunit-20071011.swc"
+                    useDefaultLinkType="false"
+                    />
+
+			<!-- artifact: advancedflex:debugger:0.2alpha2 -->
+            <libraryPathEntry 
+                    kind="3" 
+                    linkType="1" 
+                    path="D:/Program Files/Apache Software Foundation/Maven2.2.1/repo/advancedflex/debugger/0.2alpha2/debugger-0.2alpha2.swc"
+                    useDefaultLinkType="false"
+                    />
+
+			<!-- artifact: com.adobe.flex.framework:framework:3.2.0.3958 -->
+            <libraryPathEntry 
+                    kind="3" 
+                    linkType="1" 
+                    path="D:/Program Files/Apache Software Foundation/Maven2.2.1/repo/com/adobe/flex/framework/framework/3.2.0.3958/framework-3.2.0.3958-en_US.rb.swc"
+                    useDefaultLinkType="false"
+                    />
+
+			<!-- artifact: com.adobe.flex.framework:rpc:3.2.0.3958 -->
+            <libraryPathEntry 
+                    kind="3" 
+                    linkType="1" 
+                    path="D:/Program Files/Apache Software Foundation/Maven2.2.1/repo/com/adobe/flex/framework/rpc/3.2.0.3958/rpc-3.2.0.3958-en_US.rb.swc"
+                    useDefaultLinkType="false"
+                    />
+
+
+	      <libraryPathEntry kind="4" path="">
+	        <excludedEntries>
+	          <libraryPathEntry kind="1" linkType="1" path="${PROJECT_FRAMEWORKS}/locale/{locale}"/>
+	          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/flex.swc" useDefaultLinkType="false"/>
+	          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/qtp.swc" useDefaultLinkType="false"/>
+	          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/rpc.swc" useDefaultLinkType="false"/>
+	          <libraryPathEntry kind="3" linkType="4" path="${PROJECT_FRAMEWORKS}/libs/framework.swc" useDefaultLinkType="true">
+	            <crossDomainRsls>
+	              <crossDomainRslEntry autoExtract="true" policyFileUrl="" rslUrl="framework_3.1.0.2710.swz"/>
+	              <crossDomainRslEntry autoExtract="true" policyFileUrl="" rslUrl="framework_3.1.0.2710.swf"/>
+	            </crossDomainRsls>
+	          </libraryPathEntry>
+	          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/datavisualization.swc" useDefaultLinkType="false"/>
+	          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/automation.swc" useDefaultLinkType="false"/>
+	          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/automation_dmv.swc" useDefaultLinkType="false"/>
+	          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/automation_flashflexkit.swc" useDefaultLinkType="false"/>
+	          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/utilities.swc" useDefaultLinkType="false"/>
+	          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/automation_agent.swc" useDefaultLinkType="false"/>
+	        </excludedEntries>
+	      </libraryPathEntry>
+        </libraryPath>
+
+        <sourceAttachmentPath/>
+
+    </compiler>
+
+    <applications>
+        <application 
+                path="Main.mxml"
+                />
+    </applications>
+
+    <modules/>
+
+    <buildCSSFiles>
+    </buildCSSFiles>
+
+</actionScriptProperties>
