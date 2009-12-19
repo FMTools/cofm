@@ -18,15 +18,15 @@ package collab.fm.client.controller {
 			return nextId++;
 		}
 
-		public function addCommandAt(index: int, cmd: DurableCommand): void {
-			buffer[index] = cmd;
+		public function addCommant(id: int, cmd: DurableCommand): void {
+			buffer[id] = cmd;
 		}
 
-		public function getCommandAt(index: int): Command {
-			if (index < 0 || index >= buffer.length) {
+		public function getCommand(id: int): Command {
+			if (id < 0 || id >= buffer.length) {
 				return null;
 			}
-			return buffer[index];
+			return buffer[id];
 		}
 
 		private function CommandBuffer() {
