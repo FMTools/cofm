@@ -16,6 +16,7 @@ public class Operation {
 	protected String name;
 	protected Boolean vote;
 	protected Long userid; // the committer id
+	protected Long modelId;
 	
 	public Operation() {
 		
@@ -25,10 +26,11 @@ public class Operation {
 		target.setName(this.getName());
 		target.setVote(this.getVote());
 		target.setUserid(this.getUserid());
+		target.setModelId(this.getModelId());
 	}
 	
 	public boolean valid() {
-		// IMPORTANT: always check userId in the subclass
+		// IMPORTANT: check userId and modelId in the subclass
 		return name != null && vote != null;
 	}
 	
@@ -77,4 +79,13 @@ public class Operation {
 	public void setUserid(Long userid) {
 		this.userid = userid;
 	}
+
+	public Long getModelId() {
+		return modelId;
+	}
+
+	public void setModelId(Long modelId) {
+		this.modelId = modelId;
+	}
+	
 }

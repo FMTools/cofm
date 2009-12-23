@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.entity.Feature;
+import collab.fm.server.bean.entity.Model;
 import collab.fm.server.bean.entity.Relationship;
 import collab.fm.server.persistence.FeatureDao;
 import collab.fm.server.util.DaoUtil;
@@ -81,7 +82,7 @@ public class FeatureOperation extends Operation {
 	}
 	
 	public boolean valid() {
-		if (super.valid() && userid != null) {
+		if (super.valid() && userid != null && modelId != null) {
 			if (Resources.OP_CREATE_FEATURE.equals(name)) {
 				if (vote.equals(false)) {
 					return featureId != null;
@@ -123,15 +124,23 @@ public class FeatureOperation extends Operation {
 			if (vote.equals(false)) {
 				throw new InvalidOperationException("Invalid vote: NO to inexisted feature.");
 			}
+			// Get the model
+			Model model = DaoUtil.getModelDao().getById(modelId, false);
+			if (model == null) {
+				throw new InvalidOperationException("Invalid model ID: " + modelId);
+			}
 			// Check if a feature with same name has already existed.
-			Feature featureWithSameName = DaoUtil.getFeatureDao().getByName(value);
+			Feature featureWithSameName = DaoUtil.getFeatureDao().getByName(modelId, value);
 			if (featureWithSameName == null) {
 				featureWithSameName = new Feature();
 			}
 			featureWithSameName.voteName(value, vote, userid);
 			featureWithSameName.vote(true, userid);
+			featureWithSameName.setModel(model);
+			
 			featureWithSameName = DaoUtil.getFeatureDao().save(featureWithSameName);
 			featureId = featureWithSameName.getId();
+			
 			return null;
 		}
 		

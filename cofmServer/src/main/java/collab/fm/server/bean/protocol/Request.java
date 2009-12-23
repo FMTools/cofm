@@ -7,6 +7,7 @@ public class Request {
 	protected String name;
 	protected String address;
 	protected Long requesterId; // The user id of the requester
+	protected Long modelId; // The id of current feature model
 	
 	protected String lastError = "error"; 
 
@@ -62,6 +63,14 @@ public class Request {
 
 	public void setRequesterId(Long requesterId) {
 		this.requesterId = requesterId;
+	}
+
+	public Long getModelId() {
+		return modelId;
+	}
+
+	public void setModelId(Long modelId) {
+		this.modelId = modelId;
 	}
 	
 }

@@ -1,22 +1,22 @@
 package collab.fm.server.bean.entity;
 
-public class FeatureName implements Votable {
-	
-	private int version;
+public class ModelName implements Votable {
+
+    private int version;
 	
 	private Long id;
 	private String name;
 	private Vote vote = new Vote();
 	
-	private FeatureName() {
+	private ModelName() {
 		
 	}
 
-	public FeatureName(String name) {
+	public ModelName(String name) {
 		setName(name);
 	}
 	
-	public FeatureName(String name, boolean yes, Long userid) {
+	public ModelName(String name, boolean yes, Long userid) {
 		setName(name);
 		vote(yes, userid);
 	}
@@ -28,8 +28,8 @@ public class FeatureName implements Votable {
 	public boolean equals(Object v) {
 		if (this == v) return true;
 		if (this == null || v == null) return false;
-		if (!(v instanceof FeatureName)) return false;
-		final FeatureName that = (FeatureName) v;
+		if (!(v instanceof ModelName)) return false;
+		final ModelName that = (ModelName) v;
 		return getName().equals(that.getName()); 
 	}
 	

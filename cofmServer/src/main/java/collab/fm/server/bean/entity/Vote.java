@@ -62,15 +62,16 @@ public class Vote {
 	
 	@Override
 	public boolean equals(Object obj) {
-		try {
 			if (this == obj) return true;
 			if (!(obj instanceof Vote)) return false;
 			final Vote that = (Vote)obj;
 			return getSupportersInternal().equals(that.getSupporters()) &&
 				getOpponentsInternal().equals(that.getOpponents());
-		} catch (Exception e) {
-			return false;
-		}
+	}
+	
+	@Override
+	public int hashCode() { 
+		return new Integer(getSupportersInternal().hashCode() + getOpponentsInternal().hashCode()).hashCode();
 	}
 
 	@Override

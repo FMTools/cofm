@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.hibernate.*;
 import org.hibernate.criterion.Example;
+import org.hibernate.criterion.Restrictions;
 
 import collab.fm.server.util.exception.BeanPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
@@ -34,9 +35,27 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 		return entityClass;
 	}
 	
-	public List getAll() throws BeanPersistenceException, StaleDataException {
+	protected List getAll() throws BeanPersistenceException ,StaleDataException {
 		try {
-			Criteria crit = HibernateUtil.getCurrentSession().createCriteria(getEntityClass());
+			Criteria crit = HibernateUtil.getCurrentSession()
+				.createCriteria(getEntityClass());
+			List result = crit.list();
+			return result.isEmpty() ? null : result;
+		} catch (StaleObjectStateException sose) {
+			logger.warn("Stale data detected. Force client to retry.", sose);
+			throw new StaleDataException(sose);
+		} catch (RuntimeException e) {
+			logger.warn("Couldn't get all.", e);
+			throw new BeanPersistenceException(e);
+		}
+	}
+	
+	protected List getAll(IdType modelId, String modelPropertyName) throws BeanPersistenceException, StaleDataException {
+		try {
+			Criteria crit = HibernateUtil.getCurrentSession()
+				.createCriteria(getEntityClass())
+					.createCriteria(modelPropertyName)
+					.add(Restrictions.eq("id", modelId));
 			List result = crit.list();
 			return result.isEmpty() ? null : result;
 		} catch (StaleObjectStateException sose) {

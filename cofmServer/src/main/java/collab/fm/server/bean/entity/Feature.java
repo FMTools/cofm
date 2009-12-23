@@ -8,7 +8,8 @@ public class Feature implements Votable {
 	private int version;
 	
 	private Long id;
-	
+	private Model model;
+
 	private Vote existence = new Vote();
 	private Vote optionality = new Vote();
 	private Set<? extends Votable> names = new HashSet<FeatureName>();
@@ -44,6 +45,15 @@ public class Feature implements Votable {
 		return toValue(descriptions).toArray(new String[0]);
 	}*/
 	
+	public Model getModel() {
+		return model;
+	}
+
+	public void setModel(Model model) {
+		this.model = model;
+		model.addFeature(this);
+	}
+
 	/**
 	 * NOTE: never call this method directly, unless it is a subclass of Relationship.
 	 * See BinaryRelationship.setFeatures(left, right) for an example. 
@@ -196,7 +206,21 @@ public class Feature implements Votable {
 		return relationships;
 	}
 	
-	public boolean equals(Votable v) {
-		throw new UnsupportedOperationException();
+	public boolean equals(Object v) {
+		if (this == v) return true;
+		if (this == null || v == null) return false;
+		if (!(v instanceof Feature)) return false;
+		final Feature that = (Feature)v;
+		if (getId() != null) {
+			return getId().equals(that.getId());
+		} 
+		return getNames().equals(that.getNames());
 	}	
+	
+	public int hashCode() {
+		if (getId() != null) {
+			return getId().hashCode();
+		}
+		return getNames().hashCode();
+	}
 }

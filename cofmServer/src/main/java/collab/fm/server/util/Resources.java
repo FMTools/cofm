@@ -47,6 +47,7 @@ public class Resources {
 		
 	public static final String MSG_ERROR_USER_DENIED = get("msg.error.user.denied");
 	public static final String MSG_ERROR_USER_LOGIN_FAILED = get("msg.error.user.loginfailed");
+	public static final String MSG_ERROR_USER_EXISTED = get("msg.error.user.existed");
 	
 	public static final String MSG_ERROR_FEATURE_NOTFOUND = get("msg.error.feature.notfound");
 	public static final String MSG_ERROR_FEATURE_APPLYOP = get("msg.error.feature.applyop");

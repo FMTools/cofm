@@ -1,5 +1,8 @@
 package collab.fm.server.bean.protocol;
 
+import collab.fm.server.util.BeanUtil;
+import collab.fm.server.util.exception.JsonConvertException;
+
 public class Response {
 	public static final String TERMINATOR = "\0";
 	
@@ -17,7 +20,6 @@ public class Response {
 	}
 
 	public boolean valid() {
-		// message could be null
 		return name != null;
 	}
 

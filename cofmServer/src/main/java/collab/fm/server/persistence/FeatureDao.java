@@ -9,6 +9,6 @@ import collab.fm.server.util.exception.StaleDataException;
 
 public interface FeatureDao extends GenericDao<Feature, Long> {
 
-	public Feature getByName(String name) throws BeanPersistenceException, StaleDataException;
+	public Feature getByName(Long modelId, String name) throws BeanPersistenceException, StaleDataException;
 	
 }

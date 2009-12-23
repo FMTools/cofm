@@ -15,6 +15,7 @@ public abstract class DaoFactory {
 	abstract public FeatureDao getFeatureDao();
 	abstract public RelationshipDao getRelationshipDao();
 	abstract public UserDao getUserDao();
+	abstract public ModelDao getModelDao();
 	
 	// TODO: move the inner class to a separated file.
 	public static class HibernateDaoFactory extends DaoFactory {
@@ -22,6 +23,7 @@ public abstract class DaoFactory {
 		private static final FeatureDao f = new FeatureDaoImpl();
 		private static final RelationshipDao r = new RelationshipDaoImpl();
 		private static final UserDao u = new UserDaoImpl();
+		private static final ModelDao m = new ModelDaoImpl();
 		
 		@Override
 		public FeatureDao getFeatureDao() {
@@ -37,6 +39,10 @@ public abstract class DaoFactory {
 		public UserDao getUserDao() {
 			return u;
 		}
-		
+
+		@Override
+		public ModelDao getModelDao() {
+			return m;
+		}	
 	}
 }

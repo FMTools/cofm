@@ -12,6 +12,8 @@ import org.junit.*;
 import collab.fm.server.bean.entity.*;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
+import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.StaleDataException;
 
 public class RelationshipDaoImplTest {
 	
@@ -20,6 +22,7 @@ public class RelationshipDaoImplTest {
 	private static RelationshipDao rDao = DaoUtil.getRelationshipDao();
 	private static FeatureDao fDao = DaoUtil.getFeatureDao();
 	
+	private static Long modelId;
 	private static List<Long> featureIds = new ArrayList<Long>();
 	
 	@BeforeClass
@@ -34,17 +37,32 @@ public class RelationshipDaoImplTest {
 	}
 	
 	private static void prepareFeatures() {
-		createFeature("Eclipse", 1L);
-		createFeature("JBuilder", 3L);
-		createFeature("JDK", 2L);
-		createFeature("IDE", 9L);
+		Model m = new Model();
+		m.voteName("IIIIIIIIIIIIIIIII", true, 1L);
+		try {
+			m = DaoUtil.getModelDao().save(m);
+			modelId = m.getId();
+		} catch (BeanPersistenceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (StaleDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		createFeature(m, "Eclipse", 1L);
+		createFeature(m, "JBuilder", 3L);
+		createFeature(m, "JDK", 2L);
+		createFeature(m, "IDE", 9L);
+		
+		
 	}
 	
-	private static void createFeature(String name, Long userid) {
+	private static void createFeature(Model m, String name, Long userid) {
 		try {
 			Feature f = new Feature();
 			f.vote(true, userid);
 			f.voteName(name, true, userid);
+			f.setModel(m);
 			featureIds.add(fDao.save(f).getId());
 		} catch (Exception e) {
 			logger.error("Couldn't create feature: name='" + name + "'", e);
@@ -54,11 +72,15 @@ public class RelationshipDaoImplTest {
 	@Test
 	public void testSaveBinaryRelationship() {
 		try {
+			Model m = DaoUtil.getModelDao().getById(modelId, false);
+			
 			BinaryRelationship br = new BinaryRelationship();
 			br.setType(Resources.BIN_REL_EXCLUDES);
-			br.setFeatures(fDao.getByName("Eclipse"), 
-					fDao.getByName("JBuilder"));
+			br.setFeatures(fDao.getByName(modelId, "Eclipse"), 
+					fDao.getByName(modelId, "JBuilder"));
 			br.vote(true, 10L);
+			br.setModel(m);
+			DaoUtil.getModelDao().save(m);
 			rDao.save(br);
 			
 			for (Feature f: br.getFeatures()) {
@@ -76,12 +98,15 @@ public class RelationshipDaoImplTest {
 	@Test
 	public void testGetBinaryRelationshipByExample() {
 		try {
+			Model m = DaoUtil.getModelDao().getById(modelId, false);
 			BinaryRelationship br = new BinaryRelationship();
 			br.setType(Resources.BIN_REL_REFINES);
 			Long featureId1 = featureIds.get(0);
 			Long featureId2 = featureIds.get(2);
 			br.setFeatures(fDao.getById(featureId1, false), fDao.getById(featureId2, false));
 			br.vote(true, 2L);
+			br.setModel(m);
+			DaoUtil.getModelDao().save(m);
 			rDao.save(br);
 			
 			BinaryRelationship example = new BinaryRelationship();
@@ -89,14 +114,14 @@ public class RelationshipDaoImplTest {
 			example.setLeftFeatureId(br.getLeftFeatureId());
 			example.setRightFeatureId(br.getRightFeatureId());
 			
-			assertTrue(rDao.getByExample(example).size()==1);
+			assertTrue(rDao.getByExample(modelId, example).size()==1);
 			
 			BinaryRelationship bad = new BinaryRelationship();
 			bad.setType("Invalid_Type");
 			bad.setLeftFeatureId(br.getLeftFeatureId());
 			bad.setRightFeatureId(br.getRightFeatureId());
 			
-			assertNull(rDao.getByExample(bad));
+			assertNull(rDao.getByExample(modelId, bad));
 		} catch(Exception e) {
 			logger.error("Couldn't get by example.", e);
 			assertTrue(false);

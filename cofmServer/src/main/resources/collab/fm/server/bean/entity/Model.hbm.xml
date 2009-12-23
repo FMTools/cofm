@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="collab.fm.server.bean.entity">
+  <class name="Model" table="Model">
+    <id name="id" column="modelId" type="long">
+  		<generator class="native"></generator>
+  	</id>
+  	
+  	<version name="version" access="field" column="entityVersion"></version>
+  	
+  	<!-- One-to-many association to ModelName.
+  	   Note that we don't want to cascade the deleting operation. 
+  	-->
+  	<set name="namesInternal" table="ModelPossibleName" cascade="persist, merge, save-update">
+  		<key column="modelId"></key>
+  		<many-to-many class="ModelName" column="nameId" unique="true"></many-to-many>
+  	</set>
+  	
+  	<!-- One-to-many association to ModelDescription -->
+  	<set name="descriptionsInternal" table="ModelPossibleDescription" cascade="persist, merge, save-update">
+  		<key column="modelId"></key>
+  		<many-to-many class="ModelDescription" column="descriptionId" unique="true"></many-to-many>
+  	</set>
+  	
+  	<!-- One-to-many bidirectional association to Feature, managed by the Feature class,
+  	     which means Feature.setModel(model) will call model.addFeature(this) -->
+  	<set name="featuresInternal" inverse="true">
+  	    <key column="modelId"></key>
+  	    <one-to-many class="Feature" />
+  	</set>
+  	
+  	<!-- One-to-many bidirectional association to Relationship, managed by the Relationship class -->
+  	<set name="relationshipsInternal" inverse="true">
+  	    <key column="modelId"></key>
+  	    <one-to-many class="Relationship"/>
+  	</set>
+
+    <!-- Many-to-many bidirectional association to User, managed by the User class -->
+    <set inverse="true" name="usersInternal" table="ModelUserAssoc">
+  		<key column="modelId"></key>
+  		<many-to-many column="userId" class="User"></many-to-many>
+  	</set>
+  	
+  </class>
+</hibernate-mapping>

@@ -11,11 +11,11 @@
   	<property name="name" type="string" column="name"></property>
   	
   	<component name="vote" class="Vote">
-  		<set name="supportersInternal" table="NameSupporter">
+  		<set name="supportersInternal" table="FeatureNameSupporter">
   			<key column="nameId"></key>
   			<element type="long" column="supporter" not-null="true"></element>
   		</set>
-  		<set name="opponentsInternal" table="NameOpponent">
+  		<set name="opponentsInternal" table="FeatureNameOpponent">
   			<key column="nameId"></key>
   			<element type="long" column="opponent" not-null="true"></element>
   		</set>

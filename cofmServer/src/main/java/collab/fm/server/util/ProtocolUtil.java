@@ -12,6 +12,7 @@ import collab.fm.server.bean.operation.Operation;
 import collab.fm.server.bean.operation.RelationshipOperation;
 import collab.fm.server.bean.protocol.CommitRequest;
 import collab.fm.server.bean.protocol.LoginRequest;
+import collab.fm.server.bean.protocol.RegisterRequest;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.util.exception.ProtocolInterpretException;
@@ -34,8 +35,10 @@ public class ProtocolUtil {
 	static {
 		requestHandlerMap.put(Resources.REQ_COMMIT, "doCommitRequest");
 		requestHandlerMap.put(Resources.REQ_LOGIN, "doGenericRequest");
+		requestHandlerMap.put(Resources.REQ_REGISTER, "doGenericRequest");
 
 		requestClassMap.put(Resources.REQ_LOGIN, LoginRequest.class);
+		requestClassMap.put(Resources.REQ_REGISTER, RegisterRequest.class);
 		
 		opNameClassMap.put(Resources.OP_CREATE_RELATIONSHIP, RelationshipOperation.class);
 		opNameClassMap.put(Resources.OP_ADD_DES, FeatureOperation.class);
@@ -67,7 +70,7 @@ public class ProtocolUtil {
 		try {
 			// 1. Convert to the base class Request to get the request name.
 			Request abstractReq = BeanUtil.jsonToBean(json, Request.class, null, 
-					new String[] {"id", "name", "requesterId"});
+					new String[] {"id", "name", "requesterId", "modelId"});
 			if (!abstractReq.valid()) {
 				throw new ProtocolInterpretException("Invalid request JSON string.");
 				
@@ -137,7 +140,9 @@ public class ProtocolUtil {
 			result.setName(req.getName());
 			result.setRequesterId(req.getRequesterId());
 			result.getOperation().setUserid(req.getRequesterId());
+			result.getOperation().setModelId(req.getModelId());
 			
+			logger.debug(result);
 			if (!result.valid()) {
 				throw new ProtocolInterpretException("Invalid operation JSON string in CommitRequest: " +
 						"declared '" + concreteOpClass.getName() + "', but convert failed.");
