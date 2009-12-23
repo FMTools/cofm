@@ -16,6 +16,7 @@ import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 
 import collab.fm.server.controller.*;
+import collab.fm.server.persistence.HibernateUtil;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 
@@ -63,6 +64,7 @@ public class Server {
 		
 		try {
 			theServer.bind(new InetSocketAddress(PORT), new EventHandler());
+			logger.info("Server started.");
 		} catch (IOException e) {
 			logger.fatal("Couldn't start server @ port " + PORT, e);
 			theServer.unbindAll();

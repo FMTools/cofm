@@ -12,7 +12,7 @@ public class HibernateUtil {
 	static {
 		try {
 			sessionFactory = new Configuration().configure().buildSessionFactory();
-			logger.debug("SessionFactory has built.");
+			logger.info("SessionFactory has built.");
 		} catch (Throwable e) {
 			logger.error("Can't build session factory.", e);
 			throw new ExceptionInInitializerError(e);
