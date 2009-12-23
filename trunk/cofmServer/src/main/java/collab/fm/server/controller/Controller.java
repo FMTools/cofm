@@ -49,6 +49,7 @@ public class Controller {
 		actions.add(new LoginAction());
 		actions.add(new RegisterAction());
 		actions.add(new UpdateAction());
+		logger.info("Controller initialized.");
 	}
 	
 	private Controller() {
