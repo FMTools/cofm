@@ -23,6 +23,9 @@
         <mapping resource="collab/fm/server/bean/entity/Feature.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/entity/FeatureName.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/entity/FeatureDescription.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/entity/Model.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/entity/ModelName.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/entity/ModelDescription.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/entity/Relationship.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/entity/User.hbm.xml"/>
     </session-factory>

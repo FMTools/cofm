@@ -26,6 +26,10 @@
   		<key column="relationshipId"></key>
   		<many-to-many column="featureId" class="Feature"></many-to-many>
   	</set>
+  	
+  	<!-- Many-to-one association to Model -->
+  	<many-to-one name="model" column="modelId" not-null="true"/>
+  	
   	<!-- Subclasses -->
   	<joined-subclass name="BinaryRelationship" table="BinaryRelationship">
   		<key column="binaryRelationshipId"></key>

@@ -1,5 +1,7 @@
 package collab.fm.server.persistence;
 
+import java.util.List;
+
 import org.hibernate.StaleObjectStateException;
 
 import collab.fm.server.bean.entity.User;
@@ -40,5 +42,10 @@ public class UserDaoImpl extends GenericDaoImpl<User, Long> implements UserDao {
 			logger.warn("Couldn't get by name.", e);
 			throw new BeanPersistenceException(e);
 		}
+	}
+
+	public List getAll(Long modelId) throws BeanPersistenceException,
+			StaleDataException {
+		return super.getAll(modelId, "modelsInternal");
 	}
 }

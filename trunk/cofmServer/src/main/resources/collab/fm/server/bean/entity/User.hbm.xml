@@ -10,5 +10,12 @@
 	<version name="version" access="field" column="entityVersion"></version>
 	<property name="name" column="userName" type="string"></property>
 	<property name="password" column="userPassword" type="string"></property>
+	
+	<!-- Many-to-many bidirectional association to Model -->
+  	<set name="modelsInternal" table="ModelUserAssoc">
+  		<key column="userId"></key>
+  		<many-to-many column="modelId" class="Model"></many-to-many>
+  	</set>
+  	
 </class>
 </hibernate-mapping>

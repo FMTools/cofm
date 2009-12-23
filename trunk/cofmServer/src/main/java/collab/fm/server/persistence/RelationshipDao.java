@@ -10,5 +10,5 @@ import collab.fm.server.util.exception.StaleDataException;
 
 public interface RelationshipDao extends GenericDao<Relationship, Long> {
 	
-	public List<Relationship> getByExample(BinaryRelationship example) throws BeanPersistenceException, StaleDataException;
+	public List<Relationship> getByExample(Long modelId, BinaryRelationship example) throws BeanPersistenceException, StaleDataException;
 }

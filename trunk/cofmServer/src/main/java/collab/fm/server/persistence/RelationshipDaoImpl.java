@@ -16,14 +16,17 @@ public class RelationshipDaoImpl extends GenericDaoImpl<Relationship, Long>
 
 	static Logger logger = Logger.getLogger(RelationshipDaoImpl.class);
 
-	public List<Relationship> getByExample(BinaryRelationship example)
+	public List<Relationship> getByExample(Long modelId, BinaryRelationship example)
 			throws BeanPersistenceException, StaleDataException {
 		try {
 			List result = HibernateUtil.getCurrentSession()
-				.createQuery("from BinaryRelationship as rel " +
-						"where rel.type = :type " +
+				.createQuery("select rel from BinaryRelationship as rel " +
+						"join rel.model as m " +
+						"where m.id = :mId " +
+						"and rel.type = :type " +
 						"and rel.leftFeatureId = :left " +
 						"and rel.rightFeatureId = :right")
+				.setLong("mId", modelId)
 				.setString("type", example.getType())
 				.setLong("left", example.getLeftFeatureId())
 				.setLong("right", example.getRightFeatureId())
@@ -36,6 +39,11 @@ public class RelationshipDaoImpl extends GenericDaoImpl<Relationship, Long>
 			logger.warn("Query failed.", e);
 			throw new BeanPersistenceException("Query failed.", e);
 		}
+	}
+
+	public List getAll(Long modelId) throws BeanPersistenceException,
+			StaleDataException {
+		return super.getAll(modelId, "model");
 	}
 
 }

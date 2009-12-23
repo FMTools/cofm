@@ -56,5 +56,8 @@
   		<many-to-many column="relationshipId" class="Relationship"></many-to-many>
   	</set>
   	
+  	<!-- Many-to-one association to Model -->
+  	<many-to-one name="model" column="modelId" not-null="true"/>
+  	
   </class>
 </hibernate-mapping>

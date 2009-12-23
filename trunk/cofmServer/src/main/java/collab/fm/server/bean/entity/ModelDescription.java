@@ -1,6 +1,6 @@
 package collab.fm.server.bean.entity;
 
-public class FeatureDescription implements Votable {
+public class ModelDescription implements Votable {
 
 	private int version;
 	
@@ -8,16 +8,16 @@ public class FeatureDescription implements Votable {
 	private String value;
 	private Vote vote = new Vote();
 	
-	private FeatureDescription() {
+	private ModelDescription() {
 		
 	}
 	
-	public FeatureDescription(String des, boolean yes, Long userid) {
+	public ModelDescription(String des, boolean yes, Long userid) {
 		setValue(des);
 		vote(yes, userid);
 	}
 	
-	public FeatureDescription(String des) {
+	public ModelDescription(String des) {
 		setValue(des);
 	}
 	
@@ -32,8 +32,8 @@ public class FeatureDescription implements Votable {
 	public boolean equals(Object v) {
 		if (this == v) return true;
 		if (this == null || v == null) return false;
-		if (!(v instanceof FeatureDescription)) return false;
-		final FeatureDescription that = (FeatureDescription)v;
+		if (!(v instanceof ModelDescription)) return false;
+		final ModelDescription that = (ModelDescription)v;
 		return getValue().equals(that.getValue());
 	}
 	
@@ -44,20 +44,25 @@ public class FeatureDescription implements Votable {
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
+
 	public String getValue() {
 		return value;
 	}
+
 	public void setValue(String value) {
 		this.value = value;
 	}
+
 	public Vote getVote() {
 		return vote;
 	}
+
 	public void setVote(Vote vote) {
 		this.vote = vote;
 	}
-	
+
 }

@@ -1,6 +1,6 @@
 package collab.fm.server.util;
 
-import java.util.Arrays;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.junit.*;
@@ -10,6 +10,10 @@ import collab.fm.server.bean.operation.BinaryRelationshipOperation;
 import collab.fm.server.bean.operation.FeatureOperation;
 import collab.fm.server.bean.operation.Operation;
 import collab.fm.server.bean.protocol.*;
+import collab.fm.server.bean.protocol.UpdateResponse.BinaryRelation2;
+import collab.fm.server.bean.protocol.UpdateResponse.Des2;
+import collab.fm.server.bean.protocol.UpdateResponse.Feature2;
+import collab.fm.server.bean.protocol.UpdateResponse.Name2;
 
 public class ProtocolUtilTest {
 
@@ -29,6 +33,27 @@ public class ProtocolUtilTest {
 			
 			Request req = ProtocolUtil.jsonToRequest(json);
 			assertTrue(req instanceof LoginRequest);
+			assertNull(req.getRequesterId());
+		} catch (Exception e) {
+			logger.info(e);
+			assertTrue(false);
+		}
+	}
+	
+	@Test 
+	public void testRegisterRequest() {
+		RegisterRequest lr = new RegisterRequest();
+		lr.setId(1L);
+		lr.setName(Resources.REQ_REGISTER);
+		lr.setUser("Lao Yi");
+		lr.setPwd("WWWWWWWW");
+		
+		try {
+			String json = BeanUtil.beanToJson(lr);
+			logger.debug(json);
+			
+			Request req = ProtocolUtil.jsonToRequest(json);
+			assertTrue(req instanceof RegisterRequest);
 			assertNull(req.getRequesterId());
 		} catch (Exception e) {
 			logger.info(e);
@@ -60,6 +85,7 @@ public class ProtocolUtilTest {
 		cr.setId(100L);
 		cr.setName(Resources.REQ_COMMIT);
 		cr.setRequesterId(5L);
+		cr.setModelId(111L);
 		BinaryRelationshipOperation brop = new BinaryRelationshipOperation();
 		// The relationshipId and userId are not always required.
 		brop.setLeftFeatureId(1L);
@@ -119,5 +145,65 @@ public class ProtocolUtilTest {
 			logger.info(e);
 			assertTrue(false);
 		}
+	}
+	
+	@Test
+	public void testUpdateResponse() {
+		Set<Long> yes = new HashSet<Long>();
+		yes.addAll(Arrays.asList(new Long[] { 1L, 3L, 5L, 7L, 9L }));
+		
+		Set<Long> no = new HashSet<Long>();
+		no.addAll(Arrays.asList(new Long[] { 2L, 4L, 6L, 8L, 10L }));
+		
+		Name2 n1 = new Name2();
+		n1.setVal("eclipse");
+		n1.setuYes(yes);
+		n1.setuNo(no);
+		
+		Name2 n2 = new Name2();
+		n2.setVal("jbuilder");
+		n2.setuNo(yes);
+		n2.setuYes(no);
+		
+		List<Name2> names1 = Arrays.asList(new Name2[] { n1, n2 });
+		
+		Des2 d = new Des2();
+		d.setVal("----------------------------------------------");
+		d.setuYes(yes);
+		d.setuNo(no);
+		List<Des2> des = Arrays.asList(new Des2[] { d });
+		
+		Feature2 f = new Feature2();
+		f.setDes(des);
+		f.setId(3L);
+		f.setName(names1);
+		f.setRels(Arrays.asList(new Long[] { 10L, 20L, 30L, 40L }));
+		f.setuNo(no);
+		f.setuOptNo(yes);
+		f.setuOptYes(no);
+		f.setuYes(yes);
+		
+		BinaryRelation2 b = new BinaryRelation2();
+		b.setId(1L);
+		b.setLeft(999L);
+		b.setRight(333L);
+		b.setType(Resources.BIN_REL_EXCLUDES);
+		b.setuNo(no);
+		b.setuYes(yes);
+		
+		UpdateResponse response = new UpdateResponse();
+		response.setBinaries(Arrays.asList(new BinaryRelation2[] { b }));
+		response.setFeatures(Arrays.asList(new Feature2[] { f, f }));
+		response.setName(Resources.RSP_SUCCESS);
+		response.setRequesterId(11L);
+		response.setRequestId(3L);
+		response.setRequestName(Resources.REQ_UPDATE);
+		try {
+			logger.info(ProtocolUtil.ResponseToJson(response));
+		} catch (Exception e) {
+			logger.info(e);
+			assertTrue(false);
+		}
+		
 	}
 }

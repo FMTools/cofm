@@ -8,6 +8,8 @@ public class Relationship implements Votable{
 	
 	protected int version;
 	protected Long id;
+	protected Model model;
+	
 	protected Vote existence = new Vote();
 	protected String type;
 	
@@ -20,12 +22,22 @@ public class Relationship implements Votable{
 	public String toString() {
 		return "vote=" + existence.toString() + " id=" + id + " type=" + type;
 	}
+	
 	public Long getId() {
 		return id;
 	}
 
 	protected void setId(Long id) {
 		this.id = id;
+	}
+
+	public Model getModel() {
+		return model;
+	}
+
+	public void setModel(Model model) {
+		this.model = model;
+		model.addRelationship(this);
 	}
 
 	public Vote getExistence() {
@@ -36,10 +48,24 @@ public class Relationship implements Votable{
 		this.existence = existence;
 	}
 
-	public boolean equals(Votable v) {
-		return true;
+	public boolean equals(Object v) {
+		if (this == v) return true;
+		if (this == null || v == null) return false;
+		if (!(v instanceof Relationship)) return false;
+		final Relationship that = (Relationship)v;
+		if (getId() != null) {
+			return getId().equals(that.getId());
+		}
+		return getExistence().equals(that.getExistence());
 	}
 
+	public int hashCode() {
+		if (getId() != null) {
+			return getId().hashCode();
+		}
+		return getExistence().hashCode();
+	}
+	
 	public void vote(boolean yes, Long userid) {
 		existence.vote(yes, userid);		
 	}

@@ -18,7 +18,7 @@ public class RelationshipOperation extends Operation {
 	
 	public boolean valid() {
 		if (super.valid()) {
-			return userid != null;
+			return userid != null && modelId != null;
 		}
 		return false;
 	}

@@ -19,7 +19,7 @@ public interface GenericDao<EntityType, IdType> {
 	public EntityType getById(IdType id, boolean lock) 
 		throws BeanPersistenceException, StaleDataException;
 	
-	public List getAll() throws BeanPersistenceException, StaleDataException;
+	public List getAll(IdType modelId) throws BeanPersistenceException, StaleDataException;
 	
 	/**
 	 * Save entity into database.

@@ -9,13 +9,17 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import collab.fm.server.bean.entity.Model;
 import collab.fm.server.bean.entity.User;
 import collab.fm.server.util.DaoUtil;
+import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.StaleDataException;
 
 public class UserDaoImplTest {
 	static Logger logger = Logger.getLogger(UserDaoImplTest.class);
 	
 	private static UserDao dao = DaoUtil.getUserDao();
+	private static Long mId;
 	
 	@BeforeClass
 	public static void beginSession() {
@@ -29,16 +33,30 @@ public class UserDaoImplTest {
 	}
 	
 	private static void prepareUsers() {
-		saveUser("lao yi", "12324");
-		saveUser("hoho", "ddd");
-		saveUser("hehe", "00000");
+		Model m = new Model();
+		m.voteName("my last model", true, 4L);
+		
+		try {
+			m = DaoUtil.getModelDao().save(m);
+			mId = m.getId();
+		} catch (BeanPersistenceException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (StaleDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		saveUser(m, "lao yi", "12324");
+		saveUser(m, "hoho", "ddd");
+		saveUser(m, "hehe", "00000");
 	}
 	
-	private static void saveUser(String name, String pwd) {
+	private static void saveUser(Model m, String name, String pwd) {
 		try {
 			User u = new User();
 			u.setName(name);
 			u.setPassword(pwd);
+			u.addModel(m);
 			dao.save(u);
 		} catch (Exception e) {
 			logger.error("Couldn't save user.", e);
@@ -49,7 +67,7 @@ public class UserDaoImplTest {
 	@Test
 	public void testGetAll() {
 		try {
-			assertTrue(dao.getAll().size()==3);
+			assertTrue(dao.getAll(mId).size()==3);
 		} catch (Exception e) {
 			logger.error("Couldn't get all.", e);
 			assertTrue(false);

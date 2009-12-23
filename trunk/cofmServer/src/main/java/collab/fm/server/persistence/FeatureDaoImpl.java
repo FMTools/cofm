@@ -15,13 +15,15 @@ public class FeatureDaoImpl extends GenericDaoImpl<Feature, Long> implements Fea
 
 	static Logger logger = Logger.getLogger(FeatureDaoImpl.class);
 
-	public Feature getByName(String name) throws BeanPersistenceException, StaleDataException {
+	public Feature getByName(Long modelId, String name) throws BeanPersistenceException, StaleDataException {
 		try {
 			return (Feature) HibernateUtil.getCurrentSession()
 				.createQuery("select feature " +
 						"from Feature as feature " +
+						"join feature.model as m " +
 						"join feature.namesInternal as featureName " +
-						"where featureName.name = :fname")
+						"where m.id = :mId and featureName.name = :fname")
+				.setLong("mId", modelId)
 				.setString("fname", name)
 				.uniqueResult();	
 		} catch (StaleObjectStateException sose) {
@@ -31,6 +33,11 @@ public class FeatureDaoImpl extends GenericDaoImpl<Feature, Long> implements Fea
 			logger.warn("Query failed.", e);
 			throw new BeanPersistenceException("Query failed.", e);
 		}
+	}
+
+	public List getAll(Long modelId) throws BeanPersistenceException,
+			StaleDataException {
+		return super.getAll(modelId, "model");
 	}
 
 }

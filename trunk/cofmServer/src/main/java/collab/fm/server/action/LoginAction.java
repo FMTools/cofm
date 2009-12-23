@@ -44,6 +44,7 @@ public class LoginAction extends Action {
 				rsp.setName(Resources.RSP_ERROR);
 			} else {
 				rsp.setRequesterId(user.getId());
+				req.setRequesterId(user.getId());
 				rsp.setName(Resources.RSP_SUCCESS);
 			}
 			

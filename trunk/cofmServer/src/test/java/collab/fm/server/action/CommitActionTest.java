@@ -44,21 +44,29 @@ public class CommitActionTest {
 	
 	@Test
 	public void testCreateNewFeature() {
+		try {
+		// Create a Model
+		Model m = new Model();
+		m.voteName("THE PROBLEM DOMAIN", true, 1L);
+		m = DaoUtil.getModelDao().save(m);
+		
 		FeatureOperation op = new FeatureOperation();
 		op.setName(Resources.OP_CREATE_FEATURE);
 		op.setUserid(100L);
 		op.setVote(true);
 		op.setValue("I_am_a_new_feature");
+		op.setModelId(m.getId());
 
 		CommitRequest req = new CommitRequest();
 		req.setId(1L);
 		req.setName(Resources.REQ_COMMIT);
-		req.setRequesterId(100L);
+		req.setRequesterId(op.getUserid());
+		req.setModelId(op.getModelId());
 		req.setOperation(op);
 		
 		ResponseGroup rg = new ResponseGroup();
 	
-		try {
+		
 			action.doExecute(req, rg);
 			assertNotNull(rg.getBack());
 			assertTrue(rg.getBack() instanceof CommitResponse);
@@ -77,11 +85,18 @@ public class CommitActionTest {
 	@Test
 	public void testVoteNoToFeatureWithoutRelationship() {
 		try {
+			// Create a Model
+			Model m = new Model();
+			m.voteName("THE ULTIMATE DOMAIN", true, 1L);
+			m = DaoUtil.getModelDao().save(m);
+			
 			// Create a feature
 			Feature f = new Feature();
 			f.vote(true, 222L);
 			f.voteName("I_am_a_GOOD_man", true, 222L);
+			f.setModel(m);	
 			f = DaoUtil.getFeatureDao().save(f);
+			
 			
 			// Make and handle a request
 			FeatureOperation op = new FeatureOperation();
@@ -89,11 +104,13 @@ public class CommitActionTest {
 			op.setUserid(999L);
 			op.setVote(false);
 			op.setFeatureId(f.getId());
+			op.setModelId(m.getId());
 
 			CommitRequest req = new CommitRequest();
 			req.setId(4L);
 			req.setName(Resources.REQ_COMMIT);
 			req.setRequesterId(op.getUserid());
+			req.setModelId(op.getModelId());
 			req.setOperation(op);
 			
 			ResponseGroup rg = new ResponseGroup();
@@ -104,7 +121,7 @@ public class CommitActionTest {
 			showResponse(rg.getBroadcast());
 			
 			// Query and show
-			Feature me = DaoUtil.getFeatureDao().getByName("I_am_a_GOOD_man");
+			Feature me = DaoUtil.getFeatureDao().getByName(op.getModelId(), "I_am_a_GOOD_man");
 			logger.info(me.toString());
 		} catch (Exception e) {
 			logger.error("Couldn't execute.", e);
@@ -115,6 +132,10 @@ public class CommitActionTest {
 	@Test
 	public void testVoteNoToFeatureWithInvolvedRelationship() {
 		try {
+			// Create a Model
+			Model m = new Model();
+			m.voteName("My First Domain", true, 1L);
+			m = DaoUtil.getModelDao().save(m);
 			// Create 2 features and 1 binary relationship
 			Feature f1 = new Feature();
 			Feature f2 = new Feature();
@@ -122,16 +143,20 @@ public class CommitActionTest {
 			f2.vote(true, 2222L);
 			f1.voteName("OHOHOHiamleft", true, 11111L);
 			f2.voteName("HOHOHOiamright", true, 2222L);
-			
+			f1.setModel(m);
+			f2.setModel(m);
 			f1 = DaoUtil.getFeatureDao().save(f1);
 			f2 = DaoUtil.getFeatureDao().save(f2);
 			
 			BinaryRelationship r = new BinaryRelationship();
-			r.setFeatures(f1, f2);
 			r.setType(Resources.BIN_REL_EXCLUDES);
 			r.vote(true, 43L);
+			r.setFeatures(f1, f2);
+			r.setModel(m);
+			
 			
 			r = (BinaryRelationship)DaoUtil.getRelationshipDao().save(r);
+			
 			
 			// Make and handle a request
 			FeatureOperation op = new FeatureOperation();
@@ -139,11 +164,13 @@ public class CommitActionTest {
 			op.setUserid(999L);
 			op.setVote(false);
 			op.setFeatureId(f1.getId());
+			op.setModelId(m.getId());
 
 			CommitRequest req = new CommitRequest();
 			req.setId(4L);
 			req.setName(Resources.REQ_COMMIT);
 			req.setRequesterId(op.getUserid());
+			req.setModelId(op.getModelId());
 			req.setOperation(op);
 			
 			ResponseGroup rg = new ResponseGroup();
@@ -164,11 +191,18 @@ public class CommitActionTest {
 	@Test
 	public void testAddNewName() {
 		try {
+			// Create a Model
+			Model m = new Model();
+			m.voteName("Good Domain", true, 1L);
+			m = DaoUtil.getModelDao().save(m);
 			// Create a feature
 			Feature f = new Feature();
 			f.vote(true, 222L);
 			f.voteName("My1stName", true, 222L);
+			f.setModel(m);
+			
 			f = DaoUtil.getFeatureDao().save(f);
+			
 			
 			// Make and handle a request
 			FeatureOperation op = new FeatureOperation();
@@ -177,11 +211,13 @@ public class CommitActionTest {
 			op.setVote(true);
 			op.setValue("My2ndName");
 			op.setFeatureId(f.getId());
+			op.setModelId(m.getId());
 
 			CommitRequest req = new CommitRequest();
 			req.setId(3L);
 			req.setName(Resources.REQ_COMMIT);
 			req.setRequesterId(100L);
+			req.setModelId(m.getId());
 			req.setOperation(op);
 			
 			ResponseGroup rg = new ResponseGroup();
@@ -192,8 +228,8 @@ public class CommitActionTest {
 			showResponse(rg.getBroadcast());
 			
 			// Query and compare
-			Feature f1 = DaoUtil.getFeatureDao().getByName("My1stName");
-			Feature f2 = DaoUtil.getFeatureDao().getByName("My2ndName");
+			Feature f1 = DaoUtil.getFeatureDao().getByName(m.getId(), "My1stName");
+			Feature f2 = DaoUtil.getFeatureDao().getByName(m.getId(), "My2ndName");
 			assertTrue(f1==f2);
 			logger.info(f1.toString());
 		} catch (Exception e) {
@@ -205,11 +241,18 @@ public class CommitActionTest {
 	@Test
 	public void testVoteNoToName() {
 		try {
+			// Create a Model
+			Model m = new Model();
+			m.voteName("Bad Domain", true, 1L);
+			m = DaoUtil.getModelDao().save(m);
 			// Create a feature
 			Feature f = new Feature();
 			f.vote(true, 222L);
 			f.voteName("testVoteNoToName", true, 222L);
+			f.setModel(m);
+			
 			f = DaoUtil.getFeatureDao().save(f);
+			
 			
 			// Make and handle a request
 			FeatureOperation op = new FeatureOperation();
@@ -218,11 +261,13 @@ public class CommitActionTest {
 			op.setVote(false);
 			op.setValue("testVoteNoToName");
 			op.setFeatureId(f.getId());
+			op.setModelId(m.getId());
 
 			CommitRequest req = new CommitRequest();
 			req.setId(3L);
 			req.setName(Resources.REQ_COMMIT);
 			req.setRequesterId(op.getUserid());
+			req.setModelId(op.getModelId());
 			req.setOperation(op);
 			
 			ResponseGroup rg = new ResponseGroup();
@@ -233,7 +278,7 @@ public class CommitActionTest {
 			showResponse(rg.getBroadcast());
 			
 			// Query and compare
-			Feature f1 = DaoUtil.getFeatureDao().getByName("testVoteNoToName");
+			Feature f1 = DaoUtil.getFeatureDao().getByName(m.getId(), "testVoteNoToName");
 			logger.info(f1.toString());
 		} catch (Exception e) {
 			logger.error("Couldn't execute.", e);
@@ -244,6 +289,10 @@ public class CommitActionTest {
 	@Test
 	public void testCreateBinaryRelationship() {
 		try {
+			// Create a Model
+			Model m = new Model();
+			m.voteName("XXXXXXX Domain", true, 1L);
+			m = DaoUtil.getModelDao().save(m);
 			// Insert 2 features
 			Feature f1 = new Feature();
 			Feature f2 = new Feature();
@@ -251,9 +300,12 @@ public class CommitActionTest {
 			f2.vote(true, 2222L);
 			f1.voteName("ThisIsFirstOnehaha", true, 11111L);
 			f2.voteName("opopopopopop", true, 2222L);
-			
+			f1.setModel(m);
+			f2.setModel(m);
+						
 			f1 = DaoUtil.getFeatureDao().save(f1);
 			f2 = DaoUtil.getFeatureDao().save(f2);
+			
 			
 			// Make and handle request
 			BinaryRelationshipOperation op = new BinaryRelationshipOperation();
@@ -263,11 +315,13 @@ public class CommitActionTest {
 			op.setType(Resources.BIN_REL_REFINES);
 			op.setVote(true);
 			op.setUserid(1212L);
+			op.setModelId(m.getId());
 			
 			CommitRequest req = new CommitRequest();
 			req.setId(444L);
 			req.setName(Resources.REQ_COMMIT);
 			req.setRequesterId(op.getUserid());
+			req.setModelId(m.getId());
 			req.setOperation(op);
 			
 			ResponseGroup rg = new ResponseGroup();
@@ -279,10 +333,10 @@ public class CommitActionTest {
 			
 			// Query and show
 			BinaryRelationship rel = new BinaryRelationship();
-			rel.setFeatures(f1, f2);
 			rel.setType(op.getType());
-			assertTrue(DaoUtil.getRelationshipDao().getByExample(rel).size() == 1);
-			logger.info(((Relationship)DaoUtil.getRelationshipDao().getByExample(rel).get(0)).getFeatures());
+			rel.setFeatures(f1, f2);
+			assertTrue(DaoUtil.getRelationshipDao().getByExample(m.getId(), rel).size() == 1);
+			logger.info(((Relationship)DaoUtil.getRelationshipDao().getByExample(m.getId(), rel).get(0)).getFeatures());
 		} catch (Exception e) {
 			logger.error("Couldn't execute.", e);
 			assertTrue(false);
@@ -292,6 +346,10 @@ public class CommitActionTest {
 	@Test
 	public void testVoteNoToBinaryRelationship() {
 		try {
+			// Create a Model
+			Model m = new Model();
+			m.voteName("lllllllll Domain", true, 1L);
+			m = DaoUtil.getModelDao().save(m);
 			// Create 2 features and 1 binary relationship
 			Feature f1 = new Feature();
 			Feature f2 = new Feature();
@@ -299,16 +357,20 @@ public class CommitActionTest {
 			f2.vote(true, 2222L);
 			f1.voteName("iamleft", true, 11111L);
 			f2.voteName("iamright", true, 2222L);
-			
+			f1.setModel(m);
+			f2.setModel(m);
 			f1 = DaoUtil.getFeatureDao().save(f1);
 			f2 = DaoUtil.getFeatureDao().save(f2);
 			
 			BinaryRelationship r = new BinaryRelationship();
-			r.setFeatures(f1, f2);
 			r.setType(Resources.BIN_REL_EXCLUDES);
 			r.vote(true, 999L);
+			r.setFeatures(f1, f2);
+			r.setModel(m);
+			
 			
 			r = (BinaryRelationship)DaoUtil.getRelationshipDao().save(r);
+			
 			
 			// Make and handle request
 			BinaryRelationshipOperation op = new BinaryRelationshipOperation();
@@ -318,11 +380,13 @@ public class CommitActionTest {
 			op.setVote(false);
 			op.setUserid(1212L);
 			op.setRelationshipId(r.getId());
+			op.setModelId(m.getId());
 			
 			CommitRequest req = new CommitRequest();
 			req.setId(444L);
 			req.setName(Resources.REQ_COMMIT);
 			req.setRequesterId(op.getUserid());
+			req.setModelId(op.getModelId());
 			req.setOperation(op);
 			
 			ResponseGroup rg = new ResponseGroup();

@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.entity.BinaryRelationship;
 import collab.fm.server.bean.entity.Feature;
+import collab.fm.server.bean.entity.Model;
 import collab.fm.server.bean.entity.Relationship;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
@@ -61,12 +62,18 @@ public class BinaryRelationshipOperation extends RelationshipOperation {
 			if (vote.equals(false)) {
 				throw new InvalidOperationException("Invalid vote: NO to inexisted relationship.");
 			}
+			// Get the model
+			Model model = DaoUtil.getModelDao().getById(modelId, false);
+			if (model == null) {
+				throw new InvalidOperationException("Invalid model ID: " + modelId);
+			}
+			
 			// See if the relationship has already existed.
 			BinaryRelationship relation = new BinaryRelationship();
 			relation.setType(type);
 			relation.setLeftFeatureId(leftFeatureId);
 			relation.setRightFeatureId(rightFeatureId);
-			List sameRelations = DaoUtil.getRelationshipDao().getByExample(relation); 
+			List sameRelations = DaoUtil.getRelationshipDao().getByExample(modelId, relation); 
 			if (sameRelations != null) {
 				relation = (BinaryRelationship)sameRelations.get(0);
 			} else {
@@ -75,6 +82,7 @@ public class BinaryRelationshipOperation extends RelationshipOperation {
 						DaoUtil.getFeatureDao().getById(rightFeatureId, false));
 			}
 			relation.vote(true, userid);
+			relation.setModel(model);
 			relation = (BinaryRelationship)DaoUtil.getRelationshipDao().save(relation);
 			relationshipId = relation.getId();
 			
