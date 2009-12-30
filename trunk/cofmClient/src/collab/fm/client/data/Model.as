@@ -2,7 +2,7 @@ package collab.fm.client.data {
 	import flash.utils.Dictionary;
 
 	// The Feature Model
-	public class Model {
+	public class Model extends AbstractDataView {
 		/* Definition of the Model: (See also clientServer.protocol.updateResponse)
 		   features: array of feature
 		   binaries: array of binary relationships
@@ -36,16 +36,15 @@ package collab.fm.client.data {
 		// My user ID
 		public var myId: int;
 
-		// Data Views
-		private var views: Array;
+		private static var _model: Model = new Model();
+
+		public static function get instance(): Model {
+			return _model;
+		}
 
 		public function Model() {
+			super();
 		}
 
-		public function updateViews(minorChange: Object): void {
-			for each (var view: Object in views) {
-				(view as DataView).refresh(minorChange);
-			}
-		}
 	}
 }

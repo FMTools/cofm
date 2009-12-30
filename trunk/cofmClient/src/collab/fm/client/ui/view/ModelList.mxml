@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	 xmlns:r="collab.fm.client.ui.renderer.*" width="400" height="300"
+	 creationComplete="initView()"
+	 initialize="initData()">
+	
+	<!-- There're 2 lists in this view.
+	     On the up side, a 'My Models' Tile-List will display my models with big image and short information.
+	     Below my models, a vertical list will display all other models with small image (at the left) and 
+	   detailed information.
+	     But, if the user didn't login, we show ONLY the "other models" list because at that time there's no 'my'.
+	     Use event listener to handle LoginEvent.
+	     
+	     And becaus
+	     e we need to show contributors' name, so we also need a "listuser" command in ModelList
+    -->
+    <mx:TileList id="mine" dataProvider="{ModelCollection.instance.my}"
+    	 columnCount="4" columnWidth="200" width="100%">
+    	<mx:itemRenderer>
+    		<mx:Component>
+    			<mx:VBox verticalAlign="middle">
+    				<mx:Image width="90" height="90" source="structure.png" />
+    				<mx:Label text="{data.@name}" fontWeight="bold" fontSize="12"/>
+    				<mx:Label text="Contributor(s): {data.@userNum}" />  
+    			</mx:VBox>
+    		</mx:Component>
+    	</mx:itemRenderer>
+    </mx:TileList>
+    <mx:List id="others" dataProvider="{ModelCollection.instance.others}"
+    	 itemRenderer="collab.fm.client.ui.renderer.ModelIntroRenderer"
+    	 variableRowHeight="true" wordWrap="true">
+    </mx:List>  
+    <mx:Script>
+    	<![CDATA[
+    		import mx.collections.XMLListCollection;
+    		import collab.fm.client.data.ModelCollection;
+    		
+    		private function initView(): void {
+    			trace("Model List View inited.");
+    			
+    		}
+    		
+    		private function initData(): void {
+    		}
+    		
+    		private function doChange(): void {
+    			var input: Array = [
+				{ id: 1, user: [1, 2, 3, 4, 5], 
+					name: [
+					{val: "Avatar", uYes: [1, 4], uNo: [2, 3, 5] },
+						{val: "Avanti", uYes: [1, 2, 3, 4], uNo: [5] }
+					],
+					des: [
+					{val: "gogogogo", uYes: [3, 5], uNo: [1, 2, 4] }
+					]
+				},
+				{ id: 2, user: [14, 2, 3, 4, 5, 9, 10], 
+					name: [
+					{val: "Avatar123", uYes: [1, 9, 10, 11, 4], uNo: [2, 3, 5] },
+						{val: "Avanti4321", uYes: [1, 2, 3, 4], uNo: [5] }
+					],
+					des: [
+					{val: "gogogogo", uYes: [3, 5], uNo: [1, 2, 4] }
+					]
+				}
+				];
+			ModelCollection.instance.refresh(input);
+    		}
+    	]]>
+    </mx:Script>
+</mx:VBox>

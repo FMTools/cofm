@@ -1,7 +1,6 @@
-package collab.fm.client.cmn
-{
+package collab.fm.client.cmn {
 	import collab.fm.client.command.IDurableCommand;
-	
+
 	public class CommandBuffer {
 
 		private static var cb: CommandBuffer = new CommandBuffer();
@@ -25,7 +24,11 @@ package collab.fm.client.cmn
 			return buffer[id];
 		}
 
-		private function CommandBuffer() {
+		public function removeCommand(id: int): void {
+			delete buffer[id];
+		}
+
+		public function CommandBuffer() {
 			nextId = 0;
 			buffer = new Array();
 		}

@@ -1,6 +1,6 @@
 package collab.fm.client.controller {
 	import collab.fm.client.command.*;
-	import collab.fm.client.util.Resources;
+	import collab.fm.client.util.Cst;
 	
 	import flash.utils.Dictionary;
 	import flash.utils.getDefinitionByName;
@@ -12,9 +12,9 @@ package collab.fm.client.controller {
 		private final static var forwardedPrefix: String = "forwarded";
 		
 		private final static var rspNames: Array = {
-			Resources.RSP_ERROR,
-			Resources.RSP_STALE,
-			Resources.RSP_SUCCESS
+			Cst.RSP_ERROR,
+			Cst.RSP_STALE,
+			Cst.RSP_SUCCESS
 		};
 
 		private var commandMap: Dictionary = new Dictionary();
@@ -26,15 +26,15 @@ package collab.fm.client.controller {
 		}
 
 		public function buildCommand(info: Object): Command {
-			var name: String = info[Resources.FIELD_CMD_MAIN_NAME] as String;
+			var name: String = info[Cst.FIELD_RSP_NAME] as String;
 			//1. If it is a response of previous command, just return it.
 			if (isResponse(name)) {
-				var cmd:DurableCommand = CommandBuffer.getInstance().getCommand(info[Resources.FIELD_CMD_ID]);
+				var cmd:DurableCommand = CommandBuffer.getInstance().getCommand(info[Cst.FIELD_CMD_ID]);
 				cmd.setResponse(info);
 				return cmd;
 			}
 			//2. if name=="forward" then get "requestName" from info (See Response.java for details)
-			if (Resources.RSP_FORWARD == name) {
+			if (Cst.RSP_FORWARD == name) {
 				name = forwardedPrefix + name;
 			} 
 			
@@ -44,7 +44,7 @@ package collab.fm.client.controller {
 			return new commandClass(info) as Command;
 		}
 
-		private function CommandBuilder() {
+		public function CommandBuilder() {
 			initCommandMap();
 		}
 		
@@ -79,18 +79,18 @@ package collab.fm.client.controller {
 				return forwardedPrefix + name;
 			}
 			
-			commandMap[Resources.OP_ADD_DES] = getQualifiedClassName(AddDescriptionCommand);
-			commandMap[Resources.OP_ADD_NAME] = getQualifiedClassName(AddNameCommand);
-			commandMap[Resources.OP_CREATE_FEATURE] = getQualifiedClassName(CreateFeatureCommand);
-			commandMap[Resources.OP_CREATE_RELATIONSHIP] = getQualifiedClassName(CreateRelationshipCommand);
-			commandMap[Resources.OP_SET_OPT] = getQualifiedClassName(SetOptionalityCommand);
-			commandMap[Resources.CMD_UI_CREATE_FEATURE] = getQualifiedClassName(UICreateFeatureCommand);
-			commandMap[Resources.REQ_LIST_USER] = getQualifiedClassName(ListUserCommand);
-			commandMap[Resources.REQ_LOGIN] = getQualifiedClassName(LoginCommand);
-			commandMap[Resources.REQ_LOGOUT] = getQualifiedClassName(LogoutCommand);
-			commandMap[Resources.REQ_REGISTER] = getQualifiedClassName(RegisterCommand);
-			commandMap[Resources.REQ_UPDATE] = getQualifiedClassName(UpdateCommand);
-			commandMap[forward(Resources.REQ_COMMIT)] = getQualifiedClassName(ForwardedCommitCommand);
+			commandMap[Cst.OP_ADD_DES] = getQualifiedClassName(AddDescriptionCommand);
+			commandMap[Cst.OP_ADD_NAME] = getQualifiedClassName(AddNameCommand);
+			commandMap[Cst.OP_CREATE_FEATURE] = getQualifiedClassName(CreateFeatureCommand);
+			commandMap[Cst.OP_CREATE_RELATIONSHIP] = getQualifiedClassName(CreateRelationshipCommand);
+			commandMap[Cst.OP_SET_OPT] = getQualifiedClassName(SetOptionalityCommand);
+			commandMap[Cst.CMD_UI_CREATE_FEATURE] = getQualifiedClassName(UICreateFeatureCommand);
+			commandMap[Cst.REQ_LIST_USER] = getQualifiedClassName(ListUserCommand);
+			commandMap[Cst.REQ_LOGIN] = getQualifiedClassName(LoginCommand);
+			commandMap[Cst.REQ_LOGOUT] = getQualifiedClassName(LogoutCommand);
+			commandMap[Cst.REQ_REGISTER] = getQualifiedClassName(RegisterCommand);
+			commandMap[Cst.REQ_UPDATE] = getQualifiedClassName(UpdateCommand);
+			commandMap[forward(Cst.REQ_COMMIT)] = getQualifiedClassName(ForwardedCommitCommand);
 		}
 	}
 }

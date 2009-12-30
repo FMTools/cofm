@@ -1,10 +1,9 @@
-package collab.fm.client.command
-{
-	public interface IDurableCommand extends ICommand
-	{
-		public function redo(): Boolean;
-		public function undo(): Boolean;
-		public function setDurable(val: Boolean): void;
-		public function handleResponse(data: Object): Boolean;
+package collab.fm.client.command {
+
+	public interface IDurableCommand extends ICommand {
+		function redo(): void;
+		function undo(): void;
+		function setDurable(val: Boolean): void;
+		function handleResponse(data: Object): void;
 	}
 }
