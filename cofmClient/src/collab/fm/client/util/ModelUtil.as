@@ -15,7 +15,7 @@ package collab.fm.client.util {
 				nodes[feature.id] = {parent: null, children: null};
 			}
 			for each (var rel: Object in model.binaries) {
-				if (rel.type == Resources.BIN_REL_REFINES) {
+				if (rel.type == Cst.BIN_REL_REFINES) {
 					if (nodes[rel.left].children == null) {
 						nodes[rel.left].children = new Array();
 					}
@@ -54,6 +54,49 @@ package collab.fm.client.util {
 			}
 
 			return result;
+		}
+
+		/**
+		 * Sort by approval rating (yesNumber / totalNumer)
+		 */
+		public static function sortOnRating(
+			target: Array,
+			uYesPropName: String,  // property name of 'user-yes'
+			uNoPropName: String,   // property name of 'user-no'
+			myId: int): void {
+
+			function compareRatedItems(a: Object, b: Object): Number {
+				var meInA: Boolean = (a[uYesPropName] as Array).indexOf(myId) >= 0;
+				var meNotA: Boolean = (a[uNoPropName] as Array).indexOf(myId) >= 0;
+				var meInB: Boolean = (b[uYesPropName] as Array).indexOf(myId) >= 0;
+				var meNotB: Boolean = (b[uNoPropName] as Array).indexOf(myId) >= 0;
+
+				var isA: Boolean = meInA || meNotB;
+				var isB: Boolean = meInB || meNotA;
+
+				if (isA && !isB) {
+					// a goes before b
+					return -1;
+				}
+				if (isB && !isA) {
+					// a goes behind b
+					return 1;
+				}
+				// compare by the approval ratings
+				// ( a.YES / a.Total ) compares with ( b.YES / b.Total)
+				var aYes: int = (a[uYesPropName] as Array).length;
+				var aTotal: int = (a[uNoPropName] as Array).length + aYes;
+				var bYes: int = (b[uYesPropName] as Array).length;
+				var bTotal: int = (b[uNoPropName] as Array).length + bYes;
+
+				var aybt: int = aYes * bTotal;
+				var byat: int = bYes * aTotal;
+				if (aybt > byat) return -1; // a first
+				if (aybt < byat) return 1; // b first
+				return 0;
+			}
+
+			target.sort(compareRatedItems);
 		}
 
 	}

@@ -1,0 +1,18 @@
+------------------------------
+--  Minor Change Definitions
+------------------------------
+[FORMAT]
+<name>: <meaning>
+   <properties> 
+   <listeners>
+
+myInfoUpdated:  my user info has updated or created.
+   myId: int
+   myName: String
+   <listeners> ModelCollection, User
+   
+userNamesUpdated:  user names and their IDs have updated.
+   nameList: array of {id, name}
+   <listeners> ModelCollection, User
+
+    

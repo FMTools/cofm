@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="200" height="200"
+	 creationComplete="initView()">
+	
+	<mx:Form id="loginForm">
+		<mx:FormHeading label="{RS.LOGIN_HEADING}"/>
+		<mx:FormItem label="{RS.LOGIN_INPUT_NAME}">
+			<mx:TextInput id="uName" />
+		</mx:FormItem>
+		<mx:FormItem label="{RS.LOGIN_INPUT_PWD}">
+			<mx:TextInput id="uPwd" displayAsPassword="true" />
+		</mx:FormItem>
+		<mx:FormItem>
+			<mx:Button label="{RS.BTN_OK}" click="doLogin()" />
+			<mx:Spacer/>
+			<mx:Label text="{RS.LOGIN_GO_REGISTER}" />
+			<mx:LinkButton label="{RS.LOGIN_REGISTER_BTN}" click="doRegister()" />
+		</mx:FormItem>
+	</mx:Form>
+	
+	<mx:Form id="regForm">
+		<mx:FormHeading label="{RS.REG_HEADING}" />		
+	</mx:Form>
+	
+	<mx:Script>
+		<![CDATA[
+			import collab.fm.client.util.RS;
+			import collab.fm.client.command.*;
+			import collab.fm.client.event.*;
+			import collab.fm.client.data.*;
+			
+			public var showLogin: Boolean = true;
+			
+			private function initView(): void {
+				this.addEventListener(LoginEvent.SUCCESS, doLoginOK);
+			}
+			
+			private function doLogin(): void {
+				new LoginCommand(uName.text, uPwd.text).execute();
+			}
+			
+			private function doRegister(): void {
+				
+			}
+			
+			private function doLoginOK(evt: LoginEvent): void {
+				
+			}
+			
+		]]>
+	</mx:Script>
+</mx:VBox>

@@ -8,11 +8,11 @@ package collab.fm.client.data {
 	//  model_tree = feature_primary_name + children
 	//  feature_primary_name = name I voted YES, or the most supported name if I haven't voted.
 
-	public class WorkingTreeView implements DataView {
-		[Bindable]
-		public var data: XMLListCollection;
+	public class WorkingModelView extends AbstractDataView {
 		
-		private var model: Model;
+		private var _data: XMLListCollection;
+		
+		private var model: Model = Model.instance;
 
 		private function createFeatureXmlNode(feature: Object): XML {
 			// Decide whether the feature should be ignored
@@ -73,27 +73,32 @@ package collab.fm.client.data {
 				root.appendChild(nodeToXml(node));
 			}
 
-			data = new XMLListCollection(root);
+			_data = new XMLListCollection(root);
 		}
 
 		private function updateMinorChange(minorChange: Object): void {
 
 		}
 
-		public function WorkingTreeView(m: Model) {
-			model = m;
+		public function WorkingModelView() {
 		}
 
-		public function getLabel(item: Object): String {
-			return (item as XML).@name;
+		[Bindable]
+		public function get asXml(): XMLListCollection {
+			return _data;
 		}
-
-		public function refresh(minorChange: Object): void {
-			if (minorChange == undefined) {
-				updateEntireView();
+		
+		public function set asXml(val: XMLListCollection): void {
+			this._data = val;
+		}
+		
+		public function refresh(input: Object, minorChange: Object): void {
+			if (minorChange) {
+				updateEntireView(input);
 			} else {
-				updateMinorChange(minorChange);
+				updateMinorChange(input);
 			}
+			super.refresh(input, minorChange);
 		}
 
 	}

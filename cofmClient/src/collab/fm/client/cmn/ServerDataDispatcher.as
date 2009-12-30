@@ -1,9 +1,39 @@
 package collab.fm.client.cmn {
 
+	import collab.fm.client.command.*;
+	import collab.fm.client.event.*;
+	import collab.fm.client.util.*;
+
 	// Dispatch server response to approriate commands which implements IForwardedCommand interface.
 	public class ServerDataDispatcher {
 
-		public function ServerDataDispatcher() {
+		private static var rsps: Array = [
+			Cst.RSP_ERROR,
+			Cst.RSP_STALE,
+			Cst.RSP_SUCCESS
+			];
+
+		private static function isResponse(name: String): Boolean {
+			return rsps.indexOf(name) >= 0;
+		}
+
+		public static function dispatchData(data: Object): void {
+			// get the resposne name
+			var name: String = data[Cst.FIELD_RSP_NAME] as String;
+			if (isResponse(name)) {
+				CommandBuffer.instance.getCommand(
+					int(data[Cst.FIELD_RSP_SOURCE_ID])).handleResponse(data);
+				return;
+			}
+			if (Cst.RSP_FORWARD == name) {
+				// do forwarded command
+				name = data[Cst.FIELD_RSP_SOURCE_NAME] as String;
+				switch (name) {
+					case Cst.REQ_COMMIT:
+						new ForwardedCommitCommand(data).execute();
+						break;
+				}
+			}
 		}
 	}
 }
