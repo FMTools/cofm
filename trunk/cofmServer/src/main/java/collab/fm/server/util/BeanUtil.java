@@ -11,6 +11,8 @@ import net.sf.json.util.PropertyFilter;
 
 import org.apache.log4j.Logger;
 
+import collab.fm.server.bean.entity.Votable;
+import collab.fm.server.bean.protocol.UpdateResponse.Name2;
 import collab.fm.server.util.exception.BeanConvertException;
 import collab.fm.server.util.exception.JsonConvertException;
 
@@ -118,6 +120,7 @@ public final class BeanUtil {
 	 */
 	public static <T> T jsonToBean(Object srcJson, Class<T> beanClass, Map<String, Class> clsMap, final String[] fields) 
 		throws BeanConvertException {
+		logger.debug("json is: " + srcJson);
 		try {
 			JSON json = JSONSerializer.toJSON(srcJson);
 			JsonConfig cfg = new JsonConfig();

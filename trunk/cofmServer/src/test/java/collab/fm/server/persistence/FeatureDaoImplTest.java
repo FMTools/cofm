@@ -1,5 +1,7 @@
 package collab.fm.server.persistence;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.hibernate.FlushMode;
 import org.junit.*;
@@ -146,6 +148,32 @@ public class FeatureDaoImplTest {
 			
 			Feature me = dao.getByName(m.getId(), "QueryMe");
 			assertEquals(feature.getId(), me.getId());
+		} catch (Exception e) {
+			logger.error(e);
+			assertTrue(false);
+		}
+	}
+	
+	@Test
+	public void testGetBySimilarName() {
+		try {
+			
+			Feature feature = new Feature();
+			feature.voteName("MarkWilliams", true, 1L);
+			
+			
+			Feature another = new Feature();
+			another.voteName("MarkAllen", true, 3L);
+			
+			feature.setModel(m);
+			another.setModel(m);
+			
+			dao.save(another);
+			feature = dao.save(feature);
+			
+			
+			List<Feature> me = dao.getBySimilarName(m.getId(), "Mark");
+			assertTrue(me.size()==2);
 		} catch (Exception e) {
 			logger.error(e);
 			assertTrue(false);

@@ -1,24 +1,26 @@
 package collab.fm.server.controller;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
-import collab.fm.server.bean.*;
+import collab.fm.server.action.Action;
+import collab.fm.server.action.CommitAction;
+import collab.fm.server.action.LoginAction;
+import collab.fm.server.action.RegisterAction;
+import collab.fm.server.action.UpdateAction;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
-import collab.fm.server.filter.*;
-import collab.fm.server.action.*;
-import collab.fm.server.util.BeanUtil;
+import collab.fm.server.filter.AccessValidator;
+import collab.fm.server.filter.ActionDispatcher;
+import collab.fm.server.filter.Filter;
+import collab.fm.server.filter.FilterChain;
+import collab.fm.server.filter.HibernateSessionFilter;
+import collab.fm.server.filter.ProtocolFilter;
 import collab.fm.server.util.ProtocolUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.FilterException;
-import collab.fm.server.util.exception.JsonConvertException;
 import collab.fm.server.util.exception.ProtocolInterpretException;
 
 public class Controller {
@@ -63,27 +65,41 @@ public class Controller {
 	public ResponseGroup execute(String message, String sourceAddress) {
 		Request req = null;
 		ResponseGroup rg = new ResponseGroup();
+		rg.setBack(null);
+		rg.setBroadcast(null);
+		rg.setPeer(null);
 		try {
 			// 1. Build request from message (a JSON string actually)
 			req = ProtocolUtil.jsonToRequest(message);
 			req.setAddress(sourceAddress);
+			req.setLastError(null);
 			
 			// 2. Build a chain to process the request
 			FilterChain chain = buildChain(req.getName());
 			
+			logger.info("Filter chain is starting...");
 			chain.doNextFilter(req, rg);
-			convertResponsesToJson(rg);
+			
+			if (req.getLastError() != null) {
+				logger.info("Got error when filtering request: " + req.getLastError());
+				reportFilterError(Resources.RSP_ERROR, req, rg);
+			}
 			
 		} catch (Exception e) {
-			logger.warn("Couldn't process request: " + req.getLastError(), e);
-			reportErrorToRequester(req, rg);
-			try {
-				convertResponsesToJson(rg);
-			} catch (Exception ex) {
-				logger.fatal("Internal error in Controller.execute: should never happen.", ex);
-				throw new RuntimeException("Fatal: should never reach here.", ex);
+			if (req.getLastError() == null) {
+				req.setLastError("Internal error occured.");
 			}
+			logger.warn("Internal error: ", e);
+			reportFilterError(Resources.RSP_SERVER_ERROR, req, rg);
 		}
+		
+		try {
+			convertResponsesToJson(rg);
+		} catch (Exception ex) {
+			logger.error("Internal error: couldn't convert responses to JSON.", ex);
+			return null;
+		}
+		logger.info("Responses are ready: " + rg.toString());
 		return rg;
 	}
 	
@@ -108,7 +124,7 @@ public class Controller {
 		return false;
 	}
 	
-	private void reportErrorToRequester(Request req, ResponseGroup rg) {
+	private void reportFilterError(String errorCode, Request req, ResponseGroup rg) {
 		// Disallow multicast and broadcast
 		rg.setBroadcast(null);
 		rg.setPeer(null);
@@ -116,7 +132,7 @@ public class Controller {
 		
 		Response rsp = new Response();
 		rsp.setMessage(req.getLastError());
-		rsp.setName(Resources.RSP_ERROR);
+		rsp.setName(errorCode);
 		if (req != null) {
 			rsp.setRequesterId(req.getRequesterId());
 			rsp.setRequestId(req.getId());

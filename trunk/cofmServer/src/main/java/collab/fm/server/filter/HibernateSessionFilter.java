@@ -1,6 +1,7 @@
 package collab.fm.server.filter;
 
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
 import collab.fm.server.bean.protocol.Request;
@@ -22,31 +23,35 @@ public class HibernateSessionFilter extends Filter {
 			throws FilterException {
 		try {
 			session.getTransaction().commit();
-			session.close();
+			logger.info("Transaction closed.");
 			return true;
-		} catch (Exception e) {
-			logger.error("Couldn't commit transaction.", e);
-			req.setLastError("Couldn't commit transaction.");
-			throw new FilterException("Transaction commit error.", e);
+		} catch (HibernateException he) {
+			logger.error("Couldn't commit transaction.", he);
+			throw finalizeAndReport(he);
 		}
 	}
 
 	@Override
 	protected boolean doForwardFilter(Request req, ResponseGroup rg)
 			throws FilterException {
-		session = HibernateUtil.getSessionFactory().openSession();
-		session.beginTransaction();
-		return true;
+		try {
+			session = HibernateUtil.getSessionFactory().getCurrentSession();
+			session.beginTransaction();
+			logger.info("Transaction has began.");
+			return true;
+		} catch (HibernateException he) {
+			logger.error("Couldn't begin transaction.", he);
+			throw finalizeAndReport(he);
+		}
 	}
 	
-	@Override
-	protected FilterException onError(Request req, ResponseGroup rg, Exception e) {
+	private FilterException finalizeAndReport(HibernateException he) {
 		try {
 			session.getTransaction().rollback();
-			return new FilterException(e);
+			return new FilterException(he);
 		} catch (Exception rbe) {
-			logger.error("Couldn't rollback transaction.", rbe);
-			return new FilterException(e);
+			logger.warn("Couldn't rollback transaction.", rbe);
+			return new FilterException(he);
 		} finally {
 			session.close();		
 		}

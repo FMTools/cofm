@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import org.apache.log4j.Logger;
 
+import collab.fm.server.bean.entity.Model;
+import collab.fm.server.bean.entity.User;
 import collab.fm.server.bean.operation.BinaryRelationshipOperation;
 import collab.fm.server.bean.operation.FeatureOperation;
 import collab.fm.server.bean.operation.Operation;
@@ -15,6 +17,7 @@ import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.util.BeanUtil;
+import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.ActionException;
 import collab.fm.server.util.exception.StaleDataException;
@@ -33,6 +36,14 @@ public class CommitAction extends Action {
 		try {
 			List<Operation> ops = ((CommitRequest)req).getOperation().apply();
 			
+			// Create the association between this user and current model.
+			User me = DaoUtil.getUserDao().getById(req.getRequesterId(), false);
+			Model currentModel = DaoUtil.getModelDao().getById(req.getModelId(), false);
+			if (me != null && currentModel != null) {
+				me.addModel(currentModel);
+				DaoUtil.getUserDao().save(me);
+			}
+			
 			CommitResponse cr = new CommitResponse();
 			cr.setName(Resources.RSP_SUCCESS);
 			cr.setOperations(ops);
@@ -43,10 +54,10 @@ public class CommitAction extends Action {
 			
 			rg.setBack(cr);
 			rg.setBroadcast(cr2);
-			rg.setPeer(null);
 			
 			return true;
 		} catch (StaleDataException sde) {
+			logger.info("Stale data found.");
 			throw sde;
 		} catch (Exception e) {
 			logger.warn("Execution failed.", e);

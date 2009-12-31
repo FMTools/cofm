@@ -49,11 +49,10 @@ public class LoginAction extends Action {
 			}
 			
 			rg.setBack(rsp);
-			rg.setBroadcast(null);
-			rg.setPeer(null);
 			
 			return true;
 		} catch (StaleDataException sde) {
+			logger.info("Stale data found.");
 			throw sde;
 		} catch (Exception e) {
 			logger.warn("Couldn't login.", e);

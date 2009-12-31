@@ -109,15 +109,13 @@ public class UpdateAction extends Action {
 			response.setName(Resources.RSP_SUCCESS);
 			
 			rg.setBack(response);
-			rg.setBroadcast(null);
-			rg.setPeer(null);
 			
 			return true;
 		} catch (BeanPersistenceException e) {
 			logger.warn("Bean Persistence Failed.", e);
 			throw new ActionException(e);
 		} catch (StaleDataException e) {
-			logger.info("Stale Data");
+			logger.info("Stale data found.");
 			throw e;
 		}		
 	}

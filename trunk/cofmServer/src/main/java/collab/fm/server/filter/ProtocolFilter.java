@@ -27,6 +27,7 @@ public class ProtocolFilter extends Filter {
 			writeSource(req, rg.getBack());
 			writeSource(req, rg.getBroadcast());
 			writeSource(req, rg.getPeer());
+			logger.info("Source information has wrote.");
 			return true;
 		} catch (Exception e) {
 			logger.error("Couldn't write source.", e);

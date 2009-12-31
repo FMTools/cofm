@@ -30,6 +30,8 @@ public class RegisterAction extends Action {
 	protected boolean doExecute(Request req, ResponseGroup rg) throws ActionException, StaleDataException {
 		try {
 			RegisterRequest r = (RegisterRequest) req;
+			
+			logger.info("Register received: <name=" + r.getUser() + ", pwd=" + r.getPwd() + ">");
 			Response rsp = new Response();
 
 			User u = DaoUtil.getUserDao().getByName(r.getUser());
@@ -49,11 +51,11 @@ public class RegisterAction extends Action {
 			}
 
 			rg.setBack(rsp);
-			rg.setBroadcast(null);
-			rg.setPeer(null);
-
+			
+			logger.info("Request sent: " + rsp.getName());
 			return true;
 		} catch (StaleDataException sde) {
+			logger.info("Stale data found.");
 			throw sde;
 		} catch (Exception e) {
 			logger.warn("Couldn't register.", e);

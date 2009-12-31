@@ -48,4 +48,8 @@ public class UserDaoImpl extends GenericDaoImpl<User, Long> implements UserDao {
 			StaleDataException {
 		return super.getAll(modelId, "modelsInternal");
 	}
+	
+	public List getAll() throws BeanPersistenceException, StaleDataException {
+		return super.getAll();
+	}
 }
