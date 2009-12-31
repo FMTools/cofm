@@ -3,7 +3,7 @@
 	xmlns:v="collab.fm.client.ui.view.*" 
 	horizontalAlign="center" verticalAlign="middle"
 	creationComplete="initView()">
-	
+
 	<mx:states>
 	    <mx:State name="">
 	    	<mx:SetProperty target="{conDlg}" name="includeInLayout" value="true" />
@@ -21,7 +21,8 @@
 	
 	<v:ConnectDlg id="conDlg" width="300" height="150"/>
 	<v:ModelList id="mdList" includeInLayout="false" visible="false" width="100%" height="100%"/>
-	<v:LoginRegisterForm id="logReg" />
+	<v:LoginRegisterForm id="logReg" 
+		includeInLayout="{!User.instance.isLogin}" visible="{!User.instance.isLogin}" />
 	
 	<!-- When connected, hide the connect dlg show a Login View by default. (in the right side)
 	In the left side, show a ModelList View, when user has logined, hide the Login View and maxmize
@@ -32,6 +33,7 @@
 	 <mx:Script>
 	 	<![CDATA[
 	 		import collab.fm.client.event.*;
+	 		import collab.fm.client.data.*;
 	 		
 	 		private var _lastState: String;
 	 		
@@ -56,7 +58,7 @@
 	 		
 	 		private function onConnected(evt: ClientEvent): void {
 	 			trace("Entry: Connection success event received.");
-	 			changeStateTo("Working");		
+	 			changeStateTo("Working");	
 	 		}
 	 	]]>
 	 </mx:Script>

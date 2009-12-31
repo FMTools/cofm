@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
 	xmlns:fu="flexunit.flexui.*" creationComplete="runTest()">
-	
 	<fu:TestRunnerBase id="runner" width="100%" height="100%" />
 	<mx:Script>
 		<![CDATA[
@@ -14,6 +13,7 @@
 				// Add Test Cases
 				t.addTestSuite(ModelCollectionTest);
 				t.addTestSuite(ResourceTest);
+				t.addTestSuite(UserTest);
 				return t;
 			}
 			

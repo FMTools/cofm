@@ -12,19 +12,23 @@
 	-->
 	<mx:Image width="50" height="50" source="{imgCls}" />
 	<mx:VBox>
-		<mx:Label text="{data.@name}" fontWeight="bold" fontSize="12"/>
+		<mx:Label text="{info.name}" fontWeight="bold" fontSize="12"/>
 		<mx:HBox verticalAlign="top">
 			<mx:Label text="{RS.M_LIST_USERS}"/>
-			<mx:Repeater id="rep" dataProvider="{data.users.user}" count="{MAX_DISPLAYED_USER_COUNT}">
+			<mx:Repeater id="rep" dataProvider="{info.users}" count="{MAX_DISPLAYED_USER_COUNT}">
 				<mx:Label text="{rep.currentItem}" />
 			</mx:Repeater>	
 			<mx:Label id="userAppender" />
 		</mx:HBox>
-		<mx:Text text="{data.des}" textIndent="25"/>		
+		<mx:Text text="{info.des}" textIndent="25"/>		
 	</mx:VBox>
 
 	<mx:Script>
 		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import collab.fm.client.data.ModelInfo;
+			import collab.fm.client.data.Model;
+			import mx.collections.XMLListCollection;
 			
 			import collab.fm.client.util.RS;
 			
@@ -32,10 +36,15 @@
             [Bindable]
             private var imgCls:Class;
             
+            [Bindable]
+            private var info: ModelInfo;
             private static const MAX_DISPLAYED_USER_COUNT: int = 2; // how many users we should display
             
+            
             private function initView(): void {
-            	var actualUserCount: int = (data.users.user as XMLList).length();
+            	info = new ModelInfo(int(data.@id));
+            	
+            	var actualUserCount: int = XMLList(data.users.user).length();
             	if (actualUserCount > MAX_DISPLAYED_USER_COUNT) {
             		userAppender.text = "...(and " + (actualUserCount - MAX_DISPLAYED_USER_COUNT) + " more)";
             	} else {

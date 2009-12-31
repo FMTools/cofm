@@ -14,8 +14,15 @@
 	     And becaus
 	     e we need to show contributors' name, so we also need a "listuser" command in ModelList
     -->
+    <mx:HBox>
+    <mx:Button click="doChange()"/>	
+    <mx:Button click="doChange2()"/>
+    </mx:HBox>
+    
+    
     <mx:TileList id="mine" dataProvider="{ModelCollection.instance.my}"
-    	 columnCount="4" columnWidth="200" width="100%">
+    	 columnCount="4" columnWidth="200" width="100%"
+    	 includeInLayout="{User.instance.isLogin}" visible="{User.instance.isLogin}">
     	<mx:itemRenderer>
     		<mx:Component>
     			<mx:VBox verticalAlign="middle">
@@ -26,14 +33,17 @@
     		</mx:Component>
     	</mx:itemRenderer>
     </mx:TileList>
+    
     <mx:List id="others" dataProvider="{ModelCollection.instance.others}"
     	 itemRenderer="collab.fm.client.ui.renderer.ModelIntroRenderer"
     	 variableRowHeight="true" wordWrap="true">
     </mx:List>  
+    
     <mx:Script>
     	<![CDATA[
     		import mx.collections.XMLListCollection;
-    		import collab.fm.client.data.ModelCollection;
+    		import collab.fm.client.data.*;
+    		import collab.fm.client.util.*;
     		
     		private function initView(): void {
     			trace("Model List View inited.");
@@ -41,9 +51,6 @@
     		}
     		
     		private function initData(): void {
-    		}
-    		
-    		private function doChange(): void {
     			var input: Array = [
 				{ id: 1, user: [1, 2, 3, 4, 5], 
 					name: [
@@ -64,7 +71,23 @@
 					]
 				}
 				];
-			ModelCollection.instance.refresh(input);
+				ModelCollection.instance.refresh(input);
+    		}
+    		
+    		private function doChange(): void {
+    			
+				ModelCollection.instance.refresh({
+					"event": Cst.DATA_MY_INFO,
+					"myId": 1,
+					"myName": "haha"
+				}, true);
+    		}
+    		
+    		private function doChange2(): void {
+    			ModelCollection.instance.refresh({
+					"event": Cst.DATA_USER_NAMES,
+					"list": { "1": "hendry", "2": "ronnie" }
+				}, true);
     		}
     	]]>
     </mx:Script>

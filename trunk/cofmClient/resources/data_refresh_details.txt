@@ -1,18 +1,40 @@
 ------------------------------
---  Minor Change Definitions
+--  Data Creation Events
 ------------------------------
 [FORMAT]
-<name>: <meaning>
+<command>
+	<listeners>
+
+<command> ListModel
+	<listeners> ModelCollection
+
+
+------------------------------
+--  Data Change Events
+------------------------------
+[FORMAT]
+<event>: <meaning>    
    <properties> 
-   <listeners>
+   <dispatcher command>
+   <listeners> 
 
 myInfoUpdated:  my user info has updated or created.
    myId: int
    myName: String
+   <command> Login
    <listeners> ModelCollection, User
    
 userNamesUpdated:  user names and their IDs have updated.
-   nameList: array of {id, name}
-   <listeners> ModelCollection, User
+   list: array of {id, name}
+   <command> ListUser
+   <listeners> ModelCollection -> ModelInfo,
+    		   User
+
+othersModelUpdated:  others' model list has updated, because of search
+   models: array of model
+   <command> ListModel
+   <listeners> ModelCollection
+
+    	
 
     

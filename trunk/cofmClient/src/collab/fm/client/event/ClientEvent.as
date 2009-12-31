@@ -8,6 +8,9 @@ package collab.fm.client.event {
 		public static const REGISTER_SUCCESS: String = "registerSuccess";
 
 		public static const LIST_MODEL_SUCCESS: String = "listModelSuccess";
+		public static const SEARCH_MODEL_SUCCESS: String = "searchModelSuccess";
+
+		public static const LOGIN_SUCCESS: String = "loginSuccess";
 
 		public function ClientEvent(type:String, bubbles:Boolean=true, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);

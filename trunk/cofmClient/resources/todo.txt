@@ -1,8 +1,10 @@
 Things I need to do for model list and creation:
 1. Create UI for creating new model, so that I can have some "real" data on the server.
-2. Call ListModelCommand and ListUserCommand in the proper place in order to get these real data.
-3. Complete the Login UI for user login.
-4. Complete the Register UI and RegisterCommand so that I can add some users.
+<DONE> Search: the others-model list will display the results (note that search result will omit my models)
+    if search returns null, display the "create model form" to create the model.
+<DONE> 2. Call ListModelCommand and ListUserCommand in the proper place in order to get these real data.
+<DONE> 3. Complete the Login UI for user login.
+<DONE> 4. Complete the Register UI and RegisterCommand so that I can add some users. 
 5. Insert code for listening events and hiding/showing proper UI components, in detail:
 	Startup: show ConnectDlg and hide others.
 	When connected: show Login/Register form, others-model list and hide others.
