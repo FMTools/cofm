@@ -17,7 +17,6 @@ public class AccessValidator extends Filter {
 	private static final String[] restricted = {
 		Resources.REQ_COMMIT,
 		Resources.REQ_UPDATE,
-		Resources.REQ_LISTUSER,
 		Resources.REQ_LOGOUT
 	};
 	
@@ -31,12 +30,14 @@ public class AccessValidator extends Filter {
 				String address = loginUsers.get(req.getRequesterId());
 				if (address == null || !address.equals(req.getAddress())) {
 					req.setLastError(Resources.MSG_ERROR_USER_DENIED);
+					logger.info("Access validation failed for: " + req.getName());
 					return false;
 				}
 			}
 			if (Resources.REQ_LOGOUT.equals(req.getName())) {
 				loginUsers.remove(req.getRequesterId());
 			}
+			logger.info("Access validation OK for: " + req.getName());
 			return true;
 		} catch (Exception e) {
 			logger.error("Exception caught.", e);
@@ -56,6 +57,7 @@ public class AccessValidator extends Filter {
 					Resources.REQ_LOGIN.equals(req.getName())) {
 				// successful login
 				loginUsers.put(req.getRequesterId(), req.getAddress());
+				logger.info("User login succeed.");
 			}
 			return true;
 		} catch (Exception e) {

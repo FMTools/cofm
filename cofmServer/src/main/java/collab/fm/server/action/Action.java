@@ -16,6 +16,7 @@ import collab.fm.server.controller.*;
 
 public abstract class Action {
 	
+	
 	public Action(String[] interestedEvents) {
 		Controller.instance().registerAction(interestedEvents, this);
 	}

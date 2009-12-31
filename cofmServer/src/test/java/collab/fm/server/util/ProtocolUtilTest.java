@@ -10,6 +10,7 @@ import collab.fm.server.bean.operation.BinaryRelationshipOperation;
 import collab.fm.server.bean.operation.FeatureOperation;
 import collab.fm.server.bean.operation.Operation;
 import collab.fm.server.bean.protocol.*;
+import collab.fm.server.bean.protocol.ListModelResponse.Model2;
 import collab.fm.server.bean.protocol.UpdateResponse.BinaryRelation2;
 import collab.fm.server.bean.protocol.UpdateResponse.Des2;
 import collab.fm.server.bean.protocol.UpdateResponse.Feature2;
@@ -55,6 +56,46 @@ public class ProtocolUtilTest {
 			Request req = ProtocolUtil.jsonToRequest(json);
 			assertTrue(req instanceof RegisterRequest);
 			assertNull(req.getRequesterId());
+		} catch (Exception e) {
+			logger.info(e);
+			assertTrue(false);
+		}
+	}
+	
+	@Test
+	public void testListModelRequest() {
+		ListModelRequest req = new ListModelRequest();
+		req.setId(3L);
+		req.setName(Resources.REQ_LIST_MODEL);
+		
+		try {
+			String json = BeanUtil.beanToJson(req);
+			logger.debug(json);
+			
+			Request r = ProtocolUtil.jsonToRequest(json);
+			assertTrue(r instanceof ListModelRequest);
+			assertNull(r.getRequesterId());
+			assertNull(((ListModelRequest)r).getSearchWords());
+		} catch (Exception e) {
+			logger.info(e);
+			assertTrue(false);
+		}
+	}
+	
+	@Test
+	public void testListSpecificModelsRequest() {
+		ListModelRequest req = new ListModelRequest();
+		req.setId(3L);
+		req.setName(Resources.REQ_LIST_MODEL);
+		req.setSearchWords("Mark");
+		try {
+			String json = BeanUtil.beanToJson(req);
+			logger.debug(json);
+			
+			Request r = ProtocolUtil.jsonToRequest(json);
+			assertTrue(r instanceof ListModelRequest);
+			assertNull(r.getRequesterId());
+			assertEquals("Mark", ((ListModelRequest)r).getSearchWords());
 		} catch (Exception e) {
 			logger.info(e);
 			assertTrue(false);
@@ -141,6 +182,57 @@ public class ProtocolUtilTest {
 		
 		try {
 			logger.info(ProtocolUtil.ResponseToJson(rsp));
+		} catch (Exception e) {
+			logger.info(e);
+			assertTrue(false);
+		}
+	}
+	
+	@Test
+	public void testListModelResponse() {
+		Set<Long> yes = new HashSet<Long>();
+		yes.addAll(Arrays.asList(new Long[] { 1L, 3L, 5L, 7L, 9L }));
+		
+		Set<Long> no = new HashSet<Long>();
+		no.addAll(Arrays.asList(new Long[] { 2L, 4L, 6L, 8L, 10L }));
+		
+		Name2 n1 = new Name2();
+		n1.setVal("eclipse");
+		n1.setuYes(yes);
+		n1.setuNo(no);
+		
+		Name2 n2 = new Name2();
+		n2.setVal("jbuilder");
+		n2.setuNo(yes);
+		n2.setuYes(no);
+		
+		List<Name2> names = Arrays.asList(new Name2[] { n1, n2 });
+		
+		Des2 d = new Des2();
+		d.setVal("----------------------------------------------");
+		d.setuYes(yes);
+		d.setuNo(no);
+		List<Des2> des = Arrays.asList(new Des2[] { d });
+		
+		Set<Long> users = new HashSet<Long>();
+		users.addAll(yes);
+		users.addAll(no);
+		
+		Model2 m2 = new Model2();
+		m2.setId(1L);
+		m2.setName(names);
+		m2.setDes(des);
+		m2.setUser(users);
+		
+		ListModelResponse lmr = new ListModelResponse();
+		lmr.setModels(new ArrayList<Model2>());
+		lmr.getModels().add(m2);
+		lmr.setName(Resources.RSP_SUCCESS);
+		lmr.setRequesterId(null);
+		lmr.setRequestId(3L);
+		lmr.setRequestName(Resources.REQ_LIST_MODEL);
+		try {
+			logger.info(ProtocolUtil.ResponseToJson(lmr));
 		} catch (Exception e) {
 			logger.info(e);
 			assertTrue(false);

@@ -1,7 +1,7 @@
 package collab.fm.server.bean.protocol;
 
 public class Request {
-	public static final String TERMINATOR = "\n";
+	public static final String TERMINATOR = "\0";
 	
 	protected Long id;
 	protected String name;
@@ -9,7 +9,7 @@ public class Request {
 	protected Long requesterId; // The user id of the requester
 	protected Long modelId; // The id of current feature model
 	
-	protected String lastError = "error"; 
+	protected String lastError = null; 
 
 	public Request() {
 		

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.log4j.Logger;
 import org.apache.mina.common.IdleStatus;
 import org.apache.mina.common.IoHandlerAdapter;
 import org.apache.mina.common.IoSession;
@@ -15,6 +16,8 @@ import collab.fm.server.bean.protocol.ResponseGroup;
  */
 public class EventHandler extends IoHandlerAdapter {
 	
+	static Logger logger = Logger.getLogger(EventHandler.class);
+	
 	private ConcurrentHashMap<String, IoSession> sessionMap = 
 		new ConcurrentHashMap<String, IoSession>();
 	
@@ -23,19 +26,23 @@ public class EventHandler extends IoHandlerAdapter {
 	}
 
 	public void messageReceived(IoSession session, Object message) throws Exception {
+		logger.info("--- Request received: '" + message + "'");
 		ResponseGroup group = 
 			Controller.instance().execute((String)message, session.getRemoteAddress().toString());
 		distributeResponse(session, group);
+		logger.info("--- Response sent.");
 	}
 
 	public void messageSent(IoSession session, Object message) throws Exception {
 	}
 	
     public void sessionOpened(IoSession session) throws Exception {
+    	logger.info("--- Connection established.");
     	sessionMap.put(session.getRemoteAddress().toString(), session);
     }
 
     public void sessionClosed(IoSession session) throws Exception {
+    	logger.info("--- Connection closed.");
     	sessionMap.remove(session.getRemoteAddress().toString());
     }
 
@@ -44,6 +51,7 @@ public class EventHandler extends IoHandlerAdapter {
     
     private void distributeResponse(IoSession session, ResponseGroup group) {
     	// Write back to requester
+    	
     	if (group.getJsonBack() != null) {
     		session.write(group.getJsonBack());
     	}

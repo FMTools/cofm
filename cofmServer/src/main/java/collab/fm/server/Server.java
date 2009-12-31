@@ -2,6 +2,7 @@ package collab.fm.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.charset.Charset;
 import java.util.concurrent.Executors;
 
@@ -63,8 +64,9 @@ public class Server {
 		IoAcceptor theServer = Server.setup();
 		
 		try {
-			theServer.bind(new InetSocketAddress(PORT), new EventHandler());
-			logger.info("Server started.");
+			InetSocketAddress addr = new InetSocketAddress(PORT);
+			theServer.bind(addr, new EventHandler());
+			logger.info("Server started at " + addr.toString() + ".");
 		} catch (IOException e) {
 			logger.fatal("Couldn't start server @ port " + PORT, e);
 			theServer.unbindAll();

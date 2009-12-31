@@ -11,4 +11,6 @@ public interface FeatureDao extends GenericDao<Feature, Long> {
 
 	public Feature getByName(Long modelId, String name) throws BeanPersistenceException, StaleDataException;
 	
+	public List getBySimilarName(Long modelId, String name) throws BeanPersistenceException, StaleDataException;
+	
 }

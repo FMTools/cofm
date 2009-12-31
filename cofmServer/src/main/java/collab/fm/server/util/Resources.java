@@ -18,6 +18,7 @@ public class Resources {
 	public static final String REQ_LOGOUT = get("req.logout");
 	public static final String REQ_CONNECT = get("req.connect");
 	public static final String REQ_LISTUSER = get("req.listuser");
+	public static final String REQ_LIST_MODEL = get("req.listmodel");
 	public static final String REQ_REGISTER = get("req.register");
 
 	public static final String RSP_ERROR_FORMAT = get("rsp.error.format");
@@ -26,6 +27,7 @@ public class Resources {
 	public static final String RSP_FORWARD = get("rsp.forward");
 	public static final String RSP_ERROR = get("rsp.error");
 	public static final String RSP_STALE = get("rsp.stale");
+	public static final String RSP_SERVER_ERROR = get("rsp.serverError");
 
 	public static final String OP_ADD_NAME = get("op.addName");
 	public static final String OP_ADD_DES = get("op.addDes");

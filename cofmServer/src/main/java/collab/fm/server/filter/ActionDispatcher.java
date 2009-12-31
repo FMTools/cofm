@@ -40,6 +40,7 @@ public class ActionDispatcher extends Filter {
 		try {
 			Action action = reqActionMap.get(req.getName());
 			if (action != null) {
+				logger.info("Action is about to be executing.");
 				return action.execute(req, rg);
 			}
 			return true; 
