@@ -42,7 +42,7 @@ package collab.fm.client.cmn {
 		}
 
 		// Commands call send() to send data, and if necessary, write themselves into command buffer
-		public function send(data: Object): void {
+		public function send(data: String): void {
 			socket.send(data);
 			trace("Data sent: " + data);
 		}

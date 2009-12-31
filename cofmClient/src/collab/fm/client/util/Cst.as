@@ -7,6 +7,7 @@ package collab.fm.client.util {
 		public static const FIELD_RSP_SOURCE_NAME: String = "requestName";
 		public static const FIELD_RSP_SOURCE_ID: String = "requestId";
 
+		public static const REQ_DELIMITER: String = "<[!END]]>";
 		public static const REQ_COMMIT: String = "commit";
 		public static const REQ_UPDATE: String = "update";
 		public static const REQ_LOGIN: String = "login";
@@ -19,6 +20,7 @@ package collab.fm.client.util {
 		public static const RSP_ERROR: String = "error";
 		public static const RSP_STALE: String = "stale";
 		public static const RSP_FORWARD: String = "forward";
+		public static const RSP_SERVER_ERROR: String = "serverError";
 
 		public static const OP_CREATE_FEATURE: String = "createFeature";
 		public static const OP_CREATE_RELATIONSHIP: String = "createRelationship";
@@ -31,6 +33,8 @@ package collab.fm.client.util {
 		public static const BIN_REL_EXCLUDES: String = "excludes";
 
 		public static const DATA_MY_INFO: String = "myInfoUpdated";
+		public static const DATA_USER_NAMES: String = "userNamesUpdated";
+		public static const DATA_OTHERS_MODEL: String = "othersModelUpdated";
 
 	}
 }

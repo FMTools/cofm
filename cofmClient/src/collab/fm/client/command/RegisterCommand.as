@@ -1,33 +1,34 @@
 package collab.fm.client.command {
 	import collab.fm.client.cmn.*;
-	import collab.fm.client.data.ModelCollection;
 	import collab.fm.client.event.ClientEvent;
 	import collab.fm.client.util.*;
 
+	import flash.events.EventDispatcher;
 	import flash.events.IEventDispatcher;
 
-	public class ListModelCommand implements IDurableCommand {
+	public class RegisterCommand implements IDurableCommand {
 
-		private var _target: IEventDispatcher;
+		private var _name:String;
+		private var _pwd: String;
 		private var _cmdId: int;
-		private var _searchWord: String;
+		private var _target: IEventDispatcher;
 
-		public function ListModelCommand(target: IEventDispatcher, word: String = null) {
+		public function RegisterCommand(target: IEventDispatcher, name: String, pwd: String) {
 			_target = target;
-			_searchWord = word;
+			_name = name;
+			_pwd = pwd;
 		}
 
+		/** Register format see Server.RegisterRequest
+		 */
 		public function execute(): void {
 			_cmdId = CommandBuffer.instance.addCommand(this);
 			var request: Object = {
 					"id": _cmdId,
-					"name": _name
+					"name": Cst.REQ_REGISTER,
+					"user": _name,
+					"pwd": _pwd
 				};
-
-			if (_searchWord != null) {
-				request.searchWords = _searchWord;
-			}
-
 			Connector.instance.send(JsonUtil.objectToJson(request));
 		}
 
@@ -45,24 +46,13 @@ package collab.fm.client.command {
 		 *      models: array of models.
 		 */
 		public function handleResponse(data:Object): void {
+			trace("Register reponse received: " + data[Cst.FIELD_RSP_NAME]);
 			if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME]
-				&& Cst.REQ_LIST_MODEL == data[Cst.FIELD_RSP_SOURCE_NAME]) {
+				&& Cst.REQ_REGISTER == data[Cst.FIELD_RSP_SOURCE_NAME]) {
+				// Notify views
+				_target.dispatchEvent(new ClientEvent(ClientEvent.REGISTER_SUCCESS));
 
 				CommandBuffer.instance.removeCommand(_cmdId);
-
-				// Change data
-				if (_searchWord == null) {
-					ModelCollection.instance.refresh(data["models"]);
-					// Notify views
-					_target.dispatchEvent(new ClientEvent(ClientEvent.LIST_MODEL_SUCCESS));
-				} else {
-					// Change others' list only
-					ModelCollection.instance.refresh({
-							"event": Cst.DATA_OTHERS_MODEL,
-							"models": data["models"]
-						}, true);
-					_target.dispatchEvent(new ClientEvent(ClientEvent.SEARCH_MODEL_SUCCESS));
-				}
 			}
 		}
 

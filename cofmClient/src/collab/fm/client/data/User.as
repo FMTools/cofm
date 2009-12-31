@@ -1,13 +1,17 @@
 package collab.fm.client.data {
-	import mx.collections.XMLListCollection;
-
 	import collab.fm.client.util.Cst;
+
+	import mx.collections.XMLListCollection;
 
 	public class User extends AbstractDataView {
 		public var myId: int = -1;
 		public var myName: String;
+		public var currentModelId: int = -1;
+
+		[Bindable]
 		public var isLogin: Boolean;
 
+		// <user id="number" name="string" />
 		private var _users: XMLListCollection;
 
 		private static var _instance: User = new User();
@@ -31,6 +35,16 @@ package collab.fm.client.data {
 					myId = input.myId;
 					myName = input.myName;
 					break;
+				case Cst.DATA_USER_NAMES:
+					createUserList(input);
+					break;
+			}
+		}
+
+		private function createUserList(input: Object): void {
+			users = new XMLListCollection();
+			for (var key: Object in input.list) {
+				users.addItem(<user id={int(key)} name={String(input.list[key])} />);
 			}
 		}
 

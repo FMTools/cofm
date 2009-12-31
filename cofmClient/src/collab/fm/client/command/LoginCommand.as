@@ -2,19 +2,20 @@ package collab.fm.client.command {
 
 	import collab.fm.client.cmn.*;
 	import collab.fm.client.data.*;
-	import collab.fm.client.event.LoginEvent;
+	import collab.fm.client.event.ClientEvent;
 	import collab.fm.client.util.*;
 
-	import flash.events.EventDispatcher;
+	import flash.events.IEventDispatcher;
 
-	public class LoginCommand extends EventDispatcher implements IDurableCommand {
+	public class LoginCommand implements IDurableCommand {
 		private var _id: int;
 		private var _name: String;
 		private var _pwd: String;
 		private var _cmdId: int;
+		private var _target: IEventDispatcher;
 
-		public function LoginCommand(name: String, pwd: String) {
-			super();
+		public function LoginCommand(target: IEventDispatcher, name: String, pwd: String) {
+			_target = target;
 			this.name = name;
 			this.pwd = pwd;
 		}
@@ -86,8 +87,7 @@ package collab.fm.client.command {
 				ModelCollection.instance.refresh(changed, true);
 
 				// Notify the views
-				this.dispatchEvent(
-					new LoginEvent(LoginEvent.SUCCESS, this.id));
+				_target.dispatchEvent(new ClientEvent(ClientEvent.LOGIN_SUCCESS));
 
 				CommandBuffer.instance.removeCommand(_cmdId);
 			}

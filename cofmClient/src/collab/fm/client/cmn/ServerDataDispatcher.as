@@ -23,9 +23,7 @@ package collab.fm.client.cmn {
 			if (isResponse(name)) {
 				CommandBuffer.instance.getCommand(
 					int(data[Cst.FIELD_RSP_SOURCE_ID])).handleResponse(data);
-				return;
-			}
-			if (Cst.RSP_FORWARD == name) {
+			} else if (Cst.RSP_FORWARD == name) {
 				// do forwarded command
 				name = data[Cst.FIELD_RSP_SOURCE_NAME] as String;
 				switch (name) {
@@ -33,6 +31,8 @@ package collab.fm.client.cmn {
 						new ForwardedCommitCommand(data).execute();
 						break;
 				}
+			} else if (Cst.RSP_SERVER_ERROR == name) {
+				//TODO: report internal error
 			}
 		}
 	}
