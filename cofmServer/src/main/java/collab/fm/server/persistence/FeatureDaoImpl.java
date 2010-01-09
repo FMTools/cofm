@@ -37,7 +37,7 @@ public class FeatureDaoImpl extends GenericDaoImpl<Feature, Long> implements Fea
 	
 	public List getBySimilarName(Long modelId, String name) throws BeanPersistenceException, StaleDataException {
 		try {
-			return HibernateUtil.getCurrentSession()
+			List result = HibernateUtil.getCurrentSession()
 				.createQuery("select feature " +
 						"from Feature as feature " +
 						"join feature.model as m " +
@@ -46,6 +46,7 @@ public class FeatureDaoImpl extends GenericDaoImpl<Feature, Long> implements Fea
 				.setLong("mId", modelId)
 				.setString("fname", "%" + name + "%")
 				.list();	
+			return result.size() > 0 ? result: null;
 		} catch (StaleObjectStateException sose) {
 			logger.warn("Stale data detected. Force client to retry.", sose);
 			throw new StaleDataException(sose);

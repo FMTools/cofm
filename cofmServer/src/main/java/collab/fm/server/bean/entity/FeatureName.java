@@ -1,5 +1,8 @@
 package collab.fm.server.bean.entity;
 
+import collab.fm.server.bean.transfer.VotableString;
+import collab.fm.server.util.BeanUtil;
+
 public class FeatureName implements Votable {
 	
 	private int version;
@@ -11,7 +14,16 @@ public class FeatureName implements Votable {
 	private FeatureName() {
 		
 	}
-
+	
+	public VotableString transfer() {
+		VotableString vs = new VotableString();
+		vs.setVal(this.getName());
+		vs.setV0(BeanUtil.cloneSet(this.getVote().getOpponents()));
+		vs.setV1(BeanUtil.cloneSet(this.getVote().getSupporters()));
+		
+		return vs;
+	}
+	
 	public FeatureName(String name) {
 		setName(name);
 	}

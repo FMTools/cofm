@@ -10,11 +10,10 @@ import collab.fm.server.bean.operation.BinaryRelationshipOperation;
 import collab.fm.server.bean.operation.FeatureOperation;
 import collab.fm.server.bean.operation.Operation;
 import collab.fm.server.bean.protocol.*;
-import collab.fm.server.bean.protocol.ListModelResponse.Model2;
-import collab.fm.server.bean.protocol.UpdateResponse.BinaryRelation2;
-import collab.fm.server.bean.protocol.UpdateResponse.Des2;
-import collab.fm.server.bean.protocol.UpdateResponse.Feature2;
-import collab.fm.server.bean.protocol.UpdateResponse.Name2;
+import collab.fm.server.bean.transfer.BinaryRelation2;
+import collab.fm.server.bean.transfer.Feature2;
+import collab.fm.server.bean.transfer.Model2;
+import collab.fm.server.bean.transfer.VotableString;
 
 public class ProtocolUtilTest {
 
@@ -75,7 +74,7 @@ public class ProtocolUtilTest {
 			Request r = ProtocolUtil.jsonToRequest(json);
 			assertTrue(r instanceof ListModelRequest);
 			assertNull(r.getRequesterId());
-			assertNull(((ListModelRequest)r).getSearchWords());
+			assertNull(((ListModelRequest)r).getSearchWord());
 		} catch (Exception e) {
 			logger.info(e);
 			assertTrue(false);
@@ -87,7 +86,7 @@ public class ProtocolUtilTest {
 		ListModelRequest req = new ListModelRequest();
 		req.setId(3L);
 		req.setName(Resources.REQ_LIST_MODEL);
-		req.setSearchWords("Mark");
+		req.setSearchWord("Mark");
 		try {
 			String json = BeanUtil.beanToJson(req);
 			logger.debug(json);
@@ -95,7 +94,24 @@ public class ProtocolUtilTest {
 			Request r = ProtocolUtil.jsonToRequest(json);
 			assertTrue(r instanceof ListModelRequest);
 			assertNull(r.getRequesterId());
-			assertEquals("Mark", ((ListModelRequest)r).getSearchWords());
+			assertEquals("Mark", ((ListModelRequest)r).getSearchWord());
+		} catch (Exception e) {
+			logger.info(e);
+			assertTrue(false);
+		}
+	}
+	
+	@Test
+	public void testListUserRequest() {
+		Request r = new Request();
+		r.setName(Resources.REQ_LISTUSER);
+		r.setId(1L);
+		try {
+			String json = BeanUtil.beanToJson(r);
+			logger.debug(json);
+			
+			Request req = ProtocolUtil.jsonToRequest(json);
+			logger.info(req.toString());
 		} catch (Exception e) {
 			logger.info(e);
 			assertTrue(false);
@@ -196,23 +212,23 @@ public class ProtocolUtilTest {
 		Set<Long> no = new HashSet<Long>();
 		no.addAll(Arrays.asList(new Long[] { 2L, 4L, 6L, 8L, 10L }));
 		
-		Name2 n1 = new Name2();
+		VotableString n1 = new VotableString();
 		n1.setVal("eclipse");
-		n1.setuYes(yes);
-		n1.setuNo(no);
+		n1.setV1(yes);
+		n1.setV0(no);
 		
-		Name2 n2 = new Name2();
+		VotableString n2 = new VotableString();
 		n2.setVal("jbuilder");
-		n2.setuNo(yes);
-		n2.setuYes(no);
+		n2.setV0(yes);
+		n2.setV1(no);
 		
-		List<Name2> names = Arrays.asList(new Name2[] { n1, n2 });
+		List<VotableString> names = Arrays.asList(new VotableString[] { n1, n2 });
 		
-		Des2 d = new Des2();
+		VotableString d = new VotableString();
 		d.setVal("----------------------------------------------");
-		d.setuYes(yes);
-		d.setuNo(no);
-		List<Des2> des = Arrays.asList(new Des2[] { d });
+		d.setV1(yes);
+		d.setV0(no);
+		List<VotableString> des = Arrays.asList(new VotableString[] { d });
 		
 		Set<Long> users = new HashSet<Long>();
 		users.addAll(yes);
@@ -220,9 +236,9 @@ public class ProtocolUtilTest {
 		
 		Model2 m2 = new Model2();
 		m2.setId(1L);
-		m2.setName(names);
-		m2.setDes(des);
-		m2.setUser(users);
+		m2.setNames(names);
+		m2.setDscs(des);
+		m2.setUsers(users);
 		
 		ListModelResponse lmr = new ListModelResponse();
 		lmr.setModels(new ArrayList<Model2>());
@@ -247,41 +263,41 @@ public class ProtocolUtilTest {
 		Set<Long> no = new HashSet<Long>();
 		no.addAll(Arrays.asList(new Long[] { 2L, 4L, 6L, 8L, 10L }));
 		
-		Name2 n1 = new Name2();
+		VotableString n1 = new VotableString();
 		n1.setVal("eclipse");
-		n1.setuYes(yes);
-		n1.setuNo(no);
+		n1.setV1(yes);
+		n1.setV0(no);
 		
-		Name2 n2 = new Name2();
+		VotableString n2 = new VotableString();
 		n2.setVal("jbuilder");
-		n2.setuNo(yes);
-		n2.setuYes(no);
+		n2.setV0(yes);
+		n2.setV1(no);
 		
-		List<Name2> names1 = Arrays.asList(new Name2[] { n1, n2 });
+		List<VotableString> names = Arrays.asList(new VotableString[] { n1, n2 });
 		
-		Des2 d = new Des2();
+		VotableString d = new VotableString();
 		d.setVal("----------------------------------------------");
-		d.setuYes(yes);
-		d.setuNo(no);
-		List<Des2> des = Arrays.asList(new Des2[] { d });
+		d.setV1(yes);
+		d.setV0(no);
+		List<VotableString> des = Arrays.asList(new VotableString[] { d });
 		
 		Feature2 f = new Feature2();
-		f.setDes(des);
+		f.setDscs(des);
 		f.setId(3L);
-		f.setName(names1);
-		f.setRels(Arrays.asList(new Long[] { 10L, 20L, 30L, 40L }));
-		f.setuNo(no);
-		f.setuOptNo(yes);
-		f.setuOptYes(no);
-		f.setuYes(yes);
+		f.setNames(names);
+		f.setRels(yes);
+		f.setV0(no);
+		f.setOpt0(yes);
+		f.setOpt1(no);
+		f.setV1(yes);
 		
 		BinaryRelation2 b = new BinaryRelation2();
 		b.setId(1L);
 		b.setLeft(999L);
 		b.setRight(333L);
 		b.setType(Resources.BIN_REL_EXCLUDES);
-		b.setuNo(no);
-		b.setuYes(yes);
+		b.setV0(no);
+		b.setV1(yes);
 		
 		UpdateResponse response = new UpdateResponse();
 		response.setBinaries(Arrays.asList(new BinaryRelation2[] { b }));

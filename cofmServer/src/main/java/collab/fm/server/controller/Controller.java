@@ -5,11 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import collab.fm.server.action.Action;
-import collab.fm.server.action.CommitAction;
-import collab.fm.server.action.LoginAction;
-import collab.fm.server.action.RegisterAction;
-import collab.fm.server.action.UpdateAction;
+import collab.fm.server.action.*;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
@@ -31,7 +27,10 @@ public class Controller {
 		Resources.REQ_COMMIT,
 		Resources.REQ_LOGIN,
 		Resources.REQ_REGISTER,
-		Resources.REQ_UPDATE
+		Resources.REQ_UPDATE,
+		Resources.REQ_CREATE_MODEL,
+		Resources.REQ_LIST_MODEL,
+		Resources.REQ_LISTUSER
 	};
 	
 	private static Controller controller = new Controller();
@@ -51,6 +50,9 @@ public class Controller {
 		actions.add(new LoginAction());
 		actions.add(new RegisterAction());
 		actions.add(new UpdateAction());
+		actions.add(new CreateModelAction());
+		actions.add(new ListModelAction());
+		actions.add(new ListUserAction());
 		logger.info("Controller initialized.");
 	}
 	

@@ -1,5 +1,8 @@
 package collab.fm.server.bean.entity;
 
+import collab.fm.server.bean.transfer.BinaryRelation2;
+import collab.fm.server.util.BeanUtil;
+
 public class BinaryRelationship extends Relationship {
 	
 	private Long leftFeatureId;
@@ -56,5 +59,17 @@ public class BinaryRelationship extends Relationship {
 		// Maintain the many-to-many association between Feature and Relationship
 		left.addRelationship(this);
 		right.addRelationship(this);
+	}
+	
+	public BinaryRelation2 transfer() {
+		BinaryRelation2 br = new BinaryRelation2();
+		br.setId(this.getId());
+		br.setLeft(this.getLeftFeatureId());
+		br.setRight(this.getRightFeatureId());
+		br.setType(this.getType());
+		br.setV0(BeanUtil.cloneSet(this.getExistence().getOpponents()));
+		br.setV1(BeanUtil.cloneSet(this.getExistence().getSupporters()));
+		
+		return br;
 	}
 }

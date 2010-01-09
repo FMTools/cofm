@@ -9,7 +9,7 @@ import collab.fm.server.bean.entity.User;
 import collab.fm.server.bean.protocol.ListUserResponse;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.ResponseGroup;
-import collab.fm.server.bean.protocol.ListUserResponse.User2;
+import collab.fm.server.bean.transfer.User2;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.ActionException;
@@ -32,10 +32,7 @@ public class ListUserAction extends Action {
 			List<User> all = DaoUtil.getUserDao().getAll();
 			List<User2> result = new ArrayList<User2>();
 			for (User u: all) {
-				User2 u2 = new User2();
-				u2.setId(u.getId());
-				u2.setName(u.getName());
-				result.add(u2);
+				result.add(u.transfer());
 			}
 			ListUserResponse lur = new ListUserResponse();
 			lur.setName(Resources.RSP_SUCCESS);
@@ -46,10 +43,7 @@ public class ListUserAction extends Action {
 		} catch (BeanPersistenceException e) {
 			logger.warn("Bean Persistence Failed.", e);
 			throw new ActionException(e);
-		} catch (StaleDataException e) {
-			logger.info("Stale data found.");
-			throw e;
-		}
+		} 
 	}
 
 }

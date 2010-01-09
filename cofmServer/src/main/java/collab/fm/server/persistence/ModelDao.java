@@ -10,4 +10,5 @@ public interface ModelDao extends GenericDao<Model, Long> {
 	public List getAll() throws BeanPersistenceException, StaleDataException;
 	
 	public List getBySimilarName(String name) throws BeanPersistenceException, StaleDataException;
+	public Model getByName(String name) throws BeanPersistenceException, StaleDataException;
 }
