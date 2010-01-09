@@ -20,6 +20,8 @@ import collab.fm.server.util.BeanUtil;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.ActionException;
+import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 import collab.fm.server.controller.*;
 
@@ -56,11 +58,11 @@ public class CommitAction extends Action {
 			rg.setBroadcast(cr2);
 			
 			return true;
-		} catch (StaleDataException sde) {
-			logger.info("Stale data found.");
-			throw sde;
-		} catch (Exception e) {
-			logger.warn("Execution failed.", e);
+		} catch (BeanPersistenceException bpe) {
+			logger.warn("Execution failed.", bpe);
+			throw new ActionException("Action execution failed."); 
+		} catch (InvalidOperationException ioe) {
+			logger.warn("Execution failed.", ioe);
 			throw new ActionException("Action execution failed."); 
 		}
 	}

@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import collab.fm.server.bean.transfer.User2;
+
 public class User {
 	
 	private int version;
@@ -16,6 +18,14 @@ public class User {
 	
 	public User() {
 		
+	}
+	
+	public User2 transfer() {
+		User2 u = new User2();
+		u.setId(this.getId());
+		u.setName(this.getName());
+		
+		return u;
 	}
 	
 	public boolean equals(Object v) {

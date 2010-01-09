@@ -1,8 +1,13 @@
 package collab.fm.server.bean.entity;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import collab.fm.server.bean.transfer.Model2;
+import collab.fm.server.bean.transfer.VotableString;
 
 public class Model {
 	private Long id;
@@ -19,6 +24,33 @@ public class Model {
 	
 	public Model() {
 		
+	}
+	
+	public Model2 transfer() {
+		Model2 m = new Model2();
+		m.setId(this.getId());
+		
+		Set<Long> us = new HashSet<Long>();
+		for (User u: users) {
+			us.add(u.getId());
+		}
+		m.setUsers(us);
+		
+		List<VotableString> ns = new ArrayList<VotableString>();
+		for (Votable v: names) {
+			ModelName mn = (ModelName)v;
+			ns.add(mn.transfer());
+		}
+		m.setNames(ns);
+		
+		List<VotableString> ds = new ArrayList<VotableString>();
+		for (Votable v: descriptions) {
+			ModelDescription md = (ModelDescription)v;
+			ds.add(md.transfer());
+		}
+		m.setDscs(ds);
+		
+		return m;
 	}
 	
 	public boolean equals(Object v) {

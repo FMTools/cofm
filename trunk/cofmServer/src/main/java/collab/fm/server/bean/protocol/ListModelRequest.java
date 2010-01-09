@@ -1,14 +1,14 @@
 package collab.fm.server.bean.protocol;
 
 public class ListModelRequest extends Request {
-	private String searchWords;
+	private String searchWord;
 
-	public String getSearchWords() {
-		return searchWords;
+	public String getSearchWord() {
+		return searchWord;
 	}
 
-	public void setSearchWords(String searchWords) {
-		this.searchWords = searchWords;
+	public void setSearchWord(String searchWord) {
+		this.searchWord = searchWord;
 	}
 	
 }

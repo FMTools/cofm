@@ -12,9 +12,7 @@ import collab.fm.server.bean.protocol.ListModelRequest;
 import collab.fm.server.bean.protocol.ListModelResponse;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.ResponseGroup;
-import collab.fm.server.bean.protocol.ListModelResponse.Model2;
-import collab.fm.server.bean.protocol.UpdateResponse.Des2;
-import collab.fm.server.bean.protocol.UpdateResponse.Name2;
+import collab.fm.server.bean.transfer.Model2;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.ActionException;
@@ -37,10 +35,10 @@ public class ListModelAction extends Action {
 			ListModelRequest request = (ListModelRequest)req;
 			
 			List<Model> all = null;
-			if (request.getSearchWords() == null) {
+			if (request.getSearchWord() == null) {
 				all = DaoUtil.getModelDao().getAll();
 			} else {
-				all = DaoUtil.getModelDao().getBySimilarName(request.getSearchWords());
+				all = DaoUtil.getModelDao().getBySimilarName(request.getSearchWord());
 			}
 			
 			ListModelResponse lmr = new ListModelResponse();
@@ -48,38 +46,7 @@ public class ListModelAction extends Action {
 			
 			if (all != null) {
 				for (Model m: all) {
-					Model2 m2 = new Model2();
-					m2.setId(m.getId());
-					
-					Set<Long> m2Users = new HashSet<Long>();
-					for (User u: m.getUsers()) {
-						m2Users.add(u.getId());
-					}
-					m2.setUser(m2Users);
-					
-					List<Name2> m2Name = new ArrayList<Name2>();
-					for (Votable v: m.getNames()) {
-						ModelName n = (ModelName)v;
-						Name2 n2 = new Name2();
-						n2.setVal(n.getName());
-						n2.setuNo(n.getVote().getOpponents());
-						n2.setuYes(n.getVote().getSupporters());
-						m2Name.add(n2);
-					}
-					m2.setName(m2Name);
-					
-					List<Des2> m2Des = new ArrayList<Des2>();
-					for (Votable v: m.getDescriptions()) {
-						ModelDescription d = (ModelDescription)v;
-						Des2 d2 = new Des2();
-						d2.setVal(d.getValue());
-						d2.setuNo(d.getVote().getOpponents());
-						d2.setuYes(d.getVote().getSupporters());
-						m2Des.add(d2);
-					}
-					m2.setDes(m2Des);
-					
-					lmr.getModels().add(m2);
+					lmr.getModels().add(m.transfer());
 				}
 			}
 			lmr.setName(Resources.RSP_SUCCESS);
@@ -90,10 +57,7 @@ public class ListModelAction extends Action {
 		} catch (BeanPersistenceException e) {
 			logger.warn("Bean Persistence Failed.", e);
 			throw new ActionException(e);
-		} catch (StaleDataException e) {
-			logger.info("Stale data found.");
-			throw e;
-		}
+		} 
 	}
 
 }

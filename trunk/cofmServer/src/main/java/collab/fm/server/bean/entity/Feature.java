@@ -2,6 +2,10 @@ package collab.fm.server.bean.entity;
 
 import java.util.*;
 
+import collab.fm.server.bean.transfer.Feature2;
+import collab.fm.server.bean.transfer.VotableString;
+import collab.fm.server.util.BeanUtil;
+
 
 public class Feature implements Votable {
 	
@@ -20,7 +24,38 @@ public class Feature implements Votable {
 	public Feature() {
 	
 	}
-
+	
+	public Feature2 transfer() {
+		Feature2 f = new Feature2();
+		f.setId(this.getId());
+		f.setV0(BeanUtil.cloneSet(this.getExistence().getOpponents()));
+		f.setV1(BeanUtil.cloneSet(this.getExistence().getSupporters()));
+		f.setOpt0(BeanUtil.cloneSet(this.getOptionality().getOpponents()));
+		f.setOpt1(BeanUtil.cloneSet(this.getOptionality().getSupporters()));
+		
+		Set<Long> rels = new HashSet<Long>();
+		for (Relationship rel: relationships) {
+			rels.add(rel.getId());
+		}
+		f.setRels(rels);
+		
+		List<VotableString> ns = new ArrayList<VotableString>();
+		for (Votable v: names) {
+			FeatureName fn = (FeatureName)v;
+			ns.add(fn.transfer());
+		}
+		f.setNames(ns);
+		
+		List<VotableString> ds = new ArrayList<VotableString>();
+		for (Votable v: descriptions) {
+			FeatureDescription fd = (FeatureDescription)v;
+			ds.add(fd.transfer());
+		}
+		f.setDscs(ds);
+		
+		return f;
+	}
+	
 	public Long getId() {
 		return id;
 	}

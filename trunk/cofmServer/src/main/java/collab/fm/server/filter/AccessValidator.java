@@ -17,7 +17,8 @@ public class AccessValidator extends Filter {
 	private static final String[] restricted = {
 		Resources.REQ_COMMIT,
 		Resources.REQ_UPDATE,
-		Resources.REQ_LOGOUT
+		Resources.REQ_LOGOUT,
+		Resources.REQ_CREATE_MODEL
 	};
 	
 	private static ConcurrentHashMap<Long, String> loginUsers = new ConcurrentHashMap<Long, String>();

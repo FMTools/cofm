@@ -25,13 +25,14 @@ public class ModelDaoImpl extends GenericDaoImpl<Model, Long> implements
 	public List getBySimilarName(String name) throws BeanPersistenceException,
 			StaleDataException {
 		try {
-			return HibernateUtil.getCurrentSession()
+			List result = HibernateUtil.getCurrentSession()
 				.createQuery("select model " +
 						"from Model as model " +
 						"join model.namesInternal as mName " +
 						"where mName.name like :theName")
 				.setString("theName", "%" + name + "%")
-				.list();	
+				.list();
+			return result.isEmpty() ? null : result;
 		} catch (StaleObjectStateException sose) {
 			logger.warn("Stale data detected. Force client to retry.", sose);
 			throw new StaleDataException(sose);
@@ -39,6 +40,23 @@ public class ModelDaoImpl extends GenericDaoImpl<Model, Long> implements
 			logger.warn("Query failed.", e);
 			throw new BeanPersistenceException("Query failed.", e);
 		}
-		
+	}
+	
+	public Model getByName(String name) throws BeanPersistenceException, StaleDataException {
+		try {
+			return (Model)HibernateUtil.getCurrentSession()
+				.createQuery("select model " +
+						"from Model as model " +
+						"join model.namesInternal as mName " +
+						"where mName.name=:theName")
+				.setString("theName", name)
+				.uniqueResult();
+		} catch (StaleObjectStateException sose) {
+			logger.warn("Stale data detected. Force client to retry.", sose);
+			throw new StaleDataException(sose);
+		} catch (Exception e) {
+			logger.warn("Query failed.", e);
+			throw new BeanPersistenceException("Query failed.", e);
+		}
 	}
 }

@@ -11,6 +11,7 @@ import collab.fm.server.bean.operation.FeatureOperation;
 import collab.fm.server.bean.operation.Operation;
 import collab.fm.server.bean.operation.RelationshipOperation;
 import collab.fm.server.bean.protocol.CommitRequest;
+import collab.fm.server.bean.protocol.CreateModelRequest;
 import collab.fm.server.bean.protocol.ListModelRequest;
 import collab.fm.server.bean.protocol.LoginRequest;
 import collab.fm.server.bean.protocol.RegisterRequest;
@@ -38,10 +39,13 @@ public class ProtocolUtil {
 		requestHandlerMap.put(Resources.REQ_LOGIN, "doGenericRequest");
 		requestHandlerMap.put(Resources.REQ_REGISTER, "doGenericRequest");
 		requestHandlerMap.put(Resources.REQ_LIST_MODEL, "doGenericRequest");
+		requestHandlerMap.put(Resources.REQ_CREATE_MODEL, "doGenericRequest");
+		requestHandlerMap.put(Resources.REQ_LISTUSER, "doGenericRequest");
 
 		requestClassMap.put(Resources.REQ_LOGIN, LoginRequest.class);
 		requestClassMap.put(Resources.REQ_REGISTER, RegisterRequest.class);
 		requestClassMap.put(Resources.REQ_LIST_MODEL, ListModelRequest.class);
+		requestClassMap.put(Resources.REQ_CREATE_MODEL, CreateModelRequest.class);
 		
 		opNameClassMap.put(Resources.OP_CREATE_RELATIONSHIP, RelationshipOperation.class);
 		opNameClassMap.put(Resources.OP_ADD_DES, FeatureOperation.class);
@@ -94,11 +98,13 @@ public class ProtocolUtil {
 	@SuppressWarnings("unused")
 	private static Request doGenericRequest(Request req, String json) throws ProtocolInterpretException {
 		try {
-			Class<? extends Request> concretRequestClass = requestClassMap.get(req.getName());
-			
-			Request result = BeanUtil.jsonToBean(json, concretRequestClass, null);
+			Class<? extends Request> concreteRequestClass = requestClassMap.get(req.getName());
+			if (concreteRequestClass == null) {
+				concreteRequestClass = Request.class;
+			}
+			Request result = BeanUtil.jsonToBean(json, concreteRequestClass, null);
 			if (!result.valid()) {
-				throw new ProtocolInterpretException("Invalid request JSON string. (request='" + concretRequestClass.toString() + "')");
+				throw new ProtocolInterpretException("Invalid request JSON string. (request='" + concreteRequestClass.toString() + "')");
 			}
 			result.setId(req.getId());
 			result.setName(req.getName());

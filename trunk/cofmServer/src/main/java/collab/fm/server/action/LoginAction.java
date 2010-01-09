@@ -51,10 +51,7 @@ public class LoginAction extends Action {
 			rg.setBack(rsp);
 			
 			return true;
-		} catch (StaleDataException sde) {
-			logger.info("Stale data found.");
-			throw sde;
-		} catch (Exception e) {
+		} catch (BeanPersistenceException e) {
 			logger.warn("Couldn't login.", e);
 			throw new ActionException("Login failed.", e);
 		}

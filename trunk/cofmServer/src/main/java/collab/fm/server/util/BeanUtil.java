@@ -1,24 +1,37 @@
 package collab.fm.server.util;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import net.sf.ezmorph.*;
+import net.sf.ezmorph.MorpherRegistry;
 import net.sf.ezmorph.bean.BeanMorpher;
-import net.sf.json.*;
+import net.sf.json.JSON;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+import net.sf.json.JSONSerializer;
+import net.sf.json.JsonConfig;
 import net.sf.json.util.JSONUtils;
 import net.sf.json.util.PropertyFilter;
 
 import org.apache.log4j.Logger;
 
-import collab.fm.server.bean.entity.Votable;
-import collab.fm.server.bean.protocol.UpdateResponse.Name2;
 import collab.fm.server.util.exception.BeanConvertException;
 import collab.fm.server.util.exception.JsonConvertException;
 
 public final class BeanUtil {
 	
 	static Logger logger = Logger.getLogger(BeanUtil.class);
+	
+	public static <T> Set<T> cloneSet(Set<T> source) {
+		Set<T> result = new HashSet<T>();
+		result.addAll(source);
+		return result;
+	}
 	
 	public static <T> T mapToBean(Class<T> beanClass, Map<String, Object> map)
 		throws BeanConvertException {

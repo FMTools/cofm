@@ -16,7 +16,7 @@ import collab.fm.server.controller.*;
 
 public abstract class Action {
 	
-	
+	static Logger logger = Logger.getLogger(Action.class);
 	public Action(String[] interestedEvents) {
 		Controller.instance().registerAction(interestedEvents, this);
 	}
@@ -35,6 +35,7 @@ public abstract class Action {
 		try {
 			return doExecute(req, rg);
 		} catch (StaleDataException sde) {
+			logger.warn("Stale data found.", sde);
 			reportStaleData(req, rg);
 			return true;
 		} catch (ActionException ae) {
