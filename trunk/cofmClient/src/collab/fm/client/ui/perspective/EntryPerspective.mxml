@@ -3,62 +3,62 @@
 	xmlns:v="collab.fm.client.ui.view.*" 
 	horizontalAlign="center" verticalAlign="middle"
 	creationComplete="initView()">
-
-	<mx:states>
-	    <mx:State name="">
-	    	<mx:SetProperty target="{conDlg}" name="includeInLayout" value="true" />
-	    	<mx:SetProperty target="{conDlg}" name="visible" value="true" />
-	    	<mx:SetProperty target="{mdList}" name="includeInLayout" value="false" />
-	    	<mx:SetProperty target="{mdList}" name="visible" value="false" />
-	    </mx:State>
-		<mx:State name="Working">
-			<mx:SetProperty target="{conDlg}" name="includeInLayout" value="false" />
-	    	<mx:SetProperty target="{conDlg}" name="visible" value="false" />
-	    	<mx:SetProperty target="{mdList}" name="includeInLayout" value="true" />
-	    	<mx:SetProperty target="{mdList}" name="visible" value="true" />
-		</mx:State>
-	</mx:states>
 	
 	<v:ConnectDlg id="conDlg" width="300" height="150"/>
 	<v:ModelList id="mdList" includeInLayout="false" visible="false" width="100%" height="100%"/>
-	<v:LoginRegisterForm id="logReg" 
-		includeInLayout="{!User.instance.isLogin}" visible="{!User.instance.isLogin}" />
-	
-	<!-- When connected, hide the connect dlg show a Login View by default. (in the right side)
-	In the left side, show a ModelList View, when user has logined, hide the Login View and maxmize
-	the ModelList view.
-	  
-	 -->
-	 
+	<v:LoginRegisterForm id="logReg" width="300" height="200" includeInLayout="false" visible="false" />
+
 	 <mx:Script>
 	 	<![CDATA[
 	 		import collab.fm.client.event.*;
 	 		import collab.fm.client.data.*;
+	 		import collab.fm.client.util.*;
+	 		import collab.fm.client.command.*;
 	 		
-	 		private var _lastState: String;
-	 		
-	 		public function get lastState(): String {
-	 			return _lastState;
-	 		}
-	 		
-	 		public function set lastState(s: String): void {
-	 			_lastState = s;
-	 		}
-	 		
-	 		private function changeStateTo(s: String): void {
-	 			this.lastState = this.currentState;
-	 			this.currentState = s;
-	 		}
+	 		private var isModelReady: Boolean = false;
+	 		private var isUserReady: Boolean = false;
 	 		
 	 		private function initView(): void {
-	 			this.currentState = "";
 	 			this.addEventListener(ClientEvent.CONNECT_SUCCESS, onConnected);
+	 			this.addEventListener(ClientEvent.LOGIN_SUCCESS, onLogined);
+	 			this.addEventListener(ClientEvent.LIST_MODEL_SUCCESS, onListModel);
+	 			this.addEventListener(ClientEvent.LIST_USER_SUCCESS, onListUser);
 	 			trace("Entry Perspective inited.");
 	 		}
 	 		
+	 		private function showWorkingViews(): void {
+	 			UIUtil.show(conDlg, false);
+	 			UIUtil.show(mdList, true);
+	 			UIUtil.show(logReg, true);
+	 		}
+	 		
 	 		private function onConnected(evt: ClientEvent): void {
-	 			trace("Entry: Connection success event received.");
-	 			changeStateTo("Working");	
+	 			new ListModelCommand(this).execute();
+	 			new ListUserCommand(this).execute();
+	 		}
+	 		
+	 		private function onListModel(evt: ClientEvent): void {
+	 			if (evt.target == this) {
+	 				isModelReady = true;
+	 				mdList.callOnListModelOK();
+	 			}	
+	 			if (isModelReady && isUserReady) {
+	 				showWorkingViews();
+	 			}
+	 		}
+	 		
+	 		private function onListUser(evt: ClientEvent): void {
+	 			if (evt.target == this) {
+	 				isUserReady = true;
+	 			}
+	 			if (isModelReady && isUserReady) {
+	 				showWorkingViews();
+	 			}
+	 		}
+	 		
+	 		private function onLogined(evt: ClientEvent): void {
+	 			UIUtil.show(logReg, false);
+	 			mdList.callOnLoginOK();
 	 		}
 	 	]]>
 	 </mx:Script>

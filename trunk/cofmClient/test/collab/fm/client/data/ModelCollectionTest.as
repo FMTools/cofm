@@ -7,31 +7,29 @@ package collab.fm.client.data {
 
 		public function testModelCollectionUpdateView(): void {
 			var input: Array = [
-				{ id: 1, user: [1, 2, 3, 4, 5], 
-					name: [
-					{val: "Avatar", uYes: [1, 4], uNo: [2, 3, 5] },
-						{val: "Avanti", uYes: [1, 2, 3, 4], uNo: [5] }
+				{ id: 1, users: [1, 2, 3, 4, 5], 
+					names: [
+					{val: "Avatar", v1: [1, 4], v0: [2, 3, 5] },
+						{val: "Avanti", v1: [1, 2, 3, 4], v0: [5] }
 					],
-					des: [
-					{val: "gogogogo", uYes: [3, 5], uNo: [1, 2, 4] }
+					dscs: [
+					{val: "gogogogo", v1: [3, 5], v0: [1, 2, 4] }
 					]
 				},
-				{ id: 2, user: [14, 2, 3, 4, 5, 9, 10], 
-					name: [
-					{val: "Avatar123", uYes: [1, 9, 10, 11, 4], uNo: [2, 3, 5] },
-						{val: "Avanti4321", uYes: [1, 2, 3, 4], uNo: [5] }
+				{ id: 2, users: [14, 2, 3, 4, 5, 9, 10], 
+					names: [
+					{val: "Avatar123", v1: [1, 9, 10, 11, 4], v0: [2, 3, 5] },
+						{val: "Avanti4321", v1: [1, 2, 3, 4], v0: [5] }
 					],
-					des: [
-					{val: "gogogogo", uYes: [3, 5], uNo: [1, 2, 4] }
+					dscs: [
+					{val: "gogogogo", v1: [3, 5], v0: [1, 2, 4] }
 					]
 				}
 				];
 			ModelCollection.instance.refresh(input);
-			var info: ModelInfo = new ModelInfo(1);
 			trace("------------ ModelCollection.updateEntireView ------------");
 			trace("my = " + ModelCollection.instance.my);
 			trace("others = " + ModelCollection.instance.others);
-			trace("No.1 = " + info.users.toString());
 			trace("-----------------------------------------------------------");
 			ModelCollection.instance.refresh({
 					"event": Cst.DATA_MY_INFO,
@@ -41,7 +39,6 @@ package collab.fm.client.data {
 			trace("------------ ModelCollection.updateMinorChange ------------");
 			trace("my = " + ModelCollection.instance.my);
 			trace("others = " + ModelCollection.instance.others);
-			trace("No.1 = " + info.users.toString());
 			trace("-----------------------------------------------------------");
 			ModelCollection.instance.refresh({
 					"event": Cst.DATA_USER_NAMES,
@@ -50,7 +47,6 @@ package collab.fm.client.data {
 			trace("------------ ModelCollection.updateMinorChange ------------");
 			trace("my = " + ModelCollection.instance.my);
 			trace("others = " + ModelCollection.instance.others);
-			trace("No.1 = " + info.users.toString());
 			trace("-----------------------------------------------------------");
 		}
 	}

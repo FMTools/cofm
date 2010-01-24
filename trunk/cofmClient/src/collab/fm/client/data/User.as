@@ -11,6 +11,8 @@ package collab.fm.client.data {
 		[Bindable]
 		public var isLogin: Boolean;
 
+		private static const _defaultXml: XML = <user id="-1" name=""/>;
+
 		// <user id="number" name="string" />
 		private var _users: XMLListCollection;
 
@@ -21,7 +23,9 @@ package collab.fm.client.data {
 		}
 
 		public function User() {
+			super();
 			isLogin = false;
+			_users = new XMLListCollection(new XMLList(_defaultXml));
 		}
 
 		override protected function updateEntireData(input:Object): void {
@@ -42,10 +46,12 @@ package collab.fm.client.data {
 		}
 
 		private function createUserList(input: Object): void {
-			users = new XMLListCollection();
+			var xml: XML = <users/>;
 			for (var key: Object in input.list) {
-				users.addItem(<user id={int(key)} name={String(input.list[key])} />);
+				xml.appendChild(<user id={int(key)} name={String(input.list[key])} />);
 			}
+			users.removeAll();
+			users.source = xml.user;
 		}
 
 		[Bindable]

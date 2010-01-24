@@ -1,0 +1,61 @@
+/* This CSS file defines height and width of the components.
+   Hierarchy of components: 
+    app
+      appBar
+      perspectives (prsp)
+        views 
+*/
+.app {
+	width: 1000;
+	height: 800;
+}
+
+.appBar {
+	width: "100%";
+	height: 80;
+}
+
+/* Perspective common */
+.prsp {
+	width: "100%";
+	height: "100%";
+}
+
+/*---------------------------
+     Views in Entry-Perspective
+ ----------------------------
+*/
+/* Login/Register Form */
+.loginRegForm {
+	width: 300;
+	height: 200;
+}
+/* Connection Panel */
+.conPnl {
+	width: 300;
+	height: 150;
+}
+/* Search Bar */
+.searchBar {
+	height: 26;
+}
+/* Model create form */
+.newModelForm {
+	height: 340;
+	width: "100%";
+}
+/* My model tilelist */
+.myModels {
+	width: 700;
+	height: 200;
+}
+/* Other models list */
+.otherModels {
+	width: 700;
+	height: "100%";
+}
+
+
+
+
+

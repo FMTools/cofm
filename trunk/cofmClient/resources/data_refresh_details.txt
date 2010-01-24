@@ -32,7 +32,13 @@ userNamesUpdated:  user names and their IDs have updated.
 
 othersModelUpdated:  others' model list has updated, because of search
    models: array of model
+   searchWord: the keyword in search
    <command> ListModel
+   <listeners> ModelCollection
+
+myModelCreated: the user has created a new model. We should add it to my model list
+   model: <model id=... name=... userNum=1><des>...</des>...</model>
+   <command> CreateModel
    <listeners> ModelCollection
 
     	

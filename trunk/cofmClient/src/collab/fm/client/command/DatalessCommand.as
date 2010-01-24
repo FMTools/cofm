@@ -6,9 +6,9 @@ package collab.fm.client.command {
 	import flash.events.IEventDispatcher;
 
 	public class DatalessCommand implements IDurableCommand {
-		private var _target: IEventDispatcher;
-		private var _name: name;
-		private var _cmdId: int;
+		protected var _target: IEventDispatcher;
+		protected var _name: String;
+		protected var _cmdId: int;
 		private var _needMyId: Boolean;
 		private var _needModelId: Boolean;
 

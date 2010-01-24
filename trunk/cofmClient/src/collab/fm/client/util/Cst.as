@@ -15,6 +15,7 @@ package collab.fm.client.util {
 		public static const REQ_LIST_USER: String = "listuser";
 		public static const REQ_LIST_MODEL: String = "listmodel";
 		public static const REQ_REGISTER: String = "register";
+		public static const REQ_CREATE_MODEL: String = "createModel";
 
 		public static const RSP_SUCCESS: String = "success";
 		public static const RSP_ERROR: String = "error";
@@ -35,6 +36,7 @@ package collab.fm.client.util {
 		public static const DATA_MY_INFO: String = "myInfoUpdated";
 		public static const DATA_USER_NAMES: String = "userNamesUpdated";
 		public static const DATA_OTHERS_MODEL: String = "othersModelUpdated";
+		public static const DATA_CREATE_MODEL: String = "myModelCreated";
 
 	}
 }
