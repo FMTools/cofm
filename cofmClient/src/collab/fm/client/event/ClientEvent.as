@@ -8,7 +8,8 @@ package collab.fm.client.event {
 		public static const REGISTER_SUCCESS: String = "registerSuccess";
 
 		public static const LIST_MODEL_SUCCESS: String = "listModelSuccess";
-		public static const SEARCH_MODEL_SUCCESS: String = "searchModelSuccess";
+
+		public static const LIST_USER_SUCCESS: String = "listUserSuccess";
 
 		public static const LOGIN_SUCCESS: String = "loginSuccess";
 

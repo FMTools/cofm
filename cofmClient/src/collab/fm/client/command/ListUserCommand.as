@@ -1,6 +1,7 @@
 package collab.fm.client.command {
-	import collab.fm.client.util.*;
 	import collab.fm.client.data.*;
+	import collab.fm.client.event.ClientEvent;
+	import collab.fm.client.util.*;
 
 	import flash.events.IEventDispatcher;
 	import flash.utils.Dictionary;
@@ -26,6 +27,7 @@ package collab.fm.client.command {
 			User.instance.refresh(changes, true);
 
 			// No event dispatched now
+			_target.dispatchEvent(new ClientEvent(ClientEvent.LIST_USER_SUCCESS));
 		}
 
 	}

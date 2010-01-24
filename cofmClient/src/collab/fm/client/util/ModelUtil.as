@@ -63,24 +63,59 @@ package collab.fm.client.util {
 			target: Array,
 			uYesPropName: String,  // property name of 'user-yes'
 			uNoPropName: String,   // property name of 'user-no'
-			myId: int): void {
+			myId: int=-1,        // my user ID
+			uValPropName: String=null, // property name of item value
+			matchVal: Object=null  // do matching on item value 
+			): Boolean { // if do matching && exactly matches, return true; otherwise return false
+
+			var exactlyMatches: Boolean = false;
 
 			function compareRatedItems(a: Object, b: Object): Number {
-				var meInA: Boolean = (a[uYesPropName] as Array).indexOf(myId) >= 0;
-				var meNotA: Boolean = (a[uNoPropName] as Array).indexOf(myId) >= 0;
-				var meInB: Boolean = (b[uYesPropName] as Array).indexOf(myId) >= 0;
-				var meNotB: Boolean = (b[uNoPropName] as Array).indexOf(myId) >= 0;
-
-				var isA: Boolean = meInA || meNotB;
-				var isB: Boolean = meInB || meNotA;
-
-				if (isA && !isB) {
-					// a goes before b
-					return -1;
+				trace("compared");
+				/**  The algorithm:
+				 *   if (matchVal != null) {
+				 *      if (match val in A && not in B) return A before B (-1)
+				 *      if (match val in B && not in A) return A after B (1)
+				 *   }
+				 *   if (myId != -1) {  // >= 0 actually
+				 *      if (I'm in A.yes && not in B.yes) return -1
+				 *      if (I'm in B.yes && not in A.yes) return 1
+				 *      if (I'm in A.no && not in B.no) return 1
+				 *      if (I'm in B.no && not in A.no) return -1
+				 *   }
+				 *   Now decide by the overall rating (yes/total)
+				 *   if (A.yes / A.total > B.yes / B.total) return -1
+				 *   if (... < ...) return 1
+				 *   return 0  // cannot decide which one is more important
+				 */
+				if (matchVal != null) {
+					var valInA: Boolean = (matchVal == a[uValPropName]);
+					var valInB: Boolean = (matchVal == b[uValPropName]);
+					if (valInA || valInB) {
+						exactlyMatches = true;
+					}
+					if (valInA && !valInB) {
+						return -1;
+					}
+					if (valInB && !valInA) {
+						return 1;
+					}
 				}
-				if (isB && !isA) {
-					// a goes behind b
-					return 1;
+				if (myId >= 0) {
+					var meInA: Boolean = (a[uYesPropName] as Array).indexOf(myId) >= 0;
+					var meNotA: Boolean = (a[uNoPropName] as Array).indexOf(myId) >= 0;
+					var meInB: Boolean = (b[uYesPropName] as Array).indexOf(myId) >= 0;
+					var meNotB: Boolean = (b[uNoPropName] as Array).indexOf(myId) >= 0;
+
+					var isA: Boolean = meInA || meNotB;
+					var isB: Boolean = meInB || meNotA;
+
+					if (isA && !isB) {
+						return -1;
+					}
+					if (isB && !isA) {
+						return 1;
+					}
 				}
 				// compare by the approval ratings
 				// ( a.YES / a.Total ) compares with ( b.YES / b.Total)
@@ -95,9 +130,12 @@ package collab.fm.client.util {
 				if (aybt < byat) return 1; // b first
 				return 0;
 			}
-
+			if (target.length == 1 && matchVal != null) {
+				// check exactly match
+				return matchVal == target[0][uValPropName];
+			}
 			target.sort(compareRatedItems);
+			return exactlyMatches;
 		}
-
 	}
 }

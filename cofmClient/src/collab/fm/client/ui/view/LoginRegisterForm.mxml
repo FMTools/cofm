@@ -56,7 +56,6 @@
 			public var showLogin: Boolean = true;
 			
 			private function initView(): void {
-				this.addEventListener(ClientEvent.LOGIN_SUCCESS, doLoginOK);
 				this.addEventListener(ClientEvent.REGISTER_SUCCESS, doRegisterOK);
 			}
 			
@@ -87,10 +86,6 @@
 				if (validateRegisterForm()) {
 				    new RegisterCommand(this, regName.text, regPwd.text).execute();
 				}
-			}
-			
-			private function doLoginOK(evt: ClientEvent): void {
-				
 			}
 			
 			private function doRegisterOK(evt: ClientEvent): void {

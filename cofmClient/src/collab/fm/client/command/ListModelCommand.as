@@ -2,6 +2,7 @@ package collab.fm.client.command {
 	import collab.fm.client.cmn.*;
 	import collab.fm.client.data.ModelCollection;
 	import collab.fm.client.event.ClientEvent;
+	import collab.fm.client.event.SearchModelEvent;
 	import collab.fm.client.util.*;
 
 	import flash.events.IEventDispatcher;
@@ -21,11 +22,11 @@ package collab.fm.client.command {
 			_cmdId = CommandBuffer.instance.addCommand(this);
 			var request: Object = {
 					"id": _cmdId,
-					"name": _name
+					"name": Cst.REQ_LIST_MODEL
 				};
 
 			if (_searchWord != null) {
-				request.searchWords = _searchWord;
+				request.searchWord = _searchWord;
 			}
 
 			Connector.instance.send(JsonUtil.objectToJson(request));
@@ -57,11 +58,15 @@ package collab.fm.client.command {
 					_target.dispatchEvent(new ClientEvent(ClientEvent.LIST_MODEL_SUCCESS));
 				} else {
 					// Change others' list only
+					trace("Resposne with search word: " + _searchWord);
 					ModelCollection.instance.refresh({
 							"event": Cst.DATA_OTHERS_MODEL,
-							"models": data["models"]
+							"models": data["models"],
+							"searchWord": _searchWord
 						}, true);
-					_target.dispatchEvent(new ClientEvent(ClientEvent.SEARCH_MODEL_SUCCESS));
+					_target.dispatchEvent( 
+						new SearchModelEvent(SearchModelEvent.SUCCESS,
+						_searchWord, ModelCollection.instance.lastSearchHits));
 				}
 			}
 		}

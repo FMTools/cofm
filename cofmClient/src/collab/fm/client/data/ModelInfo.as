@@ -2,12 +2,14 @@ package collab.fm.client.data {
 
 	import collab.fm.client.util.Cst;
 
-	import mx.collections.IViewCursor;
 	import mx.collections.XMLListCollection;
+	import mx.core.UIComponent;
+	import mx.core.IFlexDisplayObject;
 
 	public class ModelInfo extends AbstractDataView {
 
-		private var id: int;
+		[Bindable]
+		public var id: int;
 
 		[Bindable]
 		public var userNum: int;
@@ -21,23 +23,26 @@ package collab.fm.client.data {
 		[Bindable]
 		public var users: XMLListCollection;
 
-		public function ModelInfo(modelId: int) {
+		private var binder: UIComponent;
+
+		public function ModelInfo(modelId: int, binder: UIComponent) {
 			super();
-			ModelCollection.instance.registerSubDataView(this);
 			id = modelId;
+			this.binder = binder;
+			ModelCollection.instance.registerSubDataView(this);
 			updateEntireData(null);
 		}
 
 		override protected function updateEntireData(input:Object): void {
-			var me: XMLList = ModelCollection(parent).my.source.(@id == this.id);
-			if (me.length() <= 0) {
-				me = ModelCollection(parent).others.source.(@id == this.id);
-			}
+			var me: XMLList = ModelCollection(parent).others.source.(@id == this.id);
 			if (me.length() > 0) {
 				userNum = XML(me).@userNum;
 				name = XML(me).@name;
 				des = XML(me).des;
 				users = new XMLListCollection(XML(me).users.user);
+				binder.enabled = true;
+			} else {
+				binder.deleteReferenceOnParentDocument(IFlexDisplayObject(binder.parentDocument));
 			}
 		}
 

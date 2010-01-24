@@ -1,0 +1,46 @@
+The UI components are organized as a layered architecture. Each layer is responsible for
+show and/or hide its direct-lower layer. 
+
+The layered architecure
+=======================
+Application
+  Entry Perspective
+    Connect Dialog
+    Login/Register Form
+      Login Form
+      Register Form
+    Model List
+      My Models
+      Other Models
+      Model Search/Create Form
+        Search Bar
+        Create Form
+  Modeling Perspective
+  
+ 
+Event listeners and dispatchers
+================================
+
+Listeners           Event          Show/Hide                        Extra actions
+------------------------------------------------------------------------------------------
+Application          (init)     show EntryPerspective
+								hide ModelingPerspective
+EntryPerspective     (init)		show ConnectDlg, hide others
+                   Connect OK   hide ConnectDlg, show others   Request for models and users list before display others
+                   Login OK     hide LoginRegForm   
+ModelList			 (init)		hide MyModels, show OtherModels
+                   Login OK     show MyModels
+SearchCreateForm     (init)     hide CreateForm (show a "please login first" message instead)
+                   Login OK     show CreateForm
+                   
+                   
+                   
+Dispatchers	       Event             
+---------------------------------------
+Connect Dialog	   Connect OK
+Login Form         Login OK
+Register Form      Register OK (internal)
+Search Bar         Model Search 
+Create Form        Model Selected
+Model List         Model Selected  (when user click the "ENTER" button on a list item)                   
+                                 
