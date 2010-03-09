@@ -40,7 +40,7 @@
 					// No create allowed
 					UIUtil.show(createForm, false);
 				} else {
-					if (User.instance.isLogin) {
+					if (UserList.instance.isLogin) {
 						modelName.text = evt.searchWord;
 						intro.text = RS.format(RS.MODEL_CREATE_INTRO, [evt.searchWord]);
 						UIUtil.show(createForm, true);

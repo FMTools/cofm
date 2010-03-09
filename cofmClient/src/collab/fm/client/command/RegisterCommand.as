@@ -1,20 +1,15 @@
 package collab.fm.client.command {
 	import collab.fm.client.cmn.*;
-	import collab.fm.client.event.ClientEvent;
+	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
-
-	import flash.events.EventDispatcher;
-	import flash.events.IEventDispatcher;
 
 	public class RegisterCommand implements IDurableCommand {
 
 		private var _name:String;
 		private var _pwd: String;
 		private var _cmdId: int;
-		private var _target: IEventDispatcher;
 
-		public function RegisterCommand(target: IEventDispatcher, name: String, pwd: String) {
-			_target = target;
+		public function RegisterCommand(name: String, pwd: String) {
 			_name = name;
 			_pwd = pwd;
 		}
@@ -49,10 +44,10 @@ package collab.fm.client.command {
 			trace("Register reponse received: " + data[Cst.FIELD_RSP_NAME]);
 			if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME]
 				&& Cst.REQ_REGISTER == data[Cst.FIELD_RSP_SOURCE_NAME]) {
-				// Notify views
-				_target.dispatchEvent(new ClientEvent(ClientEvent.REGISTER_SUCCESS));
 
 				CommandBuffer.instance.removeCommand(_cmdId);
+				ClientEvtDispatcher.instance().dispatchEvent(
+					new ClientEvent(ClientEvent.REGISTER_SUCCESS, null));
 			}
 		}
 

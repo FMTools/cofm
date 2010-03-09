@@ -11,12 +11,12 @@ package collab.fm.client.data {
 			input["1"] = "ronnie";
 			input["2"] = "higgins";
 			input["3"] = "maguire";
-			User.instance.refresh({
+			UserList.instance.refresh({
 					"event": Cst.DATA_USER_NAMES,
 					"list": input
 				}, true);
 			trace("----------------- User.updateUserList --------------");
-			trace(User.instance.users.toXMLString());
+			trace(UserList.instance.users.toXMLString());
 			trace("--------------------------------------");
 		}
 	}

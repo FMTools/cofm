@@ -1,19 +1,17 @@
 package collab.fm.client.command {
 	import collab.fm.client.cmn.*;
-	import collab.fm.client.data.User;
+	import collab.fm.client.data.UserList;
 	import collab.fm.client.util.*;
 
 	import flash.events.IEventDispatcher;
 
 	public class DatalessCommand implements IDurableCommand {
-		protected var _target: IEventDispatcher;
 		protected var _name: String;
 		protected var _cmdId: int;
 		private var _needMyId: Boolean;
 		private var _needModelId: Boolean;
 
-		public function DatalessCommand(target: IEventDispatcher, name: String, needMyId: Boolean=true, needModelId: Boolean=true) {
-			_target = target;
+		public function DatalessCommand(name: String, needMyId: Boolean=true, needModelId: Boolean=true) {
 			_name = name;
 			_needMyId = needMyId;
 			_needModelId = needModelId;
@@ -26,10 +24,10 @@ package collab.fm.client.command {
 					"name": _name
 				};
 			if (_needMyId) {
-				request.requesterId = User.instance.myId;
+				request.requesterId = UserList.instance.myId;
 			}
 			if (_needModelId) {
-				request.modelId = User.instance.currentModelId;
+				request.modelId = UserList.instance.currentModelId;
 			}
 			Connector.instance.send(JsonUtil.objectToJson(request));
 		}
