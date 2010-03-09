@@ -16,7 +16,7 @@
     -->
     <mx:TileList id="mine" width="100%" height="200" dataProvider="{ModelCollection.instance.my}"
     	 columnCount="4" columnWidth="200"
-    	 includeInLayout="{User.instance.isLogin}" visible="{User.instance.isLogin}">
+    	 includeInLayout="{UserList.instance.isLogin}" visible="{UserList.instance.isLogin}">
     	<mx:itemRenderer>
     		<mx:Component>
     			<mx:VBox horizontalAlign="center" width="100" height="120">

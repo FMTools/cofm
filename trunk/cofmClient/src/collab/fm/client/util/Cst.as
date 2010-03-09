@@ -33,10 +33,5 @@ package collab.fm.client.util {
 		public static const BIN_REL_REQUIRES: String = "requires";
 		public static const BIN_REL_EXCLUDES: String = "excludes";
 
-		public static const DATA_MY_INFO: String = "myInfoUpdated";
-		public static const DATA_USER_NAMES: String = "userNamesUpdated";
-		public static const DATA_OTHERS_MODEL: String = "othersModelUpdated";
-		public static const DATA_CREATE_MODEL: String = "myModelCreated";
-
 	}
 }

@@ -8,7 +8,7 @@ package collab.fm.client.data {
 	//  model_tree = feature_primary_name + children
 	//  feature_primary_name = name I voted YES, or the most supported name if I haven't voted.
 
-	public class WorkingModelView extends AbstractDataView {
+	public class WorkingModelView {
 		
 		private var _data: XMLListCollection;
 		

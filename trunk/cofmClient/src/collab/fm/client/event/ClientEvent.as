@@ -7,18 +7,15 @@ package collab.fm.client.event {
 
 		public static const REGISTER_SUCCESS: String = "registerSuccess";
 
-		public static const LIST_MODEL_SUCCESS: String = "listModelSuccess";
+		public var data: Object;
 
-		public static const LIST_USER_SUCCESS: String = "listUserSuccess";
-
-		public static const LOGIN_SUCCESS: String = "loginSuccess";
-
-		public function ClientEvent(type:String, bubbles:Boolean=true, cancelable:Boolean=false) {
+		public function ClientEvent(type:String, data:Object, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
+			this.data = data;
 		}
 
 		override public function clone(): Event {
-			return new ClientEvent(type, bubbles, cancelable);
+			return new ClientEvent(type, data, bubbles, cancelable);
 		}
 	}
 }

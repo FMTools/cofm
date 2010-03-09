@@ -4,19 +4,14 @@ package collab.fm.client.command {
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
 
-	import flash.events.IEventDispatcher;
-
 	public class CreateModelCommand implements IDurableCommand {
 		private var _cmdId: int;
-		private var _target: IEventDispatcher;
 		private var _name: String;
 		private var _des: String;
 
-		public function CreateModelCommand(
-			target: IEventDispatcher, name: String, des: String) {
+		public function CreateModelCommand(name: String, des: String) {
 			_name = name;
 			_des = des;
-			_target = target;
 		}
 
 		/** See server.CreateModelRequest
@@ -26,7 +21,7 @@ package collab.fm.client.command {
 			var request: Object = {
 					"name": Cst.REQ_CREATE_MODEL,
 					"id": _cmdId,
-					"requesterId": User.instance.myId,
+					"requesterId": UserList.instance.myId,
 					"modelName": _name,
 					"description": _des
 				};
@@ -45,19 +40,19 @@ package collab.fm.client.command {
 		public function handleResponse(data:Object): void {
 			if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME] &&
 				Cst.REQ_CREATE_MODEL == data[Cst.FIELD_RSP_SOURCE_NAME]) {
+
+				CommandBuffer.instance.removeCommand(_cmdId);
 				var theModel: XML = 
 					<model isMine="true" id={data.modelId} name={_name} userNum="1">
 						<des>{_des}</des>
 						<users>
-							<user>{User.instance.myId}</user>
+							<user>{UserList.instance.myId}</user>
 						</users>
 					</model>;
-				ModelCollection.instance.refresh({
-						"event": Cst.DATA_CREATE_MODEL,
-						"model": theModel
-					}, true);
-				_target.dispatchEvent(
-					new ModelSelectedEvent(ModelSelectedEvent.SELECTED, int(data.modelId)));
+				ClientEvtDispatcher.instance().dispatchEvent(
+					new ModelCreateEvent(ModelCreateEvent.SUCCESS, theModel));
+				ClientEvtDispatcher.instance().dispatchEvent(
+					new ModelSelectEvent(ModelSelectEvent.SELECTED, data.modelId));
 			}
 		}
 

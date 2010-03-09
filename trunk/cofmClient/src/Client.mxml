@@ -29,10 +29,10 @@
 			
 			private function initView(): void {
 				UIUtil.show(modeling, false);
-				this.addEventListener(ModelSelectedEvent.SELECTED, doModeling);
+				this.addEventListener(ModelSelectEvent.SELECTED, doModeling);
 			}
 			
-			private function doModeling(evt: ModelSelectedEvent): void {
+			private function doModeling(evt: ModelSelectEvent): void {
 				mlabel.text = "This is model #" + evt.modelId;
 				UIUtil.show(entry, false);
 				UIUtil.show(modeling, true);
