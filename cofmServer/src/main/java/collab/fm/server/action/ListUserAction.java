@@ -31,8 +31,10 @@ public class ListUserAction extends Action {
 		try {
 			List<User> all = DaoUtil.getUserDao().getAll();
 			List<User2> result = new ArrayList<User2>();
-			for (User u: all) {
-				result.add(u.transfer());
+			if (all != null) {
+				for (User u: all) {
+					result.add(u.transfer());
+				}
 			}
 			ListUserResponse lur = new ListUserResponse();
 			lur.setName(Resources.RSP_SUCCESS);
