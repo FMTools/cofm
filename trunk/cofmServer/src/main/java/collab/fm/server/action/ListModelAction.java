@@ -1,12 +1,12 @@
 package collab.fm.server.action;
 
 import java.util.*;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.entity.Model;
-import collab.fm.server.bean.entity.ModelDescription;
 import collab.fm.server.bean.entity.ModelName;
-import collab.fm.server.bean.entity.User;
 import collab.fm.server.bean.entity.Votable;
 import collab.fm.server.bean.protocol.ListModelRequest;
 import collab.fm.server.bean.protocol.ListModelResponse;
@@ -43,9 +43,25 @@ public class ListModelAction extends Action {
 			
 			ListModelResponse lmr = new ListModelResponse();
 			lmr.setModels(new ArrayList<Model2>());
+			lmr.setExactlyMatches(false);
 			
+			// if no search word or search_word == ""
+			if (request.getSearchWord() == null || StringUtils.trim(request.getSearchWord()).equals("")) {
+				lmr.setExactlyMatches(true);
+			}
 			if (all != null) {
 				for (Model m: all) {
+					// Check exactly matches.
+					if (lmr.isExactlyMatches() == false) {
+						for (Votable v: m.getNames()) {
+							ModelName modelName = (ModelName)v;
+							if (modelName.getName().equals(request.getSearchWord())) {
+								lmr.setExactlyMatches(true);
+							}
+						}
+					}
+					
+					// Add to result list.
 					lmr.getModels().add(m.transfer());
 				}
 			}

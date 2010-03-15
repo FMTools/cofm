@@ -53,7 +53,6 @@ public class RegisterAction extends Action {
 
 			rg.setBack(rsp);
 			
-			logger.info("Request sent: " + rsp.getName());
 			return true;
 		} catch (BeanPersistenceException e) {
 			logger.warn("Couldn't register.", e);
