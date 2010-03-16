@@ -2,7 +2,7 @@
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
 	 xmlns:r="collab.fm.client.ui.renderer.*" width="700" height="700"
 	 creationComplete="initView()"
-	 initialize="initData()" xmlns:view="collab.fm.client.ui.view.*">
+	 xmlns:view="collab.fm.client.ui.view.*">
 	
 	<!-- There're 2 lists in this view.
 	     On the up side, a 'My Models' Tile-List will display my models with big image and short information.
@@ -11,8 +11,7 @@
 	     But, if the user didn't login, we show ONLY the "other models" list because at that time there's no 'my'.
 	     Use event listener to handle LoginEvent.
 	     
-	     And becaus
-	     e we need to show contributors' name, so we also need a "listuser" command in ModelList
+	     And because we need to show contributors' name, so we also need a "listuser" command in ModelList
     -->
     <mx:TileList id="mine" width="100%" height="200" dataProvider="{ModelCollection.instance.my}"
     	 columnCount="4" columnWidth="200"
@@ -26,13 +25,18 @@
     					<mx:Label text="{RS.M_LIST_USERS}" paddingRight="0"/>
     					<mx:Label text="{XML(data).@userNum}" />	
     				</mx:HBox>
+    				<mx:Button label="{RS.BTN_ENTER}" click="selectModel(int(XML(data).@id));" />
     				<mx:Script>
     				<![CDATA[
     					import collab.fm.client.util.RS;
-    					
+    					import collab.fm.client.event.*
     					[Embed(source="structure.png")]
            				[Bindable]
             			private var imgCls:Class;
+            			private function selectModel(modelId: int): void {
+    						ClientEvtDispatcher.instance().dispatchEvent(
+    							new ModelSelectEvent(ModelSelectEvent.SELECTED, modelId));
+    					}
     				]]>
     				</mx:Script>
     			</mx:VBox>	
@@ -52,7 +56,11 @@
     	 			 verticalScrollPolicy="off">
     	 			<mx:Image width="50" height="50" source="structure.png" />
 					<mx:VBox height="100%" width="100%">
-						<mx:Label text="{XML(data).@name}" fontWeight="bold" fontSize="12"/>
+						<mx:HBox>
+							<mx:Label text="{XML(data).@name}" fontWeight="bold" fontSize="12"/>
+							<mx:Button label="{RS.BTN_ENTER}" click="selectModel(int(XML(data).@id));" 
+								includeInLayout="{UserList.instance.isLogin}" visible="{UserList.instance.isLogin}" />	
+						</mx:HBox>
 						<mx:HBox verticalAlign="top">
 							<mx:Label text="{RS.M_LIST_USERS}"/>
 							<mx:Repeater id="rep" dataProvider="{XML(data).users.user}" count="{MAX_DISPLAYED_USER_COUNT}">
@@ -67,6 +75,8 @@
 					<mx:Script>
     				<![CDATA[
     					import collab.fm.client.util.RS;
+    					import collab.fm.client.event.*
+    					import collab.fm.client.data.*;
     					
     					private static const MAX_DISPLAYED_USER_COUNT: int = 5; // how many users we should display
     					
@@ -75,6 +85,11 @@
     						if (total > MAX_DISPLAYED_USER_COUNT) {
     							userAppender.text = "...(and " + (total-MAX_DISPLAYED_USER_COUNT) + " more)";
     						}
+    					}
+    					
+    					private function selectModel(modelId: int): void {
+    						ClientEvtDispatcher.instance().dispatchEvent(
+    							new ModelSelectEvent(ModelSelectEvent.SELECTED, modelId));
     					}
     				]]>
     				</mx:Script>
@@ -89,29 +104,18 @@
     		import collab.fm.client.data.*;
     		import collab.fm.client.util.*;
     		import collab.fm.client.event.*;
-    		
-    		public function callOnLoginOK(): void {
+    		  		
+    		public function onModelSearch(evt: ModelSearchEvent): void {
+    			// Because my_list and others_list are bound to ModelCollection, they are updated 
+    			// automatically, therefore we only need to update the "summary".
+    			summary.text = RS.format(RS.M_LIST_SUMMARY, [evt.result.length]);
     		}
     		
-    		public function callOnListModelOK(): void {
-    			refreshSummary();
-    		}
     		private function initView(): void {
     			trace("Model List View inited.");
-    			refreshSummary();
-    			this.addEventListener(SearchModelEvent.SUCCESS, doSearchOK);
+    			ClientEvtDispatcher.instance().addEventListener(ModelSearchEvent.SUCCESS, onModelSearch);
     		}
     		
-    		private function refreshSummary(): void {
-    			summary.text = RS.format(RS.M_LIST_SUMMARY, [ModelCollection.instance.others.length]);
-    		}
-    		
-    		private function initData(): void {
-    		}
-    		
-    		private function doSearchOK(evt: SearchModelEvent): void {
-    			refreshSummary();
-    		}
     	]]>
     </mx:Script>
 </mx:VBox>

@@ -20,7 +20,7 @@ package collab.fm.client.command {
 			}
 
 			ClientEvtDispatcher.instance().dispatchEvent(
-				new ClientEvent(ClientEvent.LIST_USER_SUCCESS, list));
+				new ListUserEvent(ListUserEvent.SUCCESS, list));
 
 		}
 

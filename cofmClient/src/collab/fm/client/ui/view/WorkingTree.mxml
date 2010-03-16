@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Tree xmlns:mx="http://www.adobe.com/2006/mxml"	 
+	 itemRenderer="collab.fm.client.ui.renderer.WorkingTreeItemRenderer"
+     labelField="@name"
+     dataProvider="{WorkingTreeData.instance.xml}">
+
+	<mx:Script>
+		<![CDATA[
+			import collab.fm.client.data.*;
+			import collab.fm.client.event.*;
+		]]>
+	</mx:Script>
+</mx:Tree>

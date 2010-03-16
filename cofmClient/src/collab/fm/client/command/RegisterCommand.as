@@ -47,7 +47,7 @@ package collab.fm.client.command {
 
 				CommandBuffer.instance.removeCommand(_cmdId);
 				ClientEvtDispatcher.instance().dispatchEvent(
-					new ClientEvent(ClientEvent.REGISTER_SUCCESS, null));
+					new ClientEvent(ClientEvent.REGISTER_SUCCESS));
 			}
 		}
 

@@ -4,12 +4,11 @@ package collab.fm.client.event {
 	public class ClientEvent extends Event {
 
 		public static const CONNECT_SUCCESS: String = "connectSuccess";
-
 		public static const REGISTER_SUCCESS: String = "registerSuccess";
 
 		public var data: Object;
 
-		public function ClientEvent(type:String, data:Object, bubbles:Boolean=false, cancelable:Boolean=false) {
+		public function ClientEvent(type:String, data:Object=null, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
 			this.data = data;
 		}

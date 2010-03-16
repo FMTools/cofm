@@ -1,59 +1,45 @@
 package collab.fm.client.util {
-	import collab.fm.client.data.Model;
+	import collab.fm.client.data.FeatureModel;
 
 	import flash.utils.Dictionary;
 
 	public class ModelUtil {
 
-		/* Hierarchy:
-		   topNodes: top level Nodes
-		   Node: <id, children of type Node>
-		 */
-		public static function getHierarchy(model: Model): Object {
-			var nodes: Dictionary = new Dictionary();
-			for each (var feature: Object in model.features) {
-				nodes[feature.id] = {parent: null, children: null};
-			}
-			for each (var rel: Object in model.binaries) {
-				if (rel.type == Cst.BIN_REL_REFINES) {
-					if (nodes[rel.left].children == null) {
-						nodes[rel.left].children = new Array();
-					}
-					(nodes[rel.left].children as Array).push(rel.right);
-					if (nodes[rel.right].parent == null) {
-						nodes[rel.right].parent = 1;
+		public static function updateVoters(vote: String, userId: String, root: XML): void {
+			var user: XML = <user>{userId}</user>;
+			var yes: XML = root.yes;
+			var no: XML = root.no;
+			var userInYes: Boolean = yes.contains(user);
+			var userInNo: Boolean = no.contains(user);
+			if (vote.toLowerCase() == (new Boolean(true).toString().toLowerCase())) {
+				if (!userInYes) {
+					yes.appendChild(user);
+					if (userInNo) {
+						for each (var u: XML in yes.user) {
+							if (u.text().toString() == userId) {
+								deleteNode(u);
+							}
+						}
 					}
 				}
-			}
-
-			function addChild(n1: Object, n2: Object): void {
-				(n1.children as Array).push(n2);
-			}
-
-			function newNode(id: Object): Object {
-				var n: Object = new Object();
-				n.id = id as Number;
-				if (nodes[id].children == null) {
-					n.children = null;
-				} else {
-					n.children = new Array();
-					for each (var child: Object in nodes[id].children) {
-						(n.children as Array).push(newNode(child));
+			} else {
+				if (!userInNo) {
+					no.appendChild(user);
+					if (userInYes) {
+						for each (var v: XML in no.user) {
+							if (v.text().toString() == userId) {
+								deleteNode(v);
+							}
+						}
 					}
 				}
-				return n;
 			}
+		}
 
-			var result: Object = new Object();
-			result.topNodes = new Array();
-
-			for (var nodeId: Object in nodes) {
-				if (nodes[nodeId].parent == null) {
-					(result.topNodes as Array).push(newNode(nodeId));
-				}
+		public static function deleteNode(node:XML): void {
+			if (node != null && node.parent() != null) {
+				delete node.parent().children()[node.childIndex()];
 			}
-
-			return result;
 		}
 
 		/**
@@ -66,9 +52,7 @@ package collab.fm.client.util {
 			myId: int=-1,        // my user ID
 			uValPropName: String=null, // property name of item value
 			matchVal: Object=null  // do matching on item value 
-			): Boolean { // if do matching && exactly matches, return true; otherwise return false
-
-			var exactlyMatches: Boolean = false;
+			): void {
 
 			function compareRatedItems(a: Object, b: Object): Number {
 				trace("compared");
@@ -91,9 +75,6 @@ package collab.fm.client.util {
 				if (matchVal != null) {
 					var valInA: Boolean = (matchVal == a[uValPropName]);
 					var valInB: Boolean = (matchVal == b[uValPropName]);
-					if (valInA || valInB) {
-						exactlyMatches = true;
-					}
 					if (valInA && !valInB) {
 						return -1;
 					}
@@ -130,12 +111,7 @@ package collab.fm.client.util {
 				if (aybt < byat) return 1; // b first
 				return 0;
 			}
-			if (target.length == 1 && matchVal != null) {
-				// check exactly match
-				return matchVal == target[0][uValPropName];
-			}
 			target.sort(compareRatedItems);
-			return exactlyMatches;
 		}
 	}
 }

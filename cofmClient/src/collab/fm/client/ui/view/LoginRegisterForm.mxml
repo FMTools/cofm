@@ -3,6 +3,7 @@
 	 xmlns:v="collab.fm.client.ui.validator.*"
 	 creationComplete="initView()">
 	
+	<!-- Login Form -->
 	<mx:Form id="loginForm" visible="{showLogin}" includeInLayout="{showLogin}">
 		<mx:FormHeading label="{RS.LOGIN_HEADING}"/>
 		<mx:FormItem label="{RS.LOGIN_INPUT_NAME}" required="true">
@@ -22,6 +23,7 @@
 		</mx:FormItem>
 	</mx:Form>
 	
+	<!-- Register Form -->
 	<mx:Form id="regForm" visible="{!showLogin}" includeInLayout="{!showLogin}">
 		<mx:FormHeading label="{RS.REG_HEADING}" />		
 		<mx:FormItem label="{RS.REG_NAME}" required="true">
@@ -56,7 +58,7 @@
 			public var showLogin: Boolean = true;
 			
 			private function initView(): void {
-				this.addEventListener(ClientEvent.REGISTER_SUCCESS, doRegisterOK);
+				ClientEvtDispatcher.instance().addEventListener(ClientEvent.REGISTER_SUCCESS, doRegisterOK);
 			}
 			
 			private function validateLoginForm(): Boolean {
@@ -78,13 +80,13 @@
 			
 			private function doLogin(): void {
 				if (validateLoginForm()) {
-					new LoginCommand(this, uName.text, uPwd.text).execute();
+					new LoginCommand(uName.text, uPwd.text).execute();
 				}
 			}
 			
 			private function doRegister(): void {
 				if (validateRegisterForm()) {
-				    new RegisterCommand(this, regName.text, regPwd.text).execute();
+				    new RegisterCommand(regName.text, regPwd.text).execute();
 				}
 			}
 			

@@ -5,7 +5,13 @@
 	layout="absolute" minWidth="900" minHeight="500"
     width="1000" height="800"
     creationComplete="initView()">
-	
+	<mx:Style>
+    Tree {
+        folderClosedIcon: ClassReference(null);
+        folderOpenIcon: ClassReference(null);
+        defaultLeafIcon: ClassReference(null);
+    }
+	</mx:Style>
 	<mx:VBox id="appContainer" width="100%" height="100%">
 		
 		<mx:ApplicationControlBar id="appCB" width="100%" height="30">
@@ -16,9 +22,9 @@
 			
 		</p:EntryPerspective>
 		
-		<mx:Canvas id="modeling" width="100%" height="100%">
-			<mx:Label id="mlabel" text="This is the modeling page."/>
-		</mx:Canvas>
+		<p:WorkPerspective id="work" width="100%" height="100%">
+			
+		</p:WorkPerspective>
 	
 	</mx:VBox>
 	<mx:Script>
@@ -28,14 +34,18 @@
 			import collab.fm.client.util.*;
 			
 			private function initView(): void {
-				UIUtil.show(modeling, false);
-				this.addEventListener(ModelSelectEvent.SELECTED, doModeling);
+				UIUtil.show(work, false);
+				ClientEvtDispatcher.instance().addEventListener(ModelSelectEvent.SELECTED, onModelSelect);
+				ClientEvtDispatcher.instance().addEventListener(ModelUpdateEvent.WORKING_VIEW_COMPLETE, onWorkingViewComplete);
 			}
 			
-			private function doModeling(evt: ModelSelectEvent): void {
-				mlabel.text = "This is model #" + evt.modelId;
+			private function onModelSelect(evt: ModelSelectEvent): void {
 				UIUtil.show(entry, false);
-				UIUtil.show(modeling, true);
+				work.initData(evt.modelId);
+			}
+			
+			private function onWorkingViewComplete(evt: ModelUpdateEvent): void {
+				UIUtil.show(work, true);
 			}
 			
 		]]>

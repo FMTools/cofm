@@ -3,19 +3,20 @@ package collab.fm.client.event {
 
 	public class ModelSearchEvent extends Event {
 		public static const SUCCESS: String = "modelSearchSuccess";
-		public static const EXACTLY_MATCHES: String = "modelExactlyMatches";
 
 		public var searchWord: String;
 		public var result: Array;
+		public var exactlyMatches: Boolean;
 
-		public function ModelSearchEvent(type:String, searchWord: String, result: Array, bubbles:Boolean=false, cancelable:Boolean=false) {
+		public function ModelSearchEvent(type:String, searchWord: String, result: Array, exactlyMatches: Boolean, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
 			this.searchWord = searchWord;
 			this.result = result;
+			this.exactlyMatches = exactlyMatches;
 		}
 
 		override public function clone(): Event {
-			return ModelSearchEvent(type, searchWord, result, bubbles, cancelable);
+			return new ModelSearchEvent(type, searchWord, result, exactlyMatches, bubbles, cancelable);
 		}
 
 	}

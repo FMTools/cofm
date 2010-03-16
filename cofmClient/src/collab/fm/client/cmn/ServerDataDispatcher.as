@@ -28,7 +28,10 @@ package collab.fm.client.cmn {
 				name = data[Cst.FIELD_RSP_SOURCE_NAME] as String;
 				switch (name) {
 					case Cst.REQ_COMMIT:
-						new ForwardedCommitCommand(data).execute();
+						ClientEvtDispatcher.instance().dispatchEvent(
+							new OperationCommitEvent(
+							OperationCommitEvent.SUCCUESS, 
+							data["operations"] as Array));
 						break;
 				}
 			} else if (Cst.RSP_SERVER_ERROR == name) {

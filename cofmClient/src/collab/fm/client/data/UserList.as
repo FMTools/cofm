@@ -21,7 +21,6 @@ package collab.fm.client.data {
 		}
 
 		public function UserList() {
-			super();
 			isLogin = false;
 			_users = new XMLListCollection(new XMLList(_defaultBinding));
 

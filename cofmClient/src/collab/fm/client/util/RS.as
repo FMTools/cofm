@@ -7,6 +7,8 @@ package collab.fm.client.util {
 		public static const BTN_OK: String = s("btn.ok");
 		public static const BTN_CANCEL: String = s("btn.cancel");
 		public static const BTN_CREATE: String = s("btn.create");
+		public static const BTN_ENTER: String = s("btn.enter");
+		public static const BTN_CREATE_FEATURE: String = s("btn.createFeature");
 
 		public static const CON_PANEL_TITLE: String = s("con.title");
 		public static const CON_PANEL_HOST: String = s("con.host");
@@ -34,6 +36,13 @@ package collab.fm.client.util {
 		public static const MODEL_CREATE_NAME: String = s("model.create.name");
 		public static const MODEL_CREATE_DESCRIPTION: String = s("model.create.description");
 		public static const MODEL_CREATE_NOLOGIN_INTRO: String = "model.create.noLoginIntro";
+
+		public static const FEATURE_CREATE_NAME: String = s("feature.create.name");
+		public static const FEATURE_CREATE_DES: String = s("feature.create.des");
+		public static const FEATURE_CREATE_PARENT: String = s("feature.create.parent");
+		public static const FEATURE_CREATE_PARENT_CHOOSE: String = s("feature.create.parent.choose");
+		public static const FEATURE_CREATE_PARENT_IS_ROOT: String = s("feature.create.parent.isRoot");
+		public static const FEATURE_CREATE_PARENT_SEARCH: String = s("feature.create.parent.search");
 
 		private static function s(key: String): String {
 			return ResourceManager.getInstance().getString("ui", key);

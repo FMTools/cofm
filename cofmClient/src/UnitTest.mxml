@@ -11,9 +11,7 @@
 			private function createTestSuites(): TestSuite {
 				var t: TestSuite = new TestSuite();
 				// Add Test Cases
-				t.addTestSuite(ModelCollectionTest);
 				t.addTestSuite(ResourceTest);
-				t.addTestSuite(UserTest);
 				t.addTestSuite(MiscTest);
 				t.addTestSuite(ModelUtilTest);
 				return t;

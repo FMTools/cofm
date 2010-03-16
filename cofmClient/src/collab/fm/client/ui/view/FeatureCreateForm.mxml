@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" 
+	 xmlns:a="com.hillelcoren.components.*" 
+	 width="700" height="400"
+	 creationComplete="initView()">
+	 
+	<mx:Button id="cBtn" label="{RS.BTN_CREATE_FEATURE}" click="beginCreateFeature();"/>
+	<mx:Form id="cForm">
+		<mx:FormHeading label="{RS.BTN_CREATE_FEATURE}" />
+		
+		<mx:FormItem label="{RS.FEATURE_CREATE_NAME}">
+			<a:AutoComplete id="nameInput" allowMultipleSelection="false"
+				 allowNewValues="true" allowEditingNewValues="true"
+				 matchType="word" selectedItemStyleName="none"
+				 labelField="name"
+				 dataProvider="{FeatureNameList.instance.data}"
+				 valueCommit="onDuplicateName();"
+				 searchChange="onInputName();"
+				 width="150" />
+		</mx:FormItem>
+		
+		<mx:FormItem label="{RS.FEATURE_CREATE_PARENT}" >
+			<mx:RadioButtonGroup id="parentSwitch" />
+			<mx:RadioButton groupName="parentSwitch" value="None" label="{RS.FEATURE_CREATE_PARENT_IS_ROOT}" />
+			<mx:HBox>
+				<mx:RadioButton groupName="parentSwitch" value="Exist"
+					label="{RS.FEATURE_CREATE_PARENT_CHOOSE}"
+				    paddingRight="0"/>
+				<a:AutoComplete id="parentInput" allowMultipleSelection="false"
+					 allowNewValues="false" matchType="word" selectedItemStyleName="none" width="150"
+					 labelField="name"
+					 dataProvider="{FeatureNameList.instance.data}"
+					 click="onInputParent();"
+					 valueCommit="onSelectParent();"
+					 prompt="{RS.FEATURE_CREATE_PARENT_SEARCH}"/>
+			</mx:HBox>
+		</mx:FormItem>
+		
+		<mx:FormItem label="{RS.FEATURE_CREATE_DES}" >
+			<mx:TextArea id="desInput" width="300" height="200" />
+		</mx:FormItem>
+		
+		<mx:FormItem direction="horizontal">
+			<mx:Button id="cOK" label="{RS.BTN_OK}" click="endCreateFeature();"/>
+			<mx:Button label="{RS.BTN_CANCEL}" />
+		</mx:FormItem>
+		
+	</mx:Form>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ItemClickEvent;
+			import collab.fm.client.util.*;		
+			import collab.fm.client.event.*;	
+			import collab.fm.client.data.*;
+			
+			private var parentId: int;
+			
+			private function initView(): void {
+				UIUtil.show(cForm, false);
+				ClientEvtDispatcher.instance().addEventListener(
+					FeatureSelectEvent.SELECT_FROM_TREE, onChooseParentFromTree);
+			}
+			
+			private function resetForm(): void {
+				nameInput.text = "";
+				parentSwitch.selectedValue = "None";
+				parentId = -1;
+			}
+			
+			private function beginCreateFeature(): void {
+				UIUtil.show(cBtn, false);
+				resetForm();
+				UIUtil.show(cForm, true);
+			}
+			
+			private function endCreateFeature(): void {
+				
+			}
+			
+			private function onInputName(): void {
+				cOK.enabled = true;
+			}
+			
+			private function onDuplicateName(): void {
+				cOK.enabled = false;
+			}
+			
+			private function onInputParent(): void {
+				parentSwitch.selectedValue = "Exist";
+			}
+			
+			private function onChooseParentFromTree(evt: FeatureSelectEvent): void {
+				parentSwitch.selectedValue = "Exist";
+				parentInput.text = evt.name;
+				parentId = evt.id;
+			}
+			
+			private function onSelectParent(): void {
+				// See FeatureNameList for details about the selected item.
+				parentId = parentInput.selectedItem["id"];
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>
