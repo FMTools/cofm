@@ -1,6 +1,6 @@
 package collab.fm.client.command {
 	import collab.fm.client.cmn.*;
-	import collab.fm.client.data.UserList;
+	import collab.fm.client.data.*;
 	import collab.fm.client.util.*;
 
 	import flash.events.IEventDispatcher;
@@ -27,7 +27,7 @@ package collab.fm.client.command {
 				request.requesterId = UserList.instance.myId;
 			}
 			if (_needModelId) {
-				request.modelId = UserList.instance.currentModelId;
+				request.modelId = ModelCollection.instance.currentModelId;
 			}
 			Connector.instance.send(JsonUtil.objectToJson(request));
 		}

@@ -24,7 +24,7 @@
 	<mx:Script>
 		<![CDATA[
 			import collab.fm.client.util.*;
-			import collab.fm.client.event.ClientEvent;
+			import collab.fm.client.event.*;
 			import collab.fm.client.cmn.Connector;
 
 			private function onStartConnect(): void {
@@ -34,7 +34,7 @@
 
 			public function onConnectOK(evt: Event): void {
 				trace("Connected.");
-				this.dispatchEvent(new ClientEvent(ClientEvent.CONNECT_SUCCESS));
+				ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.CONNECT_SUCCESS));
 			}
 		]]>
 	</mx:Script>

@@ -34,7 +34,6 @@ package collab.fm.client.data {
 		}
 
 		public function ModelCollection() {
-			super();
 			_my = new XMLListCollection(new XMLList(_defaultBinding));
 			_others = new XMLListCollection(new XMLList(_defaultBinding));
 
@@ -81,12 +80,6 @@ package collab.fm.client.data {
 			var updateMyList: Boolean = my.contains(<user></user>); // My list hasn't created yet.
 			var myXml: XML = <my/>;
 			var othersXml: XML = <others/>;
-			if (evt.searchWord == null || StringUtil.trim(evt.searchWord) == "") {
-				// Always hits on empty keyword
-				lastSearchHits = true;
-			} else {
-				lastSearchHits = false;
-			}
 			for each (var _model: Object in evt.result) {
 				var rslt: Object = createXmlFromModel(_model, evt.searchWord);
 				if (updateMyList && rslt.isMine == true) {
@@ -94,7 +87,6 @@ package collab.fm.client.data {
 				} else {
 					if (rslt.exactlyMatch) {
 						othersXml.insertChildAfter(null, rslt.xml);
-						lastSearchHits = true;
 					} else {
 						othersXml.appendChild(rslt.xml);
 					}
@@ -107,11 +99,6 @@ package collab.fm.client.data {
 				doUserIdToName(othersXml..user);
 			}
 			resetSource(others, othersXml);
-
-			if (lastSearchHits) {
-				ClientEvtDispatcher.instance().dispatchEvent(
-					new ModelSearchEvent(ModelSearchEvent.EXACTLY_MATCHES, evt.searchWord, evt.result));
-			}
 		}
 
 		private function onCreate(evt: ModelCreateEvent): void {
@@ -145,9 +132,8 @@ package collab.fm.client.data {
 				}
 			}
 
-			var _exactlyMatch: Boolean = false;
 			// Sort the name, if we are searching name, then the searched name should become first
-			_exactlyMatch = ModelUtil.sortOnRating(
+			ModelUtil.sortOnRating(
 				input.names as Array, "v1", "v0", UserList.instance.myId,
 				"val", search);
 			var _primary_name: String = (input.names as Array)[0].val; // primary == first
@@ -161,7 +147,7 @@ package collab.fm.client.data {
 				</model>;
 			result.appendChild(_users);
 
-			return {"xml": result, "isMine": _isMine, "exactlyMatch": _exactlyMatch};
+			return {"xml": result, "isMine": _isMine};
 		}
 
 		private function doUserIdToName(list: XMLList, input: Dictionary = null): void {

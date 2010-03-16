@@ -15,12 +15,12 @@ package collab.fm.client.util {
 					v0: []
 				}
 				];
-			var hits: Boolean = ModelUtil.sortOnRating(
+			ModelUtil.sortOnRating(
 				input, "v1", "v0", 1, "val", "music");
-			assertTrue(hits);
-			var noHits: Boolean = ModelUtil.sortOnRating(
+			
+			ModelUtil.sortOnRating(
 				input, "v1", "v0", 1, "val", "xxx");
-			assertFalse(noHits);
+			
 		}
 
 		public function testSortOnArrayWithOneElement(): void {
@@ -31,9 +31,9 @@ package collab.fm.client.util {
 					v0: []
 				}
 				];
-			var hits: Boolean = ModelUtil.sortOnRating(
+			ModelUtil.sortOnRating(
 				input, "v1", "v0", 1, "val", "music");
-			assertTrue(hits);
+			
 		}
 
 	}

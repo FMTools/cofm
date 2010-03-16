@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="initView()">
+	<!-- We combine model searching and creation together. User must search a model before creating it.
+	-->
 	 <mx:HBox height="26">
 	 	<mx:TextInput id="searchInput" text="{RS.MODEL_SEARCH_DEFAULT}" maxChars="50" />	
 		<mx:Button label="GO" click="doSearch()" />
@@ -31,11 +33,11 @@
 			
 			private function initView(): void {
 				UIUtil.show(createForm, false);
-				this.addEventListener(SearchModelEvent.SUCCESS, doSearchOK);
+				ClientEvtDispatcher.instance().addEventListener(ModelSearchEvent.SUCCESS, onModelSearch);
 			}
 
-			private function doSearchOK(evt: SearchModelEvent): void {
-				trace("Search Event accepted.");
+			private function onModelSearch(evt: ModelSearchEvent): void {
+				trace("ModelSearchEvent accepted.");
 				if (evt.exactlyMatches) {
 					// No create allowed
 					UIUtil.show(createForm, false);
@@ -49,11 +51,11 @@
 			}
 			
 			private function doCreate(): void {
-				new CreateModelCommand(this, modelName.text, modelDes.text).execute();
+				new CreateModelCommand(modelName.text, modelDes.text).execute();
 			}
 			
 			private function doSearch(): void {
-				new ListModelCommand(this, searchInput.text).execute();
+				new ListModelCommand(searchInput.text).execute();
 			}
 			
 		]]>

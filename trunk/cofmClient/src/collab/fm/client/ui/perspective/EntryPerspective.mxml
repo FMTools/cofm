@@ -17,48 +17,45 @@
 	 		
 	 		private var isModelReady: Boolean = false;
 	 		private var isUserReady: Boolean = false;
+	 		private var isConnected: Boolean = false;
 	 		
 	 		private function initView(): void {
-	 			this.addEventListener(ClientEvent.CONNECT_SUCCESS, onConnected);
-	 			this.addEventListener(ClientEvent.LOGIN_SUCCESS, onLogined);
-	 			this.addEventListener(ClientEvent.LIST_MODEL_SUCCESS, onListModel);
-	 			this.addEventListener(ClientEvent.LIST_USER_SUCCESS, onListUser);
+	 			//TODO: change event type to LoginEvent, ListUserEvent, ModelSearchEvent.
+	 			ClientEvtDispatcher.instance().addEventListener(ClientEvent.CONNECT_SUCCESS, onConnected);
+	 			ClientEvtDispatcher.instance().addEventListener(LoginEvent.SUCCESS, onLogined);
+	 			ClientEvtDispatcher.instance().addEventListener(ModelSearchEvent.SUCCESS, onListModel);
+	 			ClientEvtDispatcher.instance().addEventListener(ListUserEvent.SUCCESS, onListUser);
 	 			trace("Entry Perspective inited.");
 	 		}
 	 		
-	 		private function showWorkingViews(): void {
+	 		private function switchToHomePage(): void {
 	 			UIUtil.show(conDlg, false);
 	 			UIUtil.show(mdList, true);
 	 			UIUtil.show(logReg, true);
+	 			isConnected = true;
 	 		}
 	 		
 	 		private function onConnected(evt: ClientEvent): void {
-	 			new ListModelCommand(this).execute();
-	 			new ListUserCommand(this).execute();
+	 			new ListModelCommand().execute();
+	 			new ListUserCommand().execute();
 	 		}
 	 		
-	 		private function onListModel(evt: ClientEvent): void {
-	 			if (evt.target == this) {
-	 				isModelReady = true;
-	 				mdList.callOnListModelOK();
-	 			}	
-	 			if (isModelReady && isUserReady) {
-	 				showWorkingViews();
+	 		private function onListModel(evt: ModelSearchEvent): void {
+	 			isModelReady = true;
+	 			if (!isConnected && isModelReady && isUserReady) {
+	 				switchToHomePage();
 	 			}
 	 		}
 	 		
-	 		private function onListUser(evt: ClientEvent): void {
-	 			if (evt.target == this) {
-	 				isUserReady = true;
-	 			}
-	 			if (isModelReady && isUserReady) {
-	 				showWorkingViews();
+	 		private function onListUser(evt: ListUserEvent): void {
+	 			isUserReady = true;
+	 			if (!isConnected && isModelReady && isUserReady) {
+	 				switchToHomePage();
 	 			}
 	 		}
 	 		
-	 		private function onLogined(evt: ClientEvent): void {
+	 		private function onLogined(evt: LoginEvent): void {
 	 			UIUtil.show(logReg, false);
-	 			mdList.callOnLoginOK();
 	 		}
 	 	]]>
 	 </mx:Script>
