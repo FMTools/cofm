@@ -82,8 +82,11 @@ public class BinaryRelationshipOperation extends RelationshipOperation {
 						DaoUtil.getFeatureDao().getById(rightFeatureId, false));
 			}
 			relation.vote(true, userid);
-			relation.setModel(model);
+			model.addRelationship(relation);
+			
 			relation = (BinaryRelationship)DaoUtil.getRelationshipDao().save(relation);
+			DaoUtil.getModelDao().save(model);
+			
 			relationshipId = relation.getId();
 			
 			result = ImplicitVoteOperation.makeOperation(this, relation).apply();

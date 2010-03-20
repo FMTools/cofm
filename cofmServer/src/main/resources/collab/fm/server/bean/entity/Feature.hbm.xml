@@ -46,18 +46,16 @@
   		<many-to-many class="FeatureDescription" column="descriptionId" unique="true"></many-to-many>
   	</set>
   	
-  	<!-- Many-to-many association to Relationship
-  	  Use 'inverse=true' to indicate that the client code should never call feature.addRelationship()
-  	  directly. Actually, the ONLY callers of feature.addRelationship() are subclasses of Relationship.
-  	  See BinaryRelationship.setFeatures() for more details.
-  	-->
+  	<!-- Many-to-many association to Relationship.
+  	   The statement "inverse=true" tells Hibernate that the two updates of feature and relationship 
+  	   happens on the same column (the "featureId" in table "Feature"). -->
   	<set inverse="true" name="relationshipsInternal" table="FeatureRelationshipInvolvement">
   		<key column="featureId"></key>
   		<many-to-many column="relationshipId" class="Relationship"></many-to-many>
   	</set>
   	
   	<!-- Many-to-one association to Model -->
-  	<many-to-one name="model" column="modelId" not-null="true"/>
+  	<many-to-one name="model" column="modelId" class="Model" not-null="true" />
   	
   </class>
 </hibernate-mapping>

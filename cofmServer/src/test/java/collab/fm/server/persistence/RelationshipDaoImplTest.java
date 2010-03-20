@@ -14,7 +14,7 @@ import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.BeanPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
-
+@Ignore
 public class RelationshipDaoImplTest {
 	
 	static Logger logger = Logger.getLogger(RelationshipDaoImplTest.class);

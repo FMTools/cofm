@@ -24,20 +24,19 @@
   		<many-to-many class="ModelDescription" column="descriptionId" unique="true"></many-to-many>
   	</set>
   	
-  	<!-- One-to-many bidirectional association to Feature, managed by the Feature class,
-  	     which means Feature.setModel(model) will call model.addFeature(this) -->
+  	<!-- One-to-many bidirectional association to Feature -->
   	<set name="featuresInternal" inverse="true">
   	    <key column="modelId"></key>
   	    <one-to-many class="Feature" />
   	</set>
   	
-  	<!-- One-to-many bidirectional association to Relationship, managed by the Relationship class -->
+  	<!-- One-to-many bidirectional association to Relationship -->
   	<set name="relationshipsInternal" inverse="true">
   	    <key column="modelId"></key>
   	    <one-to-many class="Relationship"/>
   	</set>
 
-    <!-- Many-to-many bidirectional association to User, managed by the User class -->
+    <!-- Many-to-many bidirectional association to User -->
     <set inverse="true" name="usersInternal" table="ModelUserAssoc">
   		<key column="modelId"></key>
   		<many-to-many column="userId" class="User"></many-to-many>

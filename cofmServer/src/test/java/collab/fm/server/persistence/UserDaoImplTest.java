@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import collab.fm.server.bean.entity.Model;
@@ -14,7 +15,7 @@ import collab.fm.server.bean.entity.User;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.exception.BeanPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
-
+@Ignore
 public class UserDaoImplTest {
 	static Logger logger = Logger.getLogger(UserDaoImplTest.class);
 	

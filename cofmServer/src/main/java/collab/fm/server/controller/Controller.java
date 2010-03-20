@@ -65,6 +65,7 @@ public class Controller {
 	}
 	
 	public ResponseGroup execute(String message, String sourceAddress) {
+		logger.info("--- Request is: '" + message + "'");
 		Request req = null;
 		ResponseGroup rg = new ResponseGroup();
 		rg.setBack(null);

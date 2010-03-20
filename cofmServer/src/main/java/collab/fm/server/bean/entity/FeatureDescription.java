@@ -34,11 +34,11 @@ public class FeatureDescription implements Votable {
 	}
 	
 	public String toString() {
-		return value + vote.toString();
+		return value + this.getVote().toString();
 	}
 	
 	public void vote(boolean yes, Long userid) {
-		vote.vote(yes, userid);
+		this.getVote().vote(yes, userid);
 	}
 	
 	public boolean equals(Object v) {

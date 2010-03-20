@@ -26,7 +26,7 @@ public class EventHandler extends IoHandlerAdapter {
 	}
 
 	public void messageReceived(IoSession session, Object message) throws Exception {
-		logger.info("--- Request received: '" + message + "'");
+		logger.info("--- Request received from '" + session.getRemoteAddress().toString() + "'");
 		ResponseGroup group = 
 			Controller.instance().execute((String)message, session.getRemoteAddress().toString());
 		distributeResponse(session, group);

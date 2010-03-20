@@ -50,10 +50,7 @@ public class Server {
 	}
 	
 	public static IoAcceptor setup() {
-		Controller.init();
-		
 		prepareDataBuffer();
-		
 		return prepareServer();
 	}
 

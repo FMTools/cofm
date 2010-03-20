@@ -12,7 +12,7 @@ import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.exception.BeanPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 import static org.junit.Assert.*;
-
+@Ignore
 public class FeatureDaoImplTest {
 
 	static Logger logger = Logger.getLogger(FeatureDaoImplTest.class);

@@ -34,7 +34,7 @@ public class ModelName implements Votable {
 	}
 	
 	public String toString() {
-		return name + vote.toString();
+		return name + getVote().toString();
 	}
 	
 	public boolean equals(Object v) {
@@ -50,7 +50,7 @@ public class ModelName implements Votable {
 	}
 	
 	public void vote(boolean yes, Long userid) {
-		vote.vote(yes, userid);
+		getVote().vote(yes, userid);
 	}
 	
 	public Long getId() {

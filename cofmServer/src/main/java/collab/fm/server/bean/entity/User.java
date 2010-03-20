@@ -54,7 +54,7 @@ public class User {
 	}
 	
 	public void addModel(Model model) {
-		models.add(model);
+		this.getModelsInternal().add(model);
 		model.addUser(this);
 	}
 	

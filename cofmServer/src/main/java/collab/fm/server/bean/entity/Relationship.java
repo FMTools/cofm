@@ -20,7 +20,7 @@ public class Relationship implements Votable{
 	}
 
 	public String toString() {
-		return "vote=" + existence.toString() + " id=" + id + " type=" + type;
+		return "vote=" + getExistence().toString() + " id=" + id + " type=" + type;
 	}
 	
 	public Long getId() {
@@ -37,7 +37,6 @@ public class Relationship implements Votable{
 
 	public void setModel(Model model) {
 		this.model = model;
-		model.addRelationship(this);
 	}
 
 	public Vote getExistence() {
@@ -67,7 +66,7 @@ public class Relationship implements Votable{
 	}
 	
 	public void vote(boolean yes, Long userid) {
-		existence.vote(yes, userid);		
+		this.getExistence().vote(yes, userid);		
 	}
 	
 	public String getType() {
@@ -91,10 +90,10 @@ public class Relationship implements Votable{
 	}
 	
 	protected void addFeature(Feature feature) {
-		features.add(feature);
+		this.getFeaturesInternal().add(feature);
 	}
 	
 	protected void reset() {
-		features.clear();
+		this.getFeaturesInternal().clear();
 	}
 }

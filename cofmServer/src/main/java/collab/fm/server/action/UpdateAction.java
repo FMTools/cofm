@@ -36,17 +36,21 @@ public class UpdateAction extends Action {
 			List<Feature> allFeatures = DaoUtil.getFeatureDao().getAll(req.getModelId());
 			
 			List<Feature2> list1 = new ArrayList<Feature2>();
-			for (Feature f: allFeatures) {
-				list1.add(f.transfer());
+			if (allFeatures != null) {
+				for (Feature f: allFeatures) {
+					list1.add(f.transfer());
+				}
 			}
 			
 			// Return all binary relationships
 			List<Relationship> allRelation = DaoUtil.getRelationshipDao().getAll(req.getModelId());
 			
 			List<BinaryRelation2> list2 = new ArrayList<BinaryRelation2>();
-			for (Relationship r: allRelation) {
-				if (isBinary(r.getType())) {
-					list2.add(((BinaryRelationship)r).transfer());
+			if (allRelation != null) {
+				for (Relationship r: allRelation) {
+					if (isBinary(r.getType())) {
+						list2.add(((BinaryRelationship)r).transfer());
+					}	
 				}
 			}
 			
