@@ -3,13 +3,16 @@ package collab.fm.server.action;
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import collab.fm.server.bean.entity.*;
@@ -22,6 +25,7 @@ import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.ActionException;
 import collab.fm.server.util.exception.ProtocolInterpretException;
 
+@Ignore
 public class CommitActionTest {
 	
 	static Logger logger = Logger.getLogger(CommitActionTest.class);
@@ -80,6 +84,65 @@ public class CommitActionTest {
 			logger.error("Couldn't execute.", e);
 			assertTrue(false);
 		}
+	}
+	
+	@Test
+	public void testCreateTwoFeatures() {
+		try {
+			// Create a Model
+			Model m = new Model();
+			m.voteName("THE XXXXX DOMAIN", true, 1L);
+			m = DaoUtil.getModelDao().save(m);
+			
+			FeatureOperation op = new FeatureOperation();
+			op.setName(Resources.OP_CREATE_FEATURE);
+			op.setUserid(100L);
+			op.setVote(true);
+			op.setValue("I_am_a_new_feature");
+			op.setModelId(m.getId());
+
+			CommitRequest req = new CommitRequest();
+			req.setId(1L);
+			req.setName(Resources.REQ_COMMIT);
+			req.setRequesterId(op.getUserid());
+			req.setModelId(op.getModelId());
+			req.setOperation(op);
+			
+			FeatureOperation op2 = new FeatureOperation();
+			op2.setName(Resources.OP_CREATE_FEATURE);
+			op2.setUserid(100L);
+			op2.setVote(true);
+			op2.setValue("I_am_another_new_feature");
+			op2.setModelId(m.getId());
+
+			CommitRequest req2 = new CommitRequest();
+			req2.setId(1L);
+			req2.setName(Resources.REQ_COMMIT);
+			req2.setRequesterId(op2.getUserid());
+			req2.setModelId(op2.getModelId());
+			req2.setOperation(op2);
+			
+			List<CommitRequest> reqs = new ArrayList<CommitRequest>();
+			reqs.add(req);
+			reqs.add(req2);
+			
+			for (CommitRequest r: reqs) {
+				ResponseGroup rg = new ResponseGroup();
+		
+				action.execute(r, rg);
+				assertNotNull(rg.getBack());
+				assertTrue(rg.getBack() instanceof CommitResponse);
+				CommitResponse cr = (CommitResponse)rg.getBack();
+				assertNotNull(cr.getOperations());
+				
+				logger.info("------------- CREATE NEW FEATURE -------------");
+				showResponse(rg.getBack());
+				showResponse(rg.getBroadcast());
+			}
+			} catch (Exception e) {
+				logger.error("Couldn't execute.", e);
+				assertTrue(false);
+			}
 	}
 	
 	@Test

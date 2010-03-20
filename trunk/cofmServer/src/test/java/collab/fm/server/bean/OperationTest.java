@@ -5,12 +5,13 @@ import static org.junit.Assert.*;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import collab.fm.server.bean.operation.FeatureOperation;
 import collab.fm.server.bean.operation.Operation;
 import collab.fm.server.util.BeanUtil;
-
+@Ignore
 public class OperationTest {
 
 	@Test

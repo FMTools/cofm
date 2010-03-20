@@ -85,7 +85,7 @@ public class ImplicitVoteOperation extends Operation {
 		 */
 		public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
 			try {
-				if (!sourceOp.getVote()) {
+				if (sourceOp.getVote().equals(false)) {
 					setBasicInfo(Resources.OP_CREATE_RELATIONSHIP, false, sourceOp.getUserid());
 					
 					Feature feature = (Feature)sourceObject;
@@ -98,7 +98,6 @@ public class ImplicitVoteOperation extends Operation {
 					// Handle rule 3
 					feature.voteAllDescription(false, sourceOp.getUserid());
 					feature.voteAllName(false, sourceOp.getUserid());
-					DaoUtil.getFeatureDao().save(feature);
 					
 					// Construct forwarded implicit operations, note that rule 3 don't have to be forwarded.
 					if (feature.getRelationships().size() <= 0) {
@@ -130,16 +129,15 @@ public class ImplicitVoteOperation extends Operation {
 		/**
 		 * Rule 4: Vote YES on feature F's attributes -> Vote YES on F
 		 */
-		public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
+		public List<Operation> apply() throws InvalidOperationException, StaleDataException {
 			try {
 				// Set_Optionality always imply a YES vote to feature.
-				if (sourceOp.getVote() || Resources.OP_SET_OPT.equals(sourceOp.getName())) {
+				if (sourceOp.getVote().equals(true) || Resources.OP_SET_OPT.equals(sourceOp.getName())) {
 					setBasicInfo(Resources.OP_CREATE_FEATURE, true, sourceOp.getUserid());
 					
 					// Modify the database
 					Feature feature = (Feature)sourceObject;
 					feature.vote(true, sourceOp.getUserid());
-					DaoUtil.getFeatureDao().save(feature);
 					
 					// Construct the implicit operation
 					targetIds = new ArrayList<Long>();
@@ -153,9 +151,7 @@ public class ImplicitVoteOperation extends Operation {
 				
 			} catch (ClassCastException cce) {
 				throw new InvalidOperationException("Couldn't get the source feature.", cce);
-			} catch (BeanPersistenceException bpe) {
-				throw bpe;
-			}			
+			} 			
 		}
 	}
 	
@@ -170,7 +166,7 @@ public class ImplicitVoteOperation extends Operation {
 		 */
 		public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
 			try {
-				if (sourceOp.getVote()) {
+				if (sourceOp.getVote().equals(true)) {
 					setBasicInfo(Resources.OP_CREATE_FEATURE, true, sourceOp.getUserid());
 					
 					// Handle rule 2

@@ -11,11 +11,12 @@ import net.sf.json.*;
 import net.sf.json.util.JSONUtils;
 
 import org.apache.log4j.Logger;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import collab.fm.server.bean.entity.Feature;
 import collab.fm.server.util.BeanUtil;
-
+@Ignore
 public class FeatureVoteTest {
 	
 	static Logger logger = Logger.getLogger(FeatureVoteTest.class);

@@ -107,7 +107,9 @@ public class FeatureOperation extends Operation {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
 		}
 		feature.voteDescription(value, vote, userid);
-		return ImplicitVoteOperation.makeOperation(this, feature).apply();
+		List<Operation> result = ImplicitVoteOperation.makeOperation(this, feature).apply();
+		DaoUtil.getFeatureDao().save(feature);
+		return result;
 	}
 	
 	private List<Operation> applyAddName() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
@@ -116,16 +118,19 @@ public class FeatureOperation extends Operation {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
 		}
 		feature.voteName(value, vote, userid);
-		return ImplicitVoteOperation.makeOperation(this, feature).apply();
+		List<Operation> result = ImplicitVoteOperation.makeOperation(this, feature).apply();
+		DaoUtil.getFeatureDao().save(feature);
+		return result;
 	}
 	
 	private List<Operation> applyCreateFeature() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
 		if (featureId == null) {
 			if (vote.equals(false)) {
-				throw new InvalidOperationException("Invalid vote: NO to inexisted feature.");
+				throw new InvalidOperationException("Invalid: vote NO to non-existed feature.");
 			}
 			// Get the model
 			Model model = DaoUtil.getModelDao().getById(modelId, false);
+			
 			if (model == null) {
 				throw new InvalidOperationException("Invalid model ID: " + modelId);
 			}
@@ -136,9 +141,10 @@ public class FeatureOperation extends Operation {
 			}
 			featureWithSameName.voteName(value, vote, userid);
 			featureWithSameName.vote(true, userid);
-			featureWithSameName.setModel(model);
+			model.addFeature(featureWithSameName);
 			
 			featureWithSameName = DaoUtil.getFeatureDao().save(featureWithSameName);
+			DaoUtil.getModelDao().save(model);
 			featureId = featureWithSameName.getId();
 			
 			return null;
@@ -149,7 +155,9 @@ public class FeatureOperation extends Operation {
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
 		}
-		return ImplicitVoteOperation.makeOperation(this, feature).apply();
+		List<Operation> result = ImplicitVoteOperation.makeOperation(this, feature).apply();
+		DaoUtil.getFeatureDao().save(feature);
+		return result;
 	}
 	
 	private List<Operation> applySetOpt() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
@@ -158,7 +166,9 @@ public class FeatureOperation extends Operation {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
 		}
 		feature.voteOptionality(vote, userid);
-		return ImplicitVoteOperation.makeOperation(this, feature).apply();
+		List<Operation> result = ImplicitVoteOperation.makeOperation(this, feature).apply();
+		DaoUtil.getFeatureDao().save(feature);
+		return result;
 	}
 	
 	public String toString() {

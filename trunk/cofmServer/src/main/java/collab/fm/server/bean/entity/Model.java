@@ -31,20 +31,20 @@ public class Model {
 		m.setId(this.getId());
 		
 		Set<Long> us = new HashSet<Long>();
-		for (User u: users) {
+		for (User u: this.getUsersInternal()) {
 			us.add(u.getId());
 		}
 		m.setUsers(us);
 		
 		List<VotableString> ns = new ArrayList<VotableString>();
-		for (Votable v: names) {
+		for (Votable v: this.getNamesInternal()) {
 			ModelName mn = (ModelName)v;
 			ns.add(mn.transfer());
 		}
 		m.setNames(ns);
 		
 		List<VotableString> ds = new ArrayList<VotableString>();
-		for (Votable v: descriptions) {
+		for (Votable v: this.getDescriptionsInternal()) {
 			ModelDescription md = (ModelDescription)v;
 			ds.add(md.transfer());
 		}
@@ -72,33 +72,35 @@ public class Model {
 	}
 	
 	public void addFeature(Feature feature) {
-		features.add(feature);
+		this.getFeaturesInternal().add(feature);
+		feature.setModel(this);
 	}
 	
 	public void addRelationship(Relationship r) {
-		relationships.add(r);
+		this.getRelationshipsInternal().add(r);
+		r.setModel(this);
 	}
 	
 	public void addUser(User u) {
-		users.add(u);
+		this.getUsersInternal().add(u);
 	}
 	
 	public void voteAllName(boolean yes, Long userid) {
-		voteAll(names, yes, userid);
+		voteAll(this.getNamesInternal(), yes, userid);
 	}
 	
 	public void voteName(String name, boolean yes, Long userid) {
 		ModelName n = new ModelName(name);
-		voteOrAdd(names, n, yes, userid);
+		voteOrAdd(this.getNamesInternal(), n, yes, userid);
 	}
 	
 	public void voteAllDescription(boolean yes, Long userid) {
-		voteAll(descriptions, yes, userid);
+		voteAll(this.getDescriptionsInternal(), yes, userid);
 	}
 	
 	public void voteDescription(String des, boolean yes, Long userid) {
 		ModelDescription d = new ModelDescription(des);
-		voteOrAdd(descriptions, d, yes, userid);
+		voteOrAdd(this.getDescriptionsInternal(), d, yes, userid);
 	}
 	
 	@SuppressWarnings("unchecked")

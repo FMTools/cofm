@@ -44,6 +44,7 @@ public class CommitAction extends Action {
 			if (me != null && currentModel != null) {
 				me.addModel(currentModel);
 				DaoUtil.getUserDao().save(me);
+				DaoUtil.getModelDao().save(currentModel);
 			}
 			
 			CommitResponse cr = new CommitResponse();

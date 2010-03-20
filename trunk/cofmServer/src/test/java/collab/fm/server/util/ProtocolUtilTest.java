@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.apache.log4j.Logger;
 import org.junit.*;
+
 import static org.junit.Assert.*;
 
 import collab.fm.server.bean.operation.BinaryRelationshipOperation;
@@ -14,7 +15,7 @@ import collab.fm.server.bean.transfer.BinaryRelation2;
 import collab.fm.server.bean.transfer.Feature2;
 import collab.fm.server.bean.transfer.Model2;
 import collab.fm.server.bean.transfer.VotableString;
-
+@Ignore
 public class ProtocolUtilTest {
 
 	static Logger logger = Logger.getLogger(ProtocolUtilTest.class);

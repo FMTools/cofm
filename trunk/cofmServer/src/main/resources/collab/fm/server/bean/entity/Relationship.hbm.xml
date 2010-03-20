@@ -28,7 +28,7 @@
   	</set>
   	
   	<!-- Many-to-one association to Model -->
-  	<many-to-one name="model" column="modelId" not-null="true"/>
+  	<many-to-one name="model" column="modelId" class="Model" not-null="true"/>
   	
   	<!-- Subclasses -->
   	<joined-subclass name="BinaryRelationship" table="BinaryRelationship">

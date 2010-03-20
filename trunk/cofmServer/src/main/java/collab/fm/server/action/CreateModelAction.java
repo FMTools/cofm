@@ -36,9 +36,10 @@ public class CreateModelAction extends Action {
 				}
 				m.voteName(cmr.getModelName(), true, cmr.getRequesterId());
 				m.voteDescription(cmr.getDescription(), true, cmr.getRequesterId());
-				m = DaoUtil.getModelDao().save(m);
 				me.addModel(m);
+				
 				DaoUtil.getUserDao().save(me);
+				m = DaoUtil.getModelDao().save(m);
 				
 				rsp.setModelId(m.getId());
 				rsp.setName(Resources.RSP_SUCCESS);

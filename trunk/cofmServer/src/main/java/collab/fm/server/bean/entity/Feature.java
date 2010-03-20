@@ -34,20 +34,20 @@ public class Feature implements Votable {
 		f.setOpt1(BeanUtil.cloneSet(this.getOptionality().getSupporters()));
 		
 		Set<Long> rels = new HashSet<Long>();
-		for (Relationship rel: relationships) {
+		for (Relationship rel: this.getRelationshipsInternal()) {
 			rels.add(rel.getId());
 		}
 		f.setRels(rels);
 		
 		List<VotableString> ns = new ArrayList<VotableString>();
-		for (Votable v: names) {
+		for (Votable v: this.getNamesInternal()) {
 			FeatureName fn = (FeatureName)v;
 			ns.add(fn.transfer());
 		}
 		f.setNames(ns);
 		
 		List<VotableString> ds = new ArrayList<VotableString>();
-		for (Votable v: descriptions) {
+		for (Votable v: this.getDescriptionsInternal()) {
 			FeatureDescription fd = (FeatureDescription)v;
 			ds.add(fd.transfer());
 		}
@@ -86,7 +86,6 @@ public class Feature implements Votable {
 
 	public void setModel(Model model) {
 		this.model = model;
-		model.addFeature(this);
 	}
 
 	/**
@@ -94,33 +93,33 @@ public class Feature implements Votable {
 	 * See BinaryRelationship.setFeatures(left, right) for an example. 
 	 */
 	public void addRelationship(Relationship r) {
-		this.relationships.add(r);
+		this.getRelationshipsInternal().add(r);
 	}
 	
 	public void vote(boolean yes, Long userid) {
-		existence.vote(yes, userid);
+		this.getExistence().vote(yes, userid);
 	}
 	
 	public void voteOptionality(boolean yes, Long userid) {
-		optionality.vote(yes, userid);
+		this.getOptionality().vote(yes, userid);
 	}
 	
 	public void voteAllName(boolean yes, Long userid) {
-		voteAll(names, yes, userid);
+		voteAll(this.getNamesInternal(), yes, userid);
 	}
 	
 	public void voteName(String name, boolean yes, Long userid) {
 		FeatureName n = new FeatureName(name);
-		voteOrAdd(names, n, yes, userid);
+		voteOrAdd(this.getNamesInternal(), n, yes, userid);
 	}
 	
 	public void voteAllDescription(boolean yes, Long userid) {
-		voteAll(descriptions, yes, userid);
+		voteAll(this.getDescriptionsInternal(), yes, userid);
 	}
 	
 	public void voteDescription(String des, boolean yes, Long userid) {
 		FeatureDescription d = new FeatureDescription(des);
-		voteOrAdd(descriptions, d, yes, userid);
+		voteOrAdd(this.getDescriptionsInternal(), d, yes, userid);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -183,10 +182,10 @@ public class Feature implements Votable {
 	@Override
 	public String toString() {
 		return "{\n\tId: " + id + 
-			   ",\n\tExistence: " + existence.toString() +
-			   ",\n\tOptionality: " + optionality.toString() +
-			   ",\n\tName: " + names.toString() + 
-			   ",\n\tDescription:" + descriptions.toString() + "\n}";
+			   ",\n\tExistence: " + this.getExistence().toString() +
+			   ",\n\tOptionality: " + this.getOptionality().toString() +
+			   ",\n\tName: " + this.getNamesInternal().toString() + 
+			   ",\n\tDescription:" + this.getDescriptionsInternal().toString() + "\n}";
 	}
 
 	public Vote getExistence() {
