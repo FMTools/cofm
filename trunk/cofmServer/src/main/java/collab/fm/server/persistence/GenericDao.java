@@ -39,4 +39,21 @@ public interface GenericDao<EntityType, IdType> {
 	 */
 	public List<EntityType> saveAll(List<EntityType> entities) throws BeanPersistenceException, StaleDataException;
 	
+	/**
+	 * Delete an entity by ID.
+	 * @param entityId the entity's ID
+	 * @param modelId the ID of the model which contains the entity
+	 * @return TODO
+	 * @throws BeanPersistenceException
+	 * @throws StaleDataException
+	 */
+	public void deleteById(IdType entityId) throws BeanPersistenceException, StaleDataException;
+	
+	/**
+	 * Delete an entity.
+	 * @param entity
+	 * @throws BeanPersistenceException
+	 * @throws StaleDataException
+	 */
+	public void delete(EntityType entity) throws BeanPersistenceException, StaleDataException;
 }

@@ -11,15 +11,14 @@
   	<version name="version" access="field" column="entityVersion"></version>
   	
   	<!-- One-to-many association to ModelName.
-  	   Note that we don't want to cascade the deleting operation. 
   	-->
-  	<set name="namesInternal" table="ModelPossibleName" cascade="persist, merge, save-update">
+  	<set name="namesInternal" table="ModelPossibleName" cascade="all, delete-orphan">
   		<key column="modelId"></key>
   		<many-to-many class="ModelName" column="nameId" unique="true"></many-to-many>
   	</set>
   	
   	<!-- One-to-many association to ModelDescription -->
-  	<set name="descriptionsInternal" table="ModelPossibleDescription" cascade="persist, merge, save-update">
+  	<set name="descriptionsInternal" table="ModelPossibleDescription" cascade="all, delete-orphan">
   		<key column="modelId"></key>
   		<many-to-many class="ModelDescription" column="descriptionId" unique="true"></many-to-many>
   	</set>
@@ -36,7 +35,9 @@
   	    <one-to-many class="Relationship"/>
   	</set>
 
-    <!-- Many-to-many bidirectional association to User -->
+    <!-- Many-to-many bidirectional association to User 
+        (See Feature.hbm.xml for the explanation of "inverse=true")
+    -->
     <set inverse="true" name="usersInternal" table="ModelUserAssoc">
   		<key column="modelId"></key>
   		<many-to-many column="userId" class="User"></many-to-many>

@@ -129,6 +129,10 @@ public class Feature implements Votable {
 			Votable v = (Votable)obj;
 			if (v.equals(val)) {
 				v.vote(yes, userid);
+				// If no supporters after this vote, remove v from the Set.
+				if (v.getSupporterNum() <= 0) {
+					field.remove(v);
+				}
 				return;
 			}
 		}
@@ -142,6 +146,9 @@ public class Feature implements Votable {
 	private void voteAll(Set<? extends Votable> field, boolean yes, Long userid) {
 		for (Votable v: field) {
 			v.vote(yes, userid);
+			if (v.getSupporterNum() <= 0) {
+				field.remove(v);
+			}
 		}
 	}
 	
@@ -256,5 +263,13 @@ public class Feature implements Votable {
 			return getId().hashCode();
 		}
 		return getNames().hashCode();
+	}
+
+	public int getOpponentNum() {
+		return this.existence.getOpponents().size();
+	}
+
+	public int getSupporterNum() {
+		return this.existence.getSupporters().size();
 	}
 }

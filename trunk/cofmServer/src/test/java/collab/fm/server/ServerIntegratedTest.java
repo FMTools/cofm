@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import collab.fm.server.bean.entity.*;
@@ -20,7 +21,7 @@ import collab.fm.server.bean.protocol.*;
 import collab.fm.server.controller.*;
 import collab.fm.server.util.exception.*;
 import collab.fm.server.util.*;
-
+@Ignore
 public class ServerIntegratedTest {
 	
 	static Logger logger = Logger.getLogger(ServerIntegratedTest.class);

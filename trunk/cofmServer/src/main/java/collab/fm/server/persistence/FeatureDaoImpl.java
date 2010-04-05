@@ -60,5 +60,4 @@ public class FeatureDaoImpl extends GenericDaoImpl<Feature, Long> implements Fea
 			StaleDataException {
 		return super.getAll(modelId, "model");
 	}
-
 }

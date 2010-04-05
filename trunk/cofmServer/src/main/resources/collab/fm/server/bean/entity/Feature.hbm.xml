@@ -33,22 +33,22 @@
   	</component>
   	
   	<!-- One-to-many association to FeatureName.
-  	   Note that we don't want to cascade the deleting operation. 
   	-->
-  	<set name="namesInternal" table="FeaturePossibleName" cascade="persist, merge, save-update">
+  	<set name="namesInternal" table="FeaturePossibleName" cascade="all, delete-orphan">
   		<key column="featureId"></key>
   		<many-to-many class="FeatureName" column="nameId" unique="true"></many-to-many>
   	</set>
   	
   	<!-- One-to-many association to FeatureDescription -->
-  	<set name="descriptionsInternal" table="FeaturePossibleDescription" cascade="persist, merge, save-update">
+  	<set name="descriptionsInternal" table="FeaturePossibleDescription" cascade="all, delete-orphan">
   		<key column="featureId"></key>
   		<many-to-many class="FeatureDescription" column="descriptionId" unique="true"></many-to-many>
   	</set>
   	
   	<!-- Many-to-many association to Relationship.
-  	   The statement "inverse=true" tells Hibernate that the two updates of feature and relationship 
-  	   happens on the same column (the "featureId" in table "Feature"). -->
+  	   The statement "inverse=true" tells Hibernate that the two statements in class Feature and Relationship
+  	   (namely "aFeature.addRelationship(aRel)" and "aRel.addFeature(aFeature)")  
+  	   happens on the same row in the table which persists the association. -->
   	<set inverse="true" name="relationshipsInternal" table="FeatureRelationshipInvolvement">
   		<key column="featureId"></key>
   		<many-to-many column="relationshipId" class="Relationship"></many-to-many>

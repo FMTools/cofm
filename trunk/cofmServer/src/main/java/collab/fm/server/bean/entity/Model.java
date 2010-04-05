@@ -110,6 +110,10 @@ public class Model {
 			Votable v = (Votable)obj;
 			if (v.equals(val)) {
 				v.vote(yes, userid);
+				// If no supporters after this vote, remove v from the Set
+				if (v.getSupporterNum() <= 0) {
+					field.remove(v);
+				}
 				return;
 			}
 		}
@@ -123,6 +127,9 @@ public class Model {
 	private void voteAll(Set<? extends Votable> field, boolean yes, Long userid) {
 		for (Votable v: field) {
 			v.vote(yes, userid);
+			if (v.getSupporterNum() <= 0) {
+				field.remove(v);
+			}
 		}
 	}
 	

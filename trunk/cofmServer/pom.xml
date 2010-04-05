@@ -119,6 +119,7 @@
           </components>
           <componentProperties> <!-- hbm2ddl configuration -->
             <drop>true</drop>
+            <create>true</create>
             <outputfilename>dump.ddl</outputfilename>
             <configurationfile>src/main/config/hibernate.cfg.xml</configurationfile>
             <propertyfile>src/test/resources/hibernate.properties</propertyfile>
@@ -162,6 +163,7 @@
           </components>
           <componentProperties> <!-- hbm2ddl configuration -->
             <drop>true</drop>
+            <create>true</create>
             <outputfilename>dump.ddl</outputfilename>
             <configurationfile>src/main/config/hibernate.cfg.xml</configurationfile>
             <propertyfile>src/main/config/hibernate.properties</propertyfile>

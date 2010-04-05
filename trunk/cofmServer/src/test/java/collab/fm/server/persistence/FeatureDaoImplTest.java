@@ -12,7 +12,6 @@ import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.exception.BeanPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 import static org.junit.Assert.*;
-@Ignore
 public class FeatureDaoImplTest {
 
 	static Logger logger = Logger.getLogger(FeatureDaoImplTest.class);
@@ -49,9 +48,10 @@ public class FeatureDaoImplTest {
 		feature.voteName("Dragon", true, 3L);
 		feature.voteDescription("An award from XXX", true, 4L);
 		feature.voteName("Dragon", false, 4L);
-		feature.setModel(m);
+		m.addFeature(feature);
 		try {
 			feature = dao.save(feature);
+			DaoUtil.getModelDao().save(m);
 			logger.debug("Feature = " + feature.toString());
 		} catch (BeanPersistenceException e) {
 			logger.error(e);
@@ -73,9 +73,10 @@ public class FeatureDaoImplTest {
 		feature.voteDescription("A software", true, 14L);
 		feature.voteName("Mozilla", true, 4L);
 		feature.voteName("Firefox", false, 11L);
-		feature.setModel(m);
+		m.addFeature(feature);
 		try {
 			feature = dao.save(feature);
+			DaoUtil.getModelDao().save(m);
 			logger.debug("Feature = " + feature.toString());
 			
 			Feature feature2 = new Feature();
@@ -99,8 +100,9 @@ public class FeatureDaoImplTest {
 			feature.vote(true, 10L);
 			feature.vote(true, 20L);
 			feature.vote(false, 11L);
-			feature.setModel(m);
+			m.addFeature(feature);
 			feature = dao.save(feature);
+			DaoUtil.getModelDao().save(m);
 			logger.debug("Feature = " + feature.toString());
 			Feature feature2 = dao.getById(feature.getId(), false);
 			logger.debug("Feature fetched");
@@ -139,12 +141,12 @@ public class FeatureDaoImplTest {
 			Feature another = new Feature();
 			another.voteName("Another", true, 3L);
 			
-			feature.setModel(m);
-			another.setModel(m);
+			m.addFeature(feature);
+			m.addFeature(another);
 			
 			dao.save(another);
 			feature = dao.save(feature);
-			
+			DaoUtil.getModelDao().save(m);
 			
 			Feature me = dao.getByName(m.getId(), "QueryMe");
 			assertEquals(feature.getId(), me.getId());
@@ -165,12 +167,12 @@ public class FeatureDaoImplTest {
 			Feature another = new Feature();
 			another.voteName("MarkAllen", true, 3L);
 			
-			feature.setModel(m);
-			another.setModel(m);
+			m.addFeature(feature);
+			m.addFeature(another);
 			
 			dao.save(another);
 			feature = dao.save(feature);
-			
+			DaoUtil.getModelDao().save(m);
 			
 			List<Feature> me = dao.getBySimilarName(m.getId(), "Mark");
 			assertTrue(me.size()==2);
@@ -187,6 +189,56 @@ public class FeatureDaoImplTest {
 		} catch (Exception e) {
 			logger.error(e);
 			assertTrue(false);
+		}
+	}
+	
+	@Test
+	public void testDeleteFeature(){ 
+		Feature feature = new Feature();
+		feature.vote(true, 10L);
+		feature.voteOptionality(false, 10L);
+		feature.voteName("No-This-Name", true, 3L);
+		feature.voteDescription("Very bad thing happens if you see this", true, 4L);
+		m.addFeature(feature);
+		try {
+			feature = dao.save(feature);
+			DaoUtil.getModelDao().save(m);
+			
+			dao.deleteById(feature.getId());
+			
+			assertNull(dao.getById(feature.getId(), false));
+		} catch (BeanPersistenceException e) {
+			logger.error(e);
+			assertEquals("Shouldn't reach here", "");
+			
+		} catch (StaleDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void testDeleteFeatureNameByVoting(){ 
+		Feature feature = new Feature();
+		feature.vote(true, 10L);
+		feature.voteOptionality(false, 10L);
+		feature.voteName("No-This-Name-Please", true, 3L);
+		feature.voteName("You-should-see-me", true, 3L);
+		feature.voteDescription("You should see me as well!!", true, 4L);
+		m.addFeature(feature);
+		try {
+			feature = dao.save(feature);
+			DaoUtil.getModelDao().save(m);
+			
+			feature.voteName("No-This-Name-Please", false, 3L);
+			dao.save(feature);
+		} catch (BeanPersistenceException e) {
+			logger.error(e);
+			assertEquals("Shouldn't reach here", "");
+			
+		} catch (StaleDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 }

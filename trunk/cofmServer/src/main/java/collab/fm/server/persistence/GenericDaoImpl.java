@@ -104,5 +104,15 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	public void deleteById(IdType id)
+		throws BeanPersistenceException, StaleDataException {
+		HibernateUtil.getCurrentSession().delete(this.getById(id, false));
+	}
+	
+	public void delete(EntityType entity) 
+		throws BeanPersistenceException, StaleDataException{
+		HibernateUtil.getCurrentSession().delete(entity);
+	}
 
 }

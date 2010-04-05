@@ -1,1 +1,1 @@
-java -cp "%M2_HOME%/repo/hsqldb/hsqldb/1.8.0.7/hsqldb-1.8.0.7.jar" org.hsqldb.util.DatabaseManagerSwing -url jdbc:hsqldb:hsql://localhost/ -driver org.hsqldb.jdbcDriver
+java -cp "%M2_HOME%/repo/hsqldb/hsqldb/1.8.0.7/hsqldb-1.8.0.7.jar" org.hsqldb.util.DatabaseManagerSwing -url jdbc:hsqldb:hsql://localhost:9001/ -driver org.hsqldb.jdbcDriver

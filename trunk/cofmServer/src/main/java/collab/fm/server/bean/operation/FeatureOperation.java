@@ -151,12 +151,16 @@ public class FeatureOperation extends Operation {
 		}
 		
 		Feature feature = DaoUtil.getFeatureDao().getById(featureId, false);
-		feature.vote(vote, userid);
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
 		}
+		feature.vote(vote, userid);
 		List<Operation> result = ImplicitVoteOperation.makeOperation(this, feature).apply();
-		DaoUtil.getFeatureDao().save(feature);
+		if (feature.getSupporterNum() <= 0) {
+			DaoUtil.getFeatureDao().delete(feature);
+		} else {
+			DaoUtil.getFeatureDao().save(feature);
+		}
 		return result;
 	}
 	

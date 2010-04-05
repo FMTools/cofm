@@ -59,4 +59,5 @@ public class ModelDaoImpl extends GenericDaoImpl<Model, Long> implements
 			throw new BeanPersistenceException("Query failed.", e);
 		}
 	}
+
 }

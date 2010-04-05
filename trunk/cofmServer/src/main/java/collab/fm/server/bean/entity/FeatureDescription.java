@@ -71,5 +71,13 @@ public class FeatureDescription implements Votable {
 	public void setVote(Vote vote) {
 		this.vote = vote;
 	}
+
+	public int getOpponentNum() {
+		return vote.getOpponents().size();
+	}
+
+	public int getSupporterNum() {
+		return vote.getSupporters().size();
+	}
 	
 }
