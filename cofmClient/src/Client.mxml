@@ -3,7 +3,7 @@
 	xmlns:p="collab.fm.client.ui.perspective.*" 
 	xmlns:v="collab.fm.client.ui.view.*"
 	layout="absolute" minWidth="900" minHeight="500"
-    width="1000" height="800"
+    width="1000" height="800" backgroundColor="white"
     creationComplete="initView()">
 	<mx:Style>
     Tree {

@@ -30,7 +30,7 @@ package collab.fm.client.cmn {
 					case Cst.REQ_COMMIT:
 						ClientEvtDispatcher.instance().dispatchEvent(
 							new OperationCommitEvent(
-							OperationCommitEvent.SUCCUESS, 
+							OperationCommitEvent.FORWARDED, 
 							data["operations"] as Array));
 						break;
 				}

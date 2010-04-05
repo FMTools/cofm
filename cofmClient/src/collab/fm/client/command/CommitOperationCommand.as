@@ -43,7 +43,7 @@ package collab.fm.client.command {
 				CommandBuffer.instance.removeCommand(_cmdId);
 
 				ClientEvtDispatcher.instance().dispatchEvent(
-					new OperationCommitEvent(OperationCommitEvent.SUCCUESS, data["operations"] as Array));
+					new OperationCommitEvent(OperationCommitEvent.COMMIT_SUCCESS, data["operations"] as Array));
 			}
 		}
 

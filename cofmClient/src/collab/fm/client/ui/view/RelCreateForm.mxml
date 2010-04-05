@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:a="com.hillelcoren.components.*"
+	width="700" height="400"
+	creationComplete="initView()">
+	
+	<mx:FormHeading label="{RS.BTN_CREATE_RELATIONSHIP}" />
+		
+		<mx:FormItem label="{RS.REL_CREATE_TYPE}">
+			<mx:ComboBox change="onSelectRelType(event);">
+				<mx:ArrayCollection>
+					<mx:Object label="{RS.REL_TYPE_REFINEMENT}" typeName="{Cst.BIN_REL_REFINES}"/>
+				</mx:ArrayCollection>
+			</mx:ComboBox>
+		</mx:FormItem>
+		
+		<mx:Form id="refine">
+			<mx:FormItem label="{RS.REL_CREATE_PARENT}">
+				<a:AutoComplete id="parentInput" allowMultipleSelection="false"
+					 allowNewValues="false" matchType="word" selectedItemStyleName="none" width="150"
+					 labelField="name"
+					 dataProvider="{FeatureNameList.instance.data}"
+					 activate="onInputFeature();"
+					 click="onInputFeature();"
+					 valueCommit="onSelectParent();"
+					 prompt="{RS.REL_CREATE_ENTER_PROMPT}"/>
+			</mx:FormItem>
+			
+			<mx:FormItem label="{RS.REL_CREATE_CHILD}">
+				<a:AutoComplete id="childInput" allowMultipleSelection="false"
+					 allowNewValues="false" matchType="word" selectedItemStyleName="none" width="150"
+					 labelField="name"
+					 dataProvider="{FeatureNameList.instance.data}"
+					 activate="onInputFeature();"
+					 click="onInputFeature();"
+					 valueCommit="onSelectChild();"
+					 prompt="{RS.REL_CREATE_ENTER_PROMPT}"/>
+			</mx:FormItem>
+		</mx:Form>
+		
+		<mx:FormItem direction="horizontal">
+			<mx:Button id="cOK" label="{RS.BTN_OK}" click="endCreateRel();"/>
+			<mx:Button label="{RS.BTN_CANCEL}" click="cancel();"/>
+		</mx:FormItem>
+		
+		<mx:Script>
+		<![CDATA[
+			import mx.events.ItemClickEvent;
+			import collab.fm.client.util.*;		
+			import collab.fm.client.event.*;	
+			import collab.fm.client.data.*;
+			import collab.fm.client.command.*;
+			
+			private var relType: String;
+			private var left: int;
+			private var right: int;
+			
+			private function initView(): void {
+				resetForm();
+			}
+			
+			public function resetForm(): void {
+				UIUtil.show(refine, true);
+				relType = Cst.BIN_REL_REFINES;
+				parentInput.text = "";
+				childInput.text = "";
+				left = -1;
+				right = -1;
+				cOK.enabled = false;
+			}
+	
+			private function cancel(): void {
+				UIUtil.show(this, false);
+			}
+			
+			private function endCreateRel(): void {
+				UIUtil.show(this, false);
+				if (relType == Cst.BIN_REL_REFINES || relType == Cst.BIN_REL_EXCLUDES
+					|| relType == Cst.BIN_REL_REQUIRES) {
+					new CreateOrVoteBinaryRelationshipCommand(relType, left, right).execute();
+				}
+			}
+			
+			private function onSelectRelType(evt: Event): void {
+				relType = evt.currentTarget.selectedItem.typeName;
+				if (relType == Cst.BIN_REL_REFINES) {
+					UIUtil.show(refine, true);
+				}
+			}
+			
+			private function onInputFeature(): void {
+				cOK.enabled = false;
+			}
+			
+			private function onSelectParent(): void {
+				if (!parentInput.selectedItem) {
+					left= -1;
+					cOK.enabled = false;
+				} else {
+					left = parentInput.selectedItem["id"];
+					if (right >= 0 && left != right) {
+						cOK.enabled = true;
+					} else {
+						cOK.enabled = false;
+					}
+				}
+			}
+			
+			private function onSelectChild(): void {
+				if (!childInput.selectedItem) {
+					right= -1;
+					cOK.enabled = false;
+				} else {
+					right = childInput.selectedItem["id"];
+					if (left >= 0 && left != right) {
+						cOK.enabled = true;
+					} else {
+						cOK.enabled = false;
+					}
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+</mx:Form>

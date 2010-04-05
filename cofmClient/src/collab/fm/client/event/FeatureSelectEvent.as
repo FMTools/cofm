@@ -2,7 +2,8 @@ package collab.fm.client.event {
 	import flash.events.Event;
 
 	public class FeatureSelectEvent extends Event {
-		public static const SELECT_FROM_TREE: String = "SelectFromTree";
+		public static const CLICK_ON_TREE: String = "ClickOnTree";
+		public static const DB_CLICK_ON_TREE: String = "DoubleClickOnTree";
 
 		public var id: int;
 		public var name: String;

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="400" height="300"
+	 xmlns:a="com.hillelcoren.components.*"
+	 title="{RS.EDIT_ADD_NAME_TITLE}"
+	 showCloseButton="true"
+	 close="onClose();">
+	
+	<mx:Form>
+		<mx:FormItem label="{RS.EDIT_ADD_NAME}">
+			<a:AutoComplete id="nameInput" allowMultipleSelection="false"
+					 allowNewValues="true" matchType="word" 
+					 selectedItemStyleName="none" width="150"
+					 labelField="name"
+					 dataProvider="{FeatureNameList.instance.data}"
+					 activate="onBeginInput();"
+					 click="onBeginInput();"
+					 valueCommit="onEndInput();"/>
+		</mx:FormItem>
+		<mx:FormItem direction="horizontal">
+			<mx:Button id="btnOk" label="{RS.BTN_OK}" click="onOk();" enabled="false"/>
+			<mx:Button label="{RS.BTN_CANCEL}" click="onClose();"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			import collab.fm.client.command.*;
+			import collab.fm.client.util.*;
+			import collab.fm.client.data.*;
+			
+			private function onClose(): void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function onOk(): void {
+				new CreateOrVoteNameCommand(CurrentFeature.instance.id, nameInput.text, true).execute();
+				onClose();
+			}
+			
+			private function onBeginInput(): void {
+				btnOk.enabled = false;
+			}
+			
+			private function onEndInput(): void {
+				if (FeatureNameList.instance.contains(nameInput.text)) {
+					btnOk.enabled = false;
+				} else {
+					btnOk.enabled = true;
+				}
+			}
+			
+		]]>
+	</mx:Script>
+</mx:TitleWindow>
