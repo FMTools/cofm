@@ -92,7 +92,11 @@ public class ImplicitVoteOperation extends Operation {
 					// Handle rule 1
 					for (Relationship rel : feature.getRelationships()) {
 						rel.vote(false, sourceOp.getUserid());
-						DaoUtil.getRelationshipDao().save(rel);
+						if (rel.getSupporterNum() <= 0) {
+							DaoUtil.getRelationshipDao().delete(rel);
+						} else {
+							DaoUtil.getRelationshipDao().save(rel);
+						}
 					}
 					
 					// Handle rule 3

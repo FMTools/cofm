@@ -81,6 +81,14 @@ public class Relationship implements Votable{
 		return Collections.unmodifiableSet(getFeaturesInternal());
 	}
 
+	public int getOpponentNum() {
+		return existence.getOpponents().size();
+	}
+
+	public int getSupporterNum() {
+		return existence.getSupporters().size();
+	}
+	
 	protected void setFeaturesInternal(Set<Feature> features) {
 		this.features = features;
 	}

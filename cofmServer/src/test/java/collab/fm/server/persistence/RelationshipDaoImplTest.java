@@ -14,7 +14,6 @@ import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.BeanPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
-@Ignore
 public class RelationshipDaoImplTest {
 	
 	static Logger logger = Logger.getLogger(RelationshipDaoImplTest.class);
@@ -124,6 +123,36 @@ public class RelationshipDaoImplTest {
 			assertNull(rDao.getByExample(modelId, bad));
 		} catch(Exception e) {
 			logger.error("Couldn't get by example.", e);
+			assertTrue(false);
+		}
+	}
+	
+	@Test
+	public void testDeleteRelationship() {
+		try {
+			Model m = DaoUtil.getModelDao().getById(modelId, false);
+			BinaryRelationship br = new BinaryRelationship();
+			br.setType(Resources.BIN_REL_REQUIRES);
+			Long featureId1 = featureIds.get(0);
+			Long featureId2 = featureIds.get(2);
+			br.setFeatures(fDao.getById(featureId1, false), fDao.getById(featureId2, false));
+			br.vote(true, 2L);
+			br.setModel(m);
+			DaoUtil.getModelDao().save(m);
+			
+			Relationship r = rDao.save(br);
+			
+			// Select r
+			assertTrue(rDao.getById(r.getId(), false).getId().equals(r.getId()));
+			// Delete r
+			rDao.deleteById(r.getId());
+			
+			assertTrue(rDao.getById(r.getId(), false)==null);
+			// Select again
+			//assertNull(rDao.getById(r.getId(), false));
+			
+		} catch(Exception e) {
+			logger.error("Couldn't delete.", e);
 			assertTrue(false);
 		}
 	}

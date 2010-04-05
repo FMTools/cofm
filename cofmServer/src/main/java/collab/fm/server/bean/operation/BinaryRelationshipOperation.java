@@ -99,9 +99,14 @@ public class BinaryRelationshipOperation extends RelationshipOperation {
 						+ relationshipId);
 			}
 			relation.vote(vote, userid);
-			DaoUtil.getRelationshipDao().save(relation);
-	
+			
 			result = ImplicitVoteOperation.makeOperation(this, null).apply();
+			
+			if (relation.getSupporterNum() <= 0) {
+				DaoUtil.getRelationshipDao().delete(relation);
+			} else {
+				DaoUtil.getRelationshipDao().save(relation);
+			}
 		}
 		if (result == null) {
 			result = new ArrayList<Operation>();
