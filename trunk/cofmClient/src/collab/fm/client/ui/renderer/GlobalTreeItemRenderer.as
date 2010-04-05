@@ -27,7 +27,7 @@ package collab.fm.client.ui.renderer {
 				var rate: Number = Number(curItems[0].@controversy);
 				if (rate < 1) {
 					super.label.text = TreeListData(super.listData).label +
-						" (" + (rate * 100).toPrecision(2) + "%)";
+						" (" + (rate * 100).toPrecision(3) + "%)";
 				}
 			}
 		}

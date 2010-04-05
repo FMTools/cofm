@@ -18,24 +18,38 @@
     	 includeInLayout="{UserList.instance.isLogin}" visible="{UserList.instance.isLogin}">
     	<mx:itemRenderer>
     		<mx:Component>
-    			<mx:VBox horizontalAlign="center" width="100" height="120">
+    			<mx:VBox horizontalAlign="center" width="100" height="120"
+    				 creationComplete="initView();">
     				<mx:Image width="80" height="80" source="{imgCls}" />
     				<mx:Label text="{XML(data).@name}" fontWeight="bold" fontSize="12"/>
     				<mx:HBox>
     					<mx:Label text="{RS.M_LIST_USERS}" paddingRight="0"/>
     					<mx:Label text="{XML(data).@userNum}" />	
     				</mx:HBox>
-    				<mx:Button label="{RS.BTN_ENTER}" click="selectModel(int(XML(data).@id));" />
+    				<mx:Button id="enterMy" label="{RS.BTN_ENTER}" click="selectModel(int(XML(data).@id));" />
     				<mx:Script>
     				<![CDATA[
-    					import collab.fm.client.util.RS;
+    					import collab.fm.client.util.*;
     					import collab.fm.client.event.*
     					[Embed(source="structure.png")]
            				[Bindable]
             			private var imgCls:Class;
+            			
+            			private function initView(): void {
+            				ClientEvtDispatcher.instance().addEventListener(
+    							LoginEvent.SUCCESS, onLogin);
+            			}
+            			
             			private function selectModel(modelId: int): void {
     						ClientEvtDispatcher.instance().dispatchEvent(
     							new ModelSelectEvent(ModelSelectEvent.SELECTED, modelId));
+    					}
+    					
+    					private function onLogin(evt: LoginEvent): void {
+    						trace("mylist: " + XML(data).toXMLString());
+    						if (data == null || int(data.@id) < 0) {
+    							//UIUtil.show(enterMy, false);
+    						}
     					}
     				]]>
     				</mx:Script>
@@ -54,12 +68,12 @@
     	 		<mx:HBox creationComplete="initView()" borderStyle="solid"
     	 			 width="100%" height="100%"
     	 			 verticalScrollPolicy="off">
-    	 			<mx:Image width="50" height="50" source="structure.png" />
+    	 			<mx:Image width="50" height="50" source="{imgCls}" />
 					<mx:VBox height="100%" width="100%">
 						<mx:HBox>
 							<mx:Label text="{XML(data).@name}" fontWeight="bold" fontSize="12"/>
-							<mx:Button label="{RS.BTN_ENTER}" click="selectModel(int(XML(data).@id));" 
-								includeInLayout="{UserList.instance.isLogin}" visible="{UserList.instance.isLogin}" />	
+							<mx:Button label="{RS.BTN_ENTER}" 
+								id="enterOther" click="selectModel(int(XML(data).@id));" />	
 						</mx:HBox>
 						<mx:HBox verticalAlign="top">
 							<mx:Label text="{RS.M_LIST_USERS}"/>
@@ -74,10 +88,12 @@
 					</mx:VBox>
 					<mx:Script>
     				<![CDATA[
-    					import collab.fm.client.util.RS;
+    					import collab.fm.client.util.*;
     					import collab.fm.client.event.*
     					import collab.fm.client.data.*;
-    					
+    					[Embed(source="structure.png")]
+           				[Bindable]
+            			private var imgCls:Class;
     					private static const MAX_DISPLAYED_USER_COUNT: int = 5; // how many users we should display
     					
     					private function initView(): void {
@@ -85,12 +101,25 @@
     						if (total > MAX_DISPLAYED_USER_COUNT) {
     							userAppender.text = "...(and " + (total-MAX_DISPLAYED_USER_COUNT) + " more)";
     						}
+    						ClientEvtDispatcher.instance().addEventListener(
+    							LoginEvent.SUCCESS, onLogin);
+    							
+    						UIUtil.show(enterOther, false);
     					}
     					
     					private function selectModel(modelId: int): void {
     						ClientEvtDispatcher.instance().dispatchEvent(
     							new ModelSelectEvent(ModelSelectEvent.SELECTED, modelId));
     					}
+    					
+    					private function onLogin(evt: LoginEvent): void {
+    						if (data != null && int(data.@id) >= 0) {
+    							UIUtil.show(enterOther, true);
+    						} else {
+    							UIUtil.show(enterOther, false);
+    						}
+    					}
+    					
     				]]>
     				</mx:Script>
     	 		</mx:HBox>

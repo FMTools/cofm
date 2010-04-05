@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:AdvancedDataGrid xmlns:mx="http://www.adobe.com/2006/mxml"
+	 dataProvider="{CurrentFeature.instance.names}">
+	
+	<mx:columns>
+		<mx:AdvancedDataGridColumn dataField="name" headerText="{RS.EDIT_NAME_GRID_NAME}"
+			 resizable="true">
+			
+		</mx:AdvancedDataGridColumn>
+		<mx:AdvancedDataGridColumn dataField="supporters" headerText="{RS.EDIT_NAME_GRID_YES}"
+			 resizable="true">
+			
+		</mx:AdvancedDataGridColumn>
+		<mx:AdvancedDataGridColumn dataField="opponents" headerText="{RS.EDIT_NAME_GRID_NO}"
+			 resizable="true">
+			
+		</mx:AdvancedDataGridColumn>
+		<mx:AdvancedDataGridColumn headerText="{RS.EDIT_NAME_GRID_ACTION}" 
+			 resizable="false" width="200" sortable="false">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:HBox>
+						<mx:Button label="{RS.BTN_VOTE_YES}" click="onVoteYes();"/>
+						<mx:Button label="{RS.BTN_VOTE_NO}" click="onVoteNo();"/>
+						<mx:Script>
+							<![CDATA[
+								import collab.fm.client.data.*;
+								import collab.fm.client.util.*;
+								import collab.fm.client.command.*;
+								
+								private function onVoteYes(): void {
+									new CreateOrVoteNameCommand(
+										CurrentFeature.instance.id, 
+										data.name, 
+										true).execute();
+								} 
+								
+								private function onVoteNo(): void {
+									new CreateOrVoteNameCommand(
+										CurrentFeature.instance.id, 
+										data.name, 
+										false).execute();
+								}
+							]]>
+						</mx:Script>
+					</mx:HBox>
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:AdvancedDataGridColumn>
+	</mx:columns>
+	<mx:Script>
+		<![CDATA[
+			import collab.fm.client.data.*;
+			import collab.fm.client.util.*;
+		]]>
+	</mx:Script>
+</mx:AdvancedDataGrid>

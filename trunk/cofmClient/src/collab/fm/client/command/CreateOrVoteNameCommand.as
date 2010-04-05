@@ -4,20 +4,26 @@ package collab.fm.client.command {
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
 
-	public class CreateFeatureCommand extends CommitOperationCommand {
-		private var _name: String;
+	public class CreateOrVoteNameCommand extends CommitOperationCommand {
 
-		public function CreateFeatureCommand(name: String) {
+		private var _name: String;
+		private var _vote: Boolean;
+		private var _feature: int;
+
+		public function CreateOrVoteNameCommand(feature: int, name: String, vote: Boolean=true) {
 			super();
+			_feature = feature;
 			_name = name;
+			_vote = vote;
 		}
 
 		override protected function makeOperation(): Object {
 			return {
-					name: Cst.OP_CREATE_FEATURE,
-					vote: true,
+					name: Cst.OP_ADD_NAME,
+					vote: _vote,
 					userid: UserList.instance.myId,
 					modelId: ModelCollection.instance.currentModelId,
+					featureId: _feature,
 					value: _name  
 				};
 		}

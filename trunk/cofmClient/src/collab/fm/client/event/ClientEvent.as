@@ -5,7 +5,7 @@ package collab.fm.client.event {
 
 		public static const CONNECT_SUCCESS: String = "connectSuccess";
 		public static const REGISTER_SUCCESS: String = "registerSuccess";
-
+		
 		public var data: Object;
 
 		public function ClientEvent(type:String, data:Object=null, bubbles:Boolean=false, cancelable:Boolean=false) {

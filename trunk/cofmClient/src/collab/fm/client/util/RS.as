@@ -9,6 +9,15 @@ package collab.fm.client.util {
 		public static const BTN_CREATE: String = s("btn.create");
 		public static const BTN_ENTER: String = s("btn.enter");
 		public static const BTN_CREATE_FEATURE: String = s("btn.createFeature");
+		public static const BTN_CREATE_RELATIONSHIP: String = s("btn.createRelationship");
+		public static const BTN_VOTE_YES: String = s("btn.vote.yes");
+		public static const BTN_VOTE_NO: String = s("btn.vote.no");
+		public static const BTN_VOTE_FEATURE_YES: String = s("btn.vote.feature.yes");
+		public static const BTN_VOTE_FEATURE_NO: String = s("btn.vote.feature.no");
+		public static const BTN_ADD_NAME: String = s("btn.add.name");
+		public static const BTN_ADD_DES: String = s("btn.add.des");
+		public static const BTN_VOTE_OPT_YES: String = s("btn.vote.opt.yes");
+		public static const BTN_VOTE_OPT_NO: String = s("btn.vote.opt.no");
 
 		public static const CON_PANEL_TITLE: String = s("con.title");
 		public static const CON_PANEL_HOST: String = s("con.host");
@@ -43,6 +52,24 @@ package collab.fm.client.util {
 		public static const FEATURE_CREATE_PARENT_CHOOSE: String = s("feature.create.parent.choose");
 		public static const FEATURE_CREATE_PARENT_IS_ROOT: String = s("feature.create.parent.isRoot");
 		public static const FEATURE_CREATE_PARENT_SEARCH: String = s("feature.create.parent.search");
+
+		public static const REL_CREATE_TYPE: String = s("rel.create.type");
+		public static const REL_CREATE_PARENT: String = s("rel.create.parent");
+		public static const REL_CREATE_CHILD: String = s("rel.create.child");
+		public static const REL_CREATE_ENTER_PROMPT: String = s("rel.create.enter.prompt");
+
+		public static const REL_TYPE_REFINEMENT: String = "refinement";
+		public static const REL_TYPE_REQUIRE: String = "requiring";
+		public static const REL_TYPE_EXCLUDE: String = "excluding";
+
+		public static const EDIT_NAME: String = s("edit.name");
+		public static const EDIT_NAME_GRID_NAME: String = s("edit.name.grid.name");
+		public static const EDIT_NAME_GRID_YES: String = s("edit.name.grid.yes");
+		public static const EDIT_NAME_GRID_NO: String = s("edit.name.grid.no");
+		public static const EDIT_NAME_GRID_ACTION: String = s("edit.name.grid.action");
+
+		public static const EDIT_ADD_NAME: String = s("edit.add.name");
+		public static const EDIT_ADD_NAME_TITLE: String = s("edit.add.name.title");
 
 		private static function s(key: String): String {
 			return ResourceManager.getInstance().getString("ui", key);

@@ -2,12 +2,24 @@
 <mx:Tree xmlns:mx="http://www.adobe.com/2006/mxml"	 
 	 itemRenderer="collab.fm.client.ui.renderer.WorkingTreeItemRenderer"
      labelField="@name"
-     dataProvider="{WorkingTreeData.instance.xml}">
+     dataProvider="{WorkingTreeData.instance.xml}"
+     doubleClickEnabled="true"
+     itemDoubleClick="onDoubleClick(event);">
 
 	<mx:Script>
 		<![CDATA[
+			import mx.events.ListEvent;
 			import collab.fm.client.data.*;
 			import collab.fm.client.event.*;
+			
+			private function onDoubleClick(evt: ListEvent): void {
+				var node: XML = XML(this.selectedItem);
+				ClientEvtDispatcher.instance().dispatchEvent(
+					new FeatureSelectEvent(
+						FeatureSelectEvent.DB_CLICK_ON_TREE, 
+						int(node.@id), node.@name));
+			}
+			
 		]]>
 	</mx:Script>
 </mx:Tree>

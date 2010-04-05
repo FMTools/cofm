@@ -5,7 +5,7 @@ package collab.fm.client.data {
 
 	import mx.collections.XMLListCollection;
 
-	public /*abstract*/class TreeData extends OperationListener {
+	public /*abstract*/class TreeData {
 
 		/** The XML of global trees:
 		 *    <feature id=X name=X controversy=0..to..1>
@@ -16,13 +16,12 @@ package collab.fm.client.data {
 		protected var _data: XMLListCollection;
 
 		public function TreeData() {
-			super();
 			_data = new XMLListCollection();
 			ClientEvtDispatcher.instance().addEventListener(
 				ModelUpdateEvent.LOCAL_MODEL_COMPLETE, onLocalModelUpdate);
 		}
 
-		protected function onLocalModelUpdate(evt: ClientEvent): void {
+		protected function onLocalModelUpdate(evt: ModelUpdateEvent): void {
 			var refines: Dictionary = new Dictionary();
 			// refines: key = id, value = parent & children
 			//   parent == [] (empty array) indicates a root feature.
@@ -51,7 +50,6 @@ package collab.fm.client.data {
 			}
 
 			xml.source = root.feature;
-
 			onDataUpdateComplete();
 		}
 
@@ -76,7 +74,6 @@ package collab.fm.client.data {
 
 		/*abstract*/
 		protected function addRefinement(refines: Dictionary, relation: XML): void {
-
 		}
 
 		/*abstract*/
@@ -91,7 +88,6 @@ package collab.fm.client.data {
 
 		/*abstract*/
 		protected function onDataUpdateComplete(): void {
-
 		}
 
 		[Bindable]

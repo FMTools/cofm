@@ -4,7 +4,7 @@ package collab.fm.client.data {
 
 	import flash.utils.Dictionary;
 
-	public class WorkingTreeData extends TreeData {
+	public class WorkingTreeData extends TreeData implements IOperationListener {
 		private static var _instance: WorkingTreeData = new WorkingTreeData();
 
 		public static function get instance(): WorkingTreeData {
@@ -13,26 +13,117 @@ package collab.fm.client.data {
 
 		public function WorkingTreeData() {
 			super();
+			FeatureModel.instance.registerSubView(this);
 		}
 
-		override protected function handleAddDescription(op:Object): void {
-
-		}
-
-		override protected function handleAddName(op:Object): void {
+		public function handleFeatureVotePropagation(op: Object): void {
 
 		}
 
-		override protected function handleCreateFeature(op:Object): void {
-			// if vote, do nothing
+		public function handleRelationshipVotePropagation(op: Object): void {
+
+		}
+
+		public function handleAddDescription(op:Object): void {
+
+		}
+
+		public function handleAddName(op:Object): void {
+			// recalculate the displayed name (primary name)
+			var features1: XMLList = ModelUtil.getRootFeatureById(this.xml.source, op["featureId"]);
+			var features2: XMLList = ModelUtil.getNonRootFeatureById(this.xml.source, op["featureId"]);
+			var newName: String = this.getPrimaryName(
+				XML(FeatureModel.instance.features.source.(@id==op["featureId"])));
+			trace("Working tree: new name is '" + newName + "'");
+			for each (var f1: Object in features1) {
+				if (newName == null) {
+					f1.@name = "<unnamed>";
+					f1.@unnamed = "1";
+				} else if (newName != f1.@name) {
+					f1.@name = newName;
+				}
+			}
+
+			for each (var f2: Object in features2) {
+				if (newName == null) {
+					f2.@name = "<unnamed>";
+					f2.@unnamed = "1";
+				} else if (newName != f2.@name) {
+					f2.@name = newName;
+				}
+			}
+		}
+
+		public function handleCreateFeature(op:Object): void {
+			// TODO: handle deletion
 			// if create, add to the root (a creating must assign the root explicitly through the UI.)
+			if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
+				this.xml.addItem(<feature id={op["featureId"]}
+						name={op["value"]} 
+						controversy="1" 
+						nonPositioned="0"
+						multiPositioned="0"
+						unnamed="0" />);
+			}
+			if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
+				var features1: XMLList = ModelUtil.getRootFeatureById(this.xml.source, op["featureId"]);
+				var features2: XMLList = ModelUtil.getNonRootFeatureById(this.xml.source, op["featureId"]);
+
+				// Change its children to roots.
+				var f: XML = null;
+				if (features1.length() > 0) {
+					f = features1[0];
+				} else if (features2.length() > 0) {
+					f = features2[0];
+				}
+				if (f != null) {
+					for each (var child: Object in f.children()) {
+						this.xml.addItem(child);
+					}
+				}
+
+				ModelUtil.deleteRootFeatureById(this.xml, op["featureId"]);
+				ModelUtil.deleteNonRootFeatureById(this.xml, op["featureId"]);
+			}
+
+			// TODO: handle vote (controversy)
 		}
 
-		override protected function handleCreateRelationship(op:Object): void {
+		public function handleCreateBinaryRelationship(op:Object): void {
+			// only handles refinements 
+			if (op["type"] == Cst.BIN_REL_REFINES) {
+				//TODO: handle voting
+				// if create
+				if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
+					var left: String = String(op["leftFeatureId"]);
+					var right: String = String(op["rightFeatureId"]);
+					var parents1: XMLList = ModelUtil.getRootFeatureById(this.xml.source, left);
+					var parents2: XMLList = ModelUtil.getNonRootFeatureById(this.xml.source, left);
+					var children1: XMLList = ModelUtil.getRootFeatureById(this.xml.source, right);
+					var children2: XMLList = ModelUtil.getNonRootFeatureById(this.xml.source, right);
 
+					// 1. remove all children which are root features, and then copy them to parents
+					for each (var obj: Object in children1) {
+						var childIndex: int = this.xml.getItemIndex(obj);
+						this.xml.removeItemAt(childIndex);
+
+						ModelUtil.addChildFeatureToAllParents(parents1, XML(obj), right);
+						ModelUtil.addChildFeatureToAllParents(parents2, XML(obj), right);
+					}
+
+					// 2. copy all children which are non-root features to parents, and 
+					// marked as "Multi-positioned".
+					for each (var obj2: Object in children2) {
+
+						obj2.@multiPositioned = "1";
+						ModelUtil.addChildFeatureToAllParents(parents1, XML(obj2), right);
+						ModelUtil.addChildFeatureToAllParents(parents2, XML(obj2), right);
+					}
+				}
+			}
 		}
 
-		override protected function handleSetOpt(op:Object): void {
+		public function handleSetOpt(op:Object): void {
 
 		}
 
@@ -106,8 +197,12 @@ package collab.fm.client.data {
 
 		override protected function getPrimaryName(feature: XML): String {
 			// Build an array from the XML.
+			if (XMLList(feature.names.name).length() <= 0) {
+				return null;
+			}
+
 			var ns: Array = [];
-			for each (var o: Object in feature.names) {
+			for each (var o: Object in feature.names.name) {
 				var nameInMyWorkingView: Boolean = true;
 				var n: XML = o as XML;
 				var yes: Array = [];
@@ -133,7 +228,7 @@ package collab.fm.client.data {
 				return null;
 			}
 			ModelUtil.sortOnRating(ns, "v1", "v0", UserList.instance.myId);
-			return ns[0].val as String;
+			return ns[0].val;
 		}
 
 		override protected function onDataUpdateComplete(): void {

@@ -81,7 +81,7 @@ package collab.fm.client.controller {
 			
 			commandMap[Cst.OP_ADD_DES] = getQualifiedClassName(AddDescriptionCommand);
 			commandMap[Cst.OP_ADD_NAME] = getQualifiedClassName(AddNameCommand);
-			commandMap[Cst.OP_CREATE_FEATURE] = getQualifiedClassName(CreateFeatureCommand);
+			commandMap[Cst.OP_CREATE_FEATURE] = getQualifiedClassName(CreateOrVoteFeatureCommand);
 			commandMap[Cst.OP_CREATE_RELATIONSHIP] = getQualifiedClassName(CreateRelationshipCommand);
 			commandMap[Cst.OP_SET_OPT] = getQualifiedClassName(SetOptionalityCommand);
 			commandMap[Cst.CMD_UI_CREATE_FEATURE] = getQualifiedClassName(UICreateFeatureCommand);

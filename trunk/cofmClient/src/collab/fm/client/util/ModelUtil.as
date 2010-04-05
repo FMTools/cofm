@@ -1,46 +1,70 @@
 package collab.fm.client.util {
-	import collab.fm.client.data.FeatureModel;
-
-	import flash.utils.Dictionary;
+	import mx.collections.IViewCursor;
+	import mx.collections.XMLListCollection;
 
 	public class ModelUtil {
 
-		public static function updateVoters(vote: String, userId: String, root: XML): void {
+		// TODO: move this method into FeaureModel
+		// return false if there are no "YES" voters.
+		public static function updateVoters(vote: String, userId: String, root: XML): Boolean {
 			var user: XML = <user>{userId}</user>;
-			var yes: XML = root.yes;
-			var no: XML = root.no;
-			var userInYes: Boolean = yes.contains(user);
-			var userInNo: Boolean = no.contains(user);
+			var userInYes: Boolean = XMLList(root.yes.user).contains(user);
+			var userInNo: Boolean = XMLList(root.no.user).contains(user);
 			if (vote.toLowerCase() == (new Boolean(true).toString().toLowerCase())) {
 				if (!userInYes) {
-					yes.appendChild(user);
+					XML(root.yes[0]).appendChild(user);
 					if (userInNo) {
-						for each (var u: XML in yes.user) {
-							if (u.text().toString() == userId) {
-								deleteNode(u);
-							}
-						}
+						delete root.no.user.(text().toString() == userId)[0];
 					}
 				}
 			} else {
 				if (!userInNo) {
-					no.appendChild(user);
+					XML(root.no[0]).appendChild(user);
 					if (userInYes) {
-						for each (var v: XML in no.user) {
-							if (v.text().toString() == userId) {
-								deleteNode(v);
-							}
-						}
+						delete root.yes.user.(text().toString() == userId)[0];
 					}
+				}
+			}
+			return XMLList(root.yes.user).length() > 0;
+		}
+
+		// TODO: move these methods into TreeData
+		public static function getRootFeatureById(source: XMLList, id: String): XMLList {
+			return source.(@id==id);
+		}
+
+		public static function getNonRootFeatureById(source: XMLList, id: String): XMLList {
+			return source..feature.(@id==id);
+		}
+
+		public static function deleteRootFeatureById(col: XMLListCollection, id: String): void {
+			for (var cursor: IViewCursor = col.createCursor(); !cursor.afterLast; ) {
+				if (cursor.current.@id == id) {
+					cursor.remove();
+				} else {
+					cursor.moveNext();
 				}
 			}
 		}
 
-		public static function deleteNode(node:XML): void {
-			if (node != null && node.parent() != null) {
-				delete node.parent().children()[node.childIndex()];
+		public static function deleteNonRootFeatureById(col: XMLListCollection, id: String): void {
+			while (XMLList(col.source..feature.(@id==id)).length() > 0) {
+				delete col.source..feature.(@id==id)[0];
 			}
 		}
+
+		public static function addChildFeatureById(parent: XML, child: XML, childId: String): void {
+			if (XMLList(parent.children().(@id==childId)).length() <= 0) {
+				parent.appendChild(child.copy());
+			}
+		}
+
+		public static function addChildFeatureToAllParents(parents: XMLList, child: XML, childId: String): void {
+			for each (var obj: Object in parents) {
+				addChildFeatureById(XML(obj), child, childId);
+			}
+		}
+
 
 		/**
 		 * Sort by approval rating (yesNumber / totalNumer)
@@ -55,7 +79,6 @@ package collab.fm.client.util {
 			): void {
 
 			function compareRatedItems(a: Object, b: Object): Number {
-				trace("compared");
 				/**  The algorithm:
 				 *   if (matchVal != null) {
 				 *      if (match val in A && not in B) return A before B (-1)

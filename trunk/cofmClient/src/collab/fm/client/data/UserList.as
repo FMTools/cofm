@@ -26,6 +26,7 @@ package collab.fm.client.data {
 
 			ClientEvtDispatcher.instance().addEventListener(ListUserEvent.SUCCESS, onListUser);
 			ClientEvtDispatcher.instance().addEventListener(LoginEvent.SUCCESS, onLogin);
+
 		}
 
 		private function onLogin(evt: LoginEvent): void {
