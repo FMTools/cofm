@@ -28,6 +28,8 @@ public abstract class Filter {
 			}
 	}
 	
+	public abstract void onClientDisconnected(String address);
+	
 	/**
 	 * 
 	 * @param req

@@ -14,7 +14,6 @@ public class Response {
 	
 	private String message;
 	
-	
 	public Response() {
 		
 	}

@@ -172,10 +172,8 @@ public class ImplicitVoteOperation extends Operation {
 			try {
 				if (sourceOp.getVote().equals(true)) {
 					setBasicInfo(Resources.OP_CREATE_FEATURE, true, sourceOp.getUserid());
-					
 					// Handle rule 2
 					Relationship rel = (Relationship)sourceObject;
-					
 					targetIds = new ArrayList<Long>();
 					for (Feature feature: rel.getFeatures()) {
 						feature.vote(true, userid);
@@ -183,7 +181,6 @@ public class ImplicitVoteOperation extends Operation {
 						// Forward the implicit votes
 						targetIds.add(feature.getId());
 					}
-					
 					List<Operation> result = new ArrayList<Operation>();
 					result.add(this.clone());
 					return result;

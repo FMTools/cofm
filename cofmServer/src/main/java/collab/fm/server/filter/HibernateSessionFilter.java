@@ -56,4 +56,10 @@ public class HibernateSessionFilter extends Filter {
 			session.close();		
 		}
 	}
+
+	@Override
+	public void onClientDisconnected(String address) {
+		// TODO Auto-generated method stub
+		
+	}
 }

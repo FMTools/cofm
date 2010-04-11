@@ -46,7 +46,7 @@ public abstract class Action {
 	protected void reportStaleData(Request req, ResponseGroup rg) {
 		Response r = new Response();
 		r.setName(Resources.RSP_STALE);
-		
+		r.setMessage(Resources.MSG_ERROR_STALE);
 		rg.setBack(r);
 		rg.setBroadcast(null);
 		rg.setPeer(null);

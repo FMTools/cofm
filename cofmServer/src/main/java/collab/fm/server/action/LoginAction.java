@@ -45,6 +45,7 @@ public class LoginAction extends Action {
 			} else {
 				rsp.setRequesterId(user.getId());
 				req.setRequesterId(user.getId());
+				rsp.setMessage(Resources.MSG_LOGIN);
 				rsp.setName(Resources.RSP_SUCCESS);
 			}
 			
