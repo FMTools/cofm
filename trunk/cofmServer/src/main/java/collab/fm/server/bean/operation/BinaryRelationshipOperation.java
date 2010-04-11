@@ -100,7 +100,7 @@ public class BinaryRelationshipOperation extends RelationshipOperation {
 			}
 			relation.vote(vote, userid);
 			
-			result = ImplicitVoteOperation.makeOperation(this, null).apply();
+			result = ImplicitVoteOperation.makeOperation(this, relation).apply();
 			
 			if (relation.getSupporterNum() <= 0) {
 				DaoUtil.getRelationshipDao().delete(relation);

@@ -42,4 +42,10 @@ public class ProtocolFilter extends Filter {
 		return true;
 	}
 
+	@Override
+	public void onClientDisconnected(String address) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -45,6 +45,7 @@ public class RegisterAction extends Action {
 
 				req.setRequesterId(u.getId());
 				rsp.setRequesterId(u.getId());
+				rsp.setMessage(Resources.MSG_REGISTER);
 				rsp.setName(Resources.RSP_SUCCESS);
 			} else {
 				rsp.setMessage(Resources.MSG_ERROR_USER_EXISTED);

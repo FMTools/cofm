@@ -1,12 +1,16 @@
 package collab.fm.server.filter;
 
+import java.text.MessageFormat;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.log4j.Logger;
 
+import collab.fm.server.bean.protocol.LoginRequest;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
+import collab.fm.server.util.Pair;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.FilterException;
 
@@ -20,15 +24,16 @@ public class AccessValidator extends Filter {
 		Resources.REQ_LOGOUT,
 		Resources.REQ_CREATE_MODEL
 	};
-	
-	private static ConcurrentHashMap<Long, String> loginUsers = new ConcurrentHashMap<Long, String>();
+
+	// TODO: show message in client
+	private static ConcurrentHashMap<Long, String> loginUserAddrs =	new ConcurrentHashMap<Long, String>();
 	
 	@Override
 	protected boolean doForwardFilter(Request req, ResponseGroup rg)
 			throws FilterException {
-		try {
+		try {	
 			if (isRestricted(req.getName())) {
-				String address = loginUsers.get(req.getRequesterId());
+				String address = loginUserAddrs.get(req.getRequesterId());
 				if (address == null || !address.equals(req.getAddress())) {
 					req.setLastError(Resources.MSG_ERROR_USER_DENIED);
 					logger.info("Access validation failed for: " + req.getName());
@@ -36,7 +41,7 @@ public class AccessValidator extends Filter {
 				}
 			}
 			if (Resources.REQ_LOGOUT.equals(req.getName())) {
-				loginUsers.remove(req.getRequesterId());
+				loginUserAddrs.remove(req.getRequesterId());
 			}
 			logger.info("Access validation OK for: " + req.getName());
 			return true;
@@ -56,8 +61,16 @@ public class AccessValidator extends Filter {
 			}
 			if (Resources.RSP_SUCCESS.equals(rsp.getName()) &&
 					Resources.REQ_LOGIN.equals(req.getName())) {
-				// successful login
-				loginUsers.put(req.getRequesterId(), req.getAddress());
+				// Prevent repeated login
+				if (loginUserAddrs.get(req.getRequesterId()) != null) {
+					req.setLastError(MessageFormat.format(
+							Resources.MSG_ERROR_USER_LOGIN_REPEAT, 
+							((LoginRequest)req).getUser()));
+					logger.info("Repeatedly login detected. (Username=" +
+							((LoginRequest)req).getUser() + ")");
+					return false;
+				}
+				loginUserAddrs.put(req.getRequesterId(), req.getAddress());
 				logger.info("User login succeed.");
 			}
 			return true;
@@ -66,7 +79,7 @@ public class AccessValidator extends Filter {
 			throw new FilterException(e);
 		}
 	}
-
+	
 
 	private boolean isRestricted(String name) {
 		for (int i = 0; i < restricted.length; i++) {
@@ -75,6 +88,17 @@ public class AccessValidator extends Filter {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void onClientDisconnected(String address) {
+		for (Map.Entry<Long, String> entry: loginUserAddrs.entrySet()) {
+			if (entry.getValue().equals(address)) {
+				logger.info("Client <" + entry.getKey() + ", " + entry.getValue() + "> disconnected.");
+				loginUserAddrs.remove(entry.getKey());
+				return;
+			}
+		}
 	}
 	
 }

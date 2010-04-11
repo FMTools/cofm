@@ -64,6 +64,12 @@ public class Controller {
 		((ActionDispatcher)this.actionDispatcher).registerAction(names, action);
 	}
 	
+	public void disconnectUser(String addr) {
+		accessValidator.onClientDisconnected(addr);
+		actionDispatcher.onClientDisconnected(addr);
+		protocolFilter.onClientDisconnected(addr);
+	}
+	
 	public ResponseGroup execute(String message, String sourceAddress) {
 		logger.info("--- Request is: '" + message + "'");
 		Request req = null;

@@ -51,4 +51,10 @@ public class ActionDispatcher extends Filter {
 		}
 	}
 
+	@Override
+	public void onClientDisconnected(String address) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
