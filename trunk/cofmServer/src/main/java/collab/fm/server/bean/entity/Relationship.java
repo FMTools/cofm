@@ -4,9 +4,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Relationship implements Votable{
+public class Relationship extends VersionedEntity implements Votable{
 	
-	protected int version;
 	protected Long id;
 	protected Model model;
 	
@@ -16,7 +15,7 @@ public class Relationship implements Votable{
 	protected Set<Feature> features = new HashSet<Feature>();
 	
 	public Relationship() {
-		
+		super();
 	}
 
 	public String toString() {

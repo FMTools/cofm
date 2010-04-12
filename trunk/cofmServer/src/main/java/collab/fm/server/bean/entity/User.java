@@ -6,9 +6,8 @@ import java.util.Set;
 
 import collab.fm.server.bean.transfer.User2;
 
-public class User {
+public class User extends VersionedEntity {
 	
-	private int version;
 	
 	private Long id;
 	private String name;
@@ -17,7 +16,7 @@ public class User {
 	private Set<Model> models = new HashSet<Model>();
 	
 	public User() {
-		
+		super();
 	}
 	
 	public User2 transfer() {

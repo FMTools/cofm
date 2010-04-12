@@ -3,59 +3,61 @@
 	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="collab.fm.server.bean.entity">
-  <class name="Feature" table="Feature">
-  	<id name="id" column="featureId" type="long">
+  <class name="Feature" table="FEATURE">
+  	<id name="id" column="FEATURE_ID" type="long">
   		<generator class="native"></generator>
   	</id>
   	
-  	<version name="version" access="field" column="entityVersion"></version>
+  	<timestamp name="lastUpdated" column="LAST_UPDATED" />
+  	
+  	<property name="created" type="timestamp" column="CREATED" />
   	
   	<component name="existence" class="Vote">
-  		<set name="supportersInternal" table="FeatureSupporter">
-  			<key column="featureId"></key>
-  			<element type="long" column="supporter" not-null="true"></element>
+  		<set name="supportersInternal" table="FEATURE_SUPPORTER">
+  			<key column="FEATURE_ID"></key>
+  			<element type="long" column="SUPPORTER" not-null="true"></element>
   		</set>
-  		<set name="opponentsInternal" table="FeatureOpponent">
-  			<key column="featureId"></key>
-  			<element type="long" column="opponent" not-null="true"></element>
+  		<set name="opponentsInternal" table="FEATURE_OPPONENT">
+  			<key column="FEATURE_ID"></key>
+  			<element type="long" column="OPPONENT" not-null="true"></element>
   		</set>
   	</component>
   	
   	<component name="optionality" class="Vote">
-  		<set name="supportersInternal" table="FeatureOptionalSupporter">
-  			<key column="featureId"></key>
-  			<element type="long" column="supporter" not-null="true"></element>
+  		<set name="supportersInternal" table="FEATURE_OPTIONAL_SUPPORTER">
+  			<key column="FEATURE_ID"></key>
+  			<element type="long" column="SUPPORTER" not-null="true"></element>
   		</set>
-  		<set name="opponentsInternal" table="FeatureOptionalOpponent">
-  			<key column="featureId"></key>
-  			<element type="long" column="opponent" not-null="true"></element>
+  		<set name="opponentsInternal" table="FEATURE_OPTIONAL_OPPONENT">
+  			<key column="FEATURE_ID"></key>
+  			<element type="long" column="OPPONENT" not-null="true"></element>
   		</set>
   	</component>
   	
   	<!-- One-to-many association to FeatureName.
   	-->
-  	<set name="namesInternal" table="FeaturePossibleName" cascade="all, delete-orphan">
-  		<key column="featureId"></key>
-  		<many-to-many class="FeatureName" column="nameId" unique="true"></many-to-many>
+  	<set name="namesInternal" table="FEATURE_POSSIBLE_NAME" cascade="all, delete-orphan">
+  		<key column="FEATURE_ID"></key>
+  		<many-to-many class="FeatureName" column="NAME_ID" unique="true"></many-to-many>
   	</set>
   	
   	<!-- One-to-many association to FeatureDescription -->
-  	<set name="descriptionsInternal" table="FeaturePossibleDescription" cascade="all, delete-orphan">
-  		<key column="featureId"></key>
-  		<many-to-many class="FeatureDescription" column="descriptionId" unique="true"></many-to-many>
+  	<set name="descriptionsInternal" table="FEATURE_POSSIBLE_DESCRIPTION" cascade="all, delete-orphan">
+  		<key column="FEATURE_ID"></key>
+  		<many-to-many class="FeatureDescription" column="DESCRIPTION_ID" unique="true"></many-to-many>
   	</set>
   	
   	<!-- Many-to-many association to Relationship.
   	   The statement "inverse=true" tells Hibernate that the two statements in class Feature and Relationship
   	   (namely "aFeature.addRelationship(aRel)" and "aRel.addFeature(aFeature)")  
   	   happens on the same row in the table which persists the association. -->
-  	<set inverse="true" name="relationshipsInternal" table="FeatureRelationshipInvolvement">
-  		<key column="featureId"></key>
-  		<many-to-many column="relationshipId" class="Relationship"></many-to-many>
+  	<set inverse="true" name="relationshipsInternal" table="FEATURE_RELATIONSHIP_INVOLVEMENT">
+  		<key column="FEATURE_ID"></key>
+  		<many-to-many column="RELATIONSHIP_ID" class="Relationship"></many-to-many>
   	</set>
   	
   	<!-- Many-to-one association to Model -->
-  	<many-to-one name="model" column="modelId" class="Model" not-null="true" />
+  	<many-to-one name="model" column="MODEL_ID" class="Model" not-null="true" />
   	
   </class>
 </hibernate-mapping>

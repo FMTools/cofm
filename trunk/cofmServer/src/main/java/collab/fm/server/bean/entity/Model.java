@@ -9,10 +9,9 @@ import java.util.Set;
 import collab.fm.server.bean.transfer.Model2;
 import collab.fm.server.bean.transfer.VotableString;
 
-public class Model {
+public class Model extends VersionedEntity {
 	private Long id;
 	
-	private int version;
 	
 	private Set<? extends Votable> names = new HashSet<ModelName>();
 	private Set<? extends Votable> descriptions = new HashSet<ModelDescription>();
@@ -23,7 +22,7 @@ public class Model {
 	private Set<User> users = new HashSet<User>();
 	
 	public Model() {
-		
+		super();
 	}
 	
 	public Model2 transfer() {

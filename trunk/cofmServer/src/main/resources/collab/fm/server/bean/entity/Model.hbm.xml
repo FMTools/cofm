@@ -3,44 +3,46 @@
 	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="collab.fm.server.bean.entity">
-  <class name="Model" table="Model">
-    <id name="id" column="modelId" type="long">
+  <class name="Model" table="MODEL">
+    <id name="id" column="MODEL_ID" type="long">
   		<generator class="native"></generator>
   	</id>
   	
-  	<version name="version" access="field" column="entityVersion"></version>
+    <timestamp name="lastUpdated" column="LAST_UPDATED" />
+  	
+  	<property name="created" type="timestamp" column="CREATED" />
   	
   	<!-- One-to-many association to ModelName.
   	-->
-  	<set name="namesInternal" table="ModelPossibleName" cascade="all, delete-orphan">
-  		<key column="modelId"></key>
-  		<many-to-many class="ModelName" column="nameId" unique="true"></many-to-many>
+  	<set name="namesInternal" table="MODEL_POSSIBLE_NAME" cascade="all, delete-orphan">
+  		<key column="MODEL_ID"></key>
+  		<many-to-many class="ModelName" column="NAME_ID" unique="true"></many-to-many>
   	</set>
   	
   	<!-- One-to-many association to ModelDescription -->
-  	<set name="descriptionsInternal" table="ModelPossibleDescription" cascade="all, delete-orphan">
-  		<key column="modelId"></key>
-  		<many-to-many class="ModelDescription" column="descriptionId" unique="true"></many-to-many>
+  	<set name="descriptionsInternal" table="MODEL_POSSIBLE_DESCRIPTION" cascade="all, delete-orphan">
+  		<key column="MODEL_ID"></key>
+  		<many-to-many class="ModelDescription" column="DESCRIPTION_ID" unique="true"></many-to-many>
   	</set>
   	
   	<!-- One-to-many bidirectional association to Feature -->
   	<set name="featuresInternal" inverse="true">
-  	    <key column="modelId"></key>
+  	    <key column="MODEL_ID"></key>
   	    <one-to-many class="Feature" />
   	</set>
   	
   	<!-- One-to-many bidirectional association to Relationship -->
   	<set name="relationshipsInternal" inverse="true">
-  	    <key column="modelId"></key>
+  	    <key column="MODEL_ID"></key>
   	    <one-to-many class="Relationship"/>
   	</set>
 
     <!-- Many-to-many bidirectional association to User 
         (See Feature.hbm.xml for the explanation of "inverse=true")
     -->
-    <set inverse="true" name="usersInternal" table="ModelUserAssoc">
-  		<key column="modelId"></key>
-  		<many-to-many column="userId" class="User"></many-to-many>
+    <set inverse="true" name="usersInternal" table="MODEL_CONTRIBUTOR">
+  		<key column="MODEL_ID"></key>
+  		<many-to-many column="USER_ID" class="User"></many-to-many>
   	</set>
   	
   </class>
