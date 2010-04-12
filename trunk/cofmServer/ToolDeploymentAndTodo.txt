@@ -1,0 +1,14 @@
+---------------------------------
+Deploy the server via source code
+---------------------------------
+1. Use SVN command line to download code.
+2. Run maven "compile-main".
+3. Run maven "run-main".
+4. (First time only) Run "init-main-db".
+
+----------
+To Be Done
+----------
+1. A panel shows everyone's creating and voting operations.
+2. Personal trees.
+3. Log out.
