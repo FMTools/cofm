@@ -7,9 +7,7 @@ import collab.fm.server.bean.transfer.VotableString;
 import collab.fm.server.util.BeanUtil;
 
 
-public class Feature implements Votable {
-	
-	private int version;
+public class Feature extends VersionedEntity implements Votable {
 	
 	private Long id;
 	private Model model;
@@ -22,7 +20,7 @@ public class Feature implements Votable {
 	private Set<Relationship> relationships = new HashSet<Relationship>();
 	
 	public Feature() {
-	
+		super();
 	}
 	
 	public Feature2 transfer() {

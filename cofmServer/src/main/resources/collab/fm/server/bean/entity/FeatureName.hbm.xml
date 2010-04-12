@@ -3,21 +3,23 @@
 	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="collab.fm.server.bean.entity">
-  <class name="FeatureName" table="FeatureName">
-  	<id name="id" type="long" column="nameId">
+  <class name="FeatureName" table="FEATURE_NAME">
+  	<id name="id" type="long" column="NAME_ID">
   		<generator class="native"></generator>
   	</id>
-  	<version name="version" access="field" column="entityVersion"></version>
-  	<property name="name" type="string" column="name"></property>
+  	<timestamp name="lastUpdated" column="LAST_UPDATED" />
+  	
+  	<property name="created" type="timestamp" column="CREATED" />
+  	<property name="name" type="string" column="NAME"></property>
   	
   	<component name="vote" class="Vote">
-  		<set name="supportersInternal" table="FeatureNameSupporter">
-  			<key column="nameId"></key>
-  			<element type="long" column="supporter" not-null="true"></element>
+  		<set name="supportersInternal" table="FEATURE_NAME_SUPPORTER">
+  			<key column="NAME_ID"></key>
+  			<element type="long" column="SUPPORTER" not-null="true"></element>
   		</set>
-  		<set name="opponentsInternal" table="FeatureNameOpponent">
-  			<key column="nameId"></key>
-  			<element type="long" column="opponent" not-null="true"></element>
+  		<set name="opponentsInternal" table="FEATURE_NAME_OPPONENT">
+  			<key column="NAME_ID"></key>
+  			<element type="long" column="OPPONENT" not-null="true"></element>
   		</set>
   	</component>
   </class>

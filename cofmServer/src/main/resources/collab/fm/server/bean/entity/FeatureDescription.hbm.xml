@@ -3,21 +3,23 @@
 	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="collab.fm.server.bean.entity">
-  <class name="FeatureDescription" table="FeatureDescription">
-  	<id name="id" type="long" column="descriptionId">
+  <class name="FeatureDescription" table="FEATURE_DESCRIPTION">
+  	<id name="id" type="long" column="DESCRIPTION_ID">
   		<generator class="native"></generator>
   	</id>
-  	<version name="version" access="field" column="entityVersion"></version>
-  	<property name="value" type="string" column="description"></property>
+  	<timestamp name="lastUpdated" column="LAST_UPDATED" />
+  	
+  	<property name="created" type="timestamp" column="CREATED" />
+  	<property name="value" type="string" column="DESCRIPTION"></property>
   	
   	<component name="vote" class="Vote">
-  		<set name="supportersInternal" table="FeatureDescriptionSupporter">
-  			<key column="descriptionId"></key>
-  			<element type="long" column="supporter" not-null="true"></element>
+  		<set name="supportersInternal" table="FEATURE_DESCRIPTION_SUPPORTER">
+  			<key column="DESCRIPTION_ID"></key>
+  			<element type="long" column="SUPPORTER" not-null="true"></element>
   		</set>
-  		<set name="opponentsInternal" table="FeatureDescriptionOpponent">
-  			<key column="descriptionId"></key>
-  			<element type="long" column="opponent" not-null="true"></element>
+  		<set name="opponentsInternal" table="FEATURE_DESCRIPTION_OPPONENT">
+  			<key column="DESCRIPTION_ID"></key>
+  			<element type="long" column="OPPONENT" not-null="true"></element>
   		</set>
   	</component> 
   </class>
