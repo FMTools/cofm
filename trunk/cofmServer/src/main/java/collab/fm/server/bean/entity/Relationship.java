@@ -17,6 +17,10 @@ public class Relationship extends VersionedEntity implements Votable{
 	public Relationship() {
 		super();
 	}
+	
+	public Relationship(Long creator) {
+		super(creator);
+	}
 
 	public String toString() {
 		return "vote=" + getExistence().toString() + " id=" + id + " type=" + type;

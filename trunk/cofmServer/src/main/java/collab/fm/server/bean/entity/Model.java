@@ -25,6 +25,10 @@ public class Model extends VersionedEntity {
 		super();
 	}
 	
+	public Model(Long creator) {
+		super(creator);
+	}
+	
 	public Model2 transfer() {
 		Model2 m = new Model2();
 		m.setId(this.getId());

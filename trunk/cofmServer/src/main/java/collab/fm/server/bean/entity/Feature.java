@@ -23,6 +23,10 @@ public class Feature extends VersionedEntity implements Votable {
 		super();
 	}
 	
+	public Feature(Long creator) {
+		super(creator);
+	}
+	
 	public Feature2 transfer() {
 		Feature2 f = new Feature2();
 		f.setId(this.getId());

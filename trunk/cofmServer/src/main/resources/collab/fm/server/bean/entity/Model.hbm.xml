@@ -11,7 +11,7 @@
     <timestamp name="lastUpdated" column="LAST_UPDATED" />
   	
   	<property name="created" type="timestamp" column="CREATED" />
-  	
+  	<property name="creator" type="long" column="CREATOR_ID" />
   	<!-- One-to-many association to ModelName.
   	-->
   	<set name="namesInternal" table="MODEL_POSSIBLE_NAME" cascade="all, delete-orphan">

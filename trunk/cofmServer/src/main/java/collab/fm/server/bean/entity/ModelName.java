@@ -29,7 +29,7 @@ public class ModelName extends VersionedEntity implements Votable {
 	}
 	
 	public ModelName(String name, boolean yes, Long userid) {
-		super();
+		super(userid);
 		setName(name);
 		vote(yes, userid);
 	}

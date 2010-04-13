@@ -12,6 +12,10 @@ public class BinaryRelationship extends Relationship {
 		
 	}
 	
+	public BinaryRelationship(Long creator) {
+		super(creator);
+	}
+	
 	public String toString() {
 		return super.toString() + " left=" + leftFeatureId + " right=" + rightFeatureId;
 	}
