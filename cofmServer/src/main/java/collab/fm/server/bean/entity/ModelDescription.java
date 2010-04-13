@@ -24,7 +24,7 @@ public class ModelDescription extends VersionedEntity implements Votable {
 	}
 	
 	public ModelDescription(String des, boolean yes, Long userid) {
-		super();
+		super(userid);
 		setValue(des);
 		vote(yes, userid);
 	}

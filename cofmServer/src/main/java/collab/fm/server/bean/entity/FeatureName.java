@@ -29,7 +29,7 @@ public class FeatureName extends VersionedEntity implements Votable {
 	}
 	
 	public FeatureName(String name, boolean yes, Long userid) {
-		super();
+		super(userid);
 		setName(name);
 		vote(yes, userid);
 	}

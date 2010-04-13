@@ -11,7 +11,7 @@
   	
   	<property name="created" type="timestamp" column="CREATED" />
   	<property name="name" type="string" column="NAME"></property>
-  	
+  	<property name="creator" type="long" column="CREATOR_ID" />
   	<component name="vote" class="Vote">
   		<set name="supportersInternal" table="MODEL_NAME_SUPPORTER">
   			<key column="NAME_ID"></key>

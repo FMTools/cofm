@@ -24,7 +24,7 @@ public class FeatureDescription extends VersionedEntity implements Votable {
 	}
 	
 	public FeatureDescription(String des, boolean yes, Long userid) {
-		super();
+		super(userid);
 		setValue(des);
 		vote(yes, userid);
 	}

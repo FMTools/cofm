@@ -36,6 +36,7 @@ public class CreateModelAction extends Action {
 				}
 				m.voteName(cmr.getModelName(), true, cmr.getRequesterId());
 				m.voteDescription(cmr.getDescription(), true, cmr.getRequesterId());
+				m.setCreator(me.getId());
 				me.addModel(m);
 				
 				DaoUtil.getUserDao().save(me);

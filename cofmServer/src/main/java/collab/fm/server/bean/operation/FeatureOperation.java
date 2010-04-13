@@ -137,7 +137,7 @@ public class FeatureOperation extends Operation {
 			// Check if a feature with same name has already existed.
 			Feature featureWithSameName = DaoUtil.getFeatureDao().getByName(modelId, value);
 			if (featureWithSameName == null) {
-				featureWithSameName = new Feature();
+				featureWithSameName = new Feature(userid);
 			}
 			featureWithSameName.voteName(value, vote, userid);
 			featureWithSameName.vote(true, userid);

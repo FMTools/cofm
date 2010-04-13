@@ -69,7 +69,7 @@ public class BinaryRelationshipOperation extends RelationshipOperation {
 			}
 			
 			// See if the relationship has already existed.
-			BinaryRelationship relation = new BinaryRelationship();
+			BinaryRelationship relation = new BinaryRelationship(userid);
 			relation.setType(type);
 			relation.setLeftFeatureId(leftFeatureId);
 			relation.setRightFeatureId(rightFeatureId);
