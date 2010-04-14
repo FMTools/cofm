@@ -19,7 +19,7 @@ public class EventHandler extends IoHandlerAdapter {
 	static Logger logger = Logger.getLogger(EventHandler.class);
 	
 	private static final String CROSS_DOMAIN_POLICY = 
-		"<?xml version=\"1.0\"?><cross-domain-policy><allow-http-request-headers-from domain=\"*\" headers=\"*\" secure=\"false\" /><allow-access-from domain=\"*\" secure=\"false\" /></cross-domain-policy>";
+		"<?xml version=\"1.0\"?><cross-domain-policy><allow-http-request-headers-from domain=\"*\" to-ports=\"*\" headers=\"*\" secure=\"false\" /><allow-access-from domain=\"*\" to-ports=\"*\" secure=\"false\" /></cross-domain-policy>";
 	
 	private ConcurrentHashMap<String, IoSession> sessionMap = 
 		new ConcurrentHashMap<String, IoSession>();
