@@ -18,6 +18,9 @@ public class EventHandler extends IoHandlerAdapter {
 	
 	static Logger logger = Logger.getLogger(EventHandler.class);
 	
+	private static final String CROSS_DOMAIN_POLICY = 
+		"<?xml version=\"1.0\"?><cross-domain-policy><allow-access-from domain=\"*\" /></cross-domain-policy>";
+	
 	private ConcurrentHashMap<String, IoSession> sessionMap = 
 		new ConcurrentHashMap<String, IoSession>();
 	
@@ -27,6 +30,10 @@ public class EventHandler extends IoHandlerAdapter {
 
 	public void messageReceived(IoSession session, Object message) throws Exception {
 		logger.info("--- Request received from '" + session.getRemoteAddress().toString() + "'");
+		if (((String)message).startsWith("<policy-file-request")) {
+			session.write(CROSS_DOMAIN_POLICY);
+			return;
+		}
 		ResponseGroup group = 
 			Controller.instance().execute((String)message, session.getRemoteAddress().toString());
 		distributeResponse(session, group);
