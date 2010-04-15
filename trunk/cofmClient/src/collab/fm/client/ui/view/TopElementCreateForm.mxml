@@ -1,72 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
-	 xmlns:a="com.hillelcoren.components.*" 
-	 xmlns:v="collab.fm.client.ui.view.*"
-	 width="700" height="400"
-	 creationComplete="initView()">
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	 xmlns:a="com.hillelcoren.components.*" >
 	
-	<mx:HBox>
-		<mx:Button id="featureBtn" label="{RS.BTN_CREATE_FEATURE}" click="beginCreateFeature();"/>
-		<mx:Button id="relBtn" label="{RS.BTN_CREATE_RELATIONSHIP}" click="beginCreateRel();"/>
-	</mx:HBox> 
+	<mx:Button id="featureBtn" label="{RS.BTN_CREATE_FEATURE}" click="beginCreateFeature();"/>
+	<mx:Button id="relBtn" label="{RS.BTN_CREATE_RELATIONSHIP}" click="beginCreateRel();"/>
 	
-	<v:FeatureCreateForm id="featureForm" hide="onHideForm(event);"/>
-	<v:RelCreateForm id="relForm" hide="onHideForm(event);"/>
 		
 	<mx:Script>
 		<![CDATA[
-			import mx.events.FlexEvent;
-			import mx.events.ItemClickEvent;
+			import mx.managers.PopUpManager;
 			import collab.fm.client.util.*;		
-			import collab.fm.client.event.*;	
-			import collab.fm.client.data.*;
-			import collab.fm.client.command.*;
 			
-			private var parentId: int;
-			private var nameOk: Boolean;
-			private var parentOk: Boolean;
-			
-			private function hideAllForms(): void {
-				UIUtil.show(featureForm, false);
-				UIUtil.show(relForm, false);
-				
-				featureBtn.enabled = true;
-				relBtn.enabled = true;
-			}
-			
-			private function showFeatureForm(): void {
-				UIUtil.show(featureForm, true);
-				UIUtil.show(relForm, false);
-				
-				featureBtn.enabled = false;
-				relBtn.enabled = true;
-			}
-			
-			private function showRelForm(): void {
-				UIUtil.show(featureForm, false);
-				UIUtil.show(relForm, true);
-				
-				featureBtn.enabled = true;
-				relBtn.enabled = false;
-			}
-			
-			private function initView(): void {
-				hideAllForms();
-			}
+			private var featureWindow: CreateFeatureDlg;
+			private var relWindow: CreateRelationshipDlg;
 			
 			private function beginCreateFeature(): void {
-				showFeatureForm();
-				featureForm.resetForm();
+				featureWindow = CreateFeatureDlg(PopUpManager.createPopUp(this, CreateFeatureDlg, true));
+				PopUpManager.centerPopUp(featureWindow);
 			}
 			
 			private function beginCreateRel(): void {
-				showRelForm();
-				relForm.resetForm();
-			}
-			
-			private function onHideForm(evt: FlexEvent): void {
-				hideAllForms();
+				relWindow = CreateRelationshipDlg(PopUpManager.createPopUp(this, CreateRelationshipDlg, true));
+				PopUpManager.centerPopUp(relWindow);
 			}
 		]]>
 	</mx:Script>
-</mx:VBox>
+</mx:HBox>

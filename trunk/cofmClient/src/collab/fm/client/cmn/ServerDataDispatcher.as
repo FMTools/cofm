@@ -21,6 +21,7 @@ package collab.fm.client.cmn {
 			// get the resposne name
 			var name: String = data[Cst.FIELD_RSP_NAME] as String;
 			if (isResponse(name)) {
+				Msg.showResponse(name, data[Cst.FIELD_RSP_MESSAGE]);
 				CommandBuffer.instance.getCommand(
 					int(data[Cst.FIELD_RSP_SOURCE_ID])).handleResponse(data);
 			} else if (Cst.RSP_FORWARD == name) {

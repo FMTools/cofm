@@ -1,6 +1,6 @@
 package collab.fm.client.data {
 	import collab.fm.client.event.*;
-
+	import collab.fm.client.util.*;
 	import flash.utils.Dictionary;
 
 	import mx.collections.XMLListCollection;
@@ -19,6 +19,17 @@ package collab.fm.client.data {
 			_data = new XMLListCollection();
 			ClientEvtDispatcher.instance().addEventListener(
 				ModelUpdateEvent.LOCAL_MODEL_COMPLETE, onLocalModelUpdate);
+		}
+
+		public function getNameById(id: String): String {
+			var fs: XMLList = ModelUtil.getRootFeatureById(this.xml.source, id);
+			if (fs.length() <= 0) {
+				fs = ModelUtil.getNonRootFeatureById(this.xml.source, id);
+			}
+			if (fs.length() > 0) {
+				return fs[0].@name;
+			}
+			return null;
 		}
 
 		protected function onLocalModelUpdate(evt: ModelUpdateEvent): void {

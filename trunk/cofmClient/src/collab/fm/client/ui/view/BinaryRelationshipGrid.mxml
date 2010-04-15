@@ -1,27 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <v:AutoRowAdjustmentGrid xmlns:v="collab.fm.client.ui.view.*"
-	xmlns:mx="http://www.adobe.com/2006/mxml"
-	dataProvider="{CurrentFeature.instance.names}">
+	xmlns:mx="http://www.adobe.com/2006/mxml">
 	
 	<v:columns>
-		<mx:AdvancedDataGridColumn dataField="name" headerText="{RS.EDIT_NAME_GRID_NAME}"
-			 resizable="true"/>
+		<mx:AdvancedDataGridColumn dataField="name" headerText="{firstColumnName}"
+			 resizable="true">
 			
+		</mx:AdvancedDataGridColumn>
 		<mx:AdvancedDataGridColumn dataField="supporters" headerText="{RS.EDIT_GRID_YES}"
-			 resizable="true"/>
+			 resizable="true">
 			
+		</mx:AdvancedDataGridColumn>
 		<mx:AdvancedDataGridColumn dataField="opponents" headerText="{RS.EDIT_GRID_NO}"
-			 resizable="true"/>
+			 resizable="true">
 			
+		</mx:AdvancedDataGridColumn>
 		<mx:AdvancedDataGridColumn headerText="{RS.EDIT_GRID_ACTION}" 
 			 resizable="false" width="200" sortable="false"
-			 itemRenderer="collab.fm.client.ui.renderer.FeatureNameGridActionRenderer"/>
-			
+			 itemRenderer="collab.fm.client.ui.renderer.BinaryRelationshipGridActionRenderer">
+		</mx:AdvancedDataGridColumn>
 	</v:columns>
+	
 	<mx:Script>
 		<![CDATA[
 			import collab.fm.client.data.*;
 			import collab.fm.client.util.*;
+			
+			[Bindable]
+			public var firstColumnName: String;
+			
 		]]>
 	</mx:Script>
 </v:AutoRowAdjustmentGrid>

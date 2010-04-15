@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <v:AutoRowAdjustmentGrid xmlns:v="collab.fm.client.ui.view.*"
 	xmlns:mx="http://www.adobe.com/2006/mxml"
-	dataProvider="{CurrentFeature.instance.names}">
+	dataProvider="{CurrentFeature.instance.descriptions}">
 	
 	<v:columns>
-		<mx:AdvancedDataGridColumn dataField="name" headerText="{RS.EDIT_NAME_GRID_NAME}"
-			 resizable="true"/>
+		<mx:AdvancedDataGridColumn headerText="{RS.EDIT_DES_GRID_NAME}"
+			 resizable="true" sortable="false" width="150">
+			<mx:itemRenderer>
+				<mx:Component>
+					<mx:TextArea text="{data.des}" editable="false" height="40" />
+				</mx:Component>
+			</mx:itemRenderer>
+		</mx:AdvancedDataGridColumn>
 			
 		<mx:AdvancedDataGridColumn dataField="supporters" headerText="{RS.EDIT_GRID_YES}"
 			 resizable="true"/>
@@ -14,8 +20,8 @@
 			 resizable="true"/>
 			
 		<mx:AdvancedDataGridColumn headerText="{RS.EDIT_GRID_ACTION}" 
-			 resizable="false" width="200" sortable="false"
-			 itemRenderer="collab.fm.client.ui.renderer.FeatureNameGridActionRenderer"/>
+			 resizable="false" width="100" sortable="false"
+			 itemRenderer="collab.fm.client.ui.renderer.FeatureDescriptionGridActionRenderer"/>
 			
 	</v:columns>
 	<mx:Script>
@@ -24,4 +30,5 @@
 			import collab.fm.client.util.*;
 		]]>
 	</mx:Script>
+	
 </v:AutoRowAdjustmentGrid>

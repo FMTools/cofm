@@ -1,11 +1,13 @@
 package collab.fm.client.cmn {
+	import collab.fm.client.util.*;
+
 	import flash.events.DataEvent;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
 	import flash.net.XMLSocket;
 
-	import collab.fm.client.util.*;
+	import mx.controls.Alert;
 
 	public class Connector {
 		// Send and receive data from/to server 
@@ -54,11 +56,11 @@ package collab.fm.client.cmn {
 		}
 
 		private function onIoError(evt: IOErrorEvent): void {
-			trace("IO error: " + evt.text);
+			Alert.show(evt.text, "IO Error Occured!");
 		}
 
 		private function onSecurityError(evt: SecurityErrorEvent): void {
-			trace("Security error: " + evt.text);
+			Alert.show(evt.text, "Security Error Occured!");
 		}
 	}
 }

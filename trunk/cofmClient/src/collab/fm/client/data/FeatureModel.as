@@ -18,7 +18,11 @@ package collab.fm.client.data {
 		   <no/>
 		   </name>
 		   </names>
-		   <descriptions/>
+		   <descriptions><description>
+		   <value></value>
+		   <yes/>
+		   <no/></description>
+		   </descriptions>
 		   <optional> <yes/> <no/> <optional>
 		 *  </feature>
 
@@ -31,6 +35,7 @@ package collab.fm.client.data {
 
 		public static const IS_NEW_ELEMENT: String = "IsNewElement";
 		public static const SHOULD_DELETE_ELEMENT: String = "ShouldDeleteElement";
+		public static const VOTE_NO_TO_FEATURE: String = "VoteNoToFeature";
 
 		private var _features: XMLListCollection;
 		private var _binaries: XMLListCollection;
@@ -116,6 +121,8 @@ package collab.fm.client.data {
 							}
 						} else {
 							handleCreateBinaryRelationship(op);
+							trace("------FeatureModel.create relationship handled.");
+							trace(binaries.toXMLString());
 							for each (var v3: Object in _subViews) {
 								IOperationListener(v3).handleCreateBinaryRelationship(op);
 							}
@@ -133,15 +140,17 @@ package collab.fm.client.data {
 
 		public function handleFeatureVotePropagation(op: Object): void {
 			for each (var o: Object in op["targetIds"]) {
-				var fs: XMLList = features.source.(@id==String(o));
-				if (fs.length() > 0) {
-					if (ModelUtil.updateVoters(op["vote"], op["userid"], fs[0]) == false) {
-						delete features.source.(@id==String(o))[0];
-						// Record the target which needs to be deleted.
-						if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == null) {
-							op[FeatureModel.SHOULD_DELETE_ELEMENT] = new Array();
+				for (var cursor: IViewCursor = features.createCursor(); !cursor.afterLast; cursor.moveNext()) {
+					if (cursor.current.@id == String(o)) {
+						if (ModelUtil.updateVoters(op["vote"], op["userid"], XML(cursor.current)) == false) {
+							cursor.remove();
+							// Record the target which needs to be deleted.
+							if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == null) {
+								op[FeatureModel.SHOULD_DELETE_ELEMENT] = new Array();
+							}
+							(op[FeatureModel.SHOULD_DELETE_ELEMENT] as Array).push(String(o));
 						}
-						(op[FeatureModel.SHOULD_DELETE_ELEMENT] as Array).push(String(o));
+						break;
 					}
 				}
 			}
@@ -149,21 +158,42 @@ package collab.fm.client.data {
 
 		public function handleRelationshipVotePropagation(op: Object): void {
 			for each (var o: Object in op["targetIds"]) {
-				var rs: XMLList = binaries.source.(@id==String(o));
-				if (rs.length() > 0) {
-					if (ModelUtil.updateVoters(op["vote"], op["userid"], rs[0]) == false) {
-						delete features.source.(@id==String(o))[0];
-						// Record the target which needs to be deleted.
-						if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == null) {
-							op[FeatureModel.SHOULD_DELETE_ELEMENT] = new Array();
+				for (var cursor: IViewCursor = binaries.createCursor(); !cursor.afterLast; cursor.moveNext()) {
+					if (cursor.current.@id == String(o)) {
+						if (ModelUtil.updateVoters(op["vote"], op["userid"], XML(cursor.current)) == false) {
+							cursor.remove();
+							// Record the target which needs to be deleted.
+							if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == null) {
+								op[FeatureModel.SHOULD_DELETE_ELEMENT] = new Array();
+							}
+							(op[FeatureModel.SHOULD_DELETE_ELEMENT] as Array).push(String(o));
 						}
-						(op[FeatureModel.SHOULD_DELETE_ELEMENT] as Array).push(String(o));
+						break;
 					}
 				}
 			}
 		}
 
 		public function handleAddDescription(op:Object): void {
+			var des: XMLList = features.source..description.(value.text().toString()==op["value"]);
+			// if voting
+			if (des.length() > 0) {
+				if (ModelUtil.updateVoters(op["vote"], op["userid"], XML(des[0])) == false) {
+					delete features.source..description.(value.text().toString()==op["value"])[0];
+					op[FeatureModel.SHOULD_DELETE_ELEMENT] = true;
+				}
+				return;
+			}
+			// if creation
+			op[FeatureModel.IS_NEW_ELEMENT] = true;
+
+			XML(features.source.(@id==op["featureId"]).descriptions[0]).appendChild(
+				<description>
+					<value>{op["value"]}</value>
+					<yes><user>{op["userid"]}</user></yes>
+					<no/>
+				</description>
+				);
 
 		}
 
@@ -196,6 +226,31 @@ package collab.fm.client.data {
 					if (ModelUtil.updateVoters(op["vote"], op["userid"], XML(cursor.current)) == false) {
 						cursor.remove();
 						op[FeatureModel.SHOULD_DELETE_ELEMENT] = true;
+					}
+					// If voting NO, then vote NO to all names and descriptions, and remove vote from opt
+					else if (String(op["vote"]).toLowerCase() == (new Boolean(false).toString().toLowerCase())) {
+						op[FeatureModel.VOTE_NO_TO_FEATURE] = true;
+						for each (var n: Object in cursor.current.names.name) {
+							ModelUtil.updateVoters("false", op["userid"], XML(n));
+						}
+						// delete all-NO names
+						var _removedNames: XMLList = cursor.current.names.name;
+						for (var i: int = _removedNames.length()-1; i >= 0; i--) {
+							if (XMLList(_removedNames[i].yes.user).length() == 0) {
+								delete _removedNames[i];
+							}
+						}
+
+						for each (var d: Object in cursor.current.descriptions.description) {
+							ModelUtil.updateVoters("false", op["userid"], XML(d));
+						}
+						// delete all-NO descriptions
+						var _removedDes: XMLList = cursor.current.descriptions.description;
+						for (var i2: int = _removedDes.length()-1; i2 >= 0; i2--) {
+							if (XMLList(_removedDes[i2].yes.user).length() == 0) {
+								delete _removedDes[i2];
+							}
+						}
 					}
 					return;
 				}
@@ -263,8 +318,6 @@ package collab.fm.client.data {
 			features.source = fs.feature;
 			binaries.source = bs.binary;
 
-			trace("------FeatureModel.onModelUpdate--------");
-			trace(features.source.toXMLString());
 			ClientEvtDispatcher.instance().dispatchEvent(
 				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_COMPLETE, null));
 		}
@@ -286,7 +339,9 @@ package collab.fm.client.data {
 			// Desciptions of the feature
 			var descs: XML = <descriptions/>;
 			for each (var d: Object in f.dscs) {
-				var curDes: XML = <description val={d.val}/>;
+				var curDes: XML = <description>
+						<value>{d.val}</value>
+					</description>;
 				appendVotes(curDes, d);
 				descs.appendChild(curDes);
 			}
