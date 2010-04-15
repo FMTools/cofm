@@ -1,81 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:Form xmlns:mx="http://www.adobe.com/2006/mxml" width="700" height="500"
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="700" height="500"
 	xmlns:v="collab.fm.client.ui.view.*"
-    implements="collab.fm.client.data.IOperationListener"
-    creationComplete="initView();">
+    implements="collab.fm.client.data.IOperationListener">
     
-    <mx:FormItem direction="horizontal">
-    	<mx:Button label="{RS.BTN_VOTE_FEATURE_YES}" click="voteYesOnFeature();"/>
-    	<mx:Button label="{RS.BTN_VOTE_FEATURE_NO}" click="voteNoOnFeature();"/>
-    	<mx:Button label="{RS.BTN_ADD_NAME}" click="addName();"/>
-    	<mx:Button label="{RS.BTN_ADD_DES}" click="addDes();"/>
-    </mx:FormItem>
+    <mx:VBox>
+    	<mx:Label text="{RS.EDIT_FEATURE_VOTES}"/>
+    	<v:FeatureVotesChart width="100%" height="100" />
+    </mx:VBox> 
     
-    <mx:FormItem label="{RS.EDIT_NAME}">
-    	<v:FeatureNameGrid width="100%" height="180"/>
-    </mx:FormItem>
+    <mx:VBox>
+    	<mx:HBox>
+    		<mx:Label text="{RS.EDIT_NAME}"/>
+    		<mx:Button label="{RS.BTN_ADD}" click="addName();"/>
+    	</mx:HBox>
+    	<v:FeatureNameGrid width="100%" />
+    </mx:VBox> 
+    
+    <mx:VBox>
+    	<mx:HBox>
+    		<mx:Label text="{RS.EDIT_DES}"/>
+    		<mx:Button label="{RS.BTN_ADD}" click="addDes();"/>
+    	</mx:HBox>
+    	<v:FeatureDescriptionGrid width="400" maxDisplayedRows="1" />
+    </mx:VBox> 
+    
+    <mx:VBox>
+    	<mx:Label text="{RS.EDIT_REFINE_PARENT}"/>
+    	<v:BinaryRelationshipGrid width="100%" 
+    	    firstColumnName="{RS.EDIT_REFINE_GRID_NAME}"
+    	    dataProvider="{CurrentFeature.instance.parents}"/>
+    </mx:VBox> 
+    
+    <mx:VBox>
+    	<mx:Label text="{RS.EDIT_REFINE_CHILD}"/>
+    	<v:BinaryRelationshipGrid width="100%" 
+    	    firstColumnName="{RS.EDIT_REFINE_GRID_NAME}"
+    	    dataProvider="{CurrentFeature.instance.children}"/>
+    </mx:VBox>
+    
+    <mx:VBox>
+    	<mx:Label text="{RS.EDIT_CONS}"/>
+    	<v:BinaryRelationshipGrid width="100%" 
+    	    firstColumnName="{RS.EDIT_CONS_GRID_NAME}"
+    	    dataProvider="{CurrentFeature.instance.binaryConstraints}"/>
+    </mx:VBox>
     
 	<mx:Script>
 		<![CDATA[
 			import mx.managers.PopUpManager;
-		import collab.fm.client.command.*;
-		import collab.fm.client.data.*;
-		import collab.fm.client.event.*;
-		import collab.fm.client.util.*;
-		
-		private var nameWindow: AddNameDlg;
-		
-		private function initView(): void {
-			FeatureModel.instance.registerSubView(this);
-		}
-		
-		private function addName(): void {
-			nameWindow = AddNameDlg(PopUpManager.createPopUp(this, AddNameDlg, true));
-			PopUpManager.centerPopUp(nameWindow);
-		}
-		
-		private function addDes(): void {
+			import collab.fm.client.command.*;
+			import collab.fm.client.data.*;
+			import collab.fm.client.event.*;
+			import collab.fm.client.util.*;
 			
-		}
-		
-		private function voteYesOnFeature(): void {
-			new CreateOrVoteFeatureCommand("", CurrentFeature.instance.id, true).execute();
-		}
-		
-		private function voteNoOnFeature(): void {
-			new CreateOrVoteFeatureCommand("", CurrentFeature.instance.id, false).execute();
-		}
-		
-		// OperationListener methods
-		//
-		public function handleAddDescription(op: Object): void {
+			private var nameWindow: AddNameDlg;
+			private var desWindow: AddDesDlg;
 			
-		}
-		
-		public function handleAddName(op: Object): void {
-
-		}
-		
-		public function handleCreateFeature(op: Object): void {
+			private function initView(): void {
+				UIUtil.show(this, false);
+				FeatureModel.instance.registerSubView(this);
+				ClientEvtDispatcher.instance().addEventListener(
+					FeatureSelectEvent.DB_CLICK_ON_TREE, onSelect);
+				ClientEvtDispatcher.instance().addEventListener(
+					ClientEvent.CURRENT_FEATURE_DELETED, onDelete);
+			}
 			
-		}
-		
-		public function handleCreateBinaryRelationship(op: Object): void {
+			private function onSelect(evt: FeatureSelectEvent): void {
+				UIUtil.show(this, true);
+			}
 			
-		}
-		
-		public function handleSetOpt(op: Object): void {
+			private function onDelete(evt: ClientEvent): void {
+				UIUtil.show(this, false);
+			}
 			
-		}
-
-		public function handleFeatureVotePropagation(op: Object): void {
+			private function addName(): void {
+				nameWindow = AddNameDlg(PopUpManager.createPopUp(this, AddNameDlg, true));
+				PopUpManager.centerPopUp(nameWindow);
+			}
 			
-		}
-		
-		public function handleRelationshipVotePropagation(op: Object): void {
+			private function addDes(): void {
+				desWindow = AddDesDlg(PopUpManager.createPopUp(this, AddDesDlg, true));
+				PopUpManager.centerPopUp(desWindow);
+			}
 			
-		}
+			// OperationListener methods
+			//
+			public function handleAddDescription(op: Object): void {
+				
+			}
+			
+			public function handleAddName(op: Object): void {
+	
+			}
+			
+			public function handleCreateFeature(op: Object): void {
+				
+			}
+			
+			public function handleCreateBinaryRelationship(op: Object): void {
+				
+			}
+			
+			public function handleSetOpt(op: Object): void {
+				
+			}
+	
+			public function handleFeatureVotePropagation(op: Object): void {
+				
+			}
+			
+			public function handleRelationshipVotePropagation(op: Object): void {
+				
+			}
 		
 		]]>
 	</mx:Script>
-</mx:Form>
+</mx:VBox>

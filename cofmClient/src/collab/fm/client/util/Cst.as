@@ -6,6 +6,7 @@ package collab.fm.client.util {
 		public static const FIELD_RSP_SOURCE_USER_ID: String = "requesterId";
 		public static const FIELD_RSP_SOURCE_NAME: String = "requestName";
 		public static const FIELD_RSP_SOURCE_ID: String = "requestId";
+		public static const FIELD_RSP_MESSAGE: String = "message";
 
 		public static const REQ_DELIMITER: String = "<[!END]]>";
 		public static const REQ_COMMIT: String = "commit";

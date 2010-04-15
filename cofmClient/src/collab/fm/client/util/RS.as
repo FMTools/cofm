@@ -4,6 +4,8 @@ package collab.fm.client.util {
 	[ResourceBundle("ui")]
 	public class RS {
 
+		public static const BTN_FEEDBACK: String = s("btn.feedback");
+		public static const BTN_ADD: String =s("btn.add");
 		public static const BTN_OK: String = s("btn.ok");
 		public static const BTN_CANCEL: String = s("btn.cancel");
 		public static const BTN_CREATE: String = s("btn.create");
@@ -46,6 +48,7 @@ package collab.fm.client.util {
 		public static const MODEL_CREATE_DESCRIPTION: String = s("model.create.description");
 		public static const MODEL_CREATE_NOLOGIN_INTRO: String = "model.create.noLoginIntro";
 
+		public static const FEATURE_CREATE_TITLE: String = s("feature.create.title");
 		public static const FEATURE_CREATE_NAME: String = s("feature.create.name");
 		public static const FEATURE_CREATE_DES: String = s("feature.create.des");
 		public static const FEATURE_CREATE_PARENT: String = s("feature.create.parent");
@@ -53,23 +56,47 @@ package collab.fm.client.util {
 		public static const FEATURE_CREATE_PARENT_IS_ROOT: String = s("feature.create.parent.isRoot");
 		public static const FEATURE_CREATE_PARENT_SEARCH: String = s("feature.create.parent.search");
 
+		public static const REL_CREATE_TITLE: String = s("rel.create.title");
 		public static const REL_CREATE_TYPE: String = s("rel.create.type");
 		public static const REL_CREATE_PARENT: String = s("rel.create.parent");
 		public static const REL_CREATE_CHILD: String = s("rel.create.child");
+		public static const REL_CREATE_LEFT: String = s("rel.create.left");
+		public static const REL_CREATE_RIGHT: String = s("rel.create.right");
 		public static const REL_CREATE_ENTER_PROMPT: String = s("rel.create.enter.prompt");
 
 		public static const REL_TYPE_REFINEMENT: String = "refinement";
 		public static const REL_TYPE_REQUIRE: String = "requiring";
 		public static const REL_TYPE_EXCLUDE: String = "excluding";
 
+		public static const EDIT_GRID_YES: String = s("edit.grid.yes");
+		public static const EDIT_GRID_NO: String = s("edit.grid.no");
+		public static const EDIT_GRID_ACTION: String = s("edit.grid.action");
+
+		public static const EDIT_DES: String = s("edit.des");
+		public static const EDIT_DES_GRID_NAME: String = s("edit.des.grid.name");
+		public static const EDIT_ADD_DES: String = s("edit.add.des");
+		public static const EDIT_ADD_DES_TITLE: String = s("edit.add.des.title");
+
 		public static const EDIT_NAME: String = s("edit.name");
 		public static const EDIT_NAME_GRID_NAME: String = s("edit.name.grid.name");
-		public static const EDIT_NAME_GRID_YES: String = s("edit.name.grid.yes");
-		public static const EDIT_NAME_GRID_NO: String = s("edit.name.grid.no");
-		public static const EDIT_NAME_GRID_ACTION: String = s("edit.name.grid.action");
 
 		public static const EDIT_ADD_NAME: String = s("edit.add.name");
 		public static const EDIT_ADD_NAME_TITLE: String = s("edit.add.name.title");
+
+		public static const EDIT_FEATURE_VOTES: String = s("edit.feature.votes");
+		public static const EDIT_FEATURE_BAR_YES: String = s("edit.feature.bar.yes");
+		public static const EDIT_FEATURE_BAR_NO: String = s("edit.feature.bar.no");
+
+		public static const EDIT_REFINE: String = s("edit.refine");
+		public static const EDIT_REFINE_PARENT: String = s("edit.refine.parent");
+		public static const EDIT_REFINE_CHILD: String = s("edit.refine.child");
+
+		public static const EDIT_REFINE_GRID_NAME: String = s("edit.refine.grid.name");
+
+		public static const EDIT_CONS_GRID_NAME: String = s("edit.cons.grid.name");
+		public static const EDIT_CONS: String = s("edit.cons");
+
+		public static const OP_LIST_TITLE: String = s("op.list.title");
 
 		private static function s(key: String): String {
 			return ResourceManager.getInstance().getString("ui", key);

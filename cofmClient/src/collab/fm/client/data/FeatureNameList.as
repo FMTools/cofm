@@ -18,6 +18,7 @@ package collab.fm.client.data {
 			ClientEvtDispatcher.instance().addEventListener(
 				ModelUpdateEvent.LOCAL_MODEL_COMPLETE, onLocalModelUpdate);
 			FeatureModel.instance.registerSubView(this);
+			trace("FeatureNameList inited.");
 		}
 
 		public function contains(name: String): Boolean {
@@ -71,6 +72,9 @@ package collab.fm.client.data {
 					}
 				}
 			}
+			if (op[FeatureModel.VOTE_NO_TO_FEATURE] == true) {
+				reset();
+			}
 		}
 
 		public function handleCreateBinaryRelationship(op:Object): void {
@@ -82,6 +86,10 @@ package collab.fm.client.data {
 		}
 
 		private function onLocalModelUpdate(evt: ModelUpdateEvent): void {
+			reset();
+		}
+
+		private function reset(): void {
 			data.removeAll();
 			for each (var o: Object in FeatureModel.instance.features.source) {
 				var f: XML = XML(o);
@@ -93,13 +101,11 @@ package collab.fm.client.data {
 					data.addItem(info);
 				}
 			}
-
-
 		}
 
 		[Bindable]
 		public function get data(): ArrayCollection {
-			return _data
+			return _data;
 		}
 
 		public function set data(d: ArrayCollection): void {

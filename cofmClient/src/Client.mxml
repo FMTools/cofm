@@ -15,7 +15,9 @@
 	<mx:VBox id="appContainer" width="100%" height="100%">
 		
 		<mx:ApplicationControlBar id="appCB" width="100%" height="30">
-			
+			<mx:LinkButton paddingLeft="0" paddingRight="0" label="{RS.BTN_FEEDBACK}" click="gotoFeedback();" />
+			<mx:Spacer />
+			<v:MessageBar width="300"/>
 		</mx:ApplicationControlBar>
 		
 		<p:EntryPerspective id="entry" width="100%" height="100%">
@@ -29,14 +31,22 @@
 	</mx:VBox>
 	<mx:Script>
 		<![CDATA[
+			import flash.net.navigateToURL;
 			import collab.fm.client.ui.view.ModelSearchAndCreateForm;
 			import collab.fm.client.event.*;
 			import collab.fm.client.util.*;
+			import collab.fm.client.data.*;
 			
 			private function initView(): void {
 				UIUtil.show(work, false);
 				ClientEvtDispatcher.instance().addEventListener(ModelSelectEvent.SELECTED, onModelSelect);
 				ClientEvtDispatcher.instance().addEventListener(ModelUpdateEvent.WORKING_VIEW_COMPLETE, onWorkingViewComplete);
+				
+				initData();
+			}
+			
+			private function initData(): void {
+				FeatureNameList.instance.data;
 			}
 			
 			private function onModelSelect(evt: ModelSelectEvent): void {
@@ -46,6 +56,11 @@
 			
 			private function onWorkingViewComplete(evt: ModelUpdateEvent): void {
 				UIUtil.show(work, true);
+			}
+			
+			private function gotoFeedback(): void {
+				navigateToURL(new URLRequest(
+					"http://code.google.com/p/cofm/issues/list"), "_blank");
 			}
 			
 		]]>

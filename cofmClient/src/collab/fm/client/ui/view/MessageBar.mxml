@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="100%"
+	 creationComplete="initView();"
+	 paddingLeft="20" paddingRight="20">
+	<mx:Label id="msg" width="100%" fontSize="12" color="black"/>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.utils.StringUtil;
+			import collab.fm.client.event.*;
+			
+			private function initView(): void {
+				ClientEvtDispatcher.instance().addEventListener(
+					MsgEvent.INFO, onInfo);
+				ClientEvtDispatcher.instance().addEventListener(
+					MsgEvent.WARN, onWarn);
+				ClientEvtDispatcher.instance().addEventListener(
+					MsgEvent.ERROR, onError);	
+			}
+			
+			private function isEmpty(m: String): Boolean {
+				return m == null || StringUtil.trim(m) == "";
+			}
+			
+			private function onInfo(evt: MsgEvent): void {
+				if (isEmpty(evt.msg)) {
+					return;
+				}
+				this.setStyle("backgroundColor", "yellow");
+				msg.text = evt.msg;
+			}
+			
+			private function onWarn(evt: MsgEvent): void {
+				if (isEmpty(evt.msg)) {
+					return;
+				}
+				this.setStyle("backgroundColor", "red");
+				this.alpha = 0.3;
+				msg.text = evt.msg;
+			}
+			
+			private function onError(evt: MsgEvent): void {
+				if (isEmpty(evt.msg)) {
+					return;
+				}
+				this.setStyle("backgroundColor", "red");
+				this.alpha = 0.7;
+				msg.text = evt.msg;
+			}
+		]]>
+	</mx:Script>
+</mx:HBox>

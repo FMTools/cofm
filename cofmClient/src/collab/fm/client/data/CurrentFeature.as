@@ -3,6 +3,8 @@ package collab.fm.client.data {
 	import collab.fm.client.util.*;
 
 	import mx.collections.ArrayCollection;
+	import mx.collections.Sort;
+	import mx.collections.SortField;
 
 	public class CurrentFeature implements IOperationListener {
 		private static var _instance: CurrentFeature = new CurrentFeature();
@@ -12,18 +14,43 @@ package collab.fm.client.data {
 		public var id: int;
 
 		[Bindable]
-		public var names: ArrayCollection;
+		public var names: ArrayCollection = new ArrayCollection();
+
+		[Bindable]
+		public var descriptions: ArrayCollection = new ArrayCollection();
+
+		[Bindable]
+		public var votes: ArrayCollection = new ArrayCollection();
+
+		[Bindable]
+		public var parents: ArrayCollection = new ArrayCollection();
+
+		[Bindable]
+		public var children: ArrayCollection = new ArrayCollection();
+
+		[Bindable]
+		public var binaryConstraints: ArrayCollection = new ArrayCollection();
+
+		; // votes of the feature
 
 		public static function get instance(): CurrentFeature {
 			return _instance;
 		}
 
 		public function CurrentFeature() {
-			names = new ArrayCollection();
 			FeatureModel.instance.registerSubView(this);
 
 			ClientEvtDispatcher.instance().addEventListener(
 				FeatureSelectEvent.DB_CLICK_ON_TREE, onCurrentFeatureSelected);
+		}
+
+		private function clear(): void {
+			id = -1;
+			votes.removeAll();
+			names.removeAll();
+			parents.removeAll();
+			children.removeAll();
+			binaryConstraints.removeAll();
 		}
 
 		private function onCurrentFeatureSelected(evt: FeatureSelectEvent): void {
@@ -36,12 +63,28 @@ package collab.fm.client.data {
 			updateDescriptions();
 			updateOptionality();
 			updateRefinements();
-			updateRequirings();
-			updateExcludings();
+			updateBinaryConstraints();
 		}
 
 		private function updateVotes(): void {
+			votes.removeAll();
+			// no votes
+			var noNum: int = XMLList(_feature.no.user).length();
+			var yesNum: int = XMLList(_feature.yes.user).length();
+			var yesRatio: Number = (noNum == 0) ? 100 : (100 * yesNum / (yesNum + noNum));
+			var noRatio: Number = 100 - yesRatio;
 
+			votes.addItem({
+					"label": RS.EDIT_FEATURE_BAR_NO,
+					"num": noNum,
+					"ratio": ((noRatio > 0) ? noRatio.toPrecision(3) : "0") + "%" 
+				});
+			// yes votes
+			votes.addItem({
+					"label": RS.EDIT_FEATURE_BAR_YES,
+					"num": yesNum,
+					"ratio": ((yesRatio > 0) ? yesRatio.toPrecision(3) : "0") + "%"
+				});
 		}
 
 		private function updateNames(): void {
@@ -58,7 +101,29 @@ package collab.fm.client.data {
 		}
 
 		private function updateDescriptions(): void {
-
+			descriptions.removeAll();
+			var des: Array = new Array();
+			for each (var d: Object in _feature.descriptions.description) {
+				var yesId: Array = new Array();
+				for each (var u: Object in d.yes.user) {
+					yesId.push(int(XML(u).text().toString()));
+				}
+				var noId: Array = new Array();
+				for each (var u2: Object in d.no.user) {
+					noId.push(int(XML(u2).text().toString()));
+				}
+				des.push({
+						"des": XML(d.value).text().toString(),
+						"supporters": yesId.length,
+						"opponents": noId.length,
+						"y": yesId,
+						"n": noId,
+						"ratio": ((noId.length == 0) ? "100%" : 
+							Number(100 * yesId.length / (yesId.length + noId.length)).toPrecision(3) + "%")
+					});
+			}
+			ModelUtil.sortOnRating(des, "y", "n", UserList.instance.myId);
+			descriptions.source = des;
 		}
 
 		private function updateOptionality(): void {
@@ -66,16 +131,93 @@ package collab.fm.client.data {
 		}
 
 		private function updateRefinements(): void {
-
+			parents.removeAll();
+			children.removeAll();
+			for each (var r: Object in FeatureModel.instance.binaries.source) {
+				if (r.@type == Cst.BIN_REL_REFINES) {
+					if (r.@left == String(this.id)) {
+						children.addItem({
+								"id": r.@id,
+								"name": ModelUtil.getFeatureNameById(r.@right),
+								"supporters": XMLList(r.yes.user).length(),
+								"opponents": XMLList(r.no.user).length(),
+								"type": Cst.BIN_REL_REFINES,
+								"left": r.@left,
+								"right": r.@right
+							});
+					} else if (r.@right == String(this.id)) {
+						parents.addItem({
+								"id": r.@id,
+								"name": ModelUtil.getFeatureNameById(r.@left),
+								"supporters": XMLList(r.yes.user).length(),
+								"opponents": XMLList(r.no.user).length(),
+								"type": Cst.BIN_REL_REFINES,
+								"left": r.@left,
+								"right": r.@right
+							});
+					}
+				}
+			}
 		}
 
-		private function updateRequirings(): void {
+		private function updateBinaryConstraints(): void {
+			binaryConstraints.removeAll();
+			for each (var r: Object in FeatureModel.instance.binaries.source) {
+				if (r.@type == Cst.BIN_REL_REQUIRES) {
+					if (r.@left == String(this.id)) {
+						binaryConstraints.addItem({
+								"id": r.@id,
+								"name": "this requires " + ModelUtil.getFeatureNameById(r.@right),
+								"supporters": XMLList(r.yes.user).length(),
+								"opponents": XMLList(r.no.user).length(),
+								"type": Cst.BIN_REL_REQUIRES,
+								"left": r.@left,
+								"right": r.@right
+							});
+					} else if (r.@right == String(this.id)) {
+						binaryConstraints.addItem({
+								"id": r.@id,
+								"name": ModelUtil.getFeatureNameById(r.@left) + " requires this",
+								"supporters": XMLList(r.yes.user).length(),
+								"opponents": XMLList(r.no.user).length(),
+								"type": Cst.BIN_REL_REQUIRES,
+								"left": r.@left,
+								"right": r.@right
+							});
+					}
+				} else if (r.@type == Cst.BIN_REL_EXCLUDES) {
+					if (r.@left == String(this.id)) {
+						binaryConstraints.addItem({
+								"id": r.@id,
+								"name": "this excludes " + ModelUtil.getFeatureNameById(r.@right),
+								"supporters": XMLList(r.yes.user).length(),
+								"opponents": XMLList(r.no.user).length(),
+								"type": Cst.BIN_REL_EXCLUDES,
+								"left": r.@left,
+								"right": r.@right
+							});
+					} else if (r.@right == String(this.id)) {
+						binaryConstraints.addItem({
+								"id": r.@id,
+								"name": "this excludes " + ModelUtil.getFeatureNameById(r.@left),
+								"supporters": XMLList(r.yes.user).length(),
+								"opponents": XMLList(r.no.user).length(),
+								"type": Cst.BIN_REL_EXCLUDES,
+								"left": r.@left,
+								"right": r.@right
+							});
+					}
+				}
+			}
 
+			// Sort binaryConstraints on "type" first, "id" second.
+			var sort: Sort = new Sort();
+			sort.fields = [new SortField("type", true), new SortField("id", true)];
+			binaryConstraints.sort = sort;
+			binaryConstraints.refresh();
 		}
 
-		private function updateExcludings(): void {
 
-		}
 
 		public function handleAddDescription(op:Object): void {
 			if (op["featureId"] == String(id)) {
@@ -91,7 +233,18 @@ package collab.fm.client.data {
 
 		public function handleCreateFeature(op:Object): void {
 			if (op["featureId"] == String(id)) {
-				this.updateVotes();
+				if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
+					this.clear();
+					ClientEvtDispatcher.instance().dispatchEvent(
+						new ClientEvent(ClientEvent.CURRENT_FEATURE_DELETED));
+				} else {
+					this.updateVotes();
+					if (op[FeatureModel.VOTE_NO_TO_FEATURE] == true) {
+						this.updateNames();
+						this.updateDescriptions();
+						this.updateOptionality();
+					}
+				}
 			}
 		}
 
@@ -102,10 +255,8 @@ package collab.fm.client.data {
 						this.updateRefinements();
 						break;
 					case Cst.BIN_REL_REQUIRES:
-						this.updateRequirings();
-						break;
 					case Cst.BIN_REL_EXCLUDES:
-						this.updateExcludings();
+						this.updateBinaryConstraints();
 						break;
 				}
 			}
@@ -124,12 +275,8 @@ package collab.fm.client.data {
 		}
 
 		public function handleRelationshipVotePropagation(op:Object): void {
-			// Check for removed relationships.
-			if (op[FeatureModel.SHOULD_DELETE_ELEMENT] != null) {
-				this.updateExcludings();
-				this.updateRefinements();
-				this.updateRequirings();
-			}
+			updateRefinements();
+			updateBinaryConstraints();
 		}
 	}
 }

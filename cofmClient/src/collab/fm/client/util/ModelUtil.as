@@ -2,7 +2,23 @@ package collab.fm.client.util {
 	import mx.collections.IViewCursor;
 	import mx.collections.XMLListCollection;
 
+	import collab.fm.client.data.*;
+
 	public class ModelUtil {
+
+		public static function getFeatureNameById(fId: String): String {
+			// First, try to get name from working tree
+			var n: String = WorkingTreeData.instance.getNameById(fId);
+			if (n != null) {
+				return n;
+			}
+			// Then try to get name from global tree
+			n = GlobalTreeData.instance.getNameById(fId);
+			if (n != null) {
+				return n;
+			}
+			return "#" + fId;
+		}
 
 		// TODO: move this method into FeaureModel
 		// return false if there are no "YES" voters.
