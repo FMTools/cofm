@@ -38,9 +38,14 @@ public class ImplicitVoteOperation extends Operation {
 	protected Object sourceObject;
 
 	public Operation clone() {
-		ImplicitVoteOperation op = new ImplicitVoteOperation();
+		ImplicitVoteOperation op = new ImplicitVoteOperation(sourceOp);
 		this.copyTo(op);
 		return op;
+	}
+	
+	public ImplicitVoteOperation(Operation sourceOp) {
+		this.setModelId(sourceOp.getModelId());
+		this.sourceOp = sourceOp;
 	}
 	
 	protected void copyTo(ImplicitVoteOperation op) {
@@ -76,7 +81,7 @@ public class ImplicitVoteOperation extends Operation {
 	
 	private static class DeduceFromFeatureVote extends ImplicitVoteOperation {		
 		public DeduceFromFeatureVote(Operation op, Object source) {
-			sourceOp = op;
+			super(op);
 			sourceObject = source;
 		}
 		
@@ -126,7 +131,7 @@ public class ImplicitVoteOperation extends Operation {
 	
 	private static class DeduceFromFeatureAttributeVote extends ImplicitVoteOperation {
 		public DeduceFromFeatureAttributeVote(Operation op, Object source) {
-			sourceOp = op;
+			super(op);
 			sourceObject = source;
 		}
 		
@@ -161,7 +166,7 @@ public class ImplicitVoteOperation extends Operation {
 	
 	private static class DeduceFromRelationshipVote extends ImplicitVoteOperation {
 		public DeduceFromRelationshipVote(Operation op, Object source) {
-			sourceOp = op;
+			super(op);
 			sourceObject = source;
 		}
 		
