@@ -39,6 +39,28 @@ public class FeatureDaoImplTest {
 		HibernateUtil.getCurrentSession().getTransaction().commit();
 	}
 	
+	@Test
+	public void testSaveChineseCharacters() {
+		Feature feature = new Feature();
+		feature.vote(true, 1L);
+		feature.voteOptionality(false, 1L);
+		feature.voteName("中文1", true, 3L);
+		feature.voteDescription("汉字，，，，，，，", true, 4L);
+		feature.voteName("中文1", false, 4L);
+		m.addFeature(feature);
+		try {
+			feature = dao.save(feature);
+			DaoUtil.getModelDao().save(m);
+			logger.debug("Feature = " + feature.toString());
+		} catch (BeanPersistenceException e) {
+			logger.error(e);
+			assertEquals("Shouldn't reach here", "");
+			
+		} catch (StaleDataException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	@Test
 	public void testSave() {
