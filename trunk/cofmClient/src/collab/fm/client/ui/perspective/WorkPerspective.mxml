@@ -12,6 +12,9 @@
 			<mx:Canvas label="Working Tree" width="300" height="700">
 				<v:WorkingTree id="workingTree" width="300" height="100%" />
 			</mx:Canvas>
+			<mx:Canvas label="Personal Tree" width="300" height="700">
+				<mx:Tree id="personalTree" width="300" height="100%" />
+			</mx:Canvas>
 		</mx:TabNavigator>
 	</mx:Panel>
 	

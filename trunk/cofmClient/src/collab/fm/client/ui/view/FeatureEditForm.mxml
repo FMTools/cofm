@@ -3,47 +3,39 @@
 	xmlns:v="collab.fm.client.ui.view.*"
     implements="collab.fm.client.data.IOperationListener">
     
-    <mx:VBox>
-    	<mx:Label text="{RS.EDIT_FEATURE_VOTES}"/>
-    	<v:FeatureVotesChart width="100%" height="100" />
-    </mx:VBox> 
-    
-    <mx:VBox>
-    	<mx:HBox>
-    		<mx:Label text="{RS.EDIT_NAME}"/>
-    		<mx:Button label="{RS.BTN_ADD}" click="addName();"/>
-    	</mx:HBox>
-    	<v:FeatureNameGrid width="100%" />
-    </mx:VBox> 
-    
-    <mx:VBox>
-    	<mx:HBox>
-    		<mx:Label text="{RS.EDIT_DES}"/>
-    		<mx:Button label="{RS.BTN_ADD}" click="addDes();"/>
-    	</mx:HBox>
-    	<v:FeatureDescriptionGrid width="400" maxDisplayedRows="1" />
-    </mx:VBox> 
-    
-    <mx:VBox>
-    	<mx:Label text="{RS.EDIT_REFINE_PARENT}"/>
-    	<v:BinaryRelationshipGrid width="100%" 
-    	    firstColumnName="{RS.EDIT_REFINE_GRID_NAME}"
-    	    dataProvider="{CurrentFeature.instance.parents}"/>
-    </mx:VBox> 
-    
-    <mx:VBox>
-    	<mx:Label text="{RS.EDIT_REFINE_CHILD}"/>
-    	<v:BinaryRelationshipGrid width="100%" 
-    	    firstColumnName="{RS.EDIT_REFINE_GRID_NAME}"
-    	    dataProvider="{CurrentFeature.instance.children}"/>
-    </mx:VBox>
-    
-    <mx:VBox>
-    	<mx:Label text="{RS.EDIT_CONS}"/>
-    	<v:BinaryRelationshipGrid width="100%" 
-    	    firstColumnName="{RS.EDIT_CONS_GRID_NAME}"
-    	    dataProvider="{CurrentFeature.instance.binaryConstraints}"/>
-    </mx:VBox>
+    <mx:TabNavigator id="infoTab" selectedIndex="0">
+    	<v:FeatureBasicInfoTab label="{RS.EDIT_TAB_BASIC}">
+    		
+    		
+    	</v:FeatureBasicInfoTab>
+    	
+		<mx:VBox label="{RS.EDIT_TAB_NAME}">
+			<mx:Button label="{RS.BTN_ADD}" click="addName();"/>
+			<v:FeatureNameGrid width="100%" />
+		</mx:VBox>
+		
+		<mx:VBox label="{RS.EDIT_TAB_DES}">
+			<mx:Button label="{RS.BTN_ADD}" click="addDes();"/>
+			<v:FeatureDescriptionGrid width="400" maxDisplayedRows="3" />
+		</mx:VBox>
+		<mx:VBox label="{RS.EDIT_TAB_REFINE}">
+			<mx:Label text="{RS.EDIT_REFINE_PARENT}"/>
+    		<v:BinaryRelationshipGrid width="100%" 
+    	    	firstColumnName="{RS.EDIT_REFINE_GRID_NAME}"
+    	    	dataProvider="{CurrentFeature.instance.parents}"/>
+    	    	
+    	    <mx:Label text="{RS.EDIT_REFINE_CHILD}"/>
+    		<v:BinaryRelationshipGrid width="100%" 
+    	    	firstColumnName="{RS.EDIT_REFINE_GRID_NAME}"
+    	    	dataProvider="{CurrentFeature.instance.children}"/>
+    	    	
+		</mx:VBox>
+		<mx:VBox label="{RS.EDIT_TAB_CONS}">
+    		<v:BinaryRelationshipGrid width="100%" 
+    	    	firstColumnName="{RS.EDIT_CONS_GRID_NAME}"
+    	    	dataProvider="{CurrentFeature.instance.binaryConstraints}"/>
+		</mx:VBox>	
+	</mx:TabNavigator>
     
 	<mx:Script>
 		<![CDATA[
@@ -55,6 +47,16 @@
 			
 			private var nameWindow: AddNameDlg;
 			private var desWindow: AddDesDlg;
+			
+			private function addName(): void {
+				nameWindow = AddNameDlg(PopUpManager.createPopUp(this, AddNameDlg, true));
+				PopUpManager.centerPopUp(nameWindow);
+			}
+			
+			private function addDes(): void {
+				desWindow = AddDesDlg(PopUpManager.createPopUp(this, AddDesDlg, true));
+				PopUpManager.centerPopUp(desWindow);
+			}
 			
 			private function initView(): void {
 				UIUtil.show(this, false);
@@ -73,15 +75,7 @@
 				UIUtil.show(this, false);
 			}
 			
-			private function addName(): void {
-				nameWindow = AddNameDlg(PopUpManager.createPopUp(this, AddNameDlg, true));
-				PopUpManager.centerPopUp(nameWindow);
-			}
 			
-			private function addDes(): void {
-				desWindow = AddDesDlg(PopUpManager.createPopUp(this, AddDesDlg, true));
-				PopUpManager.centerPopUp(desWindow);
-			}
 			
 			// OperationListener methods
 			//

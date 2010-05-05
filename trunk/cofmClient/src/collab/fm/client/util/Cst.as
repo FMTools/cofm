@@ -34,5 +34,10 @@ package collab.fm.client.util {
 		public static const BIN_REL_REQUIRES: String = "requires";
 		public static const BIN_REL_EXCLUDES: String = "excludes";
 
+		public static const ATTR_TYPE_STRING: String = "string";
+		public static const ATTR_TYPE_TEXT: String = "text";
+		public static const ATTR_TYPE_ENUM: String = "enum";
+		public static const ATTR_TYPE_NUMBER: String = "number";
+
 	}
 }

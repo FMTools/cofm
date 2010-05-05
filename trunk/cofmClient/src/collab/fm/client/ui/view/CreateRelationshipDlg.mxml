@@ -58,11 +58,11 @@
 			import collab.fm.client.data.*;
 			import collab.fm.client.event.*;
 			
-			private var relType: String;
+			private var relType: String = Cst.BIN_REL_REFINES;
 			private var left: int;
 			private var right: int;
 			
-			
+		
 			private function onClose(): void {
 				PopUpManager.removePopUp(this);
 			}
