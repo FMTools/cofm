@@ -17,6 +17,8 @@
 		<mx:ApplicationControlBar id="appCB" width="100%" height="30">
 			<mx:LinkButton paddingLeft="0" paddingRight="0" label="{RS.BTN_FEEDBACK}" click="gotoFeedback();" />
 			<mx:Spacer />
+			<mx:LinkButton label="{RS.BTN_BACK_TO_HOME}" click="gotoHomePage();" id="btnBack" />
+			<mx:Spacer />
 			<v:MessageBar width="300"/>
 		</mx:ApplicationControlBar>
 		
@@ -39,14 +41,21 @@
 			
 			private function initView(): void {
 				UIUtil.show(work, false);
+				UIUtil.show(btnBack, false);
 				ClientEvtDispatcher.instance().addEventListener(ModelSelectEvent.SELECTED, onModelSelect);
 				ClientEvtDispatcher.instance().addEventListener(ModelUpdateEvent.WORKING_VIEW_COMPLETE, onWorkingViewComplete);
-				
 				initData();
 			}
 			
 			private function initData(): void {
 				FeatureNameList.instance.data;
+			}
+			
+			private function gotoHomePage(): void {
+				UIUtil.show(btnBack, false);
+				UIUtil.show(work, false);
+				UIUtil.show(entry, true);
+				ModelCollection.instance.currentModelId = -1;
 			}
 			
 			private function onModelSelect(evt: ModelSelectEvent): void {
@@ -56,6 +65,7 @@
 			
 			private function onWorkingViewComplete(evt: ModelUpdateEvent): void {
 				UIUtil.show(work, true);
+				UIUtil.show(btnBack, true);
 			}
 			
 			private function gotoFeedback(): void {

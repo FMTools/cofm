@@ -4,6 +4,7 @@ package collab.fm.client.util {
 	[ResourceBundle("ui")]
 	public class RS {
 
+		public static const BTN_BACK_TO_HOME: String = s("btn.backhome");
 		public static const BTN_FEEDBACK: String = s("btn.feedback");
 		public static const BTN_ADD: String =s("btn.add");
 		public static const BTN_OK: String = s("btn.ok");

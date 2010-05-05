@@ -7,6 +7,7 @@ package collab.fm.client.event {
 		public static const REGISTER_SUCCESS: String = "registerSuccess";
 		public static const CURRENT_FEATURE_DELETED: String = "currentFeatureDeleted";
 		public static const BASIC_INFO_UPDATED: String = "basicInfoUpdated";
+		public static const BACK_TO_HOME: String = "backToHome";
 
 		public var data: Object;
 
