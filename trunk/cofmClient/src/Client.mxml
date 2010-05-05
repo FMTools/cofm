@@ -19,6 +19,7 @@
 			<mx:Spacer />
 			<mx:LinkButton label="{RS.BTN_BACK_TO_HOME}" click="gotoHomePage();" id="btnBack" />
 			<mx:Spacer />
+			<mx:Label id="modelName" />
 			<v:MessageBar width="300"/>
 		</mx:ApplicationControlBar>
 		
@@ -56,11 +57,14 @@
 				UIUtil.show(work, false);
 				UIUtil.show(entry, true);
 				ModelCollection.instance.currentModelId = -1;
+				modelName.text = "";
 			}
 			
 			private function onModelSelect(evt: ModelSelectEvent): void {
 				UIUtil.show(entry, false);
 				work.initData(evt.modelId);
+				var mName: String = ModelCollection.instance.getModelNameById(evt.modelId);
+				modelName.text = RS.M_LIST_CURRENT_NAME + ": " + mName;
 			}
 			
 			private function onWorkingViewComplete(evt: ModelUpdateEvent): void {

@@ -29,6 +29,8 @@ package collab.fm.client.util {
 		public static const M_LIST_USERS: String = s("mlist.users");
 		public static const M_LIST_EMPTY_LIST_INFO: String = s("mlist.empty");
 		public static const M_LIST_SUMMARY: String = "mlist.summary";
+		
+		public static const M_LIST_CURRENT_NAME: String = s("mlist.current.name");
 
 		public static const LOGIN_HEADING: String = s("login.heading");
 		public static const LOGIN_INPUT_NAME: String = s("login.name");
