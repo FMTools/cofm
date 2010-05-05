@@ -1,12 +1,11 @@
 package collab.fm.client.data {
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
-
+	
 	import flash.utils.Dictionary;
-
+	
 	import mx.collections.IViewCursor;
 	import mx.collections.XMLListCollection;
-	import mx.utils.StringUtil;
 
 	public class ModelCollection {
 		public var currentModelId: int = -1;
@@ -45,6 +44,18 @@ package collab.fm.client.data {
 
 		}
 
+		public function getModelNameById(id: int): String {
+			var m: XMLList = this.my.source.(@id==String(id));
+			if (m.length() > 0) {
+				return m[0].@name;
+			}
+			m = this.others.source.(@id==String(id));
+			if (m.length() > 0) {
+				return m[0].@name;
+			}
+			return "null";
+		}
+		
 		private function resetSource(dst: XMLListCollection, src: XML): void {
 			dst.removeAll();
 			var list: XMLList = new XMLList(src.model);
