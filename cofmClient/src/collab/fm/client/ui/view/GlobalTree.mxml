@@ -4,7 +4,8 @@
      labelField="@name"
      dataProvider="{GlobalTreeData.instance.xml}"
      doubleClickEnabled="true"
-     itemDoubleClick="onDoubleClick(event);">
+     itemDoubleClick="onDoubleClick(event);"
+     itemClick="onDoubleClick(event);">
      
 	<mx:Script>
 		<![CDATA[

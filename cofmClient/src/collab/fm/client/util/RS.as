@@ -95,6 +95,12 @@ package collab.fm.client.util {
 
 		public static const EDIT_CONS_GRID_NAME: String = s("edit.cons.grid.name");
 		public static const EDIT_CONS: String = s("edit.cons");
+		
+		public static const EDIT_TAB_BASIC: String = s("edit.tab.basic");
+		public static const EDIT_TAB_NAME: String = s("edit.tab.name");
+		public static const EDIT_TAB_DES: String = s("edit.tab.des");
+		public static const EDIT_TAB_REFINE: String = s("edit.tab.refine");
+		public static const EDIT_TAB_CONS: String = s("edit.tab.cons");
 
 		public static const OP_LIST_TITLE: String = s("op.list.title");
 

@@ -1,9 +1,10 @@
 package collab.fm.client.data {
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
-
+	
 	import mx.collections.IViewCursor;
 	import mx.collections.XMLListCollection;
+	import mx.controls.Alert;
 
 	// The data of current feature model
 	public class FeatureModel implements IOperationListener {
@@ -83,6 +84,10 @@ package collab.fm.client.data {
 		// For details about operations, see server.bean.operation package.
 		private function onOperationCommit(evt: OperationCommitEvent): void {
 			for each (var op: Object in evt.operations) {
+				var opModel: String = op["modelId"];
+				if (ModelCollection.instance.currentModelId != int(opModel)) {
+					return;
+				}
 				var opName: String = op["name"];
 				if (evt.type == OperationCommitEvent.COMMIT_SUCCESS) {
 					op["local"] = true;

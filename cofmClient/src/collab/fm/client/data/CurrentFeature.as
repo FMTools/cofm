@@ -5,6 +5,7 @@ package collab.fm.client.data {
 	import mx.collections.ArrayCollection;
 	import mx.collections.Sort;
 	import mx.collections.SortField;
+	import mx.collections.XMLListCollection;
 
 	public class CurrentFeature implements IOperationListener {
 		private static var _instance: CurrentFeature = new CurrentFeature();
@@ -31,7 +32,8 @@ package collab.fm.client.data {
 		[Bindable]
 		public var binaryConstraints: ArrayCollection = new ArrayCollection();
 
-		; // votes of the feature
+		[Bindable]
+		public var basicInfo: XMLListCollection = new XMLListCollection();
 
 		public static function get instance(): CurrentFeature {
 			return _instance;
@@ -58,12 +60,17 @@ package collab.fm.client.data {
 			id = evt.id;
 			_feature = XML(FeatureModel.instance.features.source.(@id==String(evt.id))[0]);
 
+			basicInfo.removeAll();
+
 			updateVotes(); // votes to this feature
 			updateNames();
 			updateDescriptions();
 			updateOptionality();
 			updateRefinements();
 			updateBinaryConstraints();
+
+			// update basic info
+			ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
 		}
 
 		private function updateVotes(): void {
@@ -91,12 +98,34 @@ package collab.fm.client.data {
 			names.removeAll();
 			// Construct the "names" array for Feature_Name_DataGrid.
 			// Columns: name, supporters (with percentage), opponents.
+			var primary: String;
+			var rate: Number = -1;
 			for each (var _name: Object in _feature.names.name) {
+				var y: int = XMLList(_name.yes.user).length();
+				var n: int = XMLList(_name.no.user).length();
 				names.addItem({
 						"name": _name.@val,
-						"supporters": XMLList(_name.yes.user).length(),
-						"opponents": XMLList(_name.no.user).length()
+						"supporters": y,
+						"opponents": n
 					});
+				// update primary name (max supporting rate)
+				var r: Number = y / (y+n);
+				if (rate < r) {
+					rate = r;
+					primary = _name.@val;
+				}
+			}
+			var strRate: String = (rate * 100).toPrecision(3) + "%";
+			// remove previous name from basic info
+			var key: String = "name";
+			var previous: XMLList = this.basicInfo.source.(@key==key);
+			var xml: XML = <attr key={key} type={Cst.ATTR_TYPE_STRING} label="Name:" value={primary} rate={strRate}/>;
+			if (previous.length() <= 0) {
+				this.basicInfo.addItem(xml);
+			} else {
+				var pos: int = this.basicInfo.getItemIndex(previous[0]);
+				this.basicInfo.removeItemAt(pos);
+				this.basicInfo.addItemAt(xml, pos);
 			}
 		}
 
@@ -124,6 +153,33 @@ package collab.fm.client.data {
 			}
 			ModelUtil.sortOnRating(des, "y", "n", UserList.instance.myId);
 			descriptions.source = des;
+
+			// update basic info
+			var key: String = "des";
+			if (des.length <= 0) {
+				var pre: XMLList = this.basicInfo.source.(@key==key);
+				if (pre.length() > 0) {
+					var p: int = this.basicInfo.getItemIndex(pre[0]);
+					this.basicInfo.removeItemAt(p);
+				}
+				return;
+			}
+			var primary: String = des[0].des;
+			var y: int = int(des[0].supporters);
+			var n: int = int(des[0].opponents);
+			var rate: Number = y / (y + n);
+			var strRate: String = (rate * 100).toPrecision(3) + "%";
+			// remove previous name from basic info
+
+			var previous: XMLList = this.basicInfo.source.(@key==key);
+			var xml: XML = <attr key={key} type={Cst.ATTR_TYPE_TEXT} label="Description:" value={primary} rate={strRate}/>;
+			if (previous.length() <= 0) {
+				this.basicInfo.addItem(xml);
+			} else {
+				var pos: int = this.basicInfo.getItemIndex(previous[0]);
+				this.basicInfo.removeItemAt(pos);
+				this.basicInfo.addItemAt(xml, pos);
+			}
 		}
 
 		private function updateOptionality(): void {
@@ -222,12 +278,16 @@ package collab.fm.client.data {
 		public function handleAddDescription(op:Object): void {
 			if (op["featureId"] == String(id)) {
 				this.updateDescriptions();
+				ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(
+					ClientEvent.BASIC_INFO_UPDATED));
 			}
 		}
 
 		public function handleAddName(op:Object): void {
 			if (op["featureId"] == String(id)) {
 				this.updateNames();
+				ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(
+					ClientEvent.BASIC_INFO_UPDATED));
 			}
 		}
 

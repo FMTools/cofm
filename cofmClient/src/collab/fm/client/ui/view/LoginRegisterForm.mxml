@@ -14,7 +14,7 @@
 		</mx:FormItem>
 		<mx:FormItem>
 			<mx:Button label="{RS.BTN_OK}" click="doLogin()" />
-			<mx:FormItem direction="horizontal">
+			<mx:FormItem>
 				<mx:Label text="{RS.LOGIN_GO_REGISTER}" 
 					 paddingRight="0"/>
 				<mx:LinkButton label="{RS.LOGIN_REGISTER_BTN}" click="showLogin=false;"
