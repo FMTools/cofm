@@ -5,6 +5,7 @@ import org.apache.log4j.Logger;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
+import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.FilterException;
 
 public class ProtocolFilter extends Filter {
@@ -24,9 +25,10 @@ public class ProtocolFilter extends Filter {
 			throws FilterException {
 		// Ensure the source information has been added to responses
 		try {
-			// Always response
+			// No response from Actions/Filters means success.
 			if (rg.getBack() == null) {
 				rg.setBack(new Response());
+				rg.getBack().setName(Resources.RSP_SUCCESS);
 			}
 			writeSource(req, rg.getBack());
 			writeSource(req, rg.getBroadcast());
