@@ -24,6 +24,10 @@ public class ProtocolFilter extends Filter {
 			throws FilterException {
 		// Ensure the source information has been added to responses
 		try {
+			// Always response
+			if (rg.getBack() == null) {
+				rg.setBack(new Response());
+			}
 			writeSource(req, rg.getBack());
 			writeSource(req, rg.getBroadcast());
 			writeSource(req, rg.getPeer());
