@@ -65,6 +65,7 @@ public class Server {
 			InetSocketAddress addr = new InetSocketAddress(PORT);
 			theServer.bind(addr, new EventHandler());
 			logger.info("Server started at " + addr.toString() + ".");
+			logger.info("[fm] Begin");
 		} catch (IOException e) {
 			logger.fatal("Couldn't start server @ port " + PORT, e);
 			theServer.unbindAll();
