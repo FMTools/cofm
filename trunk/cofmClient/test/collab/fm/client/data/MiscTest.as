@@ -91,6 +91,11 @@ package collab.fm.client.data {
 				</feature>;
 			delete root2.no.user.(text().toString() == "200")[0];
 			trace(root2.toXMLString());
+
+			// Try to delete a non-existed node.
+			var root3: XML = <node> <a id="1"/> <a id="2"/> </node>;
+			delete root3.a.(@id=="3")[0];
+			trace (root3.toXMLString());
 		}
 	}
 }

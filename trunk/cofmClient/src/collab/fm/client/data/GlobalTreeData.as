@@ -3,6 +3,8 @@ package collab.fm.client.data {
 
 	import flash.utils.Dictionary;
 
+	import mx.controls.Alert;
+
 	public class GlobalTreeData extends TreeData implements IOperationListener {
 		private static var _instance: GlobalTreeData = new GlobalTreeData();
 
@@ -73,25 +75,58 @@ package collab.fm.client.data {
 						this.xml.addItem(child);
 					}
 				}
-				ModelUtil.deleteRootFeatureById(this.xml, op["featureId"]);
-				ModelUtil.deleteNonRootFeatureById(this.xml, op["featureId"]);
+				ModelUtil.removeRootFeatureById(this.xml, op["featureId"]);
+				ModelUtil.removeNonRootFeatureById(this.xml, op["featureId"]);
 			}
 		}
 
 		public function handleCreateBinaryRelationship(op:Object): void {
 			// The tree only deals with refinement relationships.
 			if (op["type"] == Cst.BIN_REL_REFINES) {
-				// if vote, do nothing now.
+				var left: String = String(op["leftFeatureId"]);
+				var right: String = String(op["rightFeatureId"]);
+				var parents1: XMLList = ModelUtil.getRootFeatureById(this.xml.source, left);
+				var parents2: XMLList = ModelUtil.getNonRootFeatureById(this.xml.source, left);
+				var children1: XMLList = ModelUtil.getRootFeatureById(this.xml.source, right);
+				var children2: XMLList = ModelUtil.getNonRootFeatureById(this.xml.source, right);
+
+				if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
+					var childCopy: XML = null;
+					if (children1.length() > 0) {
+						childCopy = children1[0];
+					} else if (children2.length() > 0) {
+						childCopy = children2[0];
+					}
+					if (childCopy == null) {
+						//SHOULD NEVER REACH HERE!!
+
+						Alert.show(
+							"Something bad has happend!!\n" +
+							"If you are a user of this tool, please click the 'Feedback' button and " +
+							"copy and send the following message to the developer (sorry for any inconvenience):\n\t" +
+							"BUG: we should never reach here (in GlobalTreeData.as, function handleCreateBinaryRelationship).",
+							"Oh no!!!");
+						return;
+					}
+					// First, remove the children from its parents.
+					ModelUtil.removeChildFeatureFromAllParents(parents1, right);
+					ModelUtil.removeChildFeatureFromAllParents(parents2, right);
+
+					// If there's no feature with "rightId" here, then the children have no other parents,
+					// and they should be set as root features.
+					var rightFeature1: XMLList = ModelUtil.getRootFeatureById(this.xml.source, right);
+					var rightFeature2: XMLList = ModelUtil.getNonRootFeatureById(this.xml.source, right);
+					if (rightFeature1.length() <= 0 && rightFeature2.length() <= 0) {
+						// Set childCopy as the root
+						this.xml.addItem(childCopy.copy());
+					}
+				}
+
 				if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
 					// if create, then:
 					//		if the child has already had another parent, COPY the child to the parent in the op.
 					//		else, MOVE the child to the parent in op (copy then delete).
-					var left: String = String(op["leftFeatureId"]);
-					var right: String = String(op["rightFeatureId"]);
-					var parents1: XMLList = ModelUtil.getRootFeatureById(this.xml.source, left);
-					var parents2: XMLList = ModelUtil.getNonRootFeatureById(this.xml.source, left);
-					var children1: XMLList = ModelUtil.getRootFeatureById(this.xml.source, right);
-					var children2: XMLList = ModelUtil.getNonRootFeatureById(this.xml.source, right);
+
 
 					// 1. remove all children which are root features, and then copy them to parents
 					for each (var obj: Object in children1) {

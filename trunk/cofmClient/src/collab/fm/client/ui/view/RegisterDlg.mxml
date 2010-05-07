@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:v="collab.fm.client.ui.validator.*"
+	layout="absolute" width="400" height="300"
+	title="{RS.REG_HEADING}"
+	showCloseButton="true"
+	close="onClose();">
+
+	<!-- Register Form -->
+	<mx:Form id="regForm">
+		<mx:FormItem label="{RS.REG_NAME}" required="true">
+			<mx:TextInput id="regName" />
+		</mx:FormItem>
+		<mx:FormItem label="{RS.REG_PWD}" required="true">
+			<mx:TextInput id="regPwd" displayAsPassword="true" />
+		</mx:FormItem>
+		<mx:FormItem label="{RS.REG_PWD_CONFIRM}" required="true">
+			<mx:TextInput id="regPwd2" displayAsPassword="true" />
+		</mx:FormItem>
+		<mx:FormItem direction="horizontal">
+			<mx:Button label="{RS.BTN_OK}" click="doRegister();" />
+			<mx:Button label="{RS.BTN_CANCEL}" click="onClose();" />
+		</mx:FormItem>
+	</mx:Form>
+	
+	<!-- Validators -->
+	<mx:StringValidator id="rnValidator" source="{regName}" property="text" minLength="3" maxLength="12" />
+	<mx:StringValidator id="pValidator" source="{regPwd}" property="text" minLength="1" />
+	<v:PasswordConfirmValidator id="pcValidator" pwd="{regPwd.text}" source="{regPwd2}" property="text" />
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.utils.StringUtil;
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
+			import mx.events.ValidationResultEvent;
+			import collab.fm.client.util.RS;
+			import collab.fm.client.command.*;
+			import collab.fm.client.event.*;
+			import collab.fm.client.data.*;
+			
+			private function onClose(): void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function validateRegisterForm(): Boolean {
+				var vre: Array = new Array();
+				vre.push(pcValidator.validate());
+				vre.push(rnValidator.validate());
+				vre.push(pValidator.validate());
+				for each (var evt: Object in vre) {
+					if (ValidationResultEvent(evt).type == ValidationResultEvent.INVALID) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			private function doRegister(): void {
+				if (validateRegisterForm()) {
+				    new RegisterCommand(regName.text, regPwd.text).execute();
+				    onClose();
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	
+</mx:TitleWindow>

@@ -6,7 +6,6 @@ package collab.fm.client.command {
 	import collab.fm.client.util.*;
 
 	public class LoginCommand implements IDurableCommand {
-		private var _id: int;
 		private var _name: String;
 		private var _pwd: String;
 		private var _cmdId: int;
@@ -49,7 +48,7 @@ package collab.fm.client.command {
 			if (Cst.RSP_SUCCESS == (data[Cst.FIELD_RSP_NAME] as String)
 				&& Cst.REQ_LOGIN == data[Cst.FIELD_RSP_SOURCE_NAME]) {
 
-				_id = int(data[Cst.FIELD_RSP_SOURCE_USER_ID]);
+				var _id: int = int(data[Cst.FIELD_RSP_SOURCE_USER_ID]);
 				CommandBuffer.instance.removeCommand(_cmdId);
 				ClientEvtDispatcher.instance().dispatchEvent(
 					new LoginEvent(LoginEvent.SUCCESS, _id, _name));

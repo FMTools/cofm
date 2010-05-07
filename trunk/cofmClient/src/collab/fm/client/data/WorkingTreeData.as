@@ -55,7 +55,6 @@ package collab.fm.client.data {
 		}
 
 		public function handleCreateFeature(op:Object): void {
-			// TODO: handle deletion
 			// if create, add to the root (a creating must assign the root explicitly through the UI.)
 			if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
 				this.xml.addItem(<feature id={op["featureId"]}
@@ -82,8 +81,8 @@ package collab.fm.client.data {
 					}
 				}
 
-				ModelUtil.deleteRootFeatureById(this.xml, op["featureId"]);
-				ModelUtil.deleteNonRootFeatureById(this.xml, op["featureId"]);
+				ModelUtil.removeRootFeatureById(this.xml, op["featureId"]);
+				ModelUtil.removeNonRootFeatureById(this.xml, op["featureId"]);
 			}
 
 			// TODO: handle vote (controversy)
@@ -92,15 +91,44 @@ package collab.fm.client.data {
 		public function handleCreateBinaryRelationship(op:Object): void {
 			// only handles refinements 
 			if (op["type"] == Cst.BIN_REL_REFINES) {
-				//TODO: handle voting
+				var left: String = String(op["leftFeatureId"]);
+				var right: String = String(op["rightFeatureId"]);
+				var parents1: XMLList = ModelUtil.getRootFeatureById(this.xml.source, left);
+				var parents2: XMLList = ModelUtil.getNonRootFeatureById(this.xml.source, left);
+				var children1: XMLList = ModelUtil.getRootFeatureById(this.xml.source, right);
+				var children2: XMLList = ModelUtil.getNonRootFeatureById(this.xml.source, right);
+
+
+				// If voting, and I'm an opponent or the refinement should be deleted.
+				if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == true ||
+					FeatureModel.instance.isBinaryRelationshipOpponent(op["relationshipId"])) {
+					var childCopy: XML = null;
+					if (children1.length() > 0) {
+						childCopy = children1[0];
+					} else if (children2.length() > 0) {
+						childCopy = children2[0];
+					}
+					if (childCopy == null) {
+						// This child does not belong to my working view (voted NO by me), then 
+						// nothing changes.
+						return;
+					}
+					// First, remove the children from its parents.
+					ModelUtil.removeChildFeatureFromAllParents(parents1, right);
+					ModelUtil.removeChildFeatureFromAllParents(parents2, right);
+
+					// If there's no feature with "rightId" here, then the children have no other parents,
+					// and they should be set as root features.
+					var rightFeature1: XMLList = ModelUtil.getRootFeatureById(this.xml.source, right);
+					var rightFeature2: XMLList = ModelUtil.getNonRootFeatureById(this.xml.source, right);
+					if (rightFeature1.length() <= 0 && rightFeature2.length() <= 0) {
+						// Set childCopy as the root
+						this.xml.addItem(childCopy.copy());
+					}
+				}
+
 				// if create
 				if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
-					var left: String = String(op["leftFeatureId"]);
-					var right: String = String(op["rightFeatureId"]);
-					var parents1: XMLList = ModelUtil.getRootFeatureById(this.xml.source, left);
-					var parents2: XMLList = ModelUtil.getNonRootFeatureById(this.xml.source, left);
-					var children1: XMLList = ModelUtil.getRootFeatureById(this.xml.source, right);
-					var children2: XMLList = ModelUtil.getNonRootFeatureById(this.xml.source, right);
 
 					// 1. remove all children which are root features, and then copy them to parents
 					for each (var obj: Object in children1) {

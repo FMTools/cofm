@@ -3,6 +3,7 @@ package collab.fm.client.event {
 
 	public class LoginEvent extends Event {
 		public static const SUCCESS: String = "loginSuccess";
+		public static const LOGOUT: String = "loggedOut";
 
 		public var myId: int;
 		public var myName: String;

@@ -1,8 +1,8 @@
 package collab.fm.client.util {
+	import collab.fm.client.data.*;
+
 	import mx.collections.IViewCursor;
 	import mx.collections.XMLListCollection;
-
-	import collab.fm.client.data.*;
 
 	public class ModelUtil {
 
@@ -53,7 +53,7 @@ package collab.fm.client.util {
 			return source..feature.(@id==id);
 		}
 
-		public static function deleteRootFeatureById(col: XMLListCollection, id: String): void {
+		public static function removeRootFeatureById(col: XMLListCollection, id: String): void {
 			for (var cursor: IViewCursor = col.createCursor(); !cursor.afterLast; ) {
 				if (cursor.current.@id == id) {
 					cursor.remove();
@@ -63,7 +63,7 @@ package collab.fm.client.util {
 			}
 		}
 
-		public static function deleteNonRootFeatureById(col: XMLListCollection, id: String): void {
+		public static function removeNonRootFeatureById(col: XMLListCollection, id: String): void {
 			while (XMLList(col.source..feature.(@id==id)).length() > 0) {
 				delete col.source..feature.(@id==id)[0];
 			}
@@ -78,6 +78,16 @@ package collab.fm.client.util {
 		public static function addChildFeatureToAllParents(parents: XMLList, child: XML, childId: String): void {
 			for each (var obj: Object in parents) {
 				addChildFeatureById(XML(obj), child, childId);
+			}
+		}
+
+		public static function removeChildFeatureById(parent: XML, childId: String): void {
+			delete parent.children().(@id==childId)[0];
+		}
+
+		public static function removeChildFeatureFromAllParents(parents: XMLList, childId: String): void {
+			for each (var obj: Object in parents) {
+				removeChildFeatureById(XML(obj), childId);
 			}
 		}
 

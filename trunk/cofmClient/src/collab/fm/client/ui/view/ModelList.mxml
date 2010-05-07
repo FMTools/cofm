@@ -13,6 +13,7 @@
 	     
 	     And because we need to show contributors' name, so we also need a "listuser" command in ModelList
     -->
+    <!-- 2010.05.06: Remove "mylist" in this version. 
     <mx:TileList id="mine" width="100%" height="200" dataProvider="{ModelCollection.instance.my}"
     	 columnCount="4" columnWidth="200"
     	 includeInLayout="{UserList.instance.isLogin}" visible="{UserList.instance.isLogin}">
@@ -57,7 +58,7 @@
     		</mx:Component>
     	</mx:itemRenderer>
     </mx:TileList>
-    
+    -->
     <view:ModelSearchAndCreateForm id="msac"/>
     
     <mx:Label id="summary"/>
@@ -73,7 +74,8 @@
 						<mx:HBox>
 							<mx:Label text="{XML(data).@name}" fontWeight="bold" fontSize="12"/>
 							<mx:Button label="{RS.BTN_ENTER}" 
-								id="enterOther" click="selectModel(int(XML(data).@id));" />	
+								id="enterOther" click="selectModel(int(XML(data).@id));"
+								includeInLayout="{UserList.instance.isLogin}" visible="{UserList.instance.isLogin}" />	
 						</mx:HBox>
 						<mx:HBox verticalAlign="top">
 							<mx:Label text="{RS.M_LIST_USERS}"/>
@@ -101,23 +103,11 @@
     						if (total > MAX_DISPLAYED_USER_COUNT) {
     							userAppender.text = "...(and " + (total-MAX_DISPLAYED_USER_COUNT) + " more)";
     						}
-    						ClientEvtDispatcher.instance().addEventListener(
-    							LoginEvent.SUCCESS, onLogin);
-    							
-    						UIUtil.show(enterOther, false);
     					}
     					
     					private function selectModel(modelId: int): void {
     						ClientEvtDispatcher.instance().dispatchEvent(
     							new ModelSelectEvent(ModelSelectEvent.SELECTED, modelId));
-    					}
-    					
-    					private function onLogin(evt: LoginEvent): void {
-    						if (data != null && int(data.@id) >= 0) {
-    							UIUtil.show(enterOther, true);
-    						} else {
-    							UIUtil.show(enterOther, false);
-    						}
     					}
     					
     				]]>
