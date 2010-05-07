@@ -4,6 +4,9 @@ package collab.fm.client.util {
 	[ResourceBundle("ui")]
 	public class RS {
 
+		public static const BTN_LOGIN: String = s("btn.login");
+		public static const BTN_LOGOUT: String = s("btn.logout");
+		public static const BTN_REGISTER: String = s("btn.register");
 		public static const BTN_BACK_TO_HOME: String = s("btn.backhome");
 		public static const BTN_FEEDBACK: String = s("btn.feedback");
 		public static const BTN_ADD: String =s("btn.add");
@@ -29,7 +32,7 @@ package collab.fm.client.util {
 		public static const M_LIST_USERS: String = s("mlist.users");
 		public static const M_LIST_EMPTY_LIST_INFO: String = s("mlist.empty");
 		public static const M_LIST_SUMMARY: String = "mlist.summary";
-		
+
 		public static const M_LIST_CURRENT_NAME: String = s("mlist.current.name");
 
 		public static const LOGIN_HEADING: String = s("login.heading");
@@ -98,7 +101,7 @@ package collab.fm.client.util {
 
 		public static const EDIT_CONS_GRID_NAME: String = s("edit.cons.grid.name");
 		public static const EDIT_CONS: String = s("edit.cons");
-		
+
 		public static const EDIT_TAB_BASIC: String = s("edit.tab.basic");
 		public static const EDIT_TAB_NAME: String = s("edit.tab.name");
 		public static const EDIT_TAB_DES: String = s("edit.tab.des");

@@ -1,10 +1,9 @@
 package collab.fm.client.data {
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
-	
+
 	import mx.collections.IViewCursor;
 	import mx.collections.XMLListCollection;
-	import mx.controls.Alert;
 
 	// The data of current feature model
 	public class FeatureModel implements IOperationListener {
@@ -75,6 +74,21 @@ package collab.fm.client.data {
 			return rs.length() > 0;
 			// TODO: extend if there are other types of relationships (group or complex)
 		}
+
+		public function isBinaryRelationshipOpponent(relationshipId: String): Boolean {
+			var me: String = UserList.instance.myId as String;
+			return findVoter(this.binaries, relationshipId, me, false);
+		}
+
+		private function findVoter(target: XMLListCollection, id: String, voter: String, yes: Boolean): Boolean {
+			if (yes) {
+				return XMLList(target.source.(@id==id).yes.user.(text().toString()==voter)
+					).length() > 0;
+			}
+			return XMLList(target.source.(@id==id).no.user.(text().toString()==voter)
+				).length() > 0;
+		}
+
 
 		public function resetAll(): void {
 			features.source = new XMLList(_defaultXml.feature);

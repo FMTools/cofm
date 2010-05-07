@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="400" height="200"
+    title="{RS.LOGIN_HEADING}"
+	showCloseButton="true"
+	close="onClose();">
+	
+	<!-- Login Form -->
+	<mx:Form id="loginForm">
+		<mx:FormItem label="{RS.LOGIN_INPUT_NAME}" required="true">
+			<mx:TextInput id="uName" />
+		</mx:FormItem>
+		<mx:FormItem label="{RS.LOGIN_INPUT_PWD}" required="true">
+			<mx:TextInput id="uPwd" displayAsPassword="true" />
+		</mx:FormItem>
+		<mx:FormItem direction="horizontal">
+			<mx:Button label="{RS.BTN_OK}" click="doLogin()" />
+			<mx:Button label="{RS.BTN_CANCEL}" click="onClose();" />
+		</mx:FormItem>
+	</mx:Form>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.utils.StringUtil;
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			import collab.fm.client.command.*;
+			import collab.fm.client.util.*;
+			import collab.fm.client.data.*;
+			
+			private function onClose(): void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function validateLoginForm(): Boolean {
+				return uName.text.length > 0 && uPwd.text.length > 0;
+			}
+			
+			private function doLogin(): void {
+				if (validateLoginForm()) {
+					new LoginCommand(uName.text, uPwd.text).execute();
+					onClose();
+				}
+			}
+			
+		]]>
+	</mx:Script>
+</mx:TitleWindow>

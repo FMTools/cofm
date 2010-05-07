@@ -6,7 +6,6 @@
 	
 	<v:ConnectDlg id="conDlg" width="300" height="150"/>
 	<v:ModelList id="mdList" includeInLayout="false" visible="false" width="100%" height="100%"/>
-	<v:LoginRegisterForm id="logReg" width="300" height="200" includeInLayout="false" visible="false" />
 
 	 <mx:Script>
 	 	<![CDATA[
@@ -31,7 +30,6 @@
 	 		private function switchToHomePage(): void {
 	 			UIUtil.show(conDlg, false);
 	 			UIUtil.show(mdList, true);
-	 			UIUtil.show(logReg, true);
 	 			isConnected = true;
 	 		}
 	 		
@@ -55,7 +53,6 @@
 	 		}
 	 		
 	 		private function onLogined(evt: LoginEvent): void {
-	 			UIUtil.show(logReg, false);
 	 		}
 	 	]]>
 	 </mx:Script>
