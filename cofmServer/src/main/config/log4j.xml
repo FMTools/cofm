@@ -8,7 +8,7 @@
     		<param name="Threshold" value="DEBUG"/>
     		<param name="File" value="log/Debug/server.log"/>
     		<layout class="org.apache.log4j.PatternLayout">
-    			<param name="ConversionPattern" value="[%-25d %c{3} %-5p] %m %n"/>
+    			<param name="ConversionPattern" value="%-25d %c{3} %-5p %m %n"/>
     		</layout>
     </appender>   
     
@@ -18,7 +18,7 @@
     		<param name="Threshold" value="INFO"/>
     		<param name="File" value="log/fm/progress.log"/>
     		<layout class="org.apache.log4j.PatternLayout">
-    			<param name="ConversionPattern" value="[%-25d %-5p] %m %n"/>
+    			<param name="ConversionPattern" value="%-25d %-5p %m %n"/>
     		</layout>
     		<filter class="collab.fm.server.util.FeatureModelLogFilter">
     			<param name="Prefix" value="[fm]"/>
