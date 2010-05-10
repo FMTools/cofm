@@ -4,8 +4,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
+import collab.fm.server.util.LogUtil;
+
 public class Relationship extends VersionedEntity implements Votable{
-	//modified on mac :)
+	
+	private static Logger logger = Logger.getLogger(Relationship.class);
+	
 	protected Long id;
 	protected Model model;
 	
@@ -23,7 +29,7 @@ public class Relationship extends VersionedEntity implements Votable{
 	}
 
 	public String toString() {
-		return "vote=" + getExistence().toString() + " id=" + id + " type=" + type;
+		return "Relationship (type=" + type + ")";
 	}
 	
 	public Long getId() {
@@ -69,7 +75,16 @@ public class Relationship extends VersionedEntity implements Votable{
 	}
 	
 	public void vote(boolean yes, Long userid) {
+		vote(yes, userid, -1L);
+	}
+	
+	public void vote(boolean yes, Long userid, Long modelId) {
 		this.getExistence().vote(yes, userid);		
+		if (modelId > 0) {
+			logger.info(LogUtil.logOp(userid, LogUtil.boolToVote(yes),
+					LogUtil.relationToStr(LogUtil.OBJ_RELATION,
+							modelId, id, this)));
+		}
 	}
 	
 	public String getType() {
@@ -107,4 +122,6 @@ public class Relationship extends VersionedEntity implements Votable{
 	protected void reset() {
 		this.getFeaturesInternal().clear();
 	}
+
+	
 }

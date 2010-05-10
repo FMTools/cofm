@@ -7,7 +7,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 
-public class Vote {
+public class Vote implements Votable {
 	
 	static Logger logger = Logger.getLogger(Vote.class);
 	
@@ -76,6 +76,14 @@ public class Vote {
 
 	@Override
 	public String toString() {
-		return "(" + getSupportersInternal().toString() + "/" + getOpponentsInternal().toString() + ")"; 
+		return "(" + getSupportersInternal().size() + "/" + getOpponentsInternal().size() + ")"; 
+	}
+
+	public int getOpponentNum() {
+		return this.getOpponents().size();
+	}
+
+	public int getSupporterNum() {
+		return this.getSupporters().size();
 	}
 }

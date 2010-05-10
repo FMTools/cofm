@@ -17,7 +17,7 @@ public class BinaryRelationship extends Relationship {
 	}
 	
 	public String toString() {
-		return super.toString() + " left=" + leftFeatureId + " right=" + rightFeatureId;
+		return "Binary(" + type + ", " + leftFeatureId + ", " + rightFeatureId + ")";
 	}
 
 	public boolean equals(Object v) {

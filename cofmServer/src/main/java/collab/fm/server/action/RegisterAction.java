@@ -13,6 +13,7 @@ import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.persistence.*;
 import collab.fm.server.util.DaoUtil;
+import collab.fm.server.util.LogUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.ActionException;
 import collab.fm.server.util.exception.BeanPersistenceException;
@@ -47,6 +48,9 @@ public class RegisterAction extends Action {
 				rsp.setRequesterId(u.getId());
 				rsp.setMessage(Resources.MSG_REGISTER);
 				rsp.setName(Resources.RSP_SUCCESS);
+				
+				logger.info(LogUtil.logOp(u.getId(), LogUtil.OP_REGISTER, u.getName()));
+				
 			} else {
 				rsp.setMessage(Resources.MSG_ERROR_USER_EXISTED);
 				rsp.setName(Resources.RSP_ERROR);

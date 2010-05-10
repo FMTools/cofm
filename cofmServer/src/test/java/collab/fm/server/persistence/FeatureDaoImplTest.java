@@ -44,9 +44,9 @@ public class FeatureDaoImplTest {
 		Feature feature = new Feature();
 		feature.vote(true, 1L);
 		feature.voteOptionality(false, 1L);
-		feature.voteName("中文1", true, 3L);
-		feature.voteDescription("汉字，，，，，，，", true, 4L);
-		feature.voteName("中文1", false, 4L);
+		feature.voteName("中文1", true, 3L, m.getId());
+		feature.voteDescription("汉字，，，，，，，", true, 4L, m.getId());
+		feature.voteName("中文1", false, 4L, m.getId());
 		m.addFeature(feature);
 		try {
 			feature = dao.save(feature);
@@ -67,9 +67,9 @@ public class FeatureDaoImplTest {
 		Feature feature = new Feature();
 		feature.vote(true, 1L);
 		feature.voteOptionality(false, 1L);
-		feature.voteName("Dragon", true, 3L);
-		feature.voteDescription("An award from XXX", true, 4L);
-		feature.voteName("Dragon", false, 4L);
+		feature.voteName("Dragon", true, 3L, m.getId());
+		feature.voteDescription("An award from XXX", true, 4L, m.getId());
+		feature.voteName("Dragon", false, 4L, m.getId());
 		m.addFeature(feature);
 		try {
 			feature = dao.save(feature);
@@ -91,10 +91,10 @@ public class FeatureDaoImplTest {
 		feature.vote(false, 2L);
 		feature.vote(true, 1L);
 		feature.voteOptionality(false, 11L);
-		feature.voteName("Firefox", true, 333L);
-		feature.voteDescription("A software", true, 14L);
-		feature.voteName("Mozilla", true, 4L);
-		feature.voteName("Firefox", false, 11L);
+		feature.voteName("Firefox", true, 333L, m.getId());
+		feature.voteDescription("A software", true, 14L, m.getId());
+		feature.voteName("Mozilla", true, 4L, m.getId());
+		feature.voteName("Firefox", false, 11L, m.getId());
 		m.addFeature(feature);
 		try {
 			feature = dao.save(feature);
@@ -157,11 +157,11 @@ public class FeatureDaoImplTest {
 		try {
 			
 			Feature feature = new Feature();
-			feature.voteName("QueryMe", true, 1L);
+			feature.voteName("QueryMe", true, 1L, m.getId());
 			
 			
 			Feature another = new Feature();
-			another.voteName("Another", true, 3L);
+			another.voteName("Another", true, 3L, m.getId());
 			
 			m.addFeature(feature);
 			m.addFeature(another);
@@ -183,11 +183,11 @@ public class FeatureDaoImplTest {
 		try {
 			
 			Feature feature = new Feature();
-			feature.voteName("MarkWilliams", true, 1L);
+			feature.voteName("MarkWilliams", true, 1L, m.getId());
 			
 			
 			Feature another = new Feature();
-			another.voteName("MarkAllen", true, 3L);
+			another.voteName("MarkAllen", true, 3L, m.getId());
 			
 			m.addFeature(feature);
 			m.addFeature(another);
@@ -219,8 +219,8 @@ public class FeatureDaoImplTest {
 		Feature feature = new Feature();
 		feature.vote(true, 10L);
 		feature.voteOptionality(false, 10L);
-		feature.voteName("No-This-Name", true, 3L);
-		feature.voteDescription("Very bad thing happens if you see this", true, 4L);
+		feature.voteName("No-This-Name", true, 3L, m.getId());
+		feature.voteDescription("Very bad thing happens if you see this", true, 4L, m.getId());
 		m.addFeature(feature);
 		try {
 			feature = dao.save(feature);
@@ -244,15 +244,15 @@ public class FeatureDaoImplTest {
 		Feature feature = new Feature();
 		feature.vote(true, 10L);
 		feature.voteOptionality(false, 10L);
-		feature.voteName("No-This-Name-Please", true, 3L);
-		feature.voteName("You-should-see-me", true, 3L);
-		feature.voteDescription("You should see me as well!!", true, 4L);
+		feature.voteName("No-This-Name-Please", true, 3L, m.getId());
+		feature.voteName("You-should-see-me", true, 3L, m.getId());
+		feature.voteDescription("You should see me as well!!", true, 4L, m.getId());
 		m.addFeature(feature);
 		try {
 			feature = dao.save(feature);
 			DaoUtil.getModelDao().save(m);
 			
-			feature.voteName("No-This-Name-Please", false, 3L);
+			feature.voteName("No-This-Name-Please", false, 3L, m.getId());
 			dao.save(feature);
 		} catch (BeanPersistenceException e) {
 			logger.error(e);

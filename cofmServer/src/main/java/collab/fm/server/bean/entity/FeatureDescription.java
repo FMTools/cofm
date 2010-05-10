@@ -2,6 +2,7 @@ package collab.fm.server.bean.entity;
 
 import collab.fm.server.bean.transfer.VotableString;
 import collab.fm.server.util.BeanUtil;
+import collab.fm.server.util.LogUtil;
 
 public class FeatureDescription extends VersionedEntity implements Votable {
 
@@ -35,7 +36,7 @@ public class FeatureDescription extends VersionedEntity implements Votable {
 	}
 	
 	public String toString() {
-		return value + this.getVote().toString();
+		return "Description '" + LogUtil.truncText(value) + "'";
 	}
 	
 	public void vote(boolean yes, Long userid) {

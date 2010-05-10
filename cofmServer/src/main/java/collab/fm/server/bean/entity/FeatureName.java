@@ -35,7 +35,7 @@ public class FeatureName extends VersionedEntity implements Votable {
 	}
 	
 	public String toString() {
-		return name + this.getVote().toString();
+		return "Name '" + name + "'";
 	}
 	
 	public boolean equals(Object v) {

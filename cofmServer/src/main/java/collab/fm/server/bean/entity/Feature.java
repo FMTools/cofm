@@ -2,12 +2,20 @@ package collab.fm.server.bean.entity;
 
 import java.util.*;
 
+import org.apache.log4j.Logger;
+
 import collab.fm.server.bean.transfer.Feature2;
 import collab.fm.server.bean.transfer.VotableString;
 import collab.fm.server.util.BeanUtil;
+import collab.fm.server.util.LogUtil;
 
+//NOTE: the vote... methods have two versions:
+// - with modelId: call this version for logging modeling progress.
+// - without modelId: no logging (suitable for propagated votes).
 
 public class Feature extends VersionedEntity implements Votable {
+	
+	private static Logger logger = Logger.getLogger(Feature.class);
 	
 	private Long id;
 	private Model model;
@@ -99,11 +107,29 @@ public class Feature extends VersionedEntity implements Votable {
 	}
 	
 	public void vote(boolean yes, Long userid) {
+		vote(yes, userid, -1L);
+	}
+	
+	public void vote(boolean yes, Long userid, Long modelId) {
 		this.getExistence().vote(yes, userid);
+		if (modelId > 0) {
+			logger.info(LogUtil.logOp(userid, LogUtil.boolToVote(yes), 
+					LogUtil.featureOrAttrToStr(LogUtil.OBJ_FEATURE,
+							modelId, id, "")));
+		}
 	}
 	
 	public void voteOptionality(boolean yes, Long userid) {
+		voteOptionality(yes, userid, -1L);
+	}
+	
+	public void voteOptionality(boolean yes, Long userid, Long modelId) {
 		this.getOptionality().vote(yes, userid);
+		if (modelId > 0) {
+			logger.info(LogUtil.logOp(userid, LogUtil.boolToVote(yes),
+					LogUtil.featureOrAttrToStr(LogUtil.OBJ_VALUE,
+							modelId, id, "Optionality")));
+		}
 	}
 	
 	public void voteAllName(boolean yes, Long userid) {
@@ -111,8 +137,12 @@ public class Feature extends VersionedEntity implements Votable {
 	}
 	
 	public void voteName(String name, boolean yes, Long userid) {
+		voteName(name, yes, userid, -1L);
+	}
+	
+	public void voteName(String name, boolean yes, Long userid, Long modelId) {
 		FeatureName n = new FeatureName(name);
-		voteOrAdd(this.getNamesInternal(), n, yes, userid);
+		voteOrAdd(this.getNamesInternal(), n, yes, userid, modelId);
 	}
 	
 	public void voteAllDescription(boolean yes, Long userid) {
@@ -120,20 +150,35 @@ public class Feature extends VersionedEntity implements Votable {
 	}
 	
 	public void voteDescription(String des, boolean yes, Long userid) {
+		voteDescription(des, yes, userid, -1L);
+	}
+	
+	public void voteDescription(String des, boolean yes, Long userid, Long modelId) {
 		FeatureDescription d = new FeatureDescription(des);
-		voteOrAdd(this.getDescriptionsInternal(), d, yes, userid);
+		voteOrAdd(this.getDescriptionsInternal(), d, yes, userid, modelId);
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void voteOrAdd(Set field, Votable val, boolean yes, Long userid) {
+	private void voteOrAdd(Set field, Votable val, boolean yes, Long userid, Long modelId) {
+		// Now I use "modelId" for logging purpose only.
 		// If existed then vote
 		for (Object obj: field) {
 			Votable v = (Votable)obj;
 			if (v.equals(val)) {
 				v.vote(yes, userid);
+				if (modelId > 0) {
+					logger.info(LogUtil.logOp(userid, LogUtil.boolToVote(yes),
+							LogUtil.featureOrAttrToStr(LogUtil.OBJ_VALUE,
+									modelId, id, val)));
+				}
 				// If no supporters after this vote, remove v from the Set.
 				if (v.getSupporterNum() <= 0) {
 					field.remove(v);
+					if (modelId > 0) {
+						logger.info(LogUtil.logOp(userid, LogUtil.OP_REMOVE,
+								LogUtil.featureOrAttrToStr(LogUtil.OBJ_VALUE,
+										modelId, id, val)));
+					}
 				}
 				return;
 			}
@@ -142,8 +187,14 @@ public class Feature extends VersionedEntity implements Votable {
 		if (yes) { // vote 'NO' to a nonexistent value is nonsense.
 			val.vote(true, userid);
 			field.add(val);
+			if (modelId > 0) {
+				logger.info(LogUtil.logOp(userid, LogUtil.OP_CREATE,
+						LogUtil.featureOrAttrToStr(LogUtil.OBJ_VALUE,
+								modelId, id, val)));
+			}
 		}
 	}
+	
 	
 	private void voteAll(Set<? extends Votable> field, boolean yes, Long userid) {
 		for (Votable v: field) {
@@ -190,11 +241,7 @@ public class Feature extends VersionedEntity implements Votable {
 
 	@Override
 	public String toString() {
-		return "{\n\tId: " + id + 
-			   ",\n\tExistence: " + this.getExistence().toString() +
-			   ",\n\tOptionality: " + this.getOptionality().toString() +
-			   ",\n\tName: " + this.getNamesInternal().toString() + 
-			   ",\n\tDescription:" + this.getDescriptionsInternal().toString() + "\n}";
+		return "Feature #" + id;
 	}
 
 	public Vote getExistence() {

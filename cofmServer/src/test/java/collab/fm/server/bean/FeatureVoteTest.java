@@ -29,13 +29,13 @@ public class FeatureVoteTest {
 		feat.vote(true, 1L);
 		feat.vote(false, 2L);
 		
-		feat.voteName("rootFeat", true, 1L);
-		feat.voteName("root", true, 2L);
+		feat.voteName("rootFeat", true, 1L, -1L);
+		feat.voteName("root", true, 2L, -1L);
 		
 		feat.voteOptionality(false, 1L);
 		feat.voteOptionality(true, 3L);
 		
-		feat.voteDescription("DDDDD", true, 3L);
+		feat.voteDescription("DDDDD", true, 3L, -1L);
 		try {
 		logger.info(BeanUtil.beanToJson(feat));
 		} catch (Exception e) {

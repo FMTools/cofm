@@ -17,7 +17,7 @@ public class FeatureModelLogFilter extends Filter {
 
 	@Override
 	public int decide(LoggingEvent arg0) {
-		String msg = (String) arg0.getMessage();
+		String msg = arg0.getMessage().toString();
 		
 		if (msg.startsWith(prefix)) {
 			return ACCEPT;

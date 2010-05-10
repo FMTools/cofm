@@ -35,7 +35,7 @@ public class ModelName extends VersionedEntity implements Votable {
 	}
 	
 	public String toString() {
-		return name + getVote().toString();
+		return "Model Name '" + name + "'";
 	}
 	
 	public boolean equals(Object v) {

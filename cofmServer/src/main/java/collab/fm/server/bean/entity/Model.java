@@ -6,12 +6,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
+
 import collab.fm.server.bean.transfer.Model2;
 import collab.fm.server.bean.transfer.VotableString;
+import collab.fm.server.util.LogUtil;
 
 public class Model extends VersionedEntity {
-	private Long id;
+	private static Logger logger = Logger.getLogger(Model.class);
 	
+	private Long id;
 	
 	private Set<? extends Votable> names = new HashSet<ModelName>();
 	private Set<? extends Votable> descriptions = new HashSet<ModelDescription>();
@@ -27,6 +31,10 @@ public class Model extends VersionedEntity {
 	
 	public Model(Long creator) {
 		super(creator);
+	}
+	
+	public String toString() {
+		return "Feature Model #" + id;
 	}
 	
 	public Model2 transfer() {
@@ -93,8 +101,12 @@ public class Model extends VersionedEntity {
 	}
 	
 	public void voteName(String name, boolean yes, Long userid) {
+		voteName(name, yes, userid, false);
+	} 
+	
+	public void voteName(String name, boolean yes, Long userid, boolean log) {
 		ModelName n = new ModelName(name);
-		voteOrAdd(this.getNamesInternal(), n, yes, userid);
+		voteOrAdd(this.getNamesInternal(), n, yes, userid, log);
 	}
 	
 	public void voteAllDescription(boolean yes, Long userid) {
@@ -102,20 +114,34 @@ public class Model extends VersionedEntity {
 	}
 	
 	public void voteDescription(String des, boolean yes, Long userid) {
+		voteDescription(des, yes, userid, false);
+	}
+	
+	public void voteDescription(String des, boolean yes, Long userid, boolean log) {
 		ModelDescription d = new ModelDescription(des);
-		voteOrAdd(this.getDescriptionsInternal(), d, yes, userid);
+		voteOrAdd(this.getDescriptionsInternal(), d, yes, userid, log);
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void voteOrAdd(Set field, Votable val, boolean yes, Long userid) {
+	private void voteOrAdd(Set field, Votable val, boolean yes, Long userid, boolean log) {
 		// If existed then vote
 		for (Object obj: field) {
 			Votable v = (Votable)obj;
 			if (v.equals(val)) {
 				v.vote(yes, userid);
+				if (log) {
+					logger.info(LogUtil.logOp(userid, LogUtil.boolToVote(yes),
+							LogUtil.modelOrAttrToStr(LogUtil.OBJ_VALUE_OF_MODEL_ATTR,
+									id, val)));
+				}
 				// If no supporters after this vote, remove v from the Set
 				if (v.getSupporterNum() <= 0) {
 					field.remove(v);
+					if (log) {
+						logger.info(LogUtil.logOp(userid, LogUtil.OP_REMOVE,
+								LogUtil.modelOrAttrToStr(LogUtil.OBJ_VALUE_OF_MODEL_ATTR,
+										id, val)));
+					}
 				}
 				return;
 			}
@@ -124,6 +150,11 @@ public class Model extends VersionedEntity {
 		if (yes) { // vote 'NO' to a nonexistent value is nonsense.
 			val.vote(true, userid);
 			field.add(val);
+			if (log) {
+				logger.info(LogUtil.logOp(userid, LogUtil.OP_CREATE,
+						LogUtil.modelOrAttrToStr(LogUtil.OBJ_VALUE_OF_MODEL_ATTR,
+								id, val)));
+			}
 		}
 	}
 	
