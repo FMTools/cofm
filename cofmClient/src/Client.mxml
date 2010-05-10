@@ -49,6 +49,8 @@
 	</mx:VBox>
 	<mx:Script>
 		<![CDATA[
+			import mx.events.CloseEvent;
+			import mx.controls.Alert;
 			import collab.fm.client.command.LogoutCommand;
 			import collab.fm.client.ui.view.RegisterDlg;
 			import mx.managers.PopUpManager;
@@ -59,11 +61,17 @@
 			import collab.fm.client.event.*;
 			import collab.fm.client.util.*;
 			import collab.fm.client.data.*;
+
+			public static const HOME_PAGE: int = 1;
+			public static const WORK_PAGE: int = 2;
 			
 			private var dlgLogin: LoginDlg;
 			private var dlgReg: RegisterDlg;
 			
+			private var currentPage: int;
+			
 			private function initView(): void {
+				currentPage = HOME_PAGE;
 				UIUtil.show(work, false);
 				UIUtil.show(btnBack, false);
 				UIUtil.show(btnLogin, false);
@@ -88,6 +96,7 @@
 				UIUtil.show(entry, true);
 				ModelCollection.instance.currentModelId = -1;
 				modelName.text = "";
+				currentPage = HOME_PAGE;
 			}
 			
 			private function onConnected(evt: ClientEvent): void {
@@ -106,6 +115,7 @@
 			private function onWorkingViewComplete(evt: ModelUpdateEvent): void {
 				UIUtil.show(work, true);
 				UIUtil.show(btnBack, true);
+				currentPage = WORK_PAGE;
 			}
 			
 			private function onLogin(evt: LoginEvent): void {
@@ -124,6 +134,9 @@
 				UIUtil.show(btnLogin, true);
 				UIUtil.show(btnReg, true);
 				UIUtil.show(btnLogout, false);
+				if (currentPage == WORK_PAGE) {
+					gotoHomePage();
+				}
 			}
 			
 			private function gotoFeedback(): void {
@@ -142,7 +155,18 @@
 			}
 			
 			private function logout(): void {
-				new LogoutCommand().execute();
+				if (currentPage == WORK_PAGE) {
+					Alert.show(RS.DLG_LOGOUT_CONFIRM_TEXT, RS.DLG_LOGOUT_CONFIRM_TITLE,
+						Alert.YES | Alert.NO, this, onLogoutConfirm, null, Alert.YES); 
+				} else {
+					new LogoutCommand().execute();
+				}
+			}
+			
+			private function onLogoutConfirm(evt: CloseEvent): void {
+				if (evt.detail == Alert.YES) {
+					new LogoutCommand().execute();
+				}
 			}
 			
 		]]>

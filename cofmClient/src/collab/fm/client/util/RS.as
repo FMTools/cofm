@@ -25,6 +25,9 @@ package collab.fm.client.util {
 		public static const BTN_VOTE_OPT_YES: String = s("btn.vote.opt.yes");
 		public static const BTN_VOTE_OPT_NO: String = s("btn.vote.opt.no");
 
+		public static const DLG_LOGOUT_CONFIRM_TITLE: String = s("dlg.logout.confirm.title");
+		public static const DLG_LOGOUT_CONFIRM_TEXT: String = s("dlg.logout.confirm.text");
+		
 		public static const CON_PANEL_TITLE: String = s("con.title");
 		public static const CON_PANEL_HOST: String = s("con.host");
 		public static const CON_PANEL_PORT: String = s("con.port");
