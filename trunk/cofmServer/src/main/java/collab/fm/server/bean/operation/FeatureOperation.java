@@ -14,6 +14,7 @@ import collab.fm.server.bean.entity.Model;
 import collab.fm.server.bean.entity.Relationship;
 import collab.fm.server.persistence.FeatureDao;
 import collab.fm.server.util.DaoUtil;
+import collab.fm.server.util.LogUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.BeanPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
@@ -106,7 +107,7 @@ public class FeatureOperation extends Operation {
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
 		}
-		feature.voteDescription(value, vote, userid);
+		feature.voteDescription(value, vote, userid, modelId);
 		List<Operation> result = ImplicitVoteOperation.makeOperation(this, feature).apply();
 		DaoUtil.getFeatureDao().save(feature);
 		return result;
@@ -117,7 +118,7 @@ public class FeatureOperation extends Operation {
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
 		}
-		feature.voteName(value, vote, userid);
+		feature.voteName(value, vote, userid, modelId);
 		List<Operation> result = ImplicitVoteOperation.makeOperation(this, feature).apply();
 		DaoUtil.getFeatureDao().save(feature);
 		return result;
@@ -135,18 +136,31 @@ public class FeatureOperation extends Operation {
 				throw new InvalidOperationException("Invalid model ID: " + modelId);
 			}
 			// Check if a feature with same name has already existed.
+			boolean alreadyExisted = true;
 			Feature featureWithSameName = DaoUtil.getFeatureDao().getByName(modelId, value);
 			if (featureWithSameName == null) {
+				alreadyExisted = false;
 				featureWithSameName = new Feature(userid);
 			}
-			featureWithSameName.voteName(value, vote, userid);
-			featureWithSameName.vote(true, userid);
-			model.addFeature(featureWithSameName);
+			// -1 means no logging at this moment (see Feature.voteOrAdd for more details.)
+			if (alreadyExisted) {
+				featureWithSameName.voteName(value, vote, userid, modelId);
+				featureWithSameName.vote(true, userid, modelId);
+			} else {
+				featureWithSameName.voteName(value, vote, userid);
+				featureWithSameName.vote(true, userid);
+				model.addFeature(featureWithSameName);
+			}
+			
 			
 			featureWithSameName = DaoUtil.getFeatureDao().save(featureWithSameName);
 			DaoUtil.getModelDao().save(model);
 			featureId = featureWithSameName.getId();
 			
+			if (!alreadyExisted) {
+				logger.info(LogUtil.logOp(userid, LogUtil.OP_CREATE,
+						LogUtil.featureOrAttrToStr(LogUtil.OBJ_FEATURE, modelId, featureId, "Name '" + value + "'")));
+			}
 			return null;
 		}
 		
@@ -154,10 +168,12 @@ public class FeatureOperation extends Operation {
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
 		}
-		feature.vote(vote, userid);
+		feature.vote(vote, userid, modelId);
 		List<Operation> result = ImplicitVoteOperation.makeOperation(this, feature).apply();
 		if (feature.getSupporterNum() <= 0) {
 			DaoUtil.getFeatureDao().delete(feature);
+			logger.info(LogUtil.logOp(userid, LogUtil.OP_REMOVE,
+					LogUtil.featureOrAttrToStr(LogUtil.OBJ_FEATURE, modelId, featureId, "")));
 		} else {
 			DaoUtil.getFeatureDao().save(feature);
 		}
@@ -169,7 +185,7 @@ public class FeatureOperation extends Operation {
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
 		}
-		feature.voteOptionality(vote, userid);
+		feature.voteOptionality(vote, userid, modelId);
 		List<Operation> result = ImplicitVoteOperation.makeOperation(this, feature).apply();
 		DaoUtil.getFeatureDao().save(feature);
 		return result;

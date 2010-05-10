@@ -13,6 +13,7 @@ import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.persistence.*;
 import collab.fm.server.util.DaoUtil;
+import collab.fm.server.util.LogUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.ActionException;
 import collab.fm.server.util.exception.BeanPersistenceException;
@@ -47,6 +48,8 @@ public class LoginAction extends Action {
 				req.setRequesterId(user.getId());
 				rsp.setMessage(Resources.MSG_LOGIN);
 				rsp.setName(Resources.RSP_SUCCESS);
+				
+				logger.info(LogUtil.logOp(user.getId(), LogUtil.OP_LOGIN, user.getName()));				
 			}
 			
 			rg.setBack(rsp);

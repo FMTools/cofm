@@ -15,7 +15,7 @@
         <!-- Enable Hibernate's automatic session context management -->
         <property name="current_session_context_class">thread</property>
         
-        <property name="hibernate.show_sql">true</property>
+        <property name="hibernate.show_sql">false</property>
         
         <mapping resource="collab/fm/server/bean/entity/Feature.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/entity/FeatureName.hbm.xml"/>

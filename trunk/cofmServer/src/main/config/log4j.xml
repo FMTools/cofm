@@ -3,6 +3,7 @@
 
 <log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/' >
     <appender name="F" class="org.apache.log4j.DailyRollingFileAppender">
+    		<param name="Encoding" value="UTF-8" />
     		<param name="Append" value="true"/>
     		<param name="DatePattern" value=".yyyy-ww"/>
     		<param name="Threshold" value="DEBUG"/>
@@ -13,6 +14,7 @@
     </appender>   
     
     <appender name="F2" class="org.apache.log4j.DailyRollingFileAppender">
+    		<param name="Encoding" value="UTF-8" />
     		<param name="Append" value="true"/>
     		<param name="DatePattern" value=".yyyy-ww"/>
     		<param name="Threshold" value="INFO"/>
@@ -27,7 +29,8 @@
     </appender>   
     
     <appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
-    		<param name="Threshold" value="INFO"/>
+    	<param name="Encoding" value="UTF-8" />
+    	<param name="Threshold" value="INFO"/>
 		<layout class="org.apache.log4j.PatternLayout">
 			<param name="ConversionPattern" value="%c{2} %-5p %m %n"/>
 		</layout>
@@ -42,7 +45,7 @@
 	</logger>
 	
 	<logger name="org.hibernate" additivity="false">
-		<level value="WARN"/>
+		<level value="INFO"/>
 		<appender-ref ref="F"/>
 	</logger>
 	           

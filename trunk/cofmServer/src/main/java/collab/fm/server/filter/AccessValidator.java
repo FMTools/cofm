@@ -10,6 +10,7 @@ import collab.fm.server.bean.protocol.LoginRequest;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
+import collab.fm.server.util.LogUtil;
 import collab.fm.server.util.Pair;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.FilterException;
@@ -41,7 +42,7 @@ public class AccessValidator extends Filter {
 				}
 			}
 			if (Resources.REQ_LOGOUT.equals(req.getName())) {
-				loginUserAddrs.remove(req.getRequesterId());
+				logoutUser(req.getRequesterId());
 			}
 			logger.info("Access validation OK for: " + req.getName());
 			return true;
@@ -95,10 +96,15 @@ public class AccessValidator extends Filter {
 		for (Map.Entry<Long, String> entry: loginUserAddrs.entrySet()) {
 			if (entry.getValue().equals(address)) {
 				logger.info("Client <" + entry.getKey() + ", " + entry.getValue() + "> disconnected.");
-				loginUserAddrs.remove(entry.getKey());
+				logoutUser(entry.getKey());
 				return;
 			}
 		}
+	}
+	
+	private void logoutUser(Long id) {
+		loginUserAddrs.remove(id);
+		logger.info(LogUtil.logOp(id, LogUtil.OP_LOGOUT, ""));
 	}
 	
 }

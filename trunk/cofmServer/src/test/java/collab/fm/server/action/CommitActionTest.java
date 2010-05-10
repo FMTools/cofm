@@ -156,7 +156,7 @@ public class CommitActionTest {
 			// Create a feature
 			Feature f = new Feature();
 			f.vote(true, 222L);
-			f.voteName("I_am_a_GOOD_man", true, 222L);
+			f.voteName("I_am_a_GOOD_man", true, 222L, m.getId());
 			f.setModel(m);	
 			f = DaoUtil.getFeatureDao().save(f);
 			
@@ -204,8 +204,8 @@ public class CommitActionTest {
 			Feature f2 = new Feature();
 			f1.vote(true, 11111L);
 			f2.vote(true, 2222L);
-			f1.voteName("OHOHOHiamleft", true, 11111L);
-			f2.voteName("HOHOHOiamright", true, 2222L);
+			f1.voteName("OHOHOHiamleft", true, 11111L, m.getId());
+			f2.voteName("HOHOHOiamright", true, 2222L, m.getId());
 			f1.setModel(m);
 			f2.setModel(m);
 			f1 = DaoUtil.getFeatureDao().save(f1);
@@ -261,7 +261,7 @@ public class CommitActionTest {
 			// Create a feature
 			Feature f = new Feature();
 			f.vote(true, 222L);
-			f.voteName("My1stName", true, 222L);
+			f.voteName("My1stName", true, 222L, m.getId());
 			f.setModel(m);
 			
 			f = DaoUtil.getFeatureDao().save(f);
@@ -311,7 +311,7 @@ public class CommitActionTest {
 			// Create a feature
 			Feature f = new Feature();
 			f.vote(true, 222L);
-			f.voteName("testVoteNoToName", true, 222L);
+			f.voteName("testVoteNoToName", true, 222L, m.getId());
 			f.setModel(m);
 			
 			f = DaoUtil.getFeatureDao().save(f);
@@ -361,8 +361,8 @@ public class CommitActionTest {
 			Feature f2 = new Feature();
 			f1.vote(true, 11111L);
 			f2.vote(true, 2222L);
-			f1.voteName("ThisIsFirstOnehaha", true, 11111L);
-			f2.voteName("opopopopopop", true, 2222L);
+			f1.voteName("ThisIsFirstOnehaha", true, 11111L, m.getId());
+			f2.voteName("opopopopopop", true, 2222L, m.getId());
 			f1.setModel(m);
 			f2.setModel(m);
 						
@@ -418,8 +418,8 @@ public class CommitActionTest {
 			Feature f2 = new Feature();
 			f1.vote(true, 11111L);
 			f2.vote(true, 2222L);
-			f1.voteName("iamleft", true, 11111L);
-			f2.voteName("iamright", true, 2222L);
+			f1.voteName("iamleft", true, 11111L, m.getId());
+			f2.voteName("iamright", true, 2222L, m.getId());
 			f1.setModel(m);
 			f2.setModel(m);
 			f1 = DaoUtil.getFeatureDao().save(f1);

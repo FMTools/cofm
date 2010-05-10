@@ -11,6 +11,7 @@ import collab.fm.server.bean.entity.Feature;
 import collab.fm.server.bean.entity.Model;
 import collab.fm.server.bean.entity.Relationship;
 import collab.fm.server.util.DaoUtil;
+import collab.fm.server.util.LogUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.BeanPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
@@ -69,25 +70,37 @@ public class BinaryRelationshipOperation extends RelationshipOperation {
 			}
 			
 			// See if the relationship has already existed.
+			boolean alreadyExisted = false;
 			BinaryRelationship relation = new BinaryRelationship(userid);
 			relation.setType(type);
 			relation.setLeftFeatureId(leftFeatureId);
 			relation.setRightFeatureId(rightFeatureId);
 			List sameRelations = DaoUtil.getRelationshipDao().getByExample(modelId, relation); 
 			if (sameRelations != null) {
+				alreadyExisted = true;
 				relation = (BinaryRelationship)sameRelations.get(0);
 			} else {
 				// CREATE A NEW BINARY RELATIONSHIP HERE
 				relation.setFeatures(DaoUtil.getFeatureDao().getById(leftFeatureId, false),
 						DaoUtil.getFeatureDao().getById(rightFeatureId, false));
 			}
-			relation.vote(true, userid);
-			model.addRelationship(relation);
+			if (alreadyExisted) {
+				relation.vote(true, userid, modelId);
+			} else {
+				relation.vote(true, userid);
+				model.addRelationship(relation);
+			}
 			
 			relation = (BinaryRelationship)DaoUtil.getRelationshipDao().save(relation);
 			DaoUtil.getModelDao().save(model);
 			
 			relationshipId = relation.getId();
+			
+			if (!alreadyExisted) {
+				logger.info(LogUtil.logOp(userid, LogUtil.OP_CREATE,
+						LogUtil.relationToStr(LogUtil.OBJ_RELATION,
+								modelId, relationshipId, relation)));
+			}
 			
 			result = ImplicitVoteOperation.makeOperation(this, relation).apply();
 		} else {
@@ -98,12 +111,16 @@ public class BinaryRelationshipOperation extends RelationshipOperation {
 				throw new InvalidOperationException("No relationship has ID: "
 						+ relationshipId);
 			}
-			relation.vote(vote, userid);
+			relation.vote(vote, userid, modelId);
 			
 			result = ImplicitVoteOperation.makeOperation(this, relation).apply();
 			
 			if (relation.getSupporterNum() <= 0) {
 				DaoUtil.getRelationshipDao().delete(relation);
+				logger.info(LogUtil.logOp(userid, LogUtil.OP_REMOVE,
+						LogUtil.relationToStr(LogUtil.OBJ_RELATION,
+								modelId, relationshipId, relation)));
+
 			} else {
 				DaoUtil.getRelationshipDao().save(relation);
 			}

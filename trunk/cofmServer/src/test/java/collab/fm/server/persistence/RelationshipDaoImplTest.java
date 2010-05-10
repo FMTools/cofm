@@ -60,7 +60,7 @@ public class RelationshipDaoImplTest {
 		try {
 			Feature f = new Feature();
 			f.vote(true, userid);
-			f.voteName(name, true, userid);
+			f.voteName(name, true, userid, -1L);
 			f.setModel(m);
 			featureIds.add(fDao.save(f).getId());
 		} catch (Exception e) {
