@@ -93,7 +93,7 @@
     					import collab.fm.client.util.*;
     					import collab.fm.client.event.*
     					import collab.fm.client.data.*;
-    					[Embed(source="structure.png")]
+    					[Embed(source="default-icon.png")]
            				[Bindable]
             			private var imgCls:Class;
     					private static const MAX_DISPLAYED_USER_COUNT: int = 5; // how many users we should display

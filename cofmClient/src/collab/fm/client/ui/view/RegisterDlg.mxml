@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" 
 	xmlns:v="collab.fm.client.ui.validator.*"
-	layout="absolute" width="400" height="300"
+	layout="absolute" width="320" height="210"
 	title="{RS.REG_HEADING}"
 	showCloseButton="true"
 	close="onClose();">
