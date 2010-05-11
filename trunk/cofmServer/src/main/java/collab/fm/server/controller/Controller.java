@@ -98,7 +98,7 @@ public class Controller {
 			if (req.getLastError() == null) {
 				req.setLastError("Internal error occured.");
 			}
-			logger.warn("Internal error: ", e);
+			logger.debug("Exception raised.", e);
 			reportFilterError(Resources.RSP_SERVER_ERROR, req, rg);
 		}
 		
@@ -148,6 +148,8 @@ public class Controller {
 			rsp.setRequestName(req.getName());
 		}
 		rg.setBack(rsp);
+		
+		logger.warn(errorCode + " " + req.getLastError());
 	}
 	
 	private void convertResponsesToJson(ResponseGroup rg) throws ProtocolInterpretException {

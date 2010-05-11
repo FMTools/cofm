@@ -5,7 +5,7 @@
     <appender name="F" class="org.apache.log4j.DailyRollingFileAppender">
     		<param name="Encoding" value="UTF-8" />
     		<param name="Append" value="true"/>
-    		<param name="DatePattern" value=".yyyy-ww"/>
+    		<param name="DatePattern" value=".yyyy-MM-dd"/>
     		<param name="Threshold" value="DEBUG"/>
     		<param name="File" value="log/Debug/server.log"/>
     		<layout class="org.apache.log4j.PatternLayout">
