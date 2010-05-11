@@ -103,8 +103,11 @@ public class AccessValidator extends Filter {
 	}
 	
 	private void logoutUser(Long id) {
-		loginUserAddrs.remove(id);
-		logger.info(LogUtil.logOp(id, LogUtil.OP_LOGOUT, ""));
+		String addr = loginUserAddrs.get(id);
+		if (addr != null) {
+			loginUserAddrs.remove(id);
+			logger.info(LogUtil.logOp(id, LogUtil.OP_LOGOUT, addr));
+		}
 	}
 	
 }

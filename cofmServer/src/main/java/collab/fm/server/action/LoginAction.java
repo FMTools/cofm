@@ -49,7 +49,8 @@ public class LoginAction extends Action {
 				rsp.setMessage(Resources.MSG_LOGIN);
 				rsp.setName(Resources.RSP_SUCCESS);
 				
-				logger.info(LogUtil.logOp(user.getId(), LogUtil.OP_LOGIN, user.getName()));				
+				logger.info(LogUtil.logOp(user.getId(), LogUtil.OP_LOGIN,
+						user.getName() + " " + req.getAddress()));				
 			}
 			
 			rg.setBack(rsp);
