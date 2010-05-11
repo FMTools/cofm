@@ -15,12 +15,6 @@ package collab.fm.client.data {
 		// TODO: 1. calculate the primary name and description
 		// 2. When the data was first loaded, separate it into "my" and "others"
 		// 3. calculate the number of contributers
-		private static const _defaultBinding: XML = <model id="-1" name={RS.M_LIST_EMPTY_LIST_INFO} userNum="0">
-				<des></des>
-				<users>
-					<user></user>
-				</users>
-			</model>;
 
 		//private var _my: XMLListCollection;
 		private var _others: XMLListCollection;
@@ -36,7 +30,7 @@ package collab.fm.client.data {
 
 		public function ModelCollection() {
 			//_my = new XMLListCollection(new XMLList(_defaultBinding));
-			_others = new XMLListCollection(new XMLList(_defaultBinding));
+			_others = new XMLListCollection(new XMLList());
 
 			ClientEvtDispatcher.instance().addEventListener(LoginEvent.SUCCESS, onLogin);
 			ClientEvtDispatcher.instance().addEventListener(ListUserEvent.SUCCESS, onListUser);
@@ -62,7 +56,7 @@ package collab.fm.client.data {
 			dst.removeAll();
 			var list: XMLList = new XMLList(src.model);
 			if (list.length() <= 0) {
-				dst.source = new XMLList(_defaultBinding);
+				dst.source = new XMLList();
 			} else {
 				dst.source = list;
 			}
@@ -119,6 +113,7 @@ package collab.fm.client.data {
 
 		private function onCreate(evt: ModelCreateEvent): void {
 			//my.addItem(evt.model);
+			others.addItem(evt.model);
 		}
 
 		private function onSelect(evt: ModelSelectEvent): void {

@@ -4,6 +4,8 @@ package collab.fm.client.util {
 	[ResourceBundle("ui")]
 	public class RS {
 
+		public static const APP_TITLE: String = s("app.title");
+
 		public static const BTN_LOGIN: String = s("btn.login");
 		public static const BTN_LOGOUT: String = s("btn.logout");
 		public static const BTN_REGISTER: String = s("btn.register");
@@ -27,7 +29,7 @@ package collab.fm.client.util {
 
 		public static const DLG_LOGOUT_CONFIRM_TITLE: String = s("dlg.logout.confirm.title");
 		public static const DLG_LOGOUT_CONFIRM_TEXT: String = s("dlg.logout.confirm.text");
-		
+
 		public static const CON_PANEL_TITLE: String = s("con.title");
 		public static const CON_PANEL_HOST: String = s("con.host");
 		public static const CON_PANEL_PORT: String = s("con.port");
@@ -74,8 +76,11 @@ package collab.fm.client.util {
 		public static const REL_CREATE_ENTER_PROMPT: String = s("rel.create.enter.prompt");
 
 		public static const REL_TYPE_REFINEMENT: String = "refinement";
-		public static const REL_TYPE_REQUIRE: String = "requiring";
-		public static const REL_TYPE_EXCLUDE: String = "excluding";
+		public static const REL_TYPE_REQUIRE: String = "require";
+		public static const REL_TYPE_EXCLUDE: String = "exclude";
+
+		public static const TREE_PANEL_TITLE: String = s("tree.panel.title");
+		public static const EDIT_PANEL_TITLE: String = s("edit.panel.title");
 
 		public static const EDIT_GRID_YES: String = s("edit.grid.yes");
 		public static const EDIT_GRID_NO: String = s("edit.grid.no");

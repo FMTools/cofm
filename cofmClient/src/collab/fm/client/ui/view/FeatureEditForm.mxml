@@ -1,24 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="700" height="500"
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
 	xmlns:v="collab.fm.client.ui.view.*"
     implements="collab.fm.client.data.IOperationListener">
     
-    <mx:TabNavigator id="infoTab" selectedIndex="0">
-    	<v:FeatureBasicInfoTab label="{RS.EDIT_TAB_BASIC}">
+    <mx:TabNavigator id="infoTab" selectedIndex="0" paddingTop="2">
+    	<v:FeatureBasicInfoTab label="{RS.EDIT_TAB_BASIC}" width="{Size.EDITOR_W}" height="{Size.EDITOR_H}">
     		
     		
     	</v:FeatureBasicInfoTab>
     	
-		<mx:VBox label="{RS.EDIT_TAB_NAME}">
+		<mx:VBox label="{RS.EDIT_TAB_NAME}" width="{Size.EDITOR_W}" height="{Size.EDITOR_H}">
 			<mx:Button label="{RS.BTN_ADD}" click="addName();"/>
 			<v:FeatureNameGrid width="100%" />
 		</mx:VBox>
 		
-		<mx:VBox label="{RS.EDIT_TAB_DES}">
+		<mx:VBox label="{RS.EDIT_TAB_DES}" width="{Size.EDITOR_W}" height="{Size.EDITOR_H}">
 			<mx:Button label="{RS.BTN_ADD}" click="addDes();"/>
-			<v:FeatureDescriptionGrid width="400" maxDisplayedRows="3" />
+			<v:FeatureDescriptionGrid width="100%" maxDisplayedRows="3" />
 		</mx:VBox>
-		<mx:VBox label="{RS.EDIT_TAB_REFINE}">
+		
+		<mx:VBox label="{RS.EDIT_TAB_REFINE}" width="{Size.EDITOR_W}" height="{Size.EDITOR_H}">
 			<mx:Label text="{RS.EDIT_REFINE_PARENT}"/>
     		<v:BinaryRelationshipGrid width="100%" 
     	    	firstColumnName="{RS.EDIT_REFINE_GRID_NAME}"
@@ -27,10 +28,10 @@
     	    <mx:Label text="{RS.EDIT_REFINE_CHILD}"/>
     		<v:BinaryRelationshipGrid width="100%" 
     	    	firstColumnName="{RS.EDIT_REFINE_GRID_NAME}"
-    	    	dataProvider="{CurrentFeature.instance.children}"/>
-    	    	
+    	    	dataProvider="{CurrentFeature.instance.children}"/>    	
 		</mx:VBox>
-		<mx:VBox label="{RS.EDIT_TAB_CONS}">
+		
+		<mx:VBox label="{RS.EDIT_TAB_CONS}" width="{Size.EDITOR_W}" height="{Size.EDITOR_H}">
     		<v:BinaryRelationshipGrid width="100%" 
     	    	firstColumnName="{RS.EDIT_CONS_GRID_NAME}"
     	    	dataProvider="{CurrentFeature.instance.binaryConstraints}"/>
