@@ -53,7 +53,7 @@ package collab.fm.client.command {
 				ClientEvtDispatcher.instance().dispatchEvent(
 					new ModelCreateEvent(ModelCreateEvent.SUCCESS, theModel));
 				ClientEvtDispatcher.instance().dispatchEvent(
-					new ModelSelectEvent(ModelSelectEvent.SELECTED, data.modelId));
+					new ModelSelectEvent(ModelSelectEvent.SELECTED, data.modelId, _name));
 			}
 		}
 
