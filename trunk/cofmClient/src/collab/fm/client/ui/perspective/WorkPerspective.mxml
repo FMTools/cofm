@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
 	 xmlns:v="collab.fm.client.ui.view.*"
-	 width="100%" height="100%">
+	 width="100%" height="100%"
+	 creationComplete="initView();">
 	
 	<!-- Feature model tree view -->
-	<mx:Panel id="leftPanel" title="{RS.TREE_PANEL_TITLE}" paddingBottom="0">
+	<mx:Panel id="leftPanel" paddingBottom="0">
 		<mx:TabNavigator id="treeTab" selectedIndex="1" paddingTop="0">
 			<mx:Canvas label="GLobal Tree" width="{Size.TREE_W}" height="{Size.TREE_H}">
 				<v:GlobalTree id="globalTree" width="100%" height="100%" />
@@ -37,8 +38,15 @@
 			import collab.fm.client.util.*;
 			
 			public function initData(modelId: int): void {
-				FeatureModel.instance.resetAll();
 				new UpdateCommand(modelId).execute();
+			}
+			
+			private function initView(): void {
+				ClientEvtDispatcher.instance().addEventListener(ModelSelectEvent.SELECTED, onModelSelected);
+			}
+			
+			private function onModelSelected(evt: ModelSelectEvent): void {
+				leftPanel.title = RS.TREE_PANEL_TITLE + ":         " + evt.modelName;
 			}
 			
 		]]>

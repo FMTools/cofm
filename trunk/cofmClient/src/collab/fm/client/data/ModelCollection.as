@@ -33,7 +33,6 @@ package collab.fm.client.data {
 			_others = new XMLListCollection(new XMLList());
 
 			ClientEvtDispatcher.instance().addEventListener(LoginEvent.SUCCESS, onLogin);
-			ClientEvtDispatcher.instance().addEventListener(ListUserEvent.SUCCESS, onListUser);
 			ClientEvtDispatcher.instance().addEventListener(ModelSearchEvent.SUCCESS, onSearch);
 			ClientEvtDispatcher.instance().addEventListener(ModelCreateEvent.SUCCESS, onCreate);
 			ClientEvtDispatcher.instance().addEventListener(ModelSelectEvent.SELECTED, onSelect);
@@ -79,11 +78,6 @@ package collab.fm.client.data {
 		   }
 		   resetSource(my, myModels);
 		 */
-		}
-
-		private function onListUser(evt: ListUserEvent): void {
-			//doUserIdToName(my.source..user, evt.users);
-			doUserIdToName(others.source..user, evt.users);
 		}
 
 		private function onSearch(evt: ModelSearchEvent): void {
@@ -161,19 +155,12 @@ package collab.fm.client.data {
 			return {"xml": result, "isMine": _isMine};
 		}
 
-		private function doUserIdToName(list: XMLList, input: Dictionary = null): void {
+		private function doUserIdToName(list: XMLList): void {
 			for each (var u: Object in list) {
 				var theId: String = XML(u).text().toString();
-				if (input != null) {
-					var name: String = input[theId];
-					if (name) {
-						XML(u).setChildren(name);
-					}
-				} else {
-					var userWithTheId: XMLList = UserList.instance.users.source.(@id==theId);
-					if (userWithTheId.length() > 0) {
-						XML(u).setChildren(userWithTheId[0].@name);
-					}
+				var userWithTheId: XMLList = UserList.instance.users.source.(@id==theId);
+				if (userWithTheId.length() > 0) {
+					XML(u).setChildren(userWithTheId[0].@name);
 				}
 			}
 		}

@@ -1,7 +1,7 @@
 package collab.fm.client.data {
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
-
+	
 	import mx.collections.ArrayCollection;
 	import mx.collections.Sort;
 	import mx.collections.SortField;
@@ -43,6 +43,8 @@ package collab.fm.client.data {
 			FeatureModel.instance.registerSubView(this);
 
 			ClientEvtDispatcher.instance().addEventListener(
+				ModelUpdateEvent.SUCCESS, onModelUpdate);
+			ClientEvtDispatcher.instance().addEventListener(
 				FeatureSelectEvent.DB_CLICK_ON_TREE, onCurrentFeatureSelected);
 		}
 
@@ -53,6 +55,11 @@ package collab.fm.client.data {
 			parents.removeAll();
 			children.removeAll();
 			binaryConstraints.removeAll();
+		}
+		
+		private function onModelUpdate(evt: ModelUpdateEvent): void {
+			// clear current feature
+			this.clear();
 		}
 
 		private function onCurrentFeatureSelected(evt: FeatureSelectEvent): void {

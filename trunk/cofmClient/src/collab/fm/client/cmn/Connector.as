@@ -56,11 +56,11 @@ package collab.fm.client.cmn {
 		}
 
 		private function onIoError(evt: IOErrorEvent): void {
-			Alert.show(evt.text, "IO Error Occured!");
+			Alert.show("Maintaining server... Please try later.", "Couldn't connect server");
 		}
 
 		private function onSecurityError(evt: SecurityErrorEvent): void {
-			Alert.show(evt.text, "Security Error Occured!");
+			Alert.show("Unfortunately, a security error has occured: " + evt.text, "Security Error");
 		}
 	}
 }
