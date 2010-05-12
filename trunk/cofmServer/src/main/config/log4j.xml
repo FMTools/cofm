@@ -9,7 +9,7 @@
     		<param name="Threshold" value="DEBUG"/>
     		<param name="File" value="log/Debug/server.log"/>
     		<layout class="org.apache.log4j.PatternLayout">
-    			<param name="ConversionPattern" value="%-25d %c{3} %-5p %m %n"/>
+    			<param name="ConversionPattern" value="%-25d %c %-5p %m %n"/>
     		</layout>
     </appender>   
     
@@ -40,8 +40,12 @@
 		<level value="DEBUG"/>
 	</logger>
 	
+	<!-- Turn off third party loggings -->
 	<logger name="org.apache.commons">
 		<level value="OFF"/>
+	</logger>
+	<logger name="com.mchange.v2"> <!-- c3p0 connection pool -->
+		<level value="OFF"/>    
 	</logger>
 	
 	<logger name="org.hibernate" additivity="false">

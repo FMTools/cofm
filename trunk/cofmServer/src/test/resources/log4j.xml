@@ -8,7 +8,7 @@
     		<param name="Threshold" value="DEBUG"/>
     		<param name="File" value="log/UnitTest/testing.log"/>
     		<layout class="org.apache.log4j.PatternLayout">
-    			<param name="ConversionPattern" value="%-25d %c{3} %-5p %m %n"/>
+    			<param name="ConversionPattern" value="%-25d %c %-5p %m %n"/>
     		</layout>
     </appender>   
 	
@@ -18,6 +18,10 @@
 	
 	<logger name="org.apache.commons">
 		<level value="WARN"/>
+	</logger>
+	
+	<logger name="com.mchange.v2"> <!-- c3p0 connection pool -->
+		<level value="INFO"/>    
 	</logger>
 	
 	<logger name="org.hibernate">
