@@ -13,7 +13,13 @@
 			
 			private function initView(): void {
 				FeatureModel.instance.registerSubView(this);	
+				
+				ClientEvtDispatcher.instance().addEventListener(ModelUpdateEvent.SUCCESS, onModelUpdate);
 			}		
+			
+			private function onModelUpdate(evt: ModelUpdateEvent): void {
+				this.htmlText = "";	
+			}
 			
 			private function getFeatureHtmlName(fId: String): String {
 				return "Feature <i>" + ModelUtil.getFeatureNameById(fId) + "</i>";

@@ -76,7 +76,7 @@ package collab.fm.client.data {
 		}
 
 		public function isBinaryRelationshipOpponent(relationshipId: String): Boolean {
-			var me: String = UserList.instance.myId as String;
+			var me: String = String(UserList.instance.myId);
 			return findVoter(this.binaries, relationshipId, me, false);
 		}
 

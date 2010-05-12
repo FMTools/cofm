@@ -4,6 +4,7 @@ package collab.fm.client.event {
 
 	public class ListUserEvent extends Event {
 		public static const SUCCESS: String = "listUserSuccess";
+		public static const LOCAL_COMPLETE: String = "localComplete";
 
 		public var users: Dictionary;
 

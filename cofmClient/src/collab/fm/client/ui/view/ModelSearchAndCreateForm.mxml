@@ -34,6 +34,11 @@
 			private function initView(): void {
 				UIUtil.show(createForm, false);
 				ClientEvtDispatcher.instance().addEventListener(ModelSearchEvent.SUCCESS, onModelSearch);
+				ClientEvtDispatcher.instance().addEventListener(ContextChangeEvent.RETURN_TO_HOME_PAGE, onBackHome);
+			}
+			
+			private function onBackHome(evt: ContextChangeEvent): void {
+				UIUtil.show(createForm, false);
 			}
 
 			private function onModelSearch(evt: ModelSearchEvent): void {
@@ -55,7 +60,7 @@
 			}
 			
 			private function doSearch(): void {
-				new ListModelCommand(searchInput.text).execute();
+				ModelListUpdater.instance.update(ModelListUpdater.FAST_MODE, searchInput.text);
 			}
 			
 		]]>

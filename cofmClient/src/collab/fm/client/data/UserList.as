@@ -1,6 +1,6 @@
 package collab.fm.client.data {
 	import collab.fm.client.event.*;
-
+	
 	import mx.collections.XMLListCollection;
 
 	public class UserList {
@@ -42,6 +42,7 @@ package collab.fm.client.data {
 			}
 			users.removeAll();
 			users.source = xml.user;
+			ClientEvtDispatcher.instance().dispatchEvent(new ListUserEvent(ListUserEvent.LOCAL_COMPLETE, null));
 		}
 
 		[Bindable]

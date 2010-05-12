@@ -26,8 +26,7 @@
 					<mx:LinkButton paddingLeft="0" paddingRight="0" 
 						label="{RS.BTN_FEEDBACK}" click="gotoFeedback();" />
 					<mx:LinkButton paddingLeft="0" paddingRight="0" 
-						label="{RS.BTN_BACK_TO_HOME}" click="gotoHomePage();" id="btnBack" />
-					<mx:Label id="modelName" paddingTop="2" />
+						label="{RS.BTN_BACK_TO_HOME}" click="refreshHomePage();" id="btnBack" />
 					<v:MessageBar width="300"/>
 				</mx:HBox>
 				<mx:HBox right="4">
@@ -86,6 +85,7 @@
 				ClientEvtDispatcher.instance().addEventListener(ClientEvent.CONNECT_SUCCESS, onConnected);
 				ClientEvtDispatcher.instance().addEventListener(LoginEvent.SUCCESS, onLogin);
 				ClientEvtDispatcher.instance().addEventListener(LoginEvent.LOGOUT, onLogout);
+				ClientEvtDispatcher.instance().addEventListener(ModelSearchEvent.SUCCESS, onModelListed);
 				initData();
 				userName.text = "";
 			}
@@ -94,13 +94,20 @@
 				FeatureNameList.instance.data;
 			}
 			
-			private function gotoHomePage(): void {
-				UIUtil.show(btnBack, false);
-				UIUtil.show(work, false);
-				UIUtil.show(entry, true);
-				ModelCollection.instance.currentModelId = -1;
-				modelName.text = "";
-				currentPage = HOME_PAGE;
+			private function refreshHomePage(): void {
+				ClientEvtDispatcher.instance().dispatchEvent(new ContextChangeEvent(ContextChangeEvent.RETURN_TO_HOME_PAGE));
+				ModelListUpdater.instance.update();
+				
+			}
+			
+			private function onModelListed(evt: ModelSearchEvent): void {
+				if (currentPage == WORK_PAGE) {
+					UIUtil.show(btnBack, false);
+					UIUtil.show(work, false);
+					UIUtil.show(entry, true);
+					ModelCollection.instance.currentModelId = -1;
+					currentPage = HOME_PAGE;
+				}
 			}
 			
 			private function onConnected(evt: ClientEvent): void {
@@ -112,7 +119,6 @@
 			private function onModelSelect(evt: ModelSelectEvent): void {
 				UIUtil.show(entry, false);
 				work.initData(evt.modelId);
-				modelName.text = RS.M_LIST_CURRENT_NAME + ": " + evt.modelName;
 			}
 			
 			private function onWorkingViewComplete(evt: ModelUpdateEvent): void {
@@ -137,9 +143,8 @@
 				UIUtil.show(btnLogin, true);
 				UIUtil.show(btnReg, true);
 				UIUtil.show(btnLogout, false);
-				if (currentPage == WORK_PAGE) {
-					gotoHomePage();
-				}
+				refreshHomePage();
+				
 			}
 			
 			private function gotoFeedback(): void {
@@ -162,14 +167,18 @@
 					Alert.show(RS.DLG_LOGOUT_CONFIRM_TEXT, RS.DLG_LOGOUT_CONFIRM_TITLE,
 						Alert.YES | Alert.NO, this, onLogoutConfirm, null, Alert.YES); 
 				} else {
-					new LogoutCommand().execute();
+					doLogout();
 				}
 			}
 			
 			private function onLogoutConfirm(evt: CloseEvent): void {
 				if (evt.detail == Alert.YES) {
-					new LogoutCommand().execute();
+					doLogout();
 				}
+			}
+			
+			private function doLogout(): void {
+				new LogoutCommand().execute();
 			}
 			
 		]]>
