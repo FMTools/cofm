@@ -47,6 +47,9 @@
 	<logger name="com.mchange.v2"> <!-- c3p0 connection pool -->
 		<level value="OFF"/>    
 	</logger>
+	<logger name="net.sf.json"> <!-- JSON lib -->
+		<level value="OFF"/>
+	</logger>
 	
 	<logger name="org.hibernate" additivity="false">
 		<level value="INFO"/>
