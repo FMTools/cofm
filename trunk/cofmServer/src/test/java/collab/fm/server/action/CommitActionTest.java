@@ -25,7 +25,6 @@ import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.ActionException;
 import collab.fm.server.util.exception.ProtocolInterpretException;
 
-@Ignore
 public class CommitActionTest {
 	
 	static Logger logger = Logger.getLogger(CommitActionTest.class);

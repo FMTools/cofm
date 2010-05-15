@@ -46,7 +46,21 @@ public class UserDaoImpl extends GenericDaoImpl<User, Long> implements UserDao {
 
 	public List getAll(Long modelId) throws BeanPersistenceException,
 			StaleDataException {
-		return super.getAll(modelId, "modelsInternal");
+		try {
+			List result = HibernateUtil.getCurrentSession()
+				.createQuery("from User as user " +
+						"left join user.modelsInternal as model " +
+						"where model.id = :mId")
+				.setLong("mId", modelId)
+				.list();
+			return result.size() > 0 ? result: null;
+		} catch (StaleObjectStateException sose) {
+			logger.warn("Stale data detected. Force client to retry.", sose);
+			throw new StaleDataException(sose);
+		} catch (Exception e) {
+			logger.warn("Query failed.", e);
+			throw new BeanPersistenceException("Query failed.", e);
+		}
 	}
 	
 	public List getAll() throws BeanPersistenceException, StaleDataException {
