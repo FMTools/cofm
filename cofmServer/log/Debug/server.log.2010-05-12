@@ -1,0 +1,665 @@
+2010-05-09 20:07:18,073   server.controller.Controller INFO  Controller initialized. 
+2010-05-09 20:07:18,133   fm.server.Server INFO  [fm] Server started at 0.0.0.0/0.0.0.0:8000. 
+2010-05-10 16:18:37,734   hibernate.cfg.Environment INFO  Hibernate 3.3.1.GA 
+2010-05-10 16:18:37,752   hibernate.cfg.Environment INFO  loaded properties from resource hibernate.properties: {hibernate.connection.username=root, hibernate.dialect=org.hibernate.dialect.MySQLDialect, hibernate.connection.url=jdbc:mysql://localhost:3306/cofm?characterEncoding=utf8, hibernate.bytecode.use_reflection_optimizer=false, hibernate.connection.driver_class=com.mysql.jdbc.Driver} 
+2010-05-10 16:18:37,755   hibernate.cfg.Environment INFO  Bytecode provider name : javassist 
+2010-05-10 16:18:37,769   hibernate.cfg.Environment INFO  using JDK 1.4 java.sql.Timestamp handling 
+2010-05-10 16:18:37,849   hibernate.cfg.Configuration INFO  configuring from url: file:/Users/mark/Documents/workspace/cofmServer/src/main/config/hibernate.cfg.xml 
+2010-05-10 16:18:37,933   hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/Feature.hbm.xml 
+2010-05-10 16:18:38,020   hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.Feature -> FEATURE 
+2010-05-10 16:18:38,031   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.existence.supportersInternal -> FEATURE_SUPPORTER 
+2010-05-10 16:18:38,032   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.existence.opponentsInternal -> FEATURE_OPPONENT 
+2010-05-10 16:18:38,032   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.optionality.supportersInternal -> FEATURE_OPTIONAL_SUPPORTER 
+2010-05-10 16:18:38,032   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.optionality.opponentsInternal -> FEATURE_OPTIONAL_OPPONENT 
+2010-05-10 16:18:38,032   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.namesInternal -> FEATURE_POSSIBLE_NAME 
+2010-05-10 16:18:38,032   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.descriptionsInternal -> FEATURE_POSSIBLE_DESCRIPTION 
+2010-05-10 16:18:38,032   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.relationshipsInternal -> FEATURE_RELATIONSHIP_INVOLVEMENT 
+2010-05-10 16:18:38,108   hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/FeatureName.hbm.xml 
+2010-05-10 16:18:38,133   hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.FeatureName -> FEATURE_NAME 
+2010-05-10 16:18:38,133   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.FeatureName.vote.supportersInternal -> FEATURE_NAME_SUPPORTER 
+2010-05-10 16:18:38,133   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.FeatureName.vote.opponentsInternal -> FEATURE_NAME_OPPONENT 
+2010-05-10 16:18:38,134   hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/FeatureDescription.hbm.xml 
+2010-05-10 16:18:38,156   hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.FeatureDescription -> FEATURE_DESCRIPTION 
+2010-05-10 16:18:38,157   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.FeatureDescription.vote.supportersInternal -> FEATURE_DESCRIPTION_SUPPORTER 
+2010-05-10 16:18:38,157   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.FeatureDescription.vote.opponentsInternal -> FEATURE_DESCRIPTION_OPPONENT 
+2010-05-10 16:18:38,157   hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/Model.hbm.xml 
+2010-05-10 16:18:38,176   hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.Model -> MODEL 
+2010-05-10 16:18:38,176   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.namesInternal -> MODEL_POSSIBLE_NAME 
+2010-05-10 16:18:38,176   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.descriptionsInternal -> MODEL_POSSIBLE_DESCRIPTION 
+2010-05-10 16:18:38,177   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.usersInternal -> MODEL_CONTRIBUTOR 
+2010-05-10 16:18:38,177   hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/ModelName.hbm.xml 
+2010-05-10 16:18:38,195   hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.ModelName -> MODEL_NAME 
+2010-05-10 16:18:38,195   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.ModelName.vote.supportersInternal -> MODEL_NAME_SUPPORTER 
+2010-05-10 16:18:38,195   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.ModelName.vote.opponentsInternal -> MODEL_NAME_OPPONENT 
+2010-05-10 16:18:38,196   hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/ModelDescription.hbm.xml 
+2010-05-10 16:18:38,218   hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.ModelDescription -> MODEL_DESCRIPTION 
+2010-05-10 16:18:38,219   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.ModelDescription.vote.supportersInternal -> MODEL_DESCRIPTION_SUPPORTER 
+2010-05-10 16:18:38,219   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.ModelDescription.vote.opponentsInternal -> MODEL_DESCRIPTION_OPPONENT 
+2010-05-10 16:18:38,219   hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/Relationship.hbm.xml 
+2010-05-10 16:18:38,244   hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.Relationship -> RELATIONSHIP 
+2010-05-10 16:18:38,245   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Relationship.existence.supportersInternal -> RELATIONSHIP_SUPPORTER 
+2010-05-10 16:18:38,245   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Relationship.existence.opponentsInternal -> RELATIONSHIP_OPPONENT 
+2010-05-10 16:18:38,245   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Relationship.featuresInternal -> FEATURE_RELATIONSHIP_INVOLVEMENT 
+2010-05-10 16:18:38,276   hibernate.cfg.HbmBinder INFO  Mapping joined-subclass: collab.fm.server.bean.entity.BinaryRelationship -> BINARY_RELATIONSHIP 
+2010-05-10 16:18:38,276   hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/User.hbm.xml 
+2010-05-10 16:18:38,311   hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.User -> TOOL_USER 
+2010-05-10 16:18:38,311   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.User.modelsInternal -> MODEL_CONTRIBUTOR 
+2010-05-10 16:18:38,312   hibernate.cfg.Configuration INFO  Configured SessionFactory: null 
+2010-05-10 16:18:38,339   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.featuresInternal -> FEATURE 
+2010-05-10 16:18:38,340   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.relationshipsInternal -> RELATIONSHIP 
+2010-05-10 16:18:38,361   hibernate.dialect.Dialect INFO  Using dialect: org.hibernate.dialect.MySQLDialect 
+2010-05-10 16:18:38,422   tool.hbm2ddl.SchemaExport INFO  Running hbm2ddl schema export 
+2010-05-10 16:18:38,425   tool.hbm2ddl.SchemaExport INFO  writing generated schema to file: /Users/mark/Documents/workspace/cofmServer/target/hibernate3/sql/dump.ddl 
+2010-05-10 16:18:38,425   tool.hbm2ddl.SchemaExport INFO  exporting generated schema to database 
+2010-05-10 16:18:38,428   hibernate.connection.DriverManagerConnectionProvider INFO  Using Hibernate built-in connection pool (not for production use!) 
+2010-05-10 16:18:38,428   hibernate.connection.DriverManagerConnectionProvider INFO  Hibernate connection pool size: 20 
+2010-05-10 16:18:38,428   hibernate.connection.DriverManagerConnectionProvider INFO  autocommit mode: false 
+2010-05-10 16:18:38,453   hibernate.connection.DriverManagerConnectionProvider INFO  using driver: com.mysql.jdbc.Driver at URL: jdbc:mysql://localhost:3306/cofmtest?characterEncoding=utf8 
+2010-05-10 16:18:38,453   hibernate.connection.DriverManagerConnectionProvider INFO  connection properties: {user=root} 
+2010-05-10 16:18:46,287   tool.hbm2ddl.SchemaExport INFO  schema export complete 
+2010-05-10 16:18:46,288   hibernate.connection.DriverManagerConnectionProvider INFO  cleaning up connection pool: jdbc:mysql://localhost:3306/cofmtest?characterEncoding=utf8 
+2010-05-10 16:18:46,560   hibernate.connection.DriverManagerConnectionProvider INFO  cleaning up connection pool: jdbc:mysql://localhost:3306/cofmtest?characterEncoding=utf8 
+2010-05-10 16:18:48,013   hibernate.cfg.Environment INFO  Hibernate 3.2.6 
+2010-05-10 16:18:48,016   hibernate.cfg.Environment INFO  loaded properties from resource hibernate.properties: {hibernate.connection.username=root, hibernate.dialect=org.hibernate.dialect.MySQLDialect, hibernate.connection.url=jdbc:mysql://localhost:3306/cofmtest?characterEncoding=utf8, hibernate.bytecode.use_reflection_optimizer=false, hibernate.connection.driver_class=com.mysql.jdbc.Driver} 
+2010-05-10 16:18:48,019   hibernate.cfg.Environment INFO  Bytecode provider name : cglib 
+2010-05-10 16:18:48,023   hibernate.cfg.Environment INFO  using JDK 1.4 java.sql.Timestamp handling 
+2010-05-10 16:18:48,086   hibernate.cfg.Configuration INFO  configuring from resource: /hibernate.cfg.xml 
+2010-05-10 16:18:48,086   hibernate.cfg.Configuration INFO  Configuration resource: /hibernate.cfg.xml 
+2010-05-10 16:18:48,130   hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/Feature.hbm.xml 
+2010-05-10 16:18:48,245   hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.Feature -> FEATURE 
+2010-05-10 16:18:48,262   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.existence.supportersInternal -> FEATURE_SUPPORTER 
+2010-05-10 16:18:48,263   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.existence.opponentsInternal -> FEATURE_OPPONENT 
+2010-05-10 16:18:48,263   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.optionality.supportersInternal -> FEATURE_OPTIONAL_SUPPORTER 
+2010-05-10 16:18:48,263   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.optionality.opponentsInternal -> FEATURE_OPTIONAL_OPPONENT 
+2010-05-10 16:18:48,263   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.namesInternal -> FEATURE_POSSIBLE_NAME 
+2010-05-10 16:18:48,263   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.descriptionsInternal -> FEATURE_POSSIBLE_DESCRIPTION 
+2010-05-10 16:18:48,263   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.relationshipsInternal -> FEATURE_RELATIONSHIP_INVOLVEMENT 
+2010-05-10 16:18:48,312   hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/FeatureName.hbm.xml 
+2010-05-10 16:18:48,339   hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.FeatureName -> FEATURE_NAME 
+2010-05-10 16:18:48,339   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.FeatureName.vote.supportersInternal -> FEATURE_NAME_SUPPORTER 
+2010-05-10 16:18:48,340   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.FeatureName.vote.opponentsInternal -> FEATURE_NAME_OPPONENT 
+2010-05-10 16:18:48,340   hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/FeatureDescription.hbm.xml 
+2010-05-10 16:18:48,364   hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.FeatureDescription -> FEATURE_DESCRIPTION 
+2010-05-10 16:18:48,365   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.FeatureDescription.vote.supportersInternal -> FEATURE_DESCRIPTION_SUPPORTER 
+2010-05-10 16:18:48,365   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.FeatureDescription.vote.opponentsInternal -> FEATURE_DESCRIPTION_OPPONENT 
+2010-05-10 16:18:48,366   hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/Model.hbm.xml 
+2010-05-10 16:18:48,386   hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.Model -> MODEL 
+2010-05-10 16:18:48,386   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.namesInternal -> MODEL_POSSIBLE_NAME 
+2010-05-10 16:18:48,386   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.descriptionsInternal -> MODEL_POSSIBLE_DESCRIPTION 
+2010-05-10 16:18:48,387   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.usersInternal -> MODEL_CONTRIBUTOR 
+2010-05-10 16:18:48,387   hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/ModelName.hbm.xml 
+2010-05-10 16:18:48,407   hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.ModelName -> MODEL_NAME 
+2010-05-10 16:18:48,408   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.ModelName.vote.supportersInternal -> MODEL_NAME_SUPPORTER 
+2010-05-10 16:18:48,408   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.ModelName.vote.opponentsInternal -> MODEL_NAME_OPPONENT 
+2010-05-10 16:18:48,408   hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/ModelDescription.hbm.xml 
+2010-05-10 16:18:48,424   hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.ModelDescription -> MODEL_DESCRIPTION 
+2010-05-10 16:18:48,425   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.ModelDescription.vote.supportersInternal -> MODEL_DESCRIPTION_SUPPORTER 
+2010-05-10 16:18:48,425   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.ModelDescription.vote.opponentsInternal -> MODEL_DESCRIPTION_OPPONENT 
+2010-05-10 16:18:48,426   hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/Relationship.hbm.xml 
+2010-05-10 16:18:48,448   hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.Relationship -> RELATIONSHIP 
+2010-05-10 16:18:48,448   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Relationship.existence.supportersInternal -> RELATIONSHIP_SUPPORTER 
+2010-05-10 16:18:48,449   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Relationship.existence.opponentsInternal -> RELATIONSHIP_OPPONENT 
+2010-05-10 16:18:48,449   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Relationship.featuresInternal -> FEATURE_RELATIONSHIP_INVOLVEMENT 
+2010-05-10 16:18:48,494   hibernate.cfg.HbmBinder INFO  Mapping joined-subclass: collab.fm.server.bean.entity.BinaryRelationship -> BINARY_RELATIONSHIP 
+2010-05-10 16:18:48,495   hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/User.hbm.xml 
+2010-05-10 16:18:48,515   hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.User -> TOOL_USER 
+2010-05-10 16:18:48,516   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.User.modelsInternal -> MODEL_CONTRIBUTOR 
+2010-05-10 16:18:48,516   hibernate.cfg.Configuration INFO  Configured SessionFactory: null 
+2010-05-10 16:18:48,520   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.featuresInternal -> FEATURE 
+2010-05-10 16:18:48,520   hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.relationshipsInternal -> RELATIONSHIP 
+2010-05-10 16:18:48,572   hibernate.connection.C3P0ConnectionProvider INFO  C3P0 using driver: com.mysql.jdbc.Driver at URL: jdbc:mysql://localhost:3306/cofmtest?characterEncoding=utf8 
+2010-05-10 16:18:48,573   hibernate.connection.C3P0ConnectionProvider INFO  Connection properties: {user=root} 
+2010-05-10 16:18:48,573   hibernate.connection.C3P0ConnectionProvider INFO  autocommit mode: false 
+2010-05-10 16:18:48,627   v2.log.MLog INFO  MLog clients using log4j logging. 
+2010-05-10 16:18:49,011   v2.c3p0.C3P0Registry INFO  Initializing c3p0-0.9.1 [built 16-January-2007 14:46:42; debug? true; trace: 10] 
+2010-05-10 16:18:49,038   c3p0.management.DynamicPooledDataSourceManagerMBean DEBUG MBean: com.mchange.v2.c3p0:type=PooledDataSource[1hge1a488zvhoif182bbw7|769aba32] registered. 
+2010-05-10 16:18:49,057   c3p0.management.DynamicPooledDataSourceManagerMBean DEBUG MBean: com.mchange.v2.c3p0:type=PooledDataSource[1hge1a488zvhoif182bbw7|769aba32] unregistered, in order to be reregistered after update. 
+2010-05-10 16:18:49,057   c3p0.management.DynamicPooledDataSourceManagerMBean DEBUG MBean: com.mchange.v2.c3p0:type=PooledDataSource[1hge1a488zvhoif182bbw7|769aba32] registered. 
+2010-05-10 16:18:49,082   c3p0.impl.AbstractPoolBackedDataSource INFO  Initializing c3p0 pool... com.mchange.v2.c3p0.PoolBackedDataSource@ac15e3ba [ connectionPoolDataSource -> com.mchange.v2.c3p0.WrapperConnectionPoolDataSource@87a31038 [ acquireIncrement -> 3, acquireRetryAttempts -> 30, acquireRetryDelay -> 1000, autoCommitOnClose -> false, automaticTestTable -> null, breakAfterAcquireFailure -> false, checkoutTimeout -> 0, connectionCustomizerClassName -> null, connectionTesterClassName -> com.mchange.v2.c3p0.impl.DefaultConnectionTester, debugUnreturnedConnectionStackTraces -> false, factoryClassLocation -> null, forceIgnoreUnresolvedTransactions -> false, identityToken -> 1hge1a488zvhoif182bbw7|1494cb8b, idleConnectionTestPeriod -> 3000, initialPoolSize -> 5, maxAdministrativeTaskTime -> 0, maxConnectionAge -> 0, maxIdleTime -> 300, maxIdleTimeExcessConnections -> 0, maxPoolSize -> 20, maxStatements -> 50, maxStatementsPerConnection -> 0, minPoolSize -> 5, nestedDataSource -> com.mchange.v2.c3p0.DriverManagerDataSource@354d87f9 [ description -> null, driverClass -> null, factoryClassLocation -> null, identityToken -> 1hge1a488zvhoif182bbw7|35ecfe07, jdbcUrl -> jdbc:mysql://localhost:3306/cofmtest?characterEncoding=utf8, properties -> {user=******} ], preferredTestQuery -> null, propertyCycle -> 0, testConnectionOnCheckin -> false, testConnectionOnCheckout -> false, unreturnedConnectionTimeout -> 0, usesTraditionalReflectiveProxies -> false; userOverrides: {} ], dataSourceName -> null, factoryClassLocation -> null, identityToken -> 1hge1a488zvhoif182bbw7|769aba32, numHelperThreads -> 3 ] 
+2010-05-10 16:18:49,104   v2.resourcepool.BasicResourcePool DEBUG incremented pending_acquires: 1 
+2010-05-10 16:18:49,104   v2.resourcepool.BasicResourcePool DEBUG incremented pending_acquires: 2 
+2010-05-10 16:18:49,104   v2.resourcepool.BasicResourcePool DEBUG incremented pending_acquires: 3 
+2010-05-10 16:18:49,104   v2.resourcepool.BasicResourcePool DEBUG incremented pending_acquires: 4 
+2010-05-10 16:18:49,104   v2.resourcepool.BasicResourcePool DEBUG incremented pending_acquires: 5 
+2010-05-10 16:18:49,105   v2.resourcepool.BasicResourcePool DEBUG com.mchange.v2.resourcepool.BasicResourcePool@1137d4a4 config: [start -> 5; min -> 5; max -> 20; inc -> 3; num_acq_attempts -> 30; acq_attempt_delay -> 1000; check_idle_resources_delay -> 3000000; mox_resource_age -> 0; max_idle_time -> 300000; excess_max_idle_time -> 0; destroy_unreturned_resc_time -> 0; expiration_enforcement_delay -> 75000; break_on_acquisition_failure -> false; debug_store_checkout_exceptions -> false] 
+2010-05-10 16:18:49,105   v2.resourcepool.BasicResourcePool DEBUG acquire test -- pool size: 0; target_pool_size: 5; desired target? 1 
+2010-05-10 16:18:49,105   v2.resourcepool.BasicResourcePool DEBUG awaitAvailable(): [unknown] 
+2010-05-10 16:18:49,105   v2.resourcepool.BasicResourcePool DEBUG trace com.mchange.v2.resourcepool.BasicResourcePool@1137d4a4 [managed: 0, unused: 0, excluded: 0] 
+2010-05-10 16:18:49,315   c3p0.stmt.GooGooStatementCache DEBUG checkinAll(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 0; checked out: 0; num connections: 0; num keys: 0 
+2010-05-10 16:18:49,315   c3p0.stmt.GooGooStatementCache DEBUG checkinAll(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 0; checked out: 0; num connections: 0; num keys: 0 
+2010-05-10 16:18:49,315   c3p0.stmt.GooGooStatementCache DEBUG checkinAll(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 0; checked out: 0; num connections: 0; num keys: 0 
+2010-05-10 16:18:49,315   c3p0.impl.C3P0PooledConnectionPool DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool$1PooledConnectionResourcePoolManager@4585572a.acquireResource() returning.  
+2010-05-10 16:18:49,315   c3p0.impl.C3P0PooledConnectionPool DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool$1PooledConnectionResourcePoolManager@4585572a.acquireResource() returning.  
+2010-05-10 16:18:49,315   c3p0.impl.C3P0PooledConnectionPool DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool$1PooledConnectionResourcePoolManager@4585572a.acquireResource() returning.  
+2010-05-10 16:18:49,315   v2.resourcepool.BasicResourcePool DEBUG trace com.mchange.v2.resourcepool.BasicResourcePool@1137d4a4 [managed: 1, unused: 1, excluded: 0] 
+2010-05-10 16:18:49,315   v2.resourcepool.BasicResourcePool DEBUG trace com.mchange.v2.resourcepool.BasicResourcePool@1137d4a4 [managed: 2, unused: 1, excluded: 0] (e.g. com.mchange.v2.c3p0.impl.NewPooledConnection@2e879860) 
+2010-05-10 16:18:49,315   v2.resourcepool.BasicResourcePool DEBUG decremented pending_acquires: 4 
+2010-05-10 16:18:49,315   v2.resourcepool.BasicResourcePool DEBUG trace com.mchange.v2.resourcepool.BasicResourcePool@1137d4a4 [managed: 3, unused: 2, excluded: 0] (e.g. com.mchange.v2.c3p0.impl.NewPooledConnection@2e879860) 
+2010-05-10 16:18:49,315   v2.resourcepool.BasicResourcePool DEBUG decremented pending_acquires: 3 
+2010-05-10 16:18:49,316   v2.resourcepool.BasicResourcePool DEBUG trace com.mchange.v2.resourcepool.BasicResourcePool@1137d4a4 [managed: 3, unused: 2, excluded: 0] (e.g. com.mchange.v2.c3p0.impl.NewPooledConnection@2e879860) 
+2010-05-10 16:18:49,316   v2.resourcepool.BasicResourcePool DEBUG decremented pending_acquires: 2 
+2010-05-10 16:18:49,324   hibernate.cfg.SettingsFactory INFO  RDBMS: MySQL, version: 5.1.46 
+2010-05-10 16:18:49,324   hibernate.cfg.SettingsFactory INFO  JDBC driver: MySQL-AB JDBC Driver, version: mysql-connector-java-5.1.12 ( Revision: ${bzr.revision-id} ) 
+2010-05-10 16:18:49,325   c3p0.stmt.GooGooStatementCache DEBUG checkinAll(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 0; checked out: 0; num connections: 0; num keys: 0 
+2010-05-10 16:18:49,326   v2.resourcepool.BasicResourcePool DEBUG trace com.mchange.v2.resourcepool.BasicResourcePool@1137d4a4 [managed: 3, unused: 2, excluded: 0] (e.g. com.mchange.v2.c3p0.impl.NewPooledConnection@2e879860) 
+2010-05-10 16:18:49,326   c3p0.stmt.GooGooStatementCache DEBUG checkinAll(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 0; checked out: 0; num connections: 0; num keys: 0 
+2010-05-10 16:18:49,326   c3p0.impl.C3P0PooledConnectionPool DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool$1PooledConnectionResourcePoolManager@4585572a.acquireResource() returning.  
+2010-05-10 16:18:49,326   v2.resourcepool.BasicResourcePool DEBUG trace com.mchange.v2.resourcepool.BasicResourcePool@1137d4a4 [managed: 4, unused: 3, excluded: 0] (e.g. com.mchange.v2.c3p0.impl.NewPooledConnection@2e879860) 
+2010-05-10 16:18:49,326   v2.resourcepool.BasicResourcePool DEBUG decremented pending_acquires: 1 
+2010-05-10 16:18:49,326   c3p0.stmt.GooGooStatementCache DEBUG checkinAll(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 0; checked out: 0; num connections: 0; num keys: 0 
+2010-05-10 16:18:49,328   c3p0.stmt.GooGooStatementCache DEBUG checkinAll(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 0; checked out: 0; num connections: 0; num keys: 0 
+2010-05-10 16:18:49,328   c3p0.impl.C3P0PooledConnectionPool DEBUG com.mchange.v2.c3p0.impl.C3P0PooledConnectionPool$1PooledConnectionResourcePoolManager@4585572a.acquireResource() returning.  
+2010-05-10 16:18:49,328   v2.resourcepool.BasicResourcePool DEBUG trace com.mchange.v2.resourcepool.BasicResourcePool@1137d4a4 [managed: 5, unused: 5, excluded: 0] (e.g. com.mchange.v2.c3p0.impl.NewPooledConnection@2e879860) 
+2010-05-10 16:18:49,328   v2.resourcepool.BasicResourcePool DEBUG decremented pending_acquires: 0 
+2010-05-10 16:18:49,357   hibernate.dialect.Dialect INFO  Using dialect: org.hibernate.dialect.MySQLDialect 
+2010-05-10 16:18:49,366   hibernate.transaction.TransactionFactoryFactory INFO  Using default transaction strategy (direct JDBC transactions) 
+2010-05-10 16:18:49,370   hibernate.transaction.TransactionManagerLookupFactory INFO  No TransactionManagerLookup configured (in JTA environment, use of read-write or transactional second-level cache is not recommended) 
+2010-05-10 16:18:49,370   hibernate.cfg.SettingsFactory INFO  Automatic flush during beforeCompletion(): disabled 
+2010-05-10 16:18:49,370   hibernate.cfg.SettingsFactory INFO  Automatic session close at end of transaction: disabled 
+2010-05-10 16:18:49,370   hibernate.cfg.SettingsFactory INFO  JDBC batch size: 15 
+2010-05-10 16:18:49,370   hibernate.cfg.SettingsFactory INFO  JDBC batch updates for versioned data: disabled 
+2010-05-10 16:18:49,371   hibernate.cfg.SettingsFactory INFO  Scrollable result sets: enabled 
+2010-05-10 16:18:49,371   hibernate.cfg.SettingsFactory INFO  JDBC3 getGeneratedKeys(): enabled 
+2010-05-10 16:18:49,371   hibernate.cfg.SettingsFactory INFO  Connection release mode: auto 
+2010-05-10 16:18:49,371   hibernate.cfg.SettingsFactory INFO  Maximum outer join fetch depth: 2 
+2010-05-10 16:18:49,372   hibernate.cfg.SettingsFactory INFO  Default batch fetch size: 1 
+2010-05-10 16:18:49,372   hibernate.cfg.SettingsFactory INFO  Generate SQL with comments: disabled 
+2010-05-10 16:18:49,372   hibernate.cfg.SettingsFactory INFO  Order SQL updates by primary key: disabled 
+2010-05-10 16:18:49,372   hibernate.cfg.SettingsFactory INFO  Order SQL inserts for batching: disabled 
+2010-05-10 16:18:49,372   hibernate.cfg.SettingsFactory INFO  Query translator: org.hibernate.hql.ast.ASTQueryTranslatorFactory 
+2010-05-10 16:18:49,378   hql.ast.ASTQueryTranslatorFactory INFO  Using ASTQueryTranslatorFactory 
+2010-05-10 16:18:49,378   hibernate.cfg.SettingsFactory INFO  Query language substitutions: {} 
+2010-05-10 16:18:49,378   hibernate.cfg.SettingsFactory INFO  JPA-QL strict compliance: disabled 
+2010-05-10 16:18:49,378   hibernate.cfg.SettingsFactory INFO  Second-level cache: enabled 
+2010-05-10 16:18:49,378   hibernate.cfg.SettingsFactory INFO  Query cache: disabled 
+2010-05-10 16:18:49,378   hibernate.cfg.SettingsFactory INFO  Cache provider: org.hibernate.cache.NoCacheProvider 
+2010-05-10 16:18:49,378   hibernate.cfg.SettingsFactory INFO  Optimize cache for minimal puts: disabled 
+2010-05-10 16:18:49,378   hibernate.cfg.SettingsFactory INFO  Structured second-level cache entries: disabled 
+2010-05-10 16:18:49,383   hibernate.cfg.SettingsFactory INFO  Echoing all SQL to stdout 
+2010-05-10 16:18:49,383   hibernate.cfg.SettingsFactory INFO  Statistics: disabled 
+2010-05-10 16:18:49,383   hibernate.cfg.SettingsFactory INFO  Deleted entity synthetic identifier rollback: disabled 
+2010-05-10 16:18:49,383   hibernate.cfg.SettingsFactory INFO  Default entity-mode: pojo 
+2010-05-10 16:18:49,383   hibernate.cfg.SettingsFactory INFO  Named query checking : enabled 
+2010-05-10 16:18:49,430   hibernate.impl.SessionFactoryImpl INFO  building session factory 
+2010-05-10 16:18:49,784   hibernate.impl.SessionFactoryObjectFactory INFO  Not binding factory to JNDI, no JNDI name configured 
+2010-05-10 16:18:49,821   server.persistence.HibernateUtil INFO  SessionFactory has built. 
+2010-05-10 16:18:49,917   v2.resourcepool.BasicResourcePool DEBUG trace com.mchange.v2.resourcepool.BasicResourcePool@1137d4a4 [managed: 5, unused: 4, excluded: 0] (e.g. com.mchange.v2.c3p0.impl.NewPooledConnection@2e879860) 
+2010-05-10 16:18:49,965   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 1 
+2010-05-10 16:18:49,965   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 1; checked out: 1; num connections: 1; num keys: 1 
+2010-05-10 16:18:50,010   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 1; checked out: 0; num connections: 1; num keys: 1 
+2010-05-10 16:18:50,012   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 2 
+2010-05-10 16:18:50,012   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 2; checked out: 1; num connections: 1; num keys: 2 
+2010-05-10 16:18:50,014   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 2; checked out: 0; num connections: 1; num keys: 2 
+2010-05-10 16:18:50,015   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 3 
+2010-05-10 16:18:50,015   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 3; checked out: 1; num connections: 1; num keys: 3 
+2010-05-10 16:18:50,016   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 3; checked out: 0; num connections: 1; num keys: 3 
+2010-05-10 16:18:50,016   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 4 
+2010-05-10 16:18:50,016   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 4; checked out: 1; num connections: 1; num keys: 4 
+2010-05-10 16:18:50,017   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 4; checked out: 0; num connections: 1; num keys: 4 
+2010-05-10 16:18:50,019   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,019   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 4; checked out: 1; num connections: 1; num keys: 4 
+2010-05-10 16:18:50,020   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 4; checked out: 0; num connections: 1; num keys: 4 
+2010-05-10 16:18:50,020   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,020   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 4; checked out: 1; num connections: 1; num keys: 4 
+2010-05-10 16:18:50,020   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 4; checked out: 0; num connections: 1; num keys: 4 
+2010-05-10 16:18:50,021   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,021   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 4; checked out: 1; num connections: 1; num keys: 4 
+2010-05-10 16:18:50,021   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 4; checked out: 0; num connections: 1; num keys: 4 
+2010-05-10 16:18:50,021   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,021   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 4; checked out: 1; num connections: 1; num keys: 4 
+2010-05-10 16:18:50,022   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 4; checked out: 0; num connections: 1; num keys: 4 
+2010-05-10 16:18:50,022   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,022   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 4; checked out: 1; num connections: 1; num keys: 4 
+2010-05-10 16:18:50,023   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 4; checked out: 0; num connections: 1; num keys: 4 
+2010-05-10 16:18:50,023   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,023   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 4; checked out: 1; num connections: 1; num keys: 4 
+2010-05-10 16:18:50,023   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 4; checked out: 0; num connections: 1; num keys: 4 
+2010-05-10 16:18:50,381   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 5 
+2010-05-10 16:18:50,381   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 5; checked out: 1; num connections: 1; num keys: 5 
+2010-05-10 16:18:50,383   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 5; checked out: 0; num connections: 1; num keys: 5 
+2010-05-10 16:18:50,384   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 6 
+2010-05-10 16:18:50,384   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 6; checked out: 1; num connections: 1; num keys: 6 
+2010-05-10 16:18:50,385   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 6; checked out: 0; num connections: 1; num keys: 6 
+2010-05-10 16:18:50,385   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 7 
+2010-05-10 16:18:50,385   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 7; checked out: 1; num connections: 1; num keys: 7 
+2010-05-10 16:18:50,386   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 7; checked out: 0; num connections: 1; num keys: 7 
+2010-05-10 16:18:50,387   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 8 
+2010-05-10 16:18:50,387   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 8; checked out: 1; num connections: 1; num keys: 8 
+2010-05-10 16:18:50,387   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 8; checked out: 0; num connections: 1; num keys: 8 
+2010-05-10 16:18:50,388   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 9 
+2010-05-10 16:18:50,388   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 1; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,388   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 0; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,388   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,388   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 1; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,389   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 0; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,389   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,389   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 1; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,389   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 0; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,390   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,390   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 1; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,390   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 0; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,390   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,390   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 1; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,390   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 0; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,391   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,391   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 1; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,391   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 0; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,391   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,391   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 1; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,392   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 0; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,392   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,392   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 1; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,392   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 0; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,392   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,392   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 1; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,393   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 0; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,393   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,393   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 1; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,393   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 9; checked out: 0; num connections: 1; num keys: 9 
+2010-05-10 16:18:50,396   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 10 
+2010-05-10 16:18:50,397   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 10; checked out: 1; num connections: 1; num keys: 10 
+2010-05-10 16:18:50,398   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 10; checked out: 0; num connections: 1; num keys: 10 
+2010-05-10 16:18:50,402   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,402   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 10; checked out: 1; num connections: 1; num keys: 10 
+2010-05-10 16:18:50,403   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 10; checked out: 0; num connections: 1; num keys: 10 
+2010-05-10 16:18:50,405   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 11 
+2010-05-10 16:18:50,405   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 11; checked out: 1; num connections: 1; num keys: 11 
+2010-05-10 16:18:50,407   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 11; checked out: 0; num connections: 1; num keys: 11 
+2010-05-10 16:18:50,407   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 12 
+2010-05-10 16:18:50,407   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 12; checked out: 1; num connections: 1; num keys: 12 
+2010-05-10 16:18:50,408   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 12; checked out: 0; num connections: 1; num keys: 12 
+2010-05-10 16:18:50,410   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,410   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 12; checked out: 1; num connections: 1; num keys: 12 
+2010-05-10 16:18:50,410   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 12; checked out: 0; num connections: 1; num keys: 12 
+2010-05-10 16:18:50,411   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,411   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 12; checked out: 1; num connections: 1; num keys: 12 
+2010-05-10 16:18:50,411   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 12; checked out: 0; num connections: 1; num keys: 12 
+2010-05-10 16:18:50,423   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 13 
+2010-05-10 16:18:50,423   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 13; checked out: 1; num connections: 1; num keys: 13 
+2010-05-10 16:18:50,425   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 13; checked out: 0; num connections: 1; num keys: 13 
+2010-05-10 16:18:50,427   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,427   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 13; checked out: 1; num connections: 1; num keys: 13 
+2010-05-10 16:18:50,427   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 13; checked out: 0; num connections: 1; num keys: 13 
+2010-05-10 16:18:50,428   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,428   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 13; checked out: 1; num connections: 1; num keys: 13 
+2010-05-10 16:18:50,429   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 13; checked out: 0; num connections: 1; num keys: 13 
+2010-05-10 16:18:50,429   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,429   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 13; checked out: 1; num connections: 1; num keys: 13 
+2010-05-10 16:18:50,429   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 13; checked out: 0; num connections: 1; num keys: 13 
+2010-05-10 16:18:50,434   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 14 
+2010-05-10 16:18:50,434   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 14; checked out: 1; num connections: 1; num keys: 14 
+2010-05-10 16:18:50,435   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 14; checked out: 0; num connections: 1; num keys: 14 
+2010-05-10 16:18:50,435   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,435   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 14; checked out: 1; num connections: 1; num keys: 14 
+2010-05-10 16:18:50,436   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 14; checked out: 0; num connections: 1; num keys: 14 
+2010-05-10 16:18:50,436   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,436   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 14; checked out: 1; num connections: 1; num keys: 14 
+2010-05-10 16:18:50,436   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 14; checked out: 0; num connections: 1; num keys: 14 
+2010-05-10 16:18:50,437   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 15 
+2010-05-10 16:18:50,437   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 15; checked out: 1; num connections: 1; num keys: 15 
+2010-05-10 16:18:50,437   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 15; checked out: 0; num connections: 1; num keys: 15 
+2010-05-10 16:18:50,438   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 16 
+2010-05-10 16:18:50,438   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 16; checked out: 1; num connections: 1; num keys: 16 
+2010-05-10 16:18:50,439   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 16; checked out: 0; num connections: 1; num keys: 16 
+2010-05-10 16:18:50,439   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,439   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 16; checked out: 1; num connections: 1; num keys: 16 
+2010-05-10 16:18:50,439   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 16; checked out: 0; num connections: 1; num keys: 16 
+2010-05-10 16:18:50,439   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,439   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 16; checked out: 1; num connections: 1; num keys: 16 
+2010-05-10 16:18:50,440   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 16; checked out: 0; num connections: 1; num keys: 16 
+2010-05-10 16:18:50,440   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 17 
+2010-05-10 16:18:50,440   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 17; checked out: 1; num connections: 1; num keys: 17 
+2010-05-10 16:18:50,440   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 17; checked out: 0; num connections: 1; num keys: 17 
+2010-05-10 16:18:50,441   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 18 
+2010-05-10 16:18:50,441   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 18; checked out: 1; num connections: 1; num keys: 18 
+2010-05-10 16:18:50,441   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 18; checked out: 0; num connections: 1; num keys: 18 
+2010-05-10 16:18:50,443   c3p0.stmt.GooGooStatementCache DEBUG checkinAll(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 18; checked out: 0; num connections: 1; num keys: 18 
+2010-05-10 16:18:50,443   v2.resourcepool.BasicResourcePool DEBUG trace com.mchange.v2.resourcepool.BasicResourcePool@1137d4a4 [managed: 5, unused: 4, excluded: 0] (e.g. com.mchange.v2.c3p0.impl.NewPooledConnection@2e879860) 
+2010-05-10 16:18:50,443   c3p0.stmt.GooGooStatementCache DEBUG checkinAll(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 18; checked out: 0; num connections: 1; num keys: 18 
+2010-05-10 16:18:50,457   v2.resourcepool.BasicResourcePool DEBUG trace com.mchange.v2.resourcepool.BasicResourcePool@1137d4a4 [managed: 5, unused: 4, excluded: 0] (e.g. com.mchange.v2.c3p0.impl.NewPooledConnection@2e879860) 
+2010-05-10 16:18:50,458   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,458   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 18; checked out: 1; num connections: 1; num keys: 18 
+2010-05-10 16:18:50,459   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 18; checked out: 0; num connections: 1; num keys: 18 
+2010-05-10 16:18:50,459   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,459   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 18; checked out: 1; num connections: 1; num keys: 18 
+2010-05-10 16:18:50,460   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 18; checked out: 0; num connections: 1; num keys: 18 
+2010-05-10 16:18:50,463   bean.entity.Feature INFO  [fm] u#3 create V m#2 f#null Name '中文1' 
+2010-05-10 16:18:50,484   bean.entity.Feature INFO  [fm] u#4 create V m#2 f#null Description '汉字，，，，，，，' 
+2010-05-10 16:18:50,485   bean.entity.Feature INFO  [fm] u#4 vote NO V m#2 f#null Name '中文1' 
+2010-05-10 16:18:50,485   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,485   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 18; checked out: 1; num connections: 1; num keys: 18 
+2010-05-10 16:18:50,486   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 18; checked out: 0; num connections: 1; num keys: 18 
+2010-05-10 16:18:50,486   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,487   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 18; checked out: 1; num connections: 1; num keys: 18 
+2010-05-10 16:18:50,487   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 18; checked out: 0; num connections: 1; num keys: 18 
+2010-05-10 16:18:50,488   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 19 
+2010-05-10 16:18:50,488   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 19; checked out: 1; num connections: 1; num keys: 19 
+2010-05-10 16:18:50,489   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 19; checked out: 0; num connections: 1; num keys: 19 
+2010-05-10 16:18:50,489   server.persistence.FeatureDaoImplTest DEBUG Feature = Feature #5 
+2010-05-10 16:18:50,490   bean.entity.Feature INFO  [fm] u#3 create V m#2 f#null Name 'Dragon' 
+2010-05-10 16:18:50,490   bean.entity.Feature INFO  [fm] u#4 create V m#2 f#null Description 'An award from XXX' 
+2010-05-10 16:18:50,490   bean.entity.Feature INFO  [fm] u#4 vote NO V m#2 f#null Name 'Dragon' 
+2010-05-10 16:18:50,491   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,491   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 19; checked out: 1; num connections: 1; num keys: 19 
+2010-05-10 16:18:50,491   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 19; checked out: 0; num connections: 1; num keys: 19 
+2010-05-10 16:18:50,491   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,491   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 19; checked out: 1; num connections: 1; num keys: 19 
+2010-05-10 16:18:50,492   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 19; checked out: 0; num connections: 1; num keys: 19 
+2010-05-10 16:18:50,492   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,492   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 19; checked out: 1; num connections: 1; num keys: 19 
+2010-05-10 16:18:50,493   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 19; checked out: 0; num connections: 1; num keys: 19 
+2010-05-10 16:18:50,493   server.persistence.FeatureDaoImplTest DEBUG Feature = Feature #6 
+2010-05-10 16:18:50,494   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,494   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 19; checked out: 1; num connections: 1; num keys: 19 
+2010-05-10 16:18:50,495   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 19; checked out: 0; num connections: 1; num keys: 19 
+2010-05-10 16:18:50,495   server.persistence.FeatureDaoImplTest DEBUG Feature = Feature #7 
+2010-05-10 16:18:50,495   server.persistence.FeatureDaoImplTest DEBUG Feature fetched 
+2010-05-10 16:18:50,496   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 20 
+2010-05-10 16:18:50,496   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 20; checked out: 1; num connections: 1; num keys: 20 
+2010-05-10 16:18:50,497   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 20; checked out: 0; num connections: 1; num keys: 20 
+2010-05-10 16:18:50,497   bean.entity.Feature INFO  [fm] u#1 create V m#2 f#null Name 'QueryMe' 
+2010-05-10 16:18:50,497   bean.entity.Feature INFO  [fm] u#3 create V m#2 f#null Name 'Another' 
+2010-05-10 16:18:50,497   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,498   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 20; checked out: 1; num connections: 1; num keys: 20 
+2010-05-10 16:18:50,498   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 20; checked out: 0; num connections: 1; num keys: 20 
+2010-05-10 16:18:50,498   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,498   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 20; checked out: 1; num connections: 1; num keys: 20 
+2010-05-10 16:18:50,499   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 20; checked out: 0; num connections: 1; num keys: 20 
+2010-05-10 16:18:50,499   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,499   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 20; checked out: 1; num connections: 1; num keys: 20 
+2010-05-10 16:18:50,499   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 20; checked out: 0; num connections: 1; num keys: 20 
+2010-05-10 16:18:50,500   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,500   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 20; checked out: 1; num connections: 1; num keys: 20 
+2010-05-10 16:18:50,500   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 20; checked out: 0; num connections: 1; num keys: 20 
+2010-05-10 16:18:50,503   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,503   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 20; checked out: 1; num connections: 1; num keys: 20 
+2010-05-10 16:18:50,504   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 20; checked out: 0; num connections: 1; num keys: 20 
+2010-05-10 16:18:50,504   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,504   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 20; checked out: 1; num connections: 1; num keys: 20 
+2010-05-10 16:18:50,504   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 20; checked out: 0; num connections: 1; num keys: 20 
+2010-05-10 16:18:50,504   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,504   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 20; checked out: 1; num connections: 1; num keys: 20 
+2010-05-10 16:18:50,505   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 20; checked out: 0; num connections: 1; num keys: 20 
+2010-05-10 16:18:50,505   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 21 
+2010-05-10 16:18:50,505   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 21; checked out: 1; num connections: 1; num keys: 21 
+2010-05-10 16:18:50,506   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 21; checked out: 0; num connections: 1; num keys: 21 
+2010-05-10 16:18:50,506   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,506   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 21; checked out: 1; num connections: 1; num keys: 21 
+2010-05-10 16:18:50,506   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 21; checked out: 0; num connections: 1; num keys: 21 
+2010-05-10 16:18:50,506   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 22 
+2010-05-10 16:18:50,507   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 22; checked out: 1; num connections: 1; num keys: 22 
+2010-05-10 16:18:50,507   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 22; checked out: 0; num connections: 1; num keys: 22 
+2010-05-10 16:18:50,507   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,507   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 22; checked out: 1; num connections: 1; num keys: 22 
+2010-05-10 16:18:50,507   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 22; checked out: 0; num connections: 1; num keys: 22 
+2010-05-10 16:18:50,508   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 23 
+2010-05-10 16:18:50,508   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 23; checked out: 1; num connections: 1; num keys: 23 
+2010-05-10 16:18:50,508   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 23; checked out: 0; num connections: 1; num keys: 23 
+2010-05-10 16:18:50,509   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 24 
+2010-05-10 16:18:50,509   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 1; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,509   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 0; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,509   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,509   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 1; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,510   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 0; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,510   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,510   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 1; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,510   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 0; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,510   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,510   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 1; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,511   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 0; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,511   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,511   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 1; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,511   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 0; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,511   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,511   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 1; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,511   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 0; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,511   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,511   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 1; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,512   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 0; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,512   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,512   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 1; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,512   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 0; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,512   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,512   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 1; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,513   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 24; checked out: 0; num connections: 1; num keys: 24 
+2010-05-10 16:18:50,513   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 25 
+2010-05-10 16:18:50,513   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 1; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,514   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 0; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,514   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,514   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 1; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,514   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 0; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,514   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,514   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 1; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,515   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 0; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,515   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,515   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 1; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,515   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 0; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,515   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,515   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 1; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,516   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 0; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,516   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,516   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 1; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,517   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 0; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,518   bean.entity.Feature INFO  [fm] u#1 create V m#2 f#null Name 'MarkWilliams' 
+2010-05-10 16:18:50,518   bean.entity.Feature INFO  [fm] u#3 create V m#2 f#null Name 'MarkAllen' 
+2010-05-10 16:18:50,519   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,519   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 1; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,520   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 0; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,520   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,520   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 1; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,521   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 0; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,521   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,521   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 1; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,521   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 0; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,522   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,522   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 1; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,522   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 25; checked out: 0; num connections: 1; num keys: 25 
+2010-05-10 16:18:50,530   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 26 
+2010-05-10 16:18:50,530   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 26; checked out: 1; num connections: 1; num keys: 26 
+2010-05-10 16:18:50,531   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 26; checked out: 0; num connections: 1; num keys: 26 
+2010-05-10 16:18:50,531   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,531   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 26; checked out: 1; num connections: 1; num keys: 26 
+2010-05-10 16:18:50,531   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 26; checked out: 0; num connections: 1; num keys: 26 
+2010-05-10 16:18:50,532   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,532   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 26; checked out: 1; num connections: 1; num keys: 26 
+2010-05-10 16:18:50,532   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 26; checked out: 0; num connections: 1; num keys: 26 
+2010-05-10 16:18:50,532   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,532   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 26; checked out: 1; num connections: 1; num keys: 26 
+2010-05-10 16:18:50,532   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 26; checked out: 0; num connections: 1; num keys: 26 
+2010-05-10 16:18:50,533   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,533   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 26; checked out: 1; num connections: 1; num keys: 26 
+2010-05-10 16:18:50,533   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 26; checked out: 0; num connections: 1; num keys: 26 
+2010-05-10 16:18:50,534   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 27 
+2010-05-10 16:18:50,534   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 1; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,535   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 0; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,538   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,538   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 1; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,539   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 0; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,539   bean.entity.Feature INFO  [fm] u#3 create V m#2 f#null Name 'No-This-Name' 
+2010-05-10 16:18:50,539   bean.entity.Feature INFO  [fm] u#4 create V m#2 f#null Description 'Very bad thing happens if you see this' 
+2010-05-10 16:18:50,540   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,540   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 1; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,540   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 0; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,541   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,541   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 1; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,541   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 0; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,541   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,541   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 1; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,542   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 0; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,543   bean.entity.Feature INFO  [fm] u#3 create V m#2 f#null Name 'No-This-Name-Please' 
+2010-05-10 16:18:50,543   bean.entity.Feature INFO  [fm] u#3 create V m#2 f#null Name 'You-should-see-me' 
+2010-05-10 16:18:50,543   bean.entity.Feature INFO  [fm] u#4 create V m#2 f#null Description 'You should see me as well!!' 
+2010-05-10 16:18:50,543   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,543   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 1; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,544   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 0; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,544   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,544   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 1; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,545   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 0; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,545   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,545   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 1; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,545   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 0; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,546   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,546   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 1; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,546   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 0; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,546   bean.entity.Feature INFO  [fm] u#3 vote NO V m#2 f#13 Name 'No-This-Name-Please' 
+2010-05-10 16:18:50,546   bean.entity.Feature INFO  [fm] u#3 remove V m#2 f#13 Name 'No-This-Name-Please' 
+2010-05-10 16:18:50,550   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,550   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 1; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,550   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 0; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,550   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,550   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 1; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,551   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 0; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,551   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,551   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 1; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,551   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 0; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,551   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,552   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 1; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,552   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 0; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,552   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,552   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 1; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,552   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 0; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,552   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,552   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 1; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,553   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 0; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,553   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,553   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 1; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,553   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 0; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,553   c3p0.stmt.GooGooStatementCache DEBUG com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache ----> CACHE HIT 
+2010-05-10 16:18:50,553   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 1; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,553   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 27; checked out: 0; num connections: 1; num keys: 27 
+2010-05-10 16:18:50,554   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 28 
+2010-05-10 16:18:50,554   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 28; checked out: 1; num connections: 1; num keys: 28 
+2010-05-10 16:18:50,554   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 28; checked out: 0; num connections: 1; num keys: 28 
+2010-05-10 16:18:50,555   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 29 
+2010-05-10 16:18:50,555   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 29; checked out: 1; num connections: 1; num keys: 29 
+2010-05-10 16:18:50,555   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 29; checked out: 0; num connections: 1; num keys: 29 
+2010-05-10 16:18:50,555   c3p0.stmt.GooGooStatementCache DEBUG cxnStmtMgr.statementSet( com.mysql.jdbc.JDBC4Connection@18f6559 ).size(): 30 
+2010-05-10 16:18:50,555   c3p0.stmt.GooGooStatementCache DEBUG checkoutStatement: com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 30; checked out: 1; num connections: 1; num keys: 30 
+2010-05-10 16:18:50,556   c3p0.stmt.GooGooStatementCache DEBUG checkinStatement(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 30; checked out: 0; num connections: 1; num keys: 30 
+2010-05-10 16:18:50,556   c3p0.stmt.GooGooStatementCache DEBUG checkinAll(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 30; checked out: 0; num connections: 1; num keys: 30 
+2010-05-10 16:18:50,556   v2.resourcepool.BasicResourcePool DEBUG trace com.mchange.v2.resourcepool.BasicResourcePool@1137d4a4 [managed: 5, unused: 4, excluded: 0] (e.g. com.mchange.v2.c3p0.impl.NewPooledConnection@2e879860) 
+2010-05-10 16:18:50,557   c3p0.stmt.GooGooStatementCache DEBUG checkinAll(): com.mchange.v2.c3p0.stmt.GlobalMaxOnlyStatementCache stats -- total size: 30; checked out: 0; num connections: 1; num keys: 30 
+2010-05-10 16:19:37,700   server.controller.Controller INFO  Controller initialized. 
+2010-05-10 16:19:37,822   fm.server.Server INFO  [fm] Server started at 0.0.0.0/0.0.0.0:8000. 
+2010-05-12 13:59:43,442   collab.fm.server.controller.Controller INFO  Controller initialized. 
+2010-05-12 13:59:43,538   collab.fm.server.Server INFO  [fm] Server started at 0.0.0.0/0.0.0.0:8000. 
+2010-05-12 14:02:26,104   collab.fm.server.controller.Controller INFO  Controller initialized. 
+2010-05-12 14:02:26,167   collab.fm.server.Server INFO  [fm] Server started at 0.0.0.0/0.0.0.0:8000. 
+2010-05-12 14:03:33,173   org.hibernate.cfg.Environment INFO  Hibernate 3.3.1.GA 
+2010-05-12 14:03:33,177   org.hibernate.cfg.Environment INFO  loaded properties from resource hibernate.properties: {hibernate.connection.username=root, hibernate.dialect=org.hibernate.dialect.MySQLDialect, hibernate.connection.url=jdbc:mysql://localhost:3306/cofm?characterEncoding=utf8, hibernate.bytecode.use_reflection_optimizer=false, hibernate.connection.driver_class=com.mysql.jdbc.Driver} 
+2010-05-12 14:03:33,180   org.hibernate.cfg.Environment INFO  Bytecode provider name : javassist 
+2010-05-12 14:03:33,185   org.hibernate.cfg.Environment INFO  using JDK 1.4 java.sql.Timestamp handling 
+2010-05-12 14:03:33,274   org.hibernate.cfg.Configuration INFO  configuring from url: file:/Users/mark/Documents/workspace/cofmServer/src/main/config/hibernate.cfg.xml 
+2010-05-12 14:03:33,341   org.hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/Feature.hbm.xml 
+2010-05-12 14:03:33,448   org.hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.Feature -> FEATURE 
+2010-05-12 14:03:33,460   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.existence.supportersInternal -> FEATURE_SUPPORTER 
+2010-05-12 14:03:33,460   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.existence.opponentsInternal -> FEATURE_OPPONENT 
+2010-05-12 14:03:33,461   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.optionality.supportersInternal -> FEATURE_OPTIONAL_SUPPORTER 
+2010-05-12 14:03:33,461   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.optionality.opponentsInternal -> FEATURE_OPTIONAL_OPPONENT 
+2010-05-12 14:03:33,461   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.namesInternal -> FEATURE_POSSIBLE_NAME 
+2010-05-12 14:03:33,461   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.descriptionsInternal -> FEATURE_POSSIBLE_DESCRIPTION 
+2010-05-12 14:03:33,461   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.relationshipsInternal -> FEATURE_RELATIONSHIP_INVOLVEMENT 
+2010-05-12 14:03:33,512   org.hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/FeatureName.hbm.xml 
+2010-05-12 14:03:33,535   org.hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.FeatureName -> FEATURE_NAME 
+2010-05-12 14:03:33,536   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.FeatureName.vote.supportersInternal -> FEATURE_NAME_SUPPORTER 
+2010-05-12 14:03:33,536   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.FeatureName.vote.opponentsInternal -> FEATURE_NAME_OPPONENT 
+2010-05-12 14:03:33,536   org.hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/FeatureDescription.hbm.xml 
+2010-05-12 14:03:33,555   org.hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.FeatureDescription -> FEATURE_DESCRIPTION 
+2010-05-12 14:03:33,555   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.FeatureDescription.vote.supportersInternal -> FEATURE_DESCRIPTION_SUPPORTER 
+2010-05-12 14:03:33,556   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.FeatureDescription.vote.opponentsInternal -> FEATURE_DESCRIPTION_OPPONENT 
+2010-05-12 14:03:33,556   org.hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/Model.hbm.xml 
+2010-05-12 14:03:33,572   org.hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.Model -> MODEL 
+2010-05-12 14:03:33,573   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.namesInternal -> MODEL_POSSIBLE_NAME 
+2010-05-12 14:03:33,573   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.descriptionsInternal -> MODEL_POSSIBLE_DESCRIPTION 
+2010-05-12 14:03:33,574   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.usersInternal -> MODEL_CONTRIBUTOR 
+2010-05-12 14:03:33,574   org.hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/ModelName.hbm.xml 
+2010-05-12 14:03:33,592   org.hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.ModelName -> MODEL_NAME 
+2010-05-12 14:03:33,592   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.ModelName.vote.supportersInternal -> MODEL_NAME_SUPPORTER 
+2010-05-12 14:03:33,592   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.ModelName.vote.opponentsInternal -> MODEL_NAME_OPPONENT 
+2010-05-12 14:03:33,593   org.hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/ModelDescription.hbm.xml 
+2010-05-12 14:03:33,611   org.hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.ModelDescription -> MODEL_DESCRIPTION 
+2010-05-12 14:03:33,612   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.ModelDescription.vote.supportersInternal -> MODEL_DESCRIPTION_SUPPORTER 
+2010-05-12 14:03:33,612   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.ModelDescription.vote.opponentsInternal -> MODEL_DESCRIPTION_OPPONENT 
+2010-05-12 14:03:33,612   org.hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/Relationship.hbm.xml 
+2010-05-12 14:03:33,638   org.hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.Relationship -> RELATIONSHIP 
+2010-05-12 14:03:33,639   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Relationship.existence.supportersInternal -> RELATIONSHIP_SUPPORTER 
+2010-05-12 14:03:33,639   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Relationship.existence.opponentsInternal -> RELATIONSHIP_OPPONENT 
+2010-05-12 14:03:33,639   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Relationship.featuresInternal -> FEATURE_RELATIONSHIP_INVOLVEMENT 
+2010-05-12 14:03:33,672   org.hibernate.cfg.HbmBinder INFO  Mapping joined-subclass: collab.fm.server.bean.entity.BinaryRelationship -> BINARY_RELATIONSHIP 
+2010-05-12 14:03:33,672   org.hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/User.hbm.xml 
+2010-05-12 14:03:33,690   org.hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.User -> TOOL_USER 
+2010-05-12 14:03:33,690   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.User.modelsInternal -> MODEL_CONTRIBUTOR 
+2010-05-12 14:03:33,691   org.hibernate.cfg.Configuration INFO  Configured SessionFactory: null 
+2010-05-12 14:03:33,693   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.featuresInternal -> FEATURE 
+2010-05-12 14:03:33,693   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.relationshipsInternal -> RELATIONSHIP 
+2010-05-12 14:03:33,717   org.hibernate.dialect.Dialect INFO  Using dialect: org.hibernate.dialect.MySQLDialect 
+2010-05-12 14:03:33,775   org.hibernate.tool.hbm2ddl.SchemaExport INFO  Running hbm2ddl schema export 
+2010-05-12 14:03:33,777   org.hibernate.tool.hbm2ddl.SchemaExport INFO  writing generated schema to file: /Users/mark/Documents/workspace/cofmServer/target/hibernate3/sql/dump.ddl 
+2010-05-12 14:03:33,777   org.hibernate.tool.hbm2ddl.SchemaExport INFO  exporting generated schema to database 
+2010-05-12 14:03:33,780   org.hibernate.connection.DriverManagerConnectionProvider INFO  Using Hibernate built-in connection pool (not for production use!) 
+2010-05-12 14:03:33,780   org.hibernate.connection.DriverManagerConnectionProvider INFO  Hibernate connection pool size: 20 
+2010-05-12 14:03:33,780   org.hibernate.connection.DriverManagerConnectionProvider INFO  autocommit mode: false 
+2010-05-12 14:03:33,785   org.hibernate.connection.DriverManagerConnectionProvider INFO  using driver: com.mysql.jdbc.Driver at URL: jdbc:mysql://localhost:3306/cofm?characterEncoding=utf8 
+2010-05-12 14:03:33,785   org.hibernate.connection.DriverManagerConnectionProvider INFO  connection properties: {user=root} 
+2010-05-12 14:03:42,109   org.hibernate.tool.hbm2ddl.SchemaExport INFO  schema export complete 
+2010-05-12 14:03:42,110   org.hibernate.connection.DriverManagerConnectionProvider INFO  cleaning up connection pool: jdbc:mysql://localhost:3306/cofm?characterEncoding=utf8 
+2010-05-12 14:03:42,285   org.hibernate.connection.DriverManagerConnectionProvider INFO  cleaning up connection pool: jdbc:mysql://localhost:3306/cofm?characterEncoding=utf8 
+2010-05-12 14:06:12,552   org.hibernate.cfg.Environment INFO  Hibernate 3.3.1.GA 
+2010-05-12 14:06:12,555   org.hibernate.cfg.Environment INFO  loaded properties from resource hibernate.properties: {hibernate.connection.username=root, hibernate.dialect=org.hibernate.dialect.MySQLDialect, hibernate.connection.url=jdbc:mysql://localhost:3306/cofm?characterEncoding=utf8, hibernate.bytecode.use_reflection_optimizer=false, hibernate.connection.driver_class=com.mysql.jdbc.Driver} 
+2010-05-12 14:06:12,557   org.hibernate.cfg.Environment INFO  Bytecode provider name : javassist 
+2010-05-12 14:06:12,561   org.hibernate.cfg.Environment INFO  using JDK 1.4 java.sql.Timestamp handling 
+2010-05-12 14:06:12,594   org.hibernate.cfg.Configuration INFO  configuring from url: file:/Users/mark/Documents/workspace/cofmServer/src/main/config/hibernate.cfg.xml 
+2010-05-12 14:06:12,637   org.hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/Feature.hbm.xml 
+2010-05-12 14:06:12,714   org.hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.Feature -> FEATURE 
+2010-05-12 14:06:12,723   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.existence.supportersInternal -> FEATURE_SUPPORTER 
+2010-05-12 14:06:12,724   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.existence.opponentsInternal -> FEATURE_OPPONENT 
+2010-05-12 14:06:12,725   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.optionality.supportersInternal -> FEATURE_OPTIONAL_SUPPORTER 
+2010-05-12 14:06:12,725   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.optionality.opponentsInternal -> FEATURE_OPTIONAL_OPPONENT 
+2010-05-12 14:06:12,725   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.namesInternal -> FEATURE_POSSIBLE_NAME 
+2010-05-12 14:06:12,725   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.descriptionsInternal -> FEATURE_POSSIBLE_DESCRIPTION 
+2010-05-12 14:06:12,725   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Feature.relationshipsInternal -> FEATURE_RELATIONSHIP_INVOLVEMENT 
+2010-05-12 14:06:12,754   org.hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/FeatureName.hbm.xml 
+2010-05-12 14:06:12,779   org.hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.FeatureName -> FEATURE_NAME 
+2010-05-12 14:06:12,780   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.FeatureName.vote.supportersInternal -> FEATURE_NAME_SUPPORTER 
+2010-05-12 14:06:12,780   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.FeatureName.vote.opponentsInternal -> FEATURE_NAME_OPPONENT 
+2010-05-12 14:06:12,780   org.hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/FeatureDescription.hbm.xml 
+2010-05-12 14:06:12,799   org.hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.FeatureDescription -> FEATURE_DESCRIPTION 
+2010-05-12 14:06:12,800   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.FeatureDescription.vote.supportersInternal -> FEATURE_DESCRIPTION_SUPPORTER 
+2010-05-12 14:06:12,800   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.FeatureDescription.vote.opponentsInternal -> FEATURE_DESCRIPTION_OPPONENT 
+2010-05-12 14:06:12,800   org.hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/Model.hbm.xml 
+2010-05-12 14:06:12,819   org.hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.Model -> MODEL 
+2010-05-12 14:06:12,820   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.namesInternal -> MODEL_POSSIBLE_NAME 
+2010-05-12 14:06:12,820   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.descriptionsInternal -> MODEL_POSSIBLE_DESCRIPTION 
+2010-05-12 14:06:12,820   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.usersInternal -> MODEL_CONTRIBUTOR 
+2010-05-12 14:06:12,821   org.hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/ModelName.hbm.xml 
+2010-05-12 14:06:12,841   org.hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.ModelName -> MODEL_NAME 
+2010-05-12 14:06:12,841   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.ModelName.vote.supportersInternal -> MODEL_NAME_SUPPORTER 
+2010-05-12 14:06:12,842   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.ModelName.vote.opponentsInternal -> MODEL_NAME_OPPONENT 
+2010-05-12 14:06:12,842   org.hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/ModelDescription.hbm.xml 
+2010-05-12 14:06:12,862   org.hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.ModelDescription -> MODEL_DESCRIPTION 
+2010-05-12 14:06:12,863   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.ModelDescription.vote.supportersInternal -> MODEL_DESCRIPTION_SUPPORTER 
+2010-05-12 14:06:12,863   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.ModelDescription.vote.opponentsInternal -> MODEL_DESCRIPTION_OPPONENT 
+2010-05-12 14:06:12,863   org.hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/Relationship.hbm.xml 
+2010-05-12 14:06:12,884   org.hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.Relationship -> RELATIONSHIP 
+2010-05-12 14:06:12,884   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Relationship.existence.supportersInternal -> RELATIONSHIP_SUPPORTER 
+2010-05-12 14:06:12,885   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Relationship.existence.opponentsInternal -> RELATIONSHIP_OPPONENT 
+2010-05-12 14:06:12,885   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Relationship.featuresInternal -> FEATURE_RELATIONSHIP_INVOLVEMENT 
+2010-05-12 14:06:12,905   org.hibernate.cfg.HbmBinder INFO  Mapping joined-subclass: collab.fm.server.bean.entity.BinaryRelationship -> BINARY_RELATIONSHIP 
+2010-05-12 14:06:12,906   org.hibernate.cfg.Configuration INFO  Reading mappings from resource : collab/fm/server/bean/entity/User.hbm.xml 
+2010-05-12 14:06:12,926   org.hibernate.cfg.HbmBinder INFO  Mapping class: collab.fm.server.bean.entity.User -> TOOL_USER 
+2010-05-12 14:06:12,926   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.User.modelsInternal -> MODEL_CONTRIBUTOR 
+2010-05-12 14:06:12,926   org.hibernate.cfg.Configuration INFO  Configured SessionFactory: null 
+2010-05-12 14:06:12,934   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.featuresInternal -> FEATURE 
+2010-05-12 14:06:12,942   org.hibernate.cfg.HbmBinder INFO  Mapping collection: collab.fm.server.bean.entity.Model.relationshipsInternal -> RELATIONSHIP 
+2010-05-12 14:06:12,962   org.hibernate.dialect.Dialect INFO  Using dialect: org.hibernate.dialect.MySQLDialect 
+2010-05-12 14:06:12,991   org.hibernate.tool.hbm2ddl.SchemaExport INFO  Running hbm2ddl schema export 
+2010-05-12 14:06:12,995   org.hibernate.tool.hbm2ddl.SchemaExport INFO  writing generated schema to file: /Users/mark/Documents/workspace/cofmServer/target/hibernate3/sql/dump.ddl 
+2010-05-12 14:06:12,995   org.hibernate.tool.hbm2ddl.SchemaExport INFO  exporting generated schema to database 
+2010-05-12 14:06:12,997   org.hibernate.connection.DriverManagerConnectionProvider INFO  Using Hibernate built-in connection pool (not for production use!) 
+2010-05-12 14:06:12,997   org.hibernate.connection.DriverManagerConnectionProvider INFO  Hibernate connection pool size: 20 
+2010-05-12 14:06:12,997   org.hibernate.connection.DriverManagerConnectionProvider INFO  autocommit mode: false 
+2010-05-12 14:06:13,001   org.hibernate.connection.DriverManagerConnectionProvider INFO  using driver: com.mysql.jdbc.Driver at URL: jdbc:mysql://localhost:3306/cofmtest?characterEncoding=utf8 
+2010-05-12 14:06:13,001   org.hibernate.connection.DriverManagerConnectionProvider INFO  connection properties: {user=root} 
+2010-05-12 14:06:21,372   org.hibernate.tool.hbm2ddl.SchemaExport INFO  schema export complete 
+2010-05-12 14:06:21,374   org.hibernate.connection.DriverManagerConnectionProvider INFO  cleaning up connection pool: jdbc:mysql://localhost:3306/cofmtest?characterEncoding=utf8 
+2010-05-12 14:06:21,578   org.hibernate.connection.DriverManagerConnectionProvider INFO  cleaning up connection pool: jdbc:mysql://localhost:3306/cofmtest?characterEncoding=utf8 

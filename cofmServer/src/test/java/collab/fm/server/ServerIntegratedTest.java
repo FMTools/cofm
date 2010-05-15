@@ -21,7 +21,6 @@ import collab.fm.server.bean.protocol.*;
 import collab.fm.server.controller.*;
 import collab.fm.server.util.exception.*;
 import collab.fm.server.util.*;
-@Ignore
 public class ServerIntegratedTest {
 	
 	static Logger logger = Logger.getLogger(ServerIntegratedTest.class);
@@ -84,9 +83,5 @@ public class ServerIntegratedTest {
 		rg = Controller.instance().execute(
 				RequestGenerator.createBinaryRelationship(Resources.BIN_REL_REFINES, 
 						f1, f2), IP2);
-		RelationshipOperation ro = (RelationshipOperation) 
-			((CommitResponse)rg.getBack()).getOperations().get(0);
-		int r = ro.getRelationshipId().intValue();
-		
 	}
 }

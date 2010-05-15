@@ -16,7 +16,6 @@ import org.junit.Test;
 
 import collab.fm.server.bean.entity.Feature;
 import collab.fm.server.util.BeanUtil;
-@Ignore
 public class FeatureVoteTest {
 	
 	static Logger logger = Logger.getLogger(FeatureVoteTest.class);

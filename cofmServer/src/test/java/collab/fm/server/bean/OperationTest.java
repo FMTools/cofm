@@ -11,7 +11,6 @@ import org.junit.Test;
 import collab.fm.server.bean.operation.FeatureOperation;
 import collab.fm.server.bean.operation.Operation;
 import collab.fm.server.util.BeanUtil;
-@Ignore
 public class OperationTest {
 
 	@Test

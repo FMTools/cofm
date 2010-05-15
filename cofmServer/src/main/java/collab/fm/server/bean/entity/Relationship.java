@@ -123,5 +123,9 @@ public class Relationship extends VersionedEntity implements Votable{
 		this.getFeaturesInternal().clear();
 	}
 
+	public Vote getVote() {
+		return this.existence;
+	}
+
 	
 }

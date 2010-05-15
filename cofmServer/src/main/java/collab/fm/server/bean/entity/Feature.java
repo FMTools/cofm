@@ -321,4 +321,8 @@ public class Feature extends VersionedEntity implements Votable {
 	public int getSupporterNum() {
 		return this.existence.getSupporters().size();
 	}
+
+	public Vote getVote() {
+		return this.existence;
+	}
 }

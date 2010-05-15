@@ -15,7 +15,6 @@ import collab.fm.server.bean.transfer.BinaryRelation2;
 import collab.fm.server.bean.transfer.Feature2;
 import collab.fm.server.bean.transfer.Model2;
 import collab.fm.server.bean.transfer.VotableString;
-@Ignore
 public class ProtocolUtilTest {
 
 	static Logger logger = Logger.getLogger(ProtocolUtilTest.class);

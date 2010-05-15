@@ -15,7 +15,6 @@ import collab.fm.server.bean.entity.User;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.exception.BeanPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
-@Ignore
 public class UserDaoImplTest {
 	static Logger logger = Logger.getLogger(UserDaoImplTest.class);
 	
@@ -40,6 +39,10 @@ public class UserDaoImplTest {
 		try {
 			m = DaoUtil.getModelDao().save(m);
 			mId = m.getId();
+			saveUser(m, "lao yi", "12324");
+			saveUser(m, "hoho", "ddd");
+			saveUser(m, "hehe", "00000");
+			DaoUtil.getModelDao().save(m);
 		} catch (BeanPersistenceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -47,9 +50,8 @@ public class UserDaoImplTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		saveUser(m, "lao yi", "12324");
-		saveUser(m, "hoho", "ddd");
-		saveUser(m, "hehe", "00000");
+		
+		
 	}
 	
 	private static void saveUser(Model m, String name, String pwd) {
@@ -68,6 +70,7 @@ public class UserDaoImplTest {
 	@Test
 	public void testGetAll() {
 		try {
+			assertTrue(dao.getAll().size()>=3);
 			assertTrue(dao.getAll(mId).size()==3);
 		} catch (Exception e) {
 			logger.error("Couldn't get all.", e);

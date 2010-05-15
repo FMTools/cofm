@@ -4,7 +4,6 @@ import org.apache.log4j.Logger;
 import org.junit.*;
 
 import static org.junit.Assert.*;
-@Ignore
 public class HibernateUtilTest {
 
 	static Logger logger = Logger.getLogger(HibernateUtilTest.class);
