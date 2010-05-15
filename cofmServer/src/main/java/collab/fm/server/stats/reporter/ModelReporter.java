@@ -36,7 +36,7 @@ public class ModelReporter implements Reporter {
 			"Number of contributors: $nc" + NL +
 			"Number of creations: total $ct avg(#/person) $ca lowest $clo highest $chi" + NL +
 			"Number of YES votes: total $yt avg(#/person) $ya lowest $ylo highest $yhi" + NL +
-			"Number of NO votes: total $nvt avg(#/person) $nva lowest $nvlo highest $nvhi" + 
+			"Number of NO votes: total $nvt avg(#/person) $nva lowest $nvlo highest $nvhi" + NL +
 			"=== Support/Oppose Overview ===" + NL +
 			"Supporters of a person: avg $spa lowest $splo highest $sphi" + NL +
 			"Opponents of a person: avg $opa lowest $oplo highest $ophi" + NL +
@@ -78,7 +78,7 @@ public class ModelReporter implements Reporter {
 	
 	@SuppressWarnings("unchecked")
 	protected void reportModel(Model m) throws BeanPersistenceException, StaleDataException {
-		String rslt;
+		String rslt = TEMPLATE_INTRO.replaceFirst("\\$id", m.getId().toString());
 		// Model name
 		Set<ModelName> names = (Set<ModelName>) m.getNames();
 		StringBuilder strNames = new StringBuilder();
@@ -89,7 +89,7 @@ public class ModelReporter implements Reporter {
 					.replaceFirst("\\$no", String.valueOf(name.getOpponentNum()))
 					+ "  ");
 		}
-		rslt = TEMPLATE_INTRO.replaceFirst("\\$name", strNames.toString());
+		rslt = rslt.replaceFirst("\\$name", strNames.toString());
 		
 		// Contribution of Elements
 		Map<Long, Contribution> coe = new HashMap<Long, Contribution>();
@@ -183,7 +183,7 @@ public class ModelReporter implements Reporter {
 			.replaceFirst("\\$clo", String.valueOf(cc.min))
 			.replaceFirst("\\$chi", String.valueOf(cc.max))
 			.replaceFirst("\\$yt", String.valueOf(yesc.sum))
-			.replaceFirst("\\$yt", yesc.toAvg(uNum))
+			.replaceFirst("\\$ya", yesc.toAvg(uNum))
 			.replaceFirst("\\$ylo", String.valueOf(yesc.min))
 			.replaceFirst("\\$yhi", String.valueOf(yesc.max))
 			.replaceFirst("\\$nvt", String.valueOf(noc.sum))
