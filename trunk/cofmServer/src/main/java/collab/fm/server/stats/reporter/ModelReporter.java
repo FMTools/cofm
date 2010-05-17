@@ -32,6 +32,7 @@ public class ModelReporter implements Reporter {
 			"Number of features: $nf" + NL +
 			"Number of relationships: total $nrt refine $nrf require $nrq exclude $nre" + NL +
 			"Number of feature names: total $fnt avg(#/feature) $fna lowest $fnlo highest $fnhi" + NL +
+			"Number of feature descriptions: total $fdt avg(#/feature) $fda lowest $fdlo highest $fdhi" + NL +
 			"=== Contributions Overview ===" + NL +
 			"Number of contributors: $nc" + NL +
 			"Number of creations: total $ct avg(#/person) $ca lowest $clo highest $chi" + NL +
@@ -127,7 +128,7 @@ public class ModelReporter implements Reporter {
 			.replaceFirst("\\$nrq", StatsUtil.nullSafeSize(requires))
 			.replaceFirst("\\$nre", StatsUtil.nullSafeSize(excludes));
 		
-		Counter fnameCounter = new Counter();
+		Counter fnameCounter = new Counter(), fdCounter = new Counter();
 		if (features != null) {
 			for (Feature f: features) {
 				addCon(coe, f);
@@ -135,13 +136,18 @@ public class ModelReporter implements Reporter {
 				fYes.count(f.getSupporterNum());
 				fNo.count(f.getOpponentNum());
 				fnameCounter.count(f.getNames().size());
+				fdCounter.count(f.getDescriptions().size());
 			}
 		}
 		
 		rslt = rslt.replaceFirst("\\$fnt", String.valueOf(fnameCounter.sum))
 			.replaceFirst("\\$fna", fnameCounter.toAvg(StatsUtil.nullSafeIntSize(features)))
 			.replaceFirst("\\$fnlo", String.valueOf(fnameCounter.min))
-			.replaceFirst("\\$fnhi", String.valueOf(fnameCounter.max));
+			.replaceFirst("\\$fnhi", String.valueOf(fnameCounter.max))
+			.replaceFirst("\\$fdt", String.valueOf(fdCounter.sum))
+			.replaceFirst("\\$fda", fdCounter.toAvg(StatsUtil.nullSafeIntSize(features)))
+			.replaceFirst("\\$fdlo", String.valueOf(fdCounter.min))
+			.replaceFirst("\\$fdhi", String.valueOf(fdCounter.max));
 		
 		//Contributions Overview
 		List<User> users = DaoUtil.getUserDao().getAll(m.getId());
