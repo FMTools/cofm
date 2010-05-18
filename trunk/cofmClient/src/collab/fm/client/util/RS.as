@@ -3,7 +3,13 @@ package collab.fm.client.util {
 
 	[ResourceBundle("ui")]
 	public class RS {
-
+		
+		public static const FEEDBACK_TITLE: String = s("feedback.title");
+		public static const FEEDBACK_INFO: String = s("feedback.info");
+		public static const FEEDBACK_LOG: String = s("feedback.log");
+		public static const BTN_ISSUE_TRACK: String = s("btn.issuetrack");
+		public static const BTN_ISSUE_OTHER: String = s("btn.otherissue");
+		
 		public static const APP_TITLE: String = s("app.title");
 
 		public static const BTN_LOGIN: String = s("btn.login");

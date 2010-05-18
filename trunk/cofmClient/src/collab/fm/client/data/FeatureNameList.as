@@ -1,5 +1,6 @@
 package collab.fm.client.data {
 	import collab.fm.client.event.*;
+	import collab.fm.client.util.*;
 
 	import mx.collections.ArrayCollection;
 	import mx.collections.IViewCursor;
@@ -87,6 +88,7 @@ package collab.fm.client.data {
 
 		private function onLocalModelUpdate(evt: ModelUpdateEvent): void {
 			reset();
+			Console.info("FeatureNameList - Model refreshed. Reset name list.");
 		}
 
 		private function reset(): void {

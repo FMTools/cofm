@@ -4,7 +4,8 @@
 	layout="absolute" width="320" height="210"
 	title="{RS.REG_HEADING}"
 	showCloseButton="true"
-	close="onClose();">
+	close="onClose();"
+    creationComplete="initView();">
 
 	<!-- Register Form -->
 	<mx:Form id="regForm">
@@ -39,6 +40,10 @@
 			import collab.fm.client.command.*;
 			import collab.fm.client.event.*;
 			import collab.fm.client.data.*;
+			
+			private function initView(): void {
+				regName.setFocus();
+			}
 			
 			private function onClose(): void {
 				PopUpManager.removePopUp(this);

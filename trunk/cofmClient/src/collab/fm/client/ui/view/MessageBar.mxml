@@ -3,7 +3,7 @@
 	 creationComplete="initView();"
 	 paddingLeft="20" paddingRight="20" hideEffect="{fadeOut}">
 	 <mx:Fade id="fadeOut" duration="1000" alphaFrom="1.0" alphaTo="0.0"/>  
-	<mx:Label id="msg" width="100%" fontSize="12" color="black" hideEffect="{fadeOut}"/>
+	<mx:Label id="msg" width="100%" fontWeight="bold" fontSize="12" color="black" hideEffect="{fadeOut}"/>
 	
 	<mx:Script>
 		<![CDATA[
@@ -11,7 +11,7 @@
 			import flash.utils.Timer;
 			import collab.fm.client.event.*;
 			
-			private var timer: Timer = new Timer(2000); 
+			private var timer: Timer = new Timer(3000); 
 			
 			private function initView(): void {
 				ClientEvtDispatcher.instance().addEventListener(
@@ -38,7 +38,7 @@
 					return;
 				}
 				timer.stop();
-				this.setStyle("backgroundColor", "yellow");
+				this.setStyle("backgroundColor", "#f6bc5d");
 				this.visible = true;
 				msg.text = evt.msg;
 				msg.visible = true;

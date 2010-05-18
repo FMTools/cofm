@@ -24,7 +24,7 @@
 				 
 				<mx:HBox width="100%">
 					<mx:LinkButton paddingLeft="0" paddingRight="0" 
-						label="{RS.BTN_FEEDBACK}" click="gotoFeedback();" />
+						label="{RS.BTN_FEEDBACK}" click="doFeedback();" />
 					<mx:LinkButton paddingLeft="0" paddingRight="0" 
 						label="{RS.BTN_BACK_TO_HOME}" click="refreshHomePage();" id="btnBack" />
 					<v:MessageBar width="300"/>
@@ -52,6 +52,7 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import collab.fm.client.ui.view.FeedBackDlg;
 			import mx.events.CloseEvent;
 			import mx.controls.Alert;
 			import collab.fm.client.command.LogoutCommand;
@@ -70,6 +71,7 @@
 			
 			private var dlgLogin: LoginDlg;
 			private var dlgReg: RegisterDlg;
+			private var dlgFeedback: FeedBackDlg;
 			
 			private var currentPage: int;
 			
@@ -91,7 +93,15 @@
 			}
 			
 			private function initData(): void {
+				FeatureModel.instance.features;
+				CurrentFeature.instance.id;
 				FeatureNameList.instance.data;
+				ModelCollection.instance.others;
+				UserList.instance.myId;
+				//Trees
+				GlobalTreeData.instance.xml;
+				WorkingTreeData.instance.xml;
+				
 			}
 			
 			private function refreshHomePage(): void {
@@ -125,6 +135,7 @@
 				UIUtil.show(work, true);
 				UIUtil.show(btnBack, true);
 				currentPage = WORK_PAGE;
+				Console.info("Client - Working view completed. Show the work page and home button.");
 			}
 			
 			private function onLogin(evt: LoginEvent): void {
@@ -147,9 +158,9 @@
 				
 			}
 			
-			private function gotoFeedback(): void {
-				navigateToURL(new URLRequest(
-					"http://code.google.com/p/cofm/issues/list"), "_blank");
+			private function doFeedback(): void {
+				dlgFeedback = FeedBackDlg(PopUpManager.createPopUp(this, FeedBackDlg, true));
+				PopUpManager.centerPopUp(dlgFeedback);
 			}
 			
 			private function showLogin(): void {

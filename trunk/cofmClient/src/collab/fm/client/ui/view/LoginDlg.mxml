@@ -2,7 +2,8 @@
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="320" height="190"
     title="{RS.LOGIN_HEADING}"
 	showCloseButton="true"
-	close="onClose();">
+	close="onClose();"
+    creationComplete="initView();">
 	
 	<!-- Login Form -->
 	<mx:Form id="loginForm">
@@ -26,6 +27,10 @@
 			import collab.fm.client.command.*;
 			import collab.fm.client.util.*;
 			import collab.fm.client.data.*;
+			
+			private function initView(): void {
+				uName.setFocus();	
+			}
 			
 			private function onClose(): void {
 				PopUpManager.removePopUp(this);

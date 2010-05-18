@@ -3,7 +3,8 @@
 	 xmlns:a="com.hillelcoren.components.*"
 	 title="{RS.EDIT_ADD_NAME_TITLE}"
 	 showCloseButton="true"
-	 close="onClose();">
+	 close="onClose();"
+	 creationComplete="initView();">
 	
 	<mx:Form>
 		<mx:FormItem label="{RS.EDIT_ADD_NAME}">
@@ -29,6 +30,10 @@
 			import collab.fm.client.command.*;
 			import collab.fm.client.util.*;
 			import collab.fm.client.data.*;
+			
+			private function initView(): void {
+				nameInput.setFocus();
+			}
 			
 			private function onClose(): void {
 				PopUpManager.removePopUp(this);

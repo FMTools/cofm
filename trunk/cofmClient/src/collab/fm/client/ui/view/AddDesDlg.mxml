@@ -2,7 +2,8 @@
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="400" height="300"
 	 title="{RS.EDIT_ADD_DES_TITLE}"
 	 showCloseButton="true"
-	 close="onClose();">
+	 close="onClose();"
+	 creationComplete="initView();">
 	
 	<mx:Form>
 		<mx:VBox>
@@ -23,6 +24,10 @@
 			import collab.fm.client.command.*;
 			import collab.fm.client.util.*;
 			import collab.fm.client.data.*;
+			
+			private function initView(): void {
+				dta.setFocus();
+			}
 			
 			private function onClose(): void {
 				PopUpManager.removePopUp(this);
