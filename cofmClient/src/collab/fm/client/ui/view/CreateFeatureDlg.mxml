@@ -69,6 +69,8 @@
 			private function initView(): void {
 				ClientEvtDispatcher.instance().addEventListener(
 					ModelMinorChangeEvent.FEATURE_CREATED_LOCALLY, onFeatureCreatedLocally);
+				resetForm();
+				nameInput.setFocus();
 			}
 			
 			private function nameValid(nameOk: Boolean): void{ 
@@ -92,22 +94,26 @@
 			}
 						
 			private function onClose(): void {
+				ClientEvtDispatcher.instance().removeEventListener(
+					ModelMinorChangeEvent.FEATURE_CREATED_LOCALLY, onFeatureCreatedLocally);
 				PopUpManager.removePopUp(this);
 			}
 			
 			private function endCreateFeature(): void {
-				onClose();
 				// 1. commit create_feature and create_relationship
+				Console.info("CreateFeatureDlg - start creating feature: " + nameInput.text);
 				new CreateOrVoteFeatureCommand(nameInput.text).execute();
 				// 2. open the properties editing form for the created feature.
 			}
 			
 			private function onFeatureCreatedLocally(evt: ModelMinorChangeEvent): void {
-				if (parentId >= 0) {
+				if (parentId > 0) {
 					trace("Create relation in creation form: " + parentId + " refined by " + int(evt.data));
+					Console.info("CreateFeatureDlg - start creating binary relationship: " + Cst.BIN_REL_REFINES + "(" + parentId + ", " + int(evt.data) + ")");
 					new CreateOrVoteBinaryRelationshipCommand(
 						Cst.BIN_REL_REFINES, parentId, int(evt.data)).execute();
 				}
+				onClose();
 			}
 			
 			private function checkDuplicateName(): void {

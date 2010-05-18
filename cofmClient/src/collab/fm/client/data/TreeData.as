@@ -17,8 +17,7 @@ package collab.fm.client.data {
 
 		public function TreeData() {
 			_data = new XMLListCollection();
-			ClientEvtDispatcher.instance().addEventListener(
-				ModelUpdateEvent.LOCAL_MODEL_COMPLETE, onLocalModelUpdate);
+			
 		}
 
 		public function getNameById(id: String): String {
@@ -32,7 +31,9 @@ package collab.fm.client.data {
 			return null;
 		}
 
-		protected function onLocalModelUpdate(evt: ModelUpdateEvent): void {
+		protected function refreshData(evt: ModelUpdateEvent): void {
+			onDataUpdateStart();
+			
 			var refines: Dictionary = new Dictionary();
 			// refines: key = id, value = parent & children
 			//   parent == [] (empty array) indicates a root feature.
@@ -99,6 +100,11 @@ package collab.fm.client.data {
 
 		/*abstract*/
 		protected function onDataUpdateComplete(): void {
+		}
+		
+		/*abstract*/
+		protected function onDataUpdateStart(): void {
+			
 		}
 
 		[Bindable]

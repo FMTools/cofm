@@ -62,7 +62,6 @@
 			private var left: int;
 			private var right: int;
 			
-		
 			private function onClose(): void {
 				PopUpManager.removePopUp(this);
 			}

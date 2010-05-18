@@ -38,6 +38,7 @@
 			import collab.fm.client.util.*;
 			
 			public function initData(modelId: int): void {
+				Console.info("WorkPerspective - Work page init started. Execute UpdateCommand.");
 				new UpdateCommand(modelId).execute();
 			}
 			
@@ -47,6 +48,7 @@
 			
 			private function onModelSelected(evt: ModelSelectEvent): void {
 				leftPanel.title = RS.TREE_PANEL_TITLE + ":         " + evt.modelName;
+				Console.info("WorkPerspective - Model selected. Set tree panel title to: " + evt.modelName);
 			}
 			
 		]]>
