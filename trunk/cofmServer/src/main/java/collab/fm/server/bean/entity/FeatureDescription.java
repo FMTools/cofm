@@ -82,4 +82,8 @@ public class FeatureDescription extends VersionedEntity implements Votable {
 		return vote.getSupporters().size();
 	}
 	
+	public boolean hasCreator() {
+		return true;
+	}
+	
 }
