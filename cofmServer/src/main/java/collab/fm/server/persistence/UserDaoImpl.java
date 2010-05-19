@@ -48,7 +48,7 @@ public class UserDaoImpl extends GenericDaoImpl<User, Long> implements UserDao {
 			StaleDataException {
 		try {
 			List result = HibernateUtil.getCurrentSession()
-				.createQuery("from User as user " +
+				.createQuery("select user from User as user " +
 						"left join user.modelsInternal as model " +
 						"where model.id = :mId")
 				.setLong("mId", modelId)

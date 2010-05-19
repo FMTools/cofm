@@ -72,6 +72,10 @@ public class UserDaoImplTest {
 		try {
 			assertTrue(dao.getAll().size()>=3);
 			assertTrue(dao.getAll(mId).size()==3);
+			List<User> u = dao.getAll(mId);
+			for (User user: u) {
+				logger.info(user.getId());
+			}
 		} catch (Exception e) {
 			logger.error("Couldn't get all.", e);
 			assertTrue(false);

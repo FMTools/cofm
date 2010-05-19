@@ -186,6 +186,7 @@ public class Feature extends VersionedEntity implements Votable {
 		// If not existed then add and vote yes
 		if (yes) { // vote 'NO' to a nonexistent value is nonsense.
 			val.vote(true, userid);
+			val.setCreator(userid);
 			field.add(val);
 			if (modelId > 0) {
 				logger.info(LogUtil.logOp(userid, LogUtil.OP_CREATE,
