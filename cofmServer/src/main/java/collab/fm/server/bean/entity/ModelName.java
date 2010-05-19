@@ -79,4 +79,8 @@ public class ModelName extends VersionedEntity implements Votable {
 	public int getSupporterNum() {
 		return vote.getSupporters().size();
 	}
+	
+	public boolean hasCreator() {
+		return true;
+	}
 }

@@ -325,4 +325,8 @@ public class Feature extends VersionedEntity implements Votable {
 	public Vote getVote() {
 		return this.existence;
 	}
+
+	public boolean hasCreator() {
+		return true;
+	}
 }

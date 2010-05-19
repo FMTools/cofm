@@ -1,11 +1,6 @@
 package collab.fm.server.stats.reporter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 
@@ -26,6 +21,14 @@ public class ModelReporter implements Reporter {
 	
 	private static Logger logger = Logger.getLogger(ModelReporter.class);
 	
+	private static final String USER_STATS_TITLE = String.format(
+			"%-22s %-20s %-20s %n" +
+			"%-12s %-4s %-4s %-6s %-6s %-6s %-6s %-6s %-6s %n" +
+			"%-54s",
+			" ", "Support(Create)", "Support(Vote)",
+			"User Name", "C#", "V#", "avg", "min", "max", "avg", "min", "max",
+			"---------------------------------------------------------------------------");
+	
 	private static final String TEMPLATE_INTRO = "[Feature Model (ID = $id)]" + NL +
 			"Model name: $name" + NL + 
 			"=== Elements Overview ===" + NL +
@@ -39,15 +42,24 @@ public class ModelReporter implements Reporter {
 			"Number of YES votes: total $yt avg(#/person) $ya lowest $ylo highest $yhi" + NL +
 			"Number of NO votes: total $nvt avg(#/person) $nva lowest $nvlo highest $nvhi" + NL +
 			"=== Support/Oppose Overview ===" + NL +
-			"Supporters of a person: avg $spa lowest $splo highest $sphi" + NL +
-			"Opponents of a person: avg $opa lowest $oplo highest $ophi" + NL +
 			"Supporters of a feature: avg $sfa lowest $sflo highest $sfhi" + NL +
 			"Opponents of a feature: avg $ofa lowest $oflo highest $ofhi" + NL +
 			"Supporters of a relationship: avg $sra lowest $srlo highest $srhi" + NL +
-			"Opponents of a relationship: avg $ora lowest $orlo highest $orhi";
+			"Opponents of a relationship: avg $ora lowest $orlo highest $orhi" + NL;
 	
 	private static final String TEMPLATE_MODEL_NAME = "$value ($yes:$no)";
 	
+	// Template for user stats, arguments:
+	// userName creation# vote# Supporting_Rate_of_creation(low high avg) Supporting_rate_of_voting(l h avg)
+	private static final String TEMPLATE_USER_STATS = 
+		"%-12s %-4d %-4d %-6.2f %-6.2f %-6.2f %-6.2f %-6.2f %-6.2f";
+	
+	
+	// Template for supporting rate (Person)
+	//   UserName     Creation#   Vote#  Supporting Rate of Creation(low high avg)   Supporting Rate of Voting(low high avg)
+	// (Element)
+	//   Supporting Rate         Count(ratio%)
+	//
 	//TODO: format the feature details and relationship details, e.g.:
 	//    FeatureID     Attribute     Value (&ID)   Creator  YES Voters     NO Voters
 	//---------------------------------------------------------------------------------------
@@ -92,12 +104,12 @@ public class ModelReporter implements Reporter {
 		}
 		rslt = rslt.replaceFirst("\\$name", strNames.toString());
 		
-		// Contribution of Elements
-		Map<Long, Contribution> coe = new HashMap<Long, Contribution>();
+		// User Stats
+		Map<Long, UserStats> userStatsMap = new HashMap<Long, UserStats>();
 		
 		// Elements Overview
-		Counter fYes = new Counter(), fNo = new Counter();
-		Counter rYes = new Counter(), rNo = new Counter();
+		IntCounter fYes = new IntCounter(), fNo = new IntCounter();
+		IntCounter rYes = new IntCounter(), rNo = new IntCounter();
 		
 		List<Feature> features = DaoUtil.getFeatureDao().getAll(m.getId());
 		rslt = rslt.replaceFirst("\\$nf", StatsUtil.nullSafeSize(features));
@@ -111,7 +123,7 @@ public class ModelReporter implements Reporter {
 			excludes = new ArrayList<BinaryRelationship>();
 			for (Relationship r: relations) {
 				
-				addCon(coe, r);
+				addUserStats(userStatsMap, r);
 				rYes.count(r.getSupporterNum());
 				rNo.count(r.getOpponentNum());
 				
@@ -128,10 +140,10 @@ public class ModelReporter implements Reporter {
 			.replaceFirst("\\$nrq", StatsUtil.nullSafeSize(requires))
 			.replaceFirst("\\$nre", StatsUtil.nullSafeSize(excludes));
 		
-		Counter fnameCounter = new Counter(), fdCounter = new Counter();
+		IntCounter fnameCounter = new IntCounter(), fdCounter = new IntCounter();
 		if (features != null) {
 			for (Feature f: features) {
-				addCon(coe, f);
+				addUserStats(userStatsMap, f);
 				
 				fYes.count(f.getSupporterNum());
 				fNo.count(f.getOpponentNum());
@@ -158,29 +170,22 @@ public class ModelReporter implements Reporter {
 			for (Feature f: features) {
 				for (Votable v: f.getNames()) {
 					FeatureName fn = (FeatureName) v;
-					addCon(coe, fn);
+					addUserStats(userStatsMap, fn);
 				}
 				for (Votable v: f.getDescriptions()) {
 					FeatureDescription fd = (FeatureDescription) v;
-					addCon(coe, fd);
+					addUserStats(userStatsMap, fd);
 				}
-				for (Long u: f.getOptionality().getSupporters()) {
-					addCon(coe, u, Contribution.YES_VOTE);
-				}
-				for (Long u: f.getOptionality().getOpponents()) {
-					addCon(coe, u, Contribution.NO_VOTE);
-				}
+				OptionalityAdapter oa = new OptionalityAdapter(f.getOptionality());
+				addUserStats(userStatsMap, oa);
 			}
 		}
 		
-		Counter cc = new Counter(), yesc = new Counter(), noc = new Counter();
-		Counter personYes = new Counter(), personNo = new Counter();
-		for (Map.Entry<Long, Contribution> entry: coe.entrySet()) {
+		IntCounter cc = new IntCounter(), yesc = new IntCounter(), noc = new IntCounter();
+		for (Map.Entry<Long, UserStats> entry: userStatsMap.entrySet()) {
 			cc.count(entry.getValue().creation);
 			yesc.count(entry.getValue().yes);
 			noc.count(entry.getValue().no);
-			personYes.count(entry.getValue().supported.size());
-			personNo.count(entry.getValue().opposed.size());
 		}
 		
 		int uNum = StatsUtil.nullSafeIntSize(users);
@@ -198,12 +203,7 @@ public class ModelReporter implements Reporter {
 			.replaceFirst("\\$nvhi", String.valueOf(noc.max));
 		
 		//Support/Oppose Overview
-		rslt = rslt.replaceFirst("\\$spa", personYes.toAvg(uNum))
-			.replaceFirst("\\$splo", String.valueOf(personYes.min))
-			.replaceFirst("\\$sphi", String.valueOf(personYes.max))
-			.replaceFirst("\\$opa", personNo.toAvg(uNum))
-			.replaceFirst("\\$oplo", String.valueOf(personNo.min))
-			.replaceFirst("\\$ophi", String.valueOf(personNo.max))
+		rslt = rslt
 			.replaceFirst("\\$sfa", fYes.toAvg(StatsUtil.nullSafeIntSize(features)))
 			.replaceFirst("\\$sflo", String.valueOf(fYes.min))
 			.replaceFirst("\\$sfhi", String.valueOf(fYes.max))
@@ -218,62 +218,197 @@ public class ModelReporter implements Reporter {
 			.replaceFirst("\\$orhi", String.valueOf(rNo.max));
 		
 		logger.info(rslt);
+		
+		Map<Long, String> us = new HashMap<Long, String>();
+		for (User u: users) {
+			us.put(u.getId(), u.getName());
+		}
+		reportUserStats(userStatsMap, us);
 	}
 	
-	protected void addCon(Map<Long, Contribution> target, Votable element) {
-		// Contribution of creation
-		addCon(target, element.getCreator(), Contribution.CREATION);
-		// Contribution of yes votes
+	protected void reportUserStats(Map<Long, UserStats> map, Map<Long, String> users) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("=== User contribution/rating details===" + NL + USER_STATS_TITLE + NL);
+		
+		// 1. Sort the map (Reverse)
+		List<Map.Entry<Long, UserStats>> list = new LinkedList<Map.Entry<Long, UserStats>>(map.entrySet());
+		Collections.sort(list, new Comparator<Map.Entry<Long, UserStats>>(){
+			public int compare(Map.Entry<Long, UserStats> o1, Map.Entry<Long, UserStats> o2) {
+				return -(o1.getValue().compareTo(o2.getValue()));
+			}
+		});
+		
+		// 2. Report by order
+		for (Map.Entry<Long, UserStats> e: list) {
+			e.getValue().calculateSupportRate();
+			sb.append(String.format(TEMPLATE_USER_STATS, 
+					safeGetName(users, e.getKey()),
+					e.getValue().creation,
+					e.getValue().yes + e.getValue().no,
+					e.getValue().avgCreationSupport,
+					e.getValue().minCreationSupport,
+					e.getValue().maxCreationSupport,
+					e.getValue().avgVoteSupport,
+					e.getValue().minVoteSupport,
+					e.getValue().maxVoteSupport
+					));
+			sb.append(NL);
+		}
+	}
+	
+	protected String safeGetName(Map<Long, String> users, Long id) {
+		String name = users.get(id);
+		if (name == null) {
+			return "User# " + id.toString();
+		}
+		return name;
+	}
+	
+	protected UserStats safeGet(Map<Long, UserStats> map, Long id) {
+		UserStats c = map.get(id);
+		if (c == null) {
+			c = new UserStats();
+			map.put(id, c);
+		}
+		return c;
+	}
+	
+	protected void addUserStats(Map<Long, UserStats> target, Votable element) {
+		addCreationStats(target, element);
+		addVoteStats(target, element);
+	}
+	
+	protected void addVoteStats(Map<Long, UserStats> target, Votable element) {
+		// Add number of voting, and support info to every voter of this Element
+		// Yes Voters
 		for (Long id: element.getVote().getSupporters()) {
-			addCon(target, id, Contribution.YES_VOTE);
+			Support vs = new Support();
+			UserStats c = safeGet(target, id);
+			c.yes++;
+			vs.yes = element.getSupporterNum();
+			vs.no = element.getOpponentNum();
+			c.voteSupport.add(vs);
 		}
-		// Contribution of no votes
+		// No Voters
 		for (Long id: element.getVote().getOpponents()) {
-			addCon(target, id, Contribution.NO_VOTE);
+			Support vs = new Support();
+			UserStats c = safeGet(target, id);
+			c.no++;
+			vs.yes = element.getOpponentNum();
+			vs.no = element.getSupporterNum();
+			c.voteSupport.add(vs);
 		}
 	}
 	
-	protected void addCon(Map<Long, Contribution> target, Long id, int type) {
-		if (id < 0) {
+	protected void addCreationStats(Map<Long, UserStats> target, Votable element) {
+		if (!element.hasCreator()) {
 			return;
 		}
-		Contribution con = target.get(id);
-		boolean newItem = false;
-		if (con == null) {
-			newItem = true;
-			con = new Contribution();
-		}
-		switch (type) {
-			case Contribution.CREATION:
-				con.creation++; break;
-			case Contribution.YES_VOTE:
-				con.yes++; 
-				con.supported.add(id);
-				break;
-			case Contribution.NO_VOTE:
-				con.no++; 
-				con.opposed.add(id);
-				break;
-		}
-		if (newItem) {
-			target.put(id, con);
-		}
+		Support cs = new Support();
+		UserStats con = safeGet(target, element.getCreator());
+		
+		con.creation++;
+		cs.yes = element.getSupporterNum();
+		cs.no = element.getOpponentNum();
+		con.creationSupport.add(cs);
 	}
 	
-	protected static class Contribution {
-		public static final int CREATION = 1;
-		public static final int YES_VOTE = 2;
-		public static final int NO_VOTE = 3;
-		
+	protected static class UserStats implements Comparable<UserStats>{
 		public int creation = 0;
 		public int yes = 0;
 		public int no = 0;
 		
-		public Set<Long> supported = new HashSet<Long>();
-		public Set<Long> opposed = new HashSet<Long>();
+		public List<Support> creationSupport = new ArrayList<Support>();
+		public List<Support> voteSupport = new ArrayList<Support>();
+		
+		public float avgCreationSupport;
+		public float minCreationSupport;
+		public float maxCreationSupport;
+		
+		public float avgVoteSupport;
+		public float minVoteSupport;
+		public float maxVoteSupport;
+		
+		public void calculateSupportRate() {
+			SupportCounter csc = calculateRate(creationSupport);
+			avgCreationSupport = csc.toAvg();
+			minCreationSupport = csc.min;
+			maxCreationSupport = csc.max;
+			
+			SupportCounter vsc = calculateRate(voteSupport);
+			avgVoteSupport = vsc.toAvg();
+			minVoteSupport = vsc.min;
+			maxVoteSupport = vsc.max;
+		}
+		
+		private SupportCounter calculateRate(List<Support> ss) {
+			SupportCounter c = new SupportCounter();
+			for (Support s: ss) {
+				c.count(s);
+			}
+			return c;
+		}
+
+		public int compareTo(UserStats o) {
+			// sort by creation number first, vote number second
+			if (this.creation < o.creation) {
+				return -1;
+			}
+			if (this.creation > o.creation) {
+				return 1;
+			}
+			int v = this.yes + this.no - o.yes - o.no;
+			if (v < 0) {
+				return -1;
+			}
+			if (v > 0) {
+				return 1;	
+			}
+			return 0;
+		}
 	}
 	
-	protected static class Counter {
+	protected static class Support {
+		public int yes = 0;
+		public int no = 0;
+		public float rate() {
+			if (no == 0) {
+				return 100.0f;
+			}
+			return (float) (100.0 * yes / (yes + no));
+		}
+	}
+	
+	protected static class SupportCounter {
+		public float min = 0.0f;
+		public float max = 100.0f;
+		public int yes = 0;
+		public int no = 0;
+		
+		private boolean hasMeetFirst = false;
+		
+		public void count(Support s) {
+			yes += s.yes;
+			no += s.no;
+			float rate = s.rate();
+			if (!hasMeetFirst || rate < min) {
+				min = rate;
+			}
+			if (!hasMeetFirst || rate > max) {
+				max = rate;
+			}
+			hasMeetFirst = true;
+		}
+		
+		public float toAvg() {
+			if (no == 0) {
+				return 100.0f;
+			}
+			return (float) (100.0 * yes / (yes + no));
+		}
+	}
+	
+	protected static class IntCounter {
 		public int min = 0;
 		public int max = 0;
 		public int sum = 0;
@@ -295,6 +430,40 @@ public class ModelReporter implements Reporter {
 		public String toAvg(int divider) {
 			return StatsUtil.zeroSafeAvg(sum, divider);
 		}
+	}
+	
+	protected static class OptionalityAdapter implements Votable {
+		
+		private Vote opt;
+		
+		public OptionalityAdapter(Vote opt) {
+			this.opt = opt;
+		}
+		
+		public Long getCreator() {
+			return Votable.VOID_CREATOR;
+		}
+
+		public int getOpponentNum() {
+			return opt.getOpponents().size();
+		}
+
+		public int getSupporterNum() {
+			return opt.getSupporters().size();
+		}
+
+		public Vote getVote() {
+			return opt;
+		}
+
+		public boolean hasCreator() {
+			return false;
+		}
+
+		public void vote(boolean yes, Long userid) {
+			opt.vote(yes, userid);
+		}
+		
 	}
 
 }
