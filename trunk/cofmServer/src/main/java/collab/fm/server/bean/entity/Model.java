@@ -149,6 +149,7 @@ public class Model extends VersionedEntity {
 		// If not existed then add and vote yes
 		if (yes) { // vote 'NO' to a nonexistent value is nonsense.
 			val.vote(true, userid);
+			val.setCreator(userid);
 			field.add(val);
 			if (log) {
 				logger.info(LogUtil.logOp(userid, LogUtil.OP_CREATE,

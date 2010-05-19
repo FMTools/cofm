@@ -254,12 +254,13 @@ public class ModelReporter implements Reporter {
 					));
 			sb.append(NL);
 		}
+		logger.info(sb.toString());
 	}
 	
 	protected String safeGetName(Map<Long, String> users, Long id) {
 		String name = users.get(id);
 		if (name == null) {
-			return "User# " + id.toString();
+			return "<unknown>";
 		}
 		return name;
 	}
@@ -373,7 +374,7 @@ public class ModelReporter implements Reporter {
 		public int no = 0;
 		public float rate() {
 			if (no == 0) {
-				return 100.0f;
+				return (yes == 0 ? Float.NaN : 100.0f);
 			}
 			return (float) (100.0 * yes / (yes + no));
 		}
@@ -381,7 +382,7 @@ public class ModelReporter implements Reporter {
 	
 	protected static class SupportCounter {
 		public float min = 0.0f;
-		public float max = 100.0f;
+		public float max = 0.0f;
 		public int yes = 0;
 		public int no = 0;
 		
@@ -391,18 +392,22 @@ public class ModelReporter implements Reporter {
 			yes += s.yes;
 			no += s.no;
 			float rate = s.rate();
-			if (!hasMeetFirst || rate < min) {
+			if (!hasMeetFirst) {
 				min = rate;
+				max = rate;
+				hasMeetFirst = true;
+				return;
 			}
-			if (!hasMeetFirst || rate > max) {
+			if (rate < min) {
+				min = rate;
+			} else if (rate > max) {
 				max = rate;
 			}
-			hasMeetFirst = true;
 		}
 		
 		public float toAvg() {
 			if (no == 0) {
-				return 100.0f;
+				return (yes == 0 ? Float.NaN : 100.0f);
 			}
 			return (float) (100.0 * yes / (yes + no));
 		}
@@ -417,13 +422,17 @@ public class ModelReporter implements Reporter {
 		
 		public void count(int number) {
 			sum += number;
-			if (!hasMeetFirstNumber || number < min) {
+			if (!hasMeetFirstNumber) {
 				min = number;
+				max = number;
+				hasMeetFirstNumber = true;
+				return;
 			}
-			if (!hasMeetFirstNumber || number > max) {
+			if (number < min) {
+				min = number;
+			} else if (number > max) {
 				max = number;
 			}
-			hasMeetFirstNumber = true;
 		}
 		
 		// Output "sum / divider" (calculate average)
@@ -462,6 +471,10 @@ public class ModelReporter implements Reporter {
 
 		public void vote(boolean yes, Long userid) {
 			opt.vote(yes, userid);
+		}
+
+		public void setCreator(Long id) {
+			// Do nothing deliberately.
 		}
 		
 	}
