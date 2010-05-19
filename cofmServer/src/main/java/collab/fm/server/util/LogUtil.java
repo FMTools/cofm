@@ -46,7 +46,11 @@ public class LogUtil {
 	}
 	
 	public static String truncText(String text) {
-		if (text.length() > MAX_TEXT_LEN) return text.substring(0, MAX_TEXT_LEN) + "...";
+		return truncText(text, MAX_TEXT_LEN);
+	}
+	
+	public static String truncText(String text, int maxLen) {
+		if (text.length() > maxLen) return text.substring(0, maxLen-3) + "...";
 		return text;
 	}
 	

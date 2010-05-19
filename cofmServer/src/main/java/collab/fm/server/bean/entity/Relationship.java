@@ -32,6 +32,10 @@ public class Relationship extends VersionedEntity implements Votable{
 		return "Relationship (type=" + type + ")";
 	}
 	
+	public String toValueString() {
+		return toString();
+	}
+	
 	public Long getId() {
 		return id;
 	}

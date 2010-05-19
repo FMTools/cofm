@@ -39,6 +39,10 @@ public class FeatureDescription extends VersionedEntity implements Votable {
 		return "Description '" + LogUtil.truncText(value) + "'";
 	}
 	
+	public String toValueString() {
+		return LogUtil.truncText(value, 30);
+	}
+	
 	public void vote(boolean yes, Long userid) {
 		this.getVote().vote(yes, userid);
 	}

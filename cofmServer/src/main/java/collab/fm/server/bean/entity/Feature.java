@@ -244,6 +244,10 @@ public class Feature extends VersionedEntity implements Votable {
 	public String toString() {
 		return "Feature #" + id;
 	}
+	
+	public String toValueString() {
+		return toString();
+	}
 
 	public Vote getExistence() {
 		return existence;

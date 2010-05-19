@@ -19,7 +19,11 @@ public class BinaryRelationship extends Relationship {
 	public String toString() {
 		return "Binary(" + type + ", " + leftFeatureId + ", " + rightFeatureId + ")";
 	}
-
+	
+	public String toValueString() {
+		return toString();
+	}
+	
 	public boolean equals(Object v) {
 		if (this == v) return true;
 		if (this == null || v == null) return false;

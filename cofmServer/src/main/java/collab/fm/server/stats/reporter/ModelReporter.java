@@ -21,14 +21,6 @@ public class ModelReporter implements Reporter {
 	
 	private static Logger logger = Logger.getLogger(ModelReporter.class);
 	
-	private static final String USER_STATS_TITLE = String.format(
-			"%-22s %-20s %-20s %n" +
-			"%-12s %-4s %-4s %-6s %-6s %-6s %-6s %-6s %-6s %n" +
-			"%-54s",
-			" ", "Support(Create)", "Support(Vote)",
-			"User Name", "C#", "V#", "avg", "min", "max", "avg", "min", "max",
-			"---------------------------------------------------------------------------");
-	
 	private static final String TEMPLATE_INTRO = "[Feature Model (ID = $id)]" + NL +
 			"Model name: $name" + NL + 
 			"=== Elements Overview ===" + NL +
@@ -52,20 +44,36 @@ public class ModelReporter implements Reporter {
 	// Template for user stats, arguments:
 	// userName creation# vote# Supporting_Rate_of_creation(low high avg) Supporting_rate_of_voting(l h avg)
 	private static final String TEMPLATE_USER_STATS = 
-		"%-12s %-4d %-4d %-6.2f %-6.2f %-6.2f %-6.2f %-6.2f %-6.2f";
-	
-	
-	// Template for supporting rate (Person)
-	//   UserName     Creation#   Vote#  Supporting Rate of Creation(low high avg)   Supporting Rate of Voting(low high avg)
+		"%-5s %-12s %-4d %-4d %-6.2f %-6.2f %-6.2f %-6.2f %-6.2f %-6.2f";
+	private static final String USER_STATS_TITLE = String.format(
+			"%-28s %-20s %-20s %n" +
+			"%-5s %-12s %-4s %-4s %-6s %-6s %-6s %-6s %-6s %-6s %n" +
+			"%-54s",
+			" ", "Support(Create)", "Support(Vote)",
+			"U_ID", "User Name", "C#", "V#", "avg", "min", "max", "avg", "min", "max",
+			"---------------------------------------------------------------------------");
+	// TODO: stats element support (use shell)
 	// (Element)
 	//   Supporting Rate         Count(ratio%)
 	//
-	//TODO: format the feature details and relationship details, e.g.:
-	//    FeatureID     Attribute     Value (&ID)   Creator  YES Voters     NO Voters
-	//---------------------------------------------------------------------------------------
-	//        1          /            /               1      (6)1,2,3,4,5,6  (2)7,8
-	//        /         Name          feature XX(7)   1      (2)1,2          (6)3,4,5,6,7,8
-	//        /         Name          feature YY(24)  4      (3)4,5,6        (5).....
+	
+	// Feature/Attribute/Value details
+	private static final String TEMPLATE_FEATURE_DETAILS = 
+		"%-5s %-12s %-30s %-5s %-5d %-6.2f";
+	private static final String FEATURE_DETAILS_HEADER = String.format(
+			"%-5s %-12s %-30s %-5s %-5s %-6s %n" +
+			"%-70s",
+			"F_ID", "Attr", "Value", "V_ID", "CrtBy", "Suppport",
+			"-----------------------------------------------------------------------");
+	
+	// Relationship details
+	private static final String TEMPLATE_REL_DETAILS = 
+		"%-5s %-10s %-15s %-15s %-5s %-6.2f";
+	private static final String REL_DETAILS_HEADER = String.format(
+			"%-5s %-10s %-15s %-15s %-5s %-6s %n" +
+			"%-70s",
+			"R_ID", "Type", "Left F", "Right F", "CrtBy", "Support",
+			"-----------------------------------------------------------------------");
 	
 	//TODO: use a properties file to define which models should be displayed.
 	
@@ -224,11 +232,89 @@ public class ModelReporter implements Reporter {
 			us.put(u.getId(), u.getName());
 		}
 		reportUserStats(userStatsMap, us);
+		
+		reportFeatureDetails(features);
+		
+		reportRelationDetails(relations);
+	}
+	
+	protected void reportRelationDetails(List<Relationship> list) {
+		logger.info(NL + "=== Relationship details ===");
+		logger.info(REL_DETAILS_HEADER);
+		if (list == null) {
+			return;
+		}
+		for (Relationship r: list) {
+			reportRelation(r);
+		}
+	}
+	
+	protected void reportRelation(Relationship r) {
+		if (Resources.BIN_REL_EXCLUDES.equals(r.getType()) ||
+				Resources.BIN_REL_REFINES.equals(r.getType()) ||
+				Resources.BIN_REL_REQUIRES.equals(r.getType())) {
+			BinaryRelationship br = (BinaryRelationship) r;
+			logger.info(String.format(TEMPLATE_REL_DETAILS,
+					r.getId(),
+					r.getType(),
+					br.getLeftFeatureId(),
+					br.getRightFeatureId(),
+					r.getCreator(),
+					StatsUtil.toPercentage(r.getSupporterNum(), r.getOpponentNum())));
+		}
+	}
+	
+	protected void reportFeatureDetails(List<Feature> list) {
+		logger.info(NL + "=== Feature/Attribute/Value details ===");
+		logger.info(FEATURE_DETAILS_HEADER);
+		if (list == null) {
+			return;
+		}
+		for (Feature f: list) {
+			reportFeature(f);
+		}
+	}
+	
+	protected void reportFeature(Feature f) {
+		// 1. The first line is the feature id, creator and support.
+		logger.info(String.format(TEMPLATE_FEATURE_DETAILS, 
+				f.getId().toString(),
+				"/",    // Attribute is skipped
+				"/",    // Value is skipped
+				"/",    // V_ID is skipped
+				f.getCreator(),
+				StatsUtil.toPercentage(f.getSupporterNum(), f.getOpponentNum())));
+		// 2. The next line is feature optionality support.
+		logger.info(String.format(TEMPLATE_FEATURE_DETAILS, 
+				"/",  // Feature ID is skipped
+				"Optionality",
+				"Mandotary",
+				"/",  // No V_ID
+				f.getCreator(),   // creator == feature.creator
+				StatsUtil.toPercentage(f.getOptionality().getSupporters().size(), 
+						f.getOptionality().getOpponents().size())));
+		// 3. The next lines are feature names and their creators and support.
+		reportVotableSet(f.getNames(), "Name");
+		
+		// 4. The next lines are feature descriptions
+		reportVotableSet(f.getDescriptions(), "Description");
+	}
+	
+	protected void reportVotableSet(Set<? extends Votable> set, String attr) {
+		for (Votable v: set) {
+			logger.info(String.format(TEMPLATE_FEATURE_DETAILS, 
+					"/",  // feature id
+					attr,
+					v.toValueString(),
+					v.getId().toString(),
+					v.getCreator(),
+					StatsUtil.toPercentage(v.getSupporterNum(), v.getOpponentNum())));
+		}
 	}
 	
 	protected void reportUserStats(Map<Long, UserStats> map, Map<Long, String> users) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("=== User contribution/rating details===" + NL + USER_STATS_TITLE + NL);
+		sb.append("=== User contribution/rating details ===" + NL + USER_STATS_TITLE + NL);
 		
 		// 1. Sort the map (Reverse)
 		List<Map.Entry<Long, UserStats>> list = new LinkedList<Map.Entry<Long, UserStats>>(map.entrySet());
@@ -242,6 +328,7 @@ public class ModelReporter implements Reporter {
 		for (Map.Entry<Long, UserStats> e: list) {
 			e.getValue().calculateSupportRate();
 			sb.append(String.format(TEMPLATE_USER_STATS, 
+					e.getKey(),
 					safeGetName(users, e.getKey()),
 					e.getValue().creation,
 					e.getValue().yes + e.getValue().no,
@@ -373,10 +460,7 @@ public class ModelReporter implements Reporter {
 		public int yes = 0;
 		public int no = 0;
 		public float rate() {
-			if (no == 0) {
-				return (yes == 0 ? Float.NaN : 100.0f);
-			}
-			return (float) (100.0 * yes / (yes + no));
+			return StatsUtil.toPercentage(yes, no);
 		}
 	}
 	
@@ -406,10 +490,7 @@ public class ModelReporter implements Reporter {
 		}
 		
 		public float toAvg() {
-			if (no == 0) {
-				return (yes == 0 ? Float.NaN : 100.0f);
-			}
-			return (float) (100.0 * yes / (yes + no));
+			return StatsUtil.toPercentage(yes, no);
 		}
 	}
 	
@@ -475,6 +556,14 @@ public class ModelReporter implements Reporter {
 
 		public void setCreator(Long id) {
 			// Do nothing deliberately.
+		}
+
+		public Long getId() {
+			return -1L;
+		}
+
+		public String toValueString() {
+			return "";
 		}
 		
 	}
