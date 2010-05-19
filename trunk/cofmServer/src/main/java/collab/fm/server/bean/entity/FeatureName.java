@@ -38,6 +38,10 @@ public class FeatureName extends VersionedEntity implements Votable {
 		return "Name '" + name + "'";
 	}
 	
+	public String toValueString() {
+		return name;
+	}
+	
 	public boolean equals(Object v) {
 		if (this == v) return true;
 		if (this == null || v == null) return false;

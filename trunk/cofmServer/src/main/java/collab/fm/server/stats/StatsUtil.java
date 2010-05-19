@@ -20,4 +20,11 @@ public class StatsUtil {
 		double avg = ((double)total) / divider;
 		return new DecimalFormat(".00").format(avg);
 	}
+	
+	public static float toPercentage(int yes, int no) {
+		if (no == 0) {
+			return (yes == 0 ? Float.NaN : 100.0f);
+		}
+		return (float) (100.0 * yes / (yes + no));
+	}
 }

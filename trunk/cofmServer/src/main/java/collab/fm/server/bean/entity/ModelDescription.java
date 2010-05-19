@@ -39,6 +39,10 @@ public class ModelDescription extends VersionedEntity implements Votable {
 		return "Model Description '" + LogUtil.truncText(value) + "'";
 	}
 	
+	public String toValueString() {
+		return LogUtil.truncText(value, 30);
+	}
+	
 	public void vote(boolean yes, Long userid) {
 		getVote().vote(yes, userid);
 	}
