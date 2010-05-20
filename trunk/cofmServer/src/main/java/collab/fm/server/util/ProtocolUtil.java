@@ -12,6 +12,7 @@ import collab.fm.server.bean.operation.Operation;
 import collab.fm.server.bean.operation.RelationshipOperation;
 import collab.fm.server.bean.protocol.CommitRequest;
 import collab.fm.server.bean.protocol.CreateModelRequest;
+import collab.fm.server.bean.protocol.EditFeatureRequest;
 import collab.fm.server.bean.protocol.ListModelRequest;
 import collab.fm.server.bean.protocol.LoginRequest;
 import collab.fm.server.bean.protocol.RegisterRequest;
@@ -43,11 +44,13 @@ public class ProtocolUtil {
 		requestHandlerMap.put(Resources.REQ_CREATE_MODEL, "doGenericRequest");
 		requestHandlerMap.put(Resources.REQ_LISTUSER, "doGenericRequest");
 		requestHandlerMap.put(Resources.REQ_UPDATE, "doGenericRequest");
+		requestHandlerMap.put(Resources.REQ_EDIT, "doGenericRequest");
 		
 		requestClassMap.put(Resources.REQ_LOGIN, LoginRequest.class);
 		requestClassMap.put(Resources.REQ_REGISTER, RegisterRequest.class);
 		requestClassMap.put(Resources.REQ_LIST_MODEL, ListModelRequest.class);
 		requestClassMap.put(Resources.REQ_CREATE_MODEL, CreateModelRequest.class);
+		requestClassMap.put(Resources.REQ_EDIT, EditFeatureRequest.class);
 		
 		opNameClassMap.put(Resources.OP_CREATE_RELATIONSHIP, RelationshipOperation.class);
 		opNameClassMap.put(Resources.OP_ADD_DES, FeatureOperation.class);
