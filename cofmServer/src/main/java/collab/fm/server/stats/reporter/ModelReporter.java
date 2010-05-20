@@ -1,5 +1,9 @@
 package collab.fm.server.stats.reporter;
 
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.net.URL;
 import java.util.*;
 
 import org.apache.log4j.Logger;
@@ -81,13 +85,29 @@ public class ModelReporter implements Reporter {
 	private StringBuilder featureDetails = new StringBuilder();
 	private StringBuilder relationDetails = new StringBuilder();
 	
+	public static final String CFG_FILE_NAME = "reporter.properties";
+	public static final String KEY_SHOW_LAST = "ModelReporter.showlast";
+	public static final String KEY_TARGETS = "ModelReporter.targets";
+	
 	public void report() {
+		List<String> targets = getReportedModelIDs();
+		
 		try {
-			List<Model> models = DaoUtil.getModelDao().getAll();
-			if (models != null) {
-				for (Model m: models) {
-					reportModel(m);
-					logger.info(NL);
+			if (targets == null) {
+				List<Model> models = DaoUtil.getModelDao().getAll();
+				if (models != null) {
+					for (Model m: models) {
+						reportModel(m);
+						logger.info(NL);
+					}
+				}
+			} else {
+				for (String s: targets) {
+					Model m = DaoUtil.getModelDao().getById(Long.valueOf(s), false);
+					if (m != null) {
+						reportModel(m);
+						logger.info(NL);
+					}
 				}
 			}
 		} catch (BeanPersistenceException e) {
@@ -95,6 +115,48 @@ public class ModelReporter implements Reporter {
 		} catch (StaleDataException e) {
 			logger.error("Stale data error.", e);
 		}
+	}
+	
+	protected List<String> getReportedModelIDs() {
+		List<String> targets = null;
+		//1. try to read property file
+		Properties cfg = new Properties();
+		try {
+			URL url = this.getClass().getClassLoader().getResource(CFG_FILE_NAME);   
+			cfg.load(url.openStream());
+			
+			String ts = cfg.getProperty(KEY_TARGETS);
+			if (ts != null) {
+				targets = Arrays.asList(cfg.getProperty(KEY_TARGETS).split(","));
+			} else {
+				String last = cfg.getProperty(KEY_SHOW_LAST);
+				if (last == null) {
+					return null;
+				}
+				int n = Integer.valueOf(last).intValue();
+				try {
+					List<Model> models = DaoUtil.getModelDao().getAll();
+					int sz = (models == null ? 0 : models.size());
+					if (sz > 0) {
+						targets = new ArrayList<String>(sz);
+						for (int i = 0; i < n; i++) {
+							targets.add(0, String.valueOf(sz - i));
+						}
+					}
+				} catch (BeanPersistenceException e) {
+					e.printStackTrace();
+				} catch (StaleDataException e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (FileNotFoundException e1) {
+			// ignore
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			// ignore
+			e1.printStackTrace();
+		}
+		return targets;
 	}
 	
 	@SuppressWarnings("unchecked")
