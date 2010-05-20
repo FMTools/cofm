@@ -1,8 +1,9 @@
 package collab.fm.client.data {
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
+	
 	import flash.utils.Dictionary;
-
+	
 	import mx.collections.XMLListCollection;
 
 	public /*abstract*/class TreeData {
@@ -18,8 +19,39 @@ package collab.fm.client.data {
 		public function TreeData() {
 			_data = new XMLListCollection();
 			
+			ClientEvtDispatcher.instance().addEventListener(
+				FeatureSelectEvent.OTHER_PEOPLE_SELECT_ON_TREE, onOtherPeopleSelect);
 		}
-
+		
+		protected function onOtherPeopleSelect(evt: FeatureSelectEvent): void {
+			// 1. Remove this person's previous location.
+			var uName: String = UserList.instance.getNameById(evt.user);
+			var p: XMLList = this.xml.source.(@person==uName);
+			var p2: XMLList = this.xml.source..feature.(@person==uName);
+			for each (var o: Object in p) {
+				o.@person = "";
+			}
+			for each (var o2: Object in p2) {
+				o2.@person = "";
+			}
+			var nodes: XMLList = ModelUtil.getRootFeatureById(this.xml.source, String(evt.id));
+			var nodes2: XMLList = ModelUtil.getNonRootFeatureById(this.xml.source, String(evt.id));
+			for each (var n: Object in nodes) {
+				updatePeopleLocation(n, uName);
+			}
+			for each (var n2: Object in nodes2) {
+				updatePeopleLocation(n2, uName);
+			}
+		}
+		
+		protected function updatePeopleLocation(node: *, person: String): void {
+			if (node == undefined || node == null) {
+				return;
+			}
+			node.@person = person;
+			updatePeopleLocation(XML(node).parent(), person);
+		}
+		
 		public function getNameById(id: String): String {
 			var fs: XMLList = ModelUtil.getRootFeatureById(this.xml.source, id);
 			if (fs.length() <= 0) {

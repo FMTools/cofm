@@ -22,7 +22,7 @@ package collab.fm.client.util {
 		public static const EDITOR_H: int = 365;
 
 		// Misc Tabs
-		public static const MISC_W: int = 660;
-		public static const MISC_H: int = 139;
+		public static const MISC_W: int = 675;
+		public static const MISC_H: int = 147;
 	}
 }

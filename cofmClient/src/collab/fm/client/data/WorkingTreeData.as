@@ -70,7 +70,8 @@ package collab.fm.client.data {
 						controversy="1" 
 						nonPositioned="0"
 						multiPositioned="0"
-						unnamed="0" />);
+						unnamed="0"
+						person="" />);
 			}
 			if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
 				var features1: XMLList = ModelUtil.getRootFeatureById(this.xml.source, op["featureId"]);
@@ -194,7 +195,8 @@ package collab.fm.client.data {
 					controversy={_controversyRate} 
 					nonPositioned={_nonPositioned}
 					multiPositioned={_multiPositioned}
-					unnamed={_unnamed}/>;
+					unnamed={_unnamed}
+					person="" />;
 		}
 
 		override protected function addRefinement(refines:Dictionary, r:XML): void {

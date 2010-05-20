@@ -1,4 +1,5 @@
 package collab.fm.client.data {
+	import collab.fm.client.command.StartEditFeatureCommand;
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
 	
@@ -48,6 +49,14 @@ package collab.fm.client.data {
 				FeatureSelectEvent.DB_CLICK_ON_TREE, onCurrentFeatureSelected);
 		}
 
+		private function toUserArray(list: XMLList): Array {
+			var rslt: Array = new Array();
+			for each (var u: Object in list) {
+				rslt.push(u.text().toString());
+			}
+			return rslt;
+		}
+		
 		private function clear(): void {
 			id = -1;
 			votes.removeAll();
@@ -63,6 +72,9 @@ package collab.fm.client.data {
 		}
 
 		private function onCurrentFeatureSelected(evt: FeatureSelectEvent): void {
+			// Broadcast my location
+			new StartEditFeatureCommand(evt.id).execute();
+			
 			// Set the feature id
 			id = evt.id;
 			_feature = XML(FeatureModel.instance.features.source.(@id==String(evt.id))[0]);
@@ -91,13 +103,15 @@ package collab.fm.client.data {
 			votes.addItem({
 					"label": RS.EDIT_FEATURE_BAR_NO,
 					"num": noNum,
-					"ratio": ((noRatio > 0) ? noRatio.toPrecision(3) : "0") + "%" 
+					"ratio": ((noRatio > 0) ? noRatio.toPrecision(3) : "0") + "%",
+					"n": toUserArray(XMLList(_feature.no.user))
 				});
 			// yes votes
 			votes.addItem({
 					"label": RS.EDIT_FEATURE_BAR_YES,
 					"num": yesNum,
-					"ratio": ((yesRatio > 0) ? yesRatio.toPrecision(3) : "0") + "%"
+					"ratio": ((yesRatio > 0) ? yesRatio.toPrecision(3) : "0") + "%",
+					"y": toUserArray(XMLList(_feature.yes.user))
 				});
 		}
 
@@ -113,7 +127,9 @@ package collab.fm.client.data {
 				names.addItem({
 						"name": _name.@val,
 						"supporters": y,
-						"opponents": n
+						"opponents": n,
+						"y": toUserArray(XMLList(_name.yes.user)),
+						"n": toUserArray(XMLList(_name.no.user))
 					});
 				// update primary name (max supporting rate)
 				var r: Number = y / (y+n);
@@ -140,14 +156,8 @@ package collab.fm.client.data {
 			descriptions.removeAll();
 			var des: Array = new Array();
 			for each (var d: Object in _feature.descriptions.description) {
-				var yesId: Array = new Array();
-				for each (var u: Object in d.yes.user) {
-					yesId.push(int(XML(u).text().toString()));
-				}
-				var noId: Array = new Array();
-				for each (var u2: Object in d.no.user) {
-					noId.push(int(XML(u2).text().toString()));
-				}
+				var yesId: Array = toUserArray(XMLList(d.yes.user));
+				var noId: Array = toUserArray(XMLList(d.no.user));
 				des.push({
 						"des": XML(d.value).text().toString(),
 						"supporters": yesId.length,
@@ -204,6 +214,8 @@ package collab.fm.client.data {
 								"name": ModelUtil.getFeatureNameById(r.@right),
 								"supporters": XMLList(r.yes.user).length(),
 								"opponents": XMLList(r.no.user).length(),
+								"y": toUserArray(XMLList(r.yes.user)),
+								"n": toUserArray(XMLList(r.no.user)),
 								"type": Cst.BIN_REL_REFINES,
 								"left": r.@left,
 								"right": r.@right
@@ -214,6 +226,8 @@ package collab.fm.client.data {
 								"name": ModelUtil.getFeatureNameById(r.@left),
 								"supporters": XMLList(r.yes.user).length(),
 								"opponents": XMLList(r.no.user).length(),
+								"y": toUserArray(XMLList(r.yes.user)),
+								"n": toUserArray(XMLList(r.no.user)),
 								"type": Cst.BIN_REL_REFINES,
 								"left": r.@left,
 								"right": r.@right
@@ -233,6 +247,8 @@ package collab.fm.client.data {
 								"name": "this requires " + ModelUtil.getFeatureNameById(r.@right),
 								"supporters": XMLList(r.yes.user).length(),
 								"opponents": XMLList(r.no.user).length(),
+								"y": toUserArray(XMLList(r.yes.user)),
+								"n": toUserArray(XMLList(r.no.user)),
 								"type": Cst.BIN_REL_REQUIRES,
 								"left": r.@left,
 								"right": r.@right
@@ -243,6 +259,8 @@ package collab.fm.client.data {
 								"name": ModelUtil.getFeatureNameById(r.@left) + " requires this",
 								"supporters": XMLList(r.yes.user).length(),
 								"opponents": XMLList(r.no.user).length(),
+								"y": toUserArray(XMLList(r.yes.user)),
+								"n": toUserArray(XMLList(r.no.user)),
 								"type": Cst.BIN_REL_REQUIRES,
 								"left": r.@left,
 								"right": r.@right
@@ -255,6 +273,8 @@ package collab.fm.client.data {
 								"name": "this excludes " + ModelUtil.getFeatureNameById(r.@right),
 								"supporters": XMLList(r.yes.user).length(),
 								"opponents": XMLList(r.no.user).length(),
+								"y": toUserArray(XMLList(r.yes.user)),
+								"n": toUserArray(XMLList(r.no.user)),
 								"type": Cst.BIN_REL_EXCLUDES,
 								"left": r.@left,
 								"right": r.@right
@@ -265,6 +285,8 @@ package collab.fm.client.data {
 								"name": "this excludes " + ModelUtil.getFeatureNameById(r.@left),
 								"supporters": XMLList(r.yes.user).length(),
 								"opponents": XMLList(r.no.user).length(),
+								"y": toUserArray(XMLList(r.yes.user)),
+								"n": toUserArray(XMLList(r.no.user)),
 								"type": Cst.BIN_REL_EXCLUDES,
 								"left": r.@left,
 								"right": r.@right
