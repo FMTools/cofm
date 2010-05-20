@@ -53,6 +53,7 @@ public class Controller {
 		actions.add(new CreateModelAction());
 		actions.add(new ListModelAction());
 		actions.add(new ListUserAction());
+		actions.add(new EditFeatureAction());
 		logger.info("Controller initialized.");
 	}
 	

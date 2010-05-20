@@ -18,7 +18,7 @@ public class Request {
 	public boolean valid() {
 		// The requester maybe unaware of its IP address and/or requester ID (e.g. a register request).
 		// But these fields might be checked by subclasses.
-		return id != null && name != null; 
+		return name != null; 
 	}
 	
 	public String toString() {
