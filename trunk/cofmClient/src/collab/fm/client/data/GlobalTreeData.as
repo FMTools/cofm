@@ -21,8 +21,11 @@ package collab.fm.client.data {
 			ClientEvtDispatcher.instance().addEventListener(
 				ModelUpdateEvent.LOCAL_MODEL_COMPLETE, onLocalModelUpdate);
 				
+			
+				
 			Console.info("GlobalTreeData - ctor");
 		}
+		
 		
 		private function onLocalModelUpdate(evt: ModelUpdateEvent): void {
 			refreshData(evt);
@@ -68,7 +71,7 @@ package collab.fm.client.data {
 			// if create, add the feature to the root
 			if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
 				this.xml.addItem(<feature id={op["featureId"]}
-						name={op["value"]} controversy="1" />);
+						name={op["value"]} controversy="1" person="" />);
 			}
 			if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
 				var features1: XMLList = ModelUtil.getRootFeatureById(this.xml.source, op["featureId"]);
@@ -172,7 +175,8 @@ package collab.fm.client.data {
 			}
 			return <feature id={id} 
 					name={fname} 
-					controversy={controversyRate} />;
+					controversy={controversyRate}
+					person="" />;
 		}
 
 		override protected function addRefinement(refines:Dictionary, r:XML): void {

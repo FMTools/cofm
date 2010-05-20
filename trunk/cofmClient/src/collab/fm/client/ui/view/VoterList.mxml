@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:VBox width="50%">
+		<mx:Label text="{RS.EDIT_GRID_YES}" />
+		<mx:List dataProvider="{yesVoters}" labelField="name"/>
+	</mx:VBox>
+	<mx:VBox width="50%">
+		<mx:Label text="{RS.EDIT_GRID_NO}" />
+		<mx:List dataProvider="{noVoters}" labelField="name"/>
+	</mx:VBox>
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import collab.fm.client.event.*;
+			import collab.fm.client.util.*;
+			
+			[Bindable]
+			public var yesVoters: ArrayCollection = new ArrayCollection();
+			
+			[Bindable]
+			public var noVoters: ArrayCollection = new ArrayCollection();
+			
+		]]>
+	</mx:Script>
+</mx:HBox>

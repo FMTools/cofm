@@ -28,7 +28,18 @@ package collab.fm.client.data {
 			ClientEvtDispatcher.instance().addEventListener(LoginEvent.SUCCESS, onLogin);
 
 		}
-
+		
+		public function getNameById(id: int): String {
+			var subject: String;
+				var u: XMLList = this.users.source.(@id==String(id));
+				if (u.length() > 0) {
+					subject = u[0].@name;
+				} else {
+					subject = "User #" + id;
+				}
+				return subject;
+		}
+		
 		private function onLogin(evt: LoginEvent): void {
 			isLogin = true;
 			myId = evt.myId;

@@ -9,6 +9,7 @@ package collab.fm.client.util {
 		public static const FIELD_RSP_MESSAGE: String = "message";
 
 		public static const REQ_DELIMITER: String = "<[!END]]>";
+		public static const REQ_EDIT: String = "edit";
 		public static const REQ_COMMIT: String = "commit";
 		public static const REQ_UPDATE: String = "update";
 		public static const REQ_LOGIN: String = "login";

@@ -1,5 +1,6 @@
 package collab.fm.client.ui.renderer {
 	import mx.controls.treeClasses.*;
+	import mx.utils.StringUtil;
 
 	public class GlobalTreeItemRenderer extends TreeItemRenderer {
 		public function GlobalTreeItemRenderer() {
@@ -28,6 +29,10 @@ package collab.fm.client.ui.renderer {
 				if (rate < 1) {
 					super.label.text = TreeListData(super.listData).label +
 						" (" + (rate * 100).toPrecision(3) + "%)";
+				}
+				var person: String = String(curItems[0].@person);
+				if (person != null && mx.utils.StringUtil.trim(person) != "") {
+					super.label.text = TreeListData(super.listData).label + "             <----- (" + person + ")";
 				}
 			}
 		}
