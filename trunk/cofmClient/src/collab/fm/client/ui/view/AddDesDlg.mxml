@@ -8,7 +8,7 @@
 	<mx:Form>
 		<mx:VBox>
 			<mx:Label text="{RS.EDIT_ADD_DES}" />
-			<mx:TextArea width="300" height="160" id="dta"/> 
+     		<mx:TextArea width="300" height="160" id="dta"/>
 		</mx:VBox>			
 		<mx:FormItem direction="horizontal">
 			<mx:Button id="btnOk" label="{RS.BTN_OK}" click="onOk();"/>

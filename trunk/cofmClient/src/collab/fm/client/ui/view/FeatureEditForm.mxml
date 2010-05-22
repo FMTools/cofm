@@ -11,7 +11,7 @@
     	
 		<mx:VBox label="{RS.EDIT_TAB_NAME}" width="{Size.EDITOR_W}" height="{Size.EDITOR_H}">
 			<mx:Button label="{RS.BTN_ADD}" click="addName();"/>
-			<v:FeatureNameGrid width="100%" />
+			<v:FeatureNameGrid width="100%"  maxDisplayedRows="10"/>
 		</mx:VBox>
 		
 		<mx:VBox label="{RS.EDIT_TAB_DES}" width="{Size.EDITOR_W}" height="{Size.EDITOR_H}">

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="510" height="420"
 	 xmlns:a="com.hillelcoren.components.*"
+	 xmlns:v="collab.fm.client.ui.validator.*"
 	 creationComplete="initView();"
 	 title="{RS.FEATURE_CREATE_TITLE}"
 	 showCloseButton="true"
@@ -11,26 +12,25 @@
 		<mx:FormItem label="{RS.FEATURE_CREATE_NAME}">
 			<a:AutoComplete id="nameInput" allowMultipleSelection="false"
 				 allowNewValues="true" allowEditingNewValues="true"
-				 matchType="word" selectedItemStyleName="none"
+				 autoSelectEnabled="false"
+				 matchType="anyPart" selectedItemStyleName="macMail"
 				 labelField="name"
 				 dataProvider="{FeatureNameList.instance.data}"
-				 valueCommit="checkDuplicateName();"
 				 width="150" />
 		</mx:FormItem>
 		
 		<mx:FormItem label="{RS.FEATURE_CREATE_PARENT}" >
-			<mx:RadioButtonGroup id="parentSwitch" itemClick="onParentSwitch(event);" />
+			<mx:RadioButtonGroup id="parentSwitch"  />
 			<mx:RadioButton groupName="parentSwitch" value="None" label="{RS.FEATURE_CREATE_PARENT_IS_ROOT}" />
 			<mx:HBox>
 				<mx:RadioButton groupName="parentSwitch" value="Exist"
 					label="{RS.FEATURE_CREATE_PARENT_SEARCH}"/>
 				<a:AutoComplete id="parentInput" allowMultipleSelection="false"
-					 allowNewValues="false" matchType="word" selectedItemStyleName="none" width="150"
+					 allowNewValues="false" matchType="anyPart" 
+					 selectedItemStyleName="macMail" width="150"
 					 labelField="name"
-					 dataProvider="{FeatureNameList.instance.data}"
-					 activate="onInputParent();"
-					 click="onInputParent();"
-					 valueCommit="onSelectParent();"/>
+					 focusIn="onFocusParent();"
+					 dataProvider="{FeatureNameList.instance.data}" />
 			</mx:HBox>
 		</mx:FormItem>
 		
@@ -44,8 +44,14 @@
 		</mx:FormItem>			
 	</mx:Form>
 	
+	<!-- Validators -->
+	<v:FeatureNameValidator id="newNameV" triggerEvent="change" nameMustExist="false" source="{nameInput}" property="text" />
+	<v:FeatureNameValidator id="parentV" triggerEvent="change" nameMustExist="true" source="{parentInput}" property="text" />
+	
 	<mx:Script>
 		<![CDATA[
+			import mx.utils.StringUtil;
+			import mx.events.ValidationResultEvent;
 			import mx.managers.PopUpManager;
 			import mx.events.CloseEvent;
 			import mx.events.ItemClickEvent;
@@ -56,14 +62,11 @@
 			import collab.fm.client.event.*;	
 			
 			private var parentId: int;
-			private var nameOk: Boolean;
-			private var parentOk: Boolean;
 			
 			public function resetForm(): void {
 				nameInput.text = "";
 				parentSwitch.selectedValue = "";
-				parentId = -1;
-				cOK.enabled = false;
+				parentInput.text = "";
 			}
 			
 			private function initView(): void {
@@ -73,94 +76,53 @@
 				nameInput.setFocus();
 			}
 			
-			private function nameValid(nameOk: Boolean): void{ 
-				this.nameOk = nameOk;
-				if (this.nameOk && this.parentOk) {
-					cOK.enabled = true;
-				} else {
-					cOK.enabled = false;
+			private function onFocusParent(): void {
+				if (parentSwitch.selectedValue != "Exist") {
+					parentSwitch.selectedValue = "Exist";
 				}
-				//trace("nameOK: " + this.nameOk + ", parentOK: " + this.parentOk);
-			}
-			
-			private function parentValid(parentOk: Boolean): void {
-				this.parentOk = parentOk;
-				if (this.nameOk && this.parentOk) {
-					cOK.enabled = true;
-				} else {
-					cOK.enabled = false;
-				}
-				//trace("nameOK: " + this.nameOk + ", parentOK: " + this.parentOk);
 			}
 						
 			private function onClose(): void {
+				// Prevent multi-listener bug
 				ClientEvtDispatcher.instance().removeEventListener(
 					ModelMinorChangeEvent.FEATURE_CREATED_LOCALLY, onFeatureCreatedLocally);
 				PopUpManager.removePopUp(this);
 			}
 			
 			private function endCreateFeature(): void {
-				// 1. commit create_feature and create_relationship
+				if (!validateNames()) {
+					return;
+				}
+				parentId = FeatureNameList.instance.getIdByName(parentInput.text);
+				// commit create_feature and create_relationship (see onFeatureCreatedLocally)
 				Console.info("CreateFeatureDlg - start creating feature: " + nameInput.text);
 				new CreateOrVoteFeatureCommand(nameInput.text).execute();
-				// 2. open the properties editing form for the created feature.
+			}
+			
+			private function validateNames(): Boolean {
+				var rslt:Array = [];
+				rslt.push(newNameV.validate());
+				rslt.push(parentV.validate());
+				for each (var o: Object in rslt) {
+					if (ValidationResultEvent(o).type == ValidationResultEvent.INVALID) {
+						return false;
+					}
+				}
+				return true;
 			}
 			
 			private function onFeatureCreatedLocally(evt: ModelMinorChangeEvent): void {
 				if (parentId > 0) {
 					trace("Create relation in creation form: " + parentId + " refined by " + int(evt.data));
-					Console.info("CreateFeatureDlg - start creating binary relationship: " + Cst.BIN_REL_REFINES + "(" + parentId + ", " + int(evt.data) + ")");
 					new CreateOrVoteBinaryRelationshipCommand(
 						Cst.BIN_REL_REFINES, parentId, int(evt.data)).execute();
+				}
+				if (mx.utils.StringUtil.trim(desInput.text) != "") {
+					new CreateOrVoteDescriptionCommand(int(evt.data), desInput.text).execute();
 				}
 				onClose();
 			}
 			
-			private function checkDuplicateName(): void {
-				if (FeatureNameList.instance.contains(nameInput.text)) {
-					this.nameValid(false);
-				} else {
-					this.nameValid(true);
-				}
-			}
-			
-			private function onInputParent(): void {
-				//trace("onInputParent");
-				parentSwitch.selectedValue = "Exist";
-				this.parentValid(false);
-			}
-			
-			private function onParentSwitch(evt: ItemClickEvent): void {
-				//trace("onParentSwitch");
-				parentId = -1;
-				if (evt.currentTarget.selectedValue == "None") {
-					this.parentValid(true);
-				} else {
-					this.parentValid(false);
-				}
-			}
-			
-			private function onChooseParentFromTree(evt: FeatureSelectEvent): void {
-				//trace("onChooseParentFromTree");
-				parentSwitch.selectedValue = "Exist";
-				parentInput.text = evt.name;
-				parentId = evt.id;
-				this.parentValid(true);
-			}
-			
-			private function onSelectParent(): void {
-				// See FeatureNameList for details about the selected item.
-				//trace("onSelectParent");
-				if (!this.parentOk) {
-					if (!parentInput.selectedItem) {
-						parentId = -1;
-						this.parentValid(false);
-					} else {
-						parentId = parentInput.selectedItem["id"];
-						this.parentValid(true);
-					}
-				}
-			}
 		]]>
 	</mx:Script>
 </mx:TitleWindow>

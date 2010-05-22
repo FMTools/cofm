@@ -56,7 +56,7 @@ package collab.fm.client.cmn {
 		}
 
 		private function onIoError(evt: IOErrorEvent): void {
-			Alert.show("Maintaining server... Please try later.", "Couldn't connect server");
+			Alert.show("Unable to connect server..", "Couldn't connect server");
 		}
 
 		private function onSecurityError(evt: SecurityErrorEvent): void {

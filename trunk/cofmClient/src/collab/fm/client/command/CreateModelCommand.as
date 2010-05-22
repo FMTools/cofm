@@ -4,14 +4,15 @@ package collab.fm.client.command {
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
 
+	import mx.utils.StringUtil;
 	public class CreateModelCommand implements IDurableCommand {
 		private var _cmdId: int;
 		private var _name: String;
 		private var _des: String;
 
 		public function CreateModelCommand(name: String, des: String) {
-			_name = name;
-			_des = des;
+			_name = mx.utils.StringUtil.trim(name);
+			_des = mx.utils.StringUtil.trim(des);
 		}
 
 		/** See server.CreateModelRequest

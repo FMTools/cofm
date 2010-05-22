@@ -3,7 +3,9 @@ package collab.fm.client.command {
 	import collab.fm.client.data.*;
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
-
+	
+	import mx.utils.StringUtil;
+	
 	public class CreateOrVoteFeatureCommand extends CommitOperationCommand {
 		private var _name: String;
 		private var _feature: int;
@@ -11,7 +13,7 @@ package collab.fm.client.command {
 
 		public function CreateOrVoteFeatureCommand(name: String, feature: int=-1, vote: Boolean=true) {
 			super();
-			_name = name;
+			_name = mx.utils.StringUtil.trim(name);
 			_feature = feature;
 			_vote = vote;
 		}

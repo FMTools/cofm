@@ -43,7 +43,7 @@
 	<!-- Validators -->
 	<mx:StringValidator id="rnValidator" source="{regName}" property="text" minLength="3" maxLength="12" />
 	<mx:StringValidator id="pValidator" source="{regPwd}" property="text" minLength="1" />
-	<v:PasswordConfirmValidator id="pcValidator" pwd="{regPwd.text}" source="{regPwd2}" property="text" />
+	<v:EqualStringValidator id="pcValidator" pwd="{regPwd.text}" source="{regPwd2}" property="text" />
 	
 	<mx:Script>
 		<![CDATA[

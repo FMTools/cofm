@@ -12,6 +12,11 @@ package collab.fm.client.util {
 		
 		public static const APP_TITLE: String = s("app.title");
 
+		public static const ERROR_NAME_DUPLICATE: String = s("error.name.duplicate");
+		public static const ERROR_NAME_INVALID: String = s("error.name.invalid");
+		public static const ERROR_NAME_EMPTY: String = s("error.name.empty");
+		public static const ERROR_REL_SELF: String = s("error.rel.self");
+		
 		public static const BTN_LOGIN: String = s("btn.login");
 		public static const BTN_LOGOUT: String = s("btn.logout");
 		public static const BTN_REGISTER: String = s("btn.register");
