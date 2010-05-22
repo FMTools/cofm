@@ -1,7 +1,7 @@
 package collab.fm.client.data {
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
-
+	
 	import mx.collections.ArrayCollection;
 	import mx.collections.IViewCursor;
 
@@ -30,7 +30,16 @@ package collab.fm.client.data {
 			}
 			return false;
 		}
-
+		
+		public function getIdByName(name: String): int {
+			for each (var obj: Object in data.source) {
+				if (obj.name == name) {
+					return int(obj.id);
+				}
+			}	
+			return -1;
+		}
+		
 		public function handleFeatureVotePropagation(op: Object): void {
 
 		}
@@ -46,12 +55,14 @@ package collab.fm.client.data {
 		public function handleAddName(op:Object): void {
 			if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
 				data.addItem({id: op["featureId"], name: op["value"]});
+				Console.info("FeatureNameList - add item (" + op["featureId"] + ", " + op["value"] + ")");
 			}
 			if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
 				for (var cursor: IViewCursor = data.createCursor(); !cursor.afterLast; ) {
 					if (cursor.current.id == op["featureId"] &&
 						cursor.current.name == op["value"]) {
 						cursor.remove();
+						break;
 					} else {
 						cursor.moveNext();
 					}
@@ -63,18 +74,24 @@ package collab.fm.client.data {
 			// if new feature
 			if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
 				data.addItem({id: op["featureId"], name: op["value"]});
+				Console.info("FeatureNameList - add item (" + op["featureId"] + ", " + op["value"] + ")");
 			}
 			if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
 				for (var cursor: IViewCursor = data.createCursor(); !cursor.afterLast; ) {
 					if (cursor.current.id == op["featureId"]) {
 						cursor.remove();
+						break;
 					} else {
 						cursor.moveNext();
 					}
 				}
 			}
 			if (op[FeatureModel.VOTE_NO_TO_FEATURE] == true) {
+				trace("---- FeatureNmeList - vote no to feature");
 				reset();
+				for each (var o: Object in data.source) {
+					trace(o.id + ", " + o.name);
+				}
 			}
 		}
 
@@ -88,19 +105,26 @@ package collab.fm.client.data {
 
 		private function onLocalModelUpdate(evt: ModelUpdateEvent): void {
 			reset();
-			Console.info("FeatureNameList - Model refreshed. Reset name list.");
+		//	Console.info("FeatureNameList - Model refreshed. Reset name list.");
 		}
 
 		private function reset(): void {
-			data.removeAll();
+			data.source = [];
+//			trace("---- reset()  data.removeAll() ---");
+//			for each (var ob: Object in data.source) {
+//					trace(ob.id + ", " + ob.name);
+//			}
 			for each (var o: Object in FeatureModel.instance.features.source) {
 				var f: XML = XML(o);
+				//trace (f.toXMLString());
 				// Get all names of the feature f.
 				for each (var obj: Object in f..name) {
+					//trace ("Name: " + XML(obj).toXMLString());
 					var info: Object = new Object();
-					info.id = f.@id;
+					info.id = String(f.@id);
 					info.name = String(obj.@val);
 					data.addItem(info);
+				//	trace ("*Added: " + info.id + ", " + info.name);
 				}
 			}
 		}

@@ -64,7 +64,7 @@
 				}
 				
 				// 2. show op
-				this.htmlText += subject + " " + action + " " + target + ".<br/>";
+				this.htmlText = subject + " " + action + " " + target + ".<br/>" + this.htmlText;
 			}
 			
 			public function handleFeatureVotePropagation(op: Object): void {

@@ -6,7 +6,7 @@
 		<![CDATA[
 			import mx.collections.ArrayCollection;
 			
-			public var maxDisplayedRows: int = 6;
+			public var maxDisplayedRows: int = 10;
 			public var minDisplayedRows: int = 1;
 			
 			protected function initView(): void {

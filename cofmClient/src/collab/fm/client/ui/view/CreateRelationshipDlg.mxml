@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="400" height="350"
 	 xmlns:a="com.hillelcoren.components.*"
+	 xmlns:v="collab.fm.client.ui.validator.*"
 	 title="{RS.REL_CREATE_TITLE}"
 	 showCloseButton="true"
 	 close="onClose();">
@@ -20,23 +21,18 @@
 		<mx:Form id="binary">
 			<mx:FormItem id="leftItem" label="{RS.REL_CREATE_PARENT}">
 				<a:AutoComplete id="leftFeature" allowMultipleSelection="false"
-					 allowNewValues="false" matchType="word" selectedItemStyleName="none" width="150"
+					 allowNewValues="false" matchType="anyPart" selectedItemStyleName="macMail" width="150"
 					 labelField="name"
 					 dataProvider="{FeatureNameList.instance.data}"
-					 activate="onInputFeature();"
-					 click="onInputFeature();"
-					 valueCommit="onInputLeft();"
 					 prompt="{RS.REL_CREATE_ENTER_PROMPT}"/>
 			</mx:FormItem>
 			
 			<mx:FormItem id="rightItem" label="{RS.REL_CREATE_CHILD}">
 				<a:AutoComplete id="rightFeature" allowMultipleSelection="false"
-					 allowNewValues="false" matchType="word" selectedItemStyleName="none" width="150"
+					 allowNewValues="false" matchType="anyPart" 
+					 selectedItemStyleName="macMail" width="150"
 					 labelField="name"
 					 dataProvider="{FeatureNameList.instance.data}"
-					 activate="onInputFeature();"
-					 click="onInputFeature();"
-					 valueCommit="onInputRight();"
 					 prompt="{RS.REL_CREATE_ENTER_PROMPT}"/>
 			</mx:FormItem>
 			
@@ -47,8 +43,18 @@
 		</mx:Form>
 	</mx:VBox>
 	
+	<!-- Validators -->
+	<v:FeatureNameValidator id="leftNameValidator" triggerEvent="change"
+			 nameMustExist="true" source="{leftFeature}" property="text" />
+	<v:FeatureNameValidator id="rightNameValidator" triggerEvent="change"
+			 nameMustExist="true" source="{rightFeature}" property="text" />
+	<v:EqualStringValidator id="equalValidator" triggerEvent="change"
+			 checkEquals="false" message="{RS.ERROR_REL_SELF}" compareTo="{leftFeature.text}"
+			 source="{rightFeature}" property="text" />
+			 
 	<mx:Script>
 		<![CDATA[
+			import mx.events.ValidationResultEvent;
 			import mx.managers.PopUpManager;
 			import mx.events.CloseEvent;
 			import mx.events.ItemClickEvent;
@@ -66,12 +72,35 @@
 				PopUpManager.removePopUp(this);
 			}
 			
+			private function validateFeatures(): Boolean {
+				var rslt: Array = [];
+				rslt.push(leftNameValidator.validate());
+				rslt.push(rightNameValidator.validate());
+				rslt.push(equalValidator.validate());
+				for each (var o: Object in rslt) {
+					if (ValidationResultEvent(o).type == ValidationResultEvent.INVALID) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
 			private function endCreateRel(): void {
-				onClose();
+				if (!validateFeatures()) {
+					return;
+				}
+				
 				if (relType == Cst.BIN_REL_REFINES || relType == Cst.BIN_REL_EXCLUDES
 					|| relType == Cst.BIN_REL_REQUIRES) {
-					new CreateOrVoteBinaryRelationshipCommand(relType, left, right).execute();
+					left = FeatureNameList.instance.getIdByName(leftFeature.text);
+					right = FeatureNameList.instance.getIdByName(rightFeature.text);
+					if (left > 0 && right > 0) {
+						new CreateOrVoteBinaryRelationshipCommand(relType, left, right).execute();
+					} else {
+						Console.error("CreateRelationshipDlg - couldn't get ID by feature name.");
+					}
 				}
+				onClose();
 			}
 			
 			private function onSelectRelType(evt: Event): void {
@@ -85,37 +114,6 @@
 				}
 			}
 			
-			private function onInputFeature(): void {
-				cOK.enabled = false;
-			}
-			
-			private function onInputLeft(): void {
-				if (!leftFeature.selectedItem) {
-					left= -1;
-					cOK.enabled = false;
-				} else {
-					left = leftFeature.selectedItem["id"];
-					if (right >= 0 && left != right) {
-						cOK.enabled = true;
-					} else {
-						cOK.enabled = false;
-					}
-				}
-			}
-			
-			private function onInputRight(): void {
-				if (!rightFeature.selectedItem) {
-					right= -1;
-					cOK.enabled = false;
-				} else {
-					right = rightFeature.selectedItem["id"];
-					if (left >= 0 && left != right) {
-						cOK.enabled = true;
-					} else {
-						cOK.enabled = false;
-					}
-				}
-			}
 			
 		]]>
 	</mx:Script>

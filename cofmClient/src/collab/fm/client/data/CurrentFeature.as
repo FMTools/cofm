@@ -59,11 +59,12 @@ package collab.fm.client.data {
 		
 		private function clear(): void {
 			id = -1;
-			votes.removeAll();
-			names.removeAll();
-			parents.removeAll();
-			children.removeAll();
-			binaryConstraints.removeAll();
+			votes.source = [];
+			names.source = [];
+			parents.source = [];
+			children.source = [];
+			binaryConstraints.source = [];
+			basicInfo.source = null;
 		}
 		
 		private function onModelUpdate(evt: ModelUpdateEvent): void {
@@ -79,7 +80,7 @@ package collab.fm.client.data {
 			id = evt.id;
 			_feature = XML(FeatureModel.instance.features.source.(@id==String(evt.id))[0]);
 
-			basicInfo.removeAll();
+			basicInfo.source = null;
 
 			updateVotes(); // votes to this feature
 			updateNames();
@@ -93,7 +94,7 @@ package collab.fm.client.data {
 		}
 
 		private function updateVotes(): void {
-			votes.removeAll();
+			votes.source = [];
 			// no votes
 			var noNum: int = XMLList(_feature.no.user).length();
 			var yesNum: int = XMLList(_feature.yes.user).length();
@@ -116,7 +117,7 @@ package collab.fm.client.data {
 		}
 
 		private function updateNames(): void {
-			names.removeAll();
+			names.source = [];
 			// Construct the "names" array for Feature_Name_DataGrid.
 			// Columns: name, supporters (with percentage), opponents.
 			var primary: String;
@@ -153,7 +154,7 @@ package collab.fm.client.data {
 		}
 
 		private function updateDescriptions(): void {
-			descriptions.removeAll();
+			descriptions.source = [];
 			var des: Array = new Array();
 			for each (var d: Object in _feature.descriptions.description) {
 				var yesId: Array = toUserArray(XMLList(d.yes.user));
@@ -204,8 +205,8 @@ package collab.fm.client.data {
 		}
 
 		private function updateRefinements(): void {
-			parents.removeAll();
-			children.removeAll();
+			parents.source = [];
+			children.source = [];
 			for each (var r: Object in FeatureModel.instance.binaries.source) {
 				if (r.@type == Cst.BIN_REL_REFINES) {
 					if (r.@left == String(this.id)) {
@@ -238,7 +239,7 @@ package collab.fm.client.data {
 		}
 
 		private function updateBinaryConstraints(): void {
-			binaryConstraints.removeAll();
+			binaryConstraints.source = [];
 			for each (var r: Object in FeatureModel.instance.binaries.source) {
 				if (r.@type == Cst.BIN_REL_REQUIRES) {
 					if (r.@left == String(this.id)) {

@@ -8,13 +8,13 @@
 	<mx:Panel id="leftPanel" paddingBottom="0">
 		<mx:TabNavigator id="treeTab" selectedIndex="1" paddingTop="0">
 			<mx:Canvas label="GLobal Tree" width="{Size.TREE_W}" height="{Size.TREE_H}">
-				<v:GlobalTree id="globalTree" width="100%" height="100%" />
+				<v:GlobalTree id="globalTree" width="100%" height="100%" fontSize="11" />
 			</mx:Canvas>
 			<mx:Canvas label="Working Tree" width="{Size.TREE_W}" height="{Size.TREE_H}">
-				<v:WorkingTree id="workingTree" width="100%" height="100%" />
+				<v:WorkingTree id="workingTree" width="100%" height="100%" fontSize="11" />
 			</mx:Canvas>
 			<mx:Canvas label="Personal Tree" width="{Size.TREE_W}" height="{Size.TREE_H}">
-				<mx:Tree id="personalTree" width="100%" height="100%" />
+				<mx:Tree id="personalTree" width="100%" height="100%" fontSize="11" />
 			</mx:Canvas>
 		</mx:TabNavigator>
 	</mx:Panel>
@@ -22,7 +22,7 @@
 	<mx:VBox>
 		<mx:Panel id="rightTopPanel" title="{RS.EDIT_PANEL_TITLE}" paddingBottom="0">
 			<v:TopElementCreateForm width="100%" height="100%" />
-			<v:FeatureEditForm id="featureEdit" width="100%" height="100%" />
+			<v:FeatureEditForm id="featureEdit" width="100%" height="100%" fontSize="11" />
 		</mx:Panel>
 		
 		<mx:TabNavigator id="rightBottomTab" paddingTop="0" paddingBottom="0">

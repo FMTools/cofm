@@ -16,7 +16,7 @@
 			<mx:TextInput id="regPwd" displayAsPassword="true" />
 		</mx:FormItem>
 		<mx:FormItem label="{RS.REG_PWD_CONFIRM}" required="true">
-			<mx:TextInput id="regPwd2" displayAsPassword="true" />
+			<mx:TextInput id="regPwd2" displayAsPassword="true" keyDown="checkEnter(event);" />
 		</mx:FormItem>
 		<mx:FormItem direction="horizontal">
 			<mx:Button label="{RS.BTN_OK}" click="doRegister();" />
@@ -27,7 +27,8 @@
 	<!-- Validators -->
 	<mx:StringValidator id="rnValidator" source="{regName}" property="text" minLength="3" maxLength="12" />
 	<mx:StringValidator id="pValidator" source="{regPwd}" property="text" minLength="1" />
-	<v:PasswordConfirmValidator id="pcValidator" pwd="{regPwd.text}" source="{regPwd2}" property="text" />
+	<v:EqualStringValidator id="pcValidator" checkEquals="true" message="{RS.REG_PWD_CONFIRM_ERROR}"
+		 compareTo="{regPwd.text}" source="{regPwd2}" property="text" />
 	
 	<mx:Script>
 		<![CDATA[
@@ -47,6 +48,12 @@
 			
 			private function onClose(): void {
 				PopUpManager.removePopUp(this);
+			}
+			
+			private function checkEnter(evt: KeyboardEvent): void {
+				if (evt.keyCode == Keyboard.ENTER) {
+					doRegister();
+				}
 			}
 			
 			private function validateRegisterForm(): Boolean {
