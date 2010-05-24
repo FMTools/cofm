@@ -45,11 +45,15 @@ public class RegisterAction extends Action {
 				u = DaoUtil.getUserDao().save(u);
 
 				req.setRequesterId(u.getId());
-				rsp.setRequesterId(u.getId());
 				rsp.setMessage(Resources.MSG_REGISTER);
 				rsp.setName(Resources.RSP_SUCCESS);
 				
 				logger.info(LogUtil.logOp(u.getId(), LogUtil.OP_REGISTER, u.getName()));
+				
+				Response r2 = new Response();
+				r2.setMessage(r.getUser());
+				r2.setName(Resources.RSP_FORWARD);
+				rg.setBroadcast(r2);
 				
 			} else {
 				rsp.setMessage(Resources.MSG_ERROR_USER_EXISTED);
