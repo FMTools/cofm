@@ -50,7 +50,9 @@ public class EventHandler extends IoHandlerAdapter {
 
     public void sessionClosed(IoSession session) throws Exception {
     	logger.info("--- Connection closed.");
-    	Controller.instance().disconnectUser(session.getRemoteAddress().toString());
+    	ResponseGroup group = 
+    		Controller.instance().disconnectUser(session.getRemoteAddress().toString());
+    	distributeResponse(session, group);
     	sessionMap.remove(session.getRemoteAddress().toString());
     }
 

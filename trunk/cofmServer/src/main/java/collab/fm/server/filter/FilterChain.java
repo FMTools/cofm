@@ -15,6 +15,7 @@ public class FilterChain {
 	
 	public FilterChain() {
 		chain = new ArrayList<Filter>();
+		itr = null;
 	}
 	
 	public void addFilter(Filter f) {
@@ -29,5 +30,14 @@ public class FilterChain {
 			itr.next().doFilter(req, rg, this);
 		}
 		
+	}
+	
+	public void doDisconnectUser(String addr, ResponseGroup rg) {
+		if (itr == null) {
+			itr = chain.iterator();
+		}
+		if (itr.hasNext()) {
+			itr.next().doDisconnectUser(addr, rg, this);
+		}
 	}
 }
