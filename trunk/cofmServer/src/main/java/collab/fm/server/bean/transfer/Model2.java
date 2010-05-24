@@ -5,6 +5,7 @@ import java.util.Set;
 
 public class Model2 {
 	private Long id;
+	private Long cid;
 	private List<VotableString> names;
 	private List<VotableString> dscs;
 	private Set<Long> users;
@@ -13,6 +14,12 @@ public class Model2 {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public Long getCid() {
+		return cid;
+	}
+	public void setCid(Long cid) {
+		this.cid = cid;
 	}
 	public List<VotableString> getNames() {
 		return names;
