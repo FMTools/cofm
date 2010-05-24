@@ -45,6 +45,7 @@ public class ProtocolUtil {
 		requestHandlerMap.put(Resources.REQ_LISTUSER, "doGenericRequest");
 		requestHandlerMap.put(Resources.REQ_UPDATE, "doGenericRequest");
 		requestHandlerMap.put(Resources.REQ_EDIT, "doGenericRequest");
+		requestHandlerMap.put(Resources.REQ_EXIT_MODEL, "doGenericRequest");
 		
 		requestClassMap.put(Resources.REQ_LOGIN, LoginRequest.class);
 		requestClassMap.put(Resources.REQ_REGISTER, RegisterRequest.class);
