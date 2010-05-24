@@ -1,9 +1,11 @@
 package collab.fm.client.cmn {
 
 	import collab.fm.client.command.*;
+	import collab.fm.client.data.*;
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
-	import collab.fm.client.data.*;
+	
+	import flash.utils.Dictionary;
 
 	// Dispatch server response to approriate commands which implements IForwardedCommand interface.
 	public class ServerDataDispatcher {
@@ -36,15 +38,35 @@ package collab.fm.client.cmn {
 							data["operations"] as Array));
 						break;
 					case Cst.REQ_EDIT:
+						// Handle current feature model only.
 						if (ModelCollection.instance.currentModelId == int(data["modelId"])) {
-						ClientEvtDispatcher.instance().dispatchEvent(
-							new FeatureSelectEvent(
-								FeatureSelectEvent.OTHER_PEOPLE_SELECT_ON_TREE,
-								int(data["featureId"]),
-								null,  // feature name is omitted
-								int(data["modelId"]),
-								int(data["requesterId"])));
+							ClientEvtDispatcher.instance().dispatchEvent(
+								new FeatureSelectEvent(
+									FeatureSelectEvent.OTHER_PEOPLE_SELECT_ON_TREE,
+									int(data["featureId"]),
+									null,  // feature name is omitted
+									int(data["modelId"]),
+									int(data["requesterId"])));
 						}
+						break;
+					case Cst.REQ_LOGOUT:
+						ClientEvtDispatcher.instance().dispatchEvent(
+							new LogoutEvent(LogoutEvent.LOGGED_OUT, int(data[Cst.FIELD_RSP_SOURCE_USER_ID])));
+						break;
+					case Cst.REQ_EXIT_MODEL:
+						ClientEvtDispatcher.instance().dispatchEvent(
+							new PageSwitchEvent(PageSwitchEvent.OTHERS_EXIT_WORK_PAGE, 
+								int(data[Cst.FIELD_RSP_SOURCE_USER_ID]),
+								int(data["modelId"])));
+							break;
+					case Cst.REQ_REGISTER:
+						var d: Dictionary = new Dictionary();
+						var key: String = String(data[Cst.FIELD_RSP_SOURCE_USER_ID]);
+						var val: String = String(data[Cst.FIELD_RSP_MESSAGE]);
+						d[key] = val;
+						ClientEvtDispatcher.instance().dispatchEvent(
+							new ListUserEvent(ListUserEvent.APPEND, 
+							d));
 						break;
 				}
 			} else if (Cst.RSP_SERVER_ERROR == name) {

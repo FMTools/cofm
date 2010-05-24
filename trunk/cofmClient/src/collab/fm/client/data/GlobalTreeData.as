@@ -17,20 +17,8 @@ package collab.fm.client.data {
 		public function GlobalTreeData() {
 			super();
 			FeatureModel.instance.registerSubView(this);
-			
-			ClientEvtDispatcher.instance().addEventListener(
-				ModelUpdateEvent.LOCAL_MODEL_COMPLETE, onLocalModelUpdate);
-				
-			
-				
-			Console.info("GlobalTreeData - ctor");
 		}
 		
-		
-		private function onLocalModelUpdate(evt: ModelUpdateEvent): void {
-			refreshData(evt);
-		}
-
 		public function handleFeatureVotePropagation(op: Object): void {
 
 		}
@@ -223,12 +211,11 @@ package collab.fm.client.data {
 		}
 
 		override protected function onDataUpdateComplete(): void {
-			Console.info("GlobalTreeData - Model refreshed. Tree completed.");	
+			Console.info("GlobalTreeData - Tree refreshed.");	
 		
 		}
 		
 		override protected function onDataUpdateStart(): void {
-			Console.info("GlobalTreeData - Tree refresh starting...");
 		}
 	}
 

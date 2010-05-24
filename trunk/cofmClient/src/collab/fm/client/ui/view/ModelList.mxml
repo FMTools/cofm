@@ -99,7 +99,7 @@
            				[Bindable]
             			private var imgCls:Class;
             			
-    					private static const MAX_DISPLAYED_USER_COUNT: int = 5; // how many users we should display
+    					private static const MAX_DISPLAYED_USER_COUNT: int = 10; // how many users we should display
     					
     					private function initView(): void {
     						if (data == null) {

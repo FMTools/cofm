@@ -24,13 +24,14 @@
 	 			ClientEvtDispatcher.instance().addEventListener(ClientEvent.CONNECT_SUCCESS, onConnected);
 	 			ClientEvtDispatcher.instance().addEventListener(LoginEvent.SUCCESS, onLogined);
 	 			ClientEvtDispatcher.instance().addEventListener(ModelSearchEvent.SUCCESS, onListModel);
-	 			trace("Entry Perspective inited.");
 	 		}
 	 		
 	 		private function switchToHomePage(): void {
 	 			UIUtil.show(conDlg, false);
 	 			UIUtil.show(mdList, true);
 	 			isConnected = true;
+	 			ClientEvtDispatcher.instance().dispatchEvent(new PageSwitchEvent(
+	 				PageSwitchEvent.ENTER_HOME_PAGE));
 	 		}
 	 		
 	 		// ListUserCommand needs to be executed first

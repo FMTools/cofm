@@ -2,7 +2,7 @@ package collab.fm.client.command {
 	import collab.fm.client.cmn.*;
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
-
+	import flash.utils.Dictionary;
 	public class RegisterCommand implements IDurableCommand {
 
 		private var _name:String;
@@ -48,6 +48,12 @@ package collab.fm.client.command {
 				CommandBuffer.instance.removeCommand(_cmdId);
 				ClientEvtDispatcher.instance().dispatchEvent(
 					new ClientEvent(ClientEvent.REGISTER_SUCCESS));
+				
+				var d: Dictionary = new Dictionary();
+				var key: String = String(data[Cst.FIELD_RSP_SOURCE_USER_ID]);
+				d[key] = _name;
+				ClientEvtDispatcher.instance().dispatchEvent(
+					new ListUserEvent(ListUserEvent.APPEND, d));
 			}
 		}
 

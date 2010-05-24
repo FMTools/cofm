@@ -14,14 +14,6 @@ package collab.fm.client.data {
 		public function WorkingTreeData() {
 			super();
 			FeatureModel.instance.registerSubView(this);
-			
-			ClientEvtDispatcher.instance().addEventListener(
-				ModelUpdateEvent.LOCAL_MODEL_COMPLETE, onWTLocalModelUpdate);
-			Console.info("WorkingTreeData - ctor");
-		}
-
-		private function onWTLocalModelUpdate(evt: ModelUpdateEvent): void {
-			refreshData(evt);
 		}
 
 		public function handleFeatureVotePropagation(op: Object): void {
@@ -270,13 +262,12 @@ package collab.fm.client.data {
 		}
 
 		override protected function onDataUpdateComplete(): void {
-			Console.info("WorkingTreeData - Model refreshed. Tree completed. Dispatch ModelUpdateEvent.WORKING_VIEW_COMPLETE");
+			Console.info("WorkingTreeData - Tree refreshed.");
 			ClientEvtDispatcher.instance().dispatchEvent(
 				new ModelUpdateEvent(ModelUpdateEvent.WORKING_VIEW_COMPLETE, null));
 		}
 		
 		override protected function onDataUpdateStart(): void {
-			Console.info("WorkingTreeData - Tree refresh starting...");
 		}
 	}
 }

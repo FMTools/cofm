@@ -46,11 +46,13 @@ package collab.fm.client.cmn {
 		// Commands call send() to send data, and if necessary, write themselves into command buffer
 		public function send(data: String): void {
 			socket.send(data);
-			trace("--- Data sent as: " + data);
+			Console.info("Connector - Data sent: " + data);
+			trace("--- Data sent: " + data);
 		}
 
 		private function onData(evt: DataEvent): void {
-			trace("--- Data received as: " + evt.data);
+			Console.info("Connector - Data received: " + Console.trunc(evt.data));
+			trace("--- Data received: " + evt.data);
 			var sdata: Object = JsonUtil.jsonToObject(evt.data);
 			ServerDataDispatcher.dispatchData(sdata);
 		}

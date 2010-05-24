@@ -26,7 +26,7 @@ package collab.fm.client.data {
 
 			ClientEvtDispatcher.instance().addEventListener(ListUserEvent.SUCCESS, onListUser);
 			ClientEvtDispatcher.instance().addEventListener(LoginEvent.SUCCESS, onLogin);
-
+			ClientEvtDispatcher.instance().addEventListener(ListUserEvent.APPEND, onAppendUser);
 		}
 		
 		public function getNameById(id: int): String {
@@ -54,6 +54,12 @@ package collab.fm.client.data {
 			users.removeAll();
 			users.source = xml.user;
 			ClientEvtDispatcher.instance().dispatchEvent(new ListUserEvent(ListUserEvent.LOCAL_COMPLETE, null));
+		}
+		
+		private function onAppendUser(evt: ListUserEvent): void {
+			for (var key: Object in evt.users) {
+				users.addItem(<user id={int(key)} name={String(evt.users[key])} />);
+			}
 		}
 
 		[Bindable]

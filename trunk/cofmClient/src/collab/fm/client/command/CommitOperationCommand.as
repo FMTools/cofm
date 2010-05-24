@@ -20,7 +20,6 @@ package collab.fm.client.command {
 					operation: makeOperation()
 				};
 			Connector.instance.send(JsonUtil.objectToJson(request));
-			Console.info("CommitOperationCommand - send request (cmdID = " + _cmdId + ")");
 		}
 
 		/*abstract*/
@@ -43,7 +42,6 @@ package collab.fm.client.command {
 
 				CommandBuffer.instance.removeCommand(_cmdId);
 				
-				Console.info("CommitOperationCommand - recv response (cmdID = " + _cmdId + "), dispatch OperationCommitEvent.COMMIT_SUCCESS");
 
 				ClientEvtDispatcher.instance().dispatchEvent(
 					new OperationCommitEvent(OperationCommitEvent.COMMIT_SUCCESS, data["operations"] as Array));

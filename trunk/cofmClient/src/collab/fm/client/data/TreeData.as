@@ -21,35 +21,77 @@ package collab.fm.client.data {
 			
 			ClientEvtDispatcher.instance().addEventListener(
 				FeatureSelectEvent.OTHER_PEOPLE_SELECT_ON_TREE, onOtherPeopleSelect);
+			ClientEvtDispatcher.instance().addEventListener(
+				ModelUpdateEvent.LOCAL_MODEL_COMPLETE, onLocalModelUpdate);
+			ClientEvtDispatcher.instance().addEventListener(
+				LogoutEvent.LOGGED_OUT, onPeopleLogout);
+			ClientEvtDispatcher.instance().addEventListener(
+				PageSwitchEvent.OTHERS_EXIT_WORK_PAGE, onPeopleExitModel);
+		}
+		
+		protected function onPeopleLogout(evt: LogoutEvent): void {
+			if (evt.user != UserList.instance.myId) {  // when other people logged out...
+				var name: String = UserList.instance.getNameById(evt.user);
+				removePersonLocation(name);
+			}
+		}
+		
+		protected function onPeopleExitModel(evt: PageSwitchEvent): void {
+			if (evt.user != UserList.instance.myId && evt.model == ModelCollection.instance.currentModelId) {
+				var name: String = UserList.instance.getNameById(evt.user);
+				removePersonLocation(name);
+			}
 		}
 		
 		protected function onOtherPeopleSelect(evt: FeatureSelectEvent): void {
 			// 1. Remove this person's previous location.
 			var uName: String = UserList.instance.getNameById(evt.user);
-			var p: XMLList = this.xml.source.(@person==uName);
-			var p2: XMLList = this.xml.source..feature.(@person==uName);
-			for each (var o: Object in p) {
-				o.@person = "";
-			}
-			for each (var o2: Object in p2) {
-				o2.@person = "";
-			}
+			removePersonLocation(uName);
+			
 			var nodes: XMLList = ModelUtil.getRootFeatureById(this.xml.source, String(evt.id));
 			var nodes2: XMLList = ModelUtil.getNonRootFeatureById(this.xml.source, String(evt.id));
 			for each (var n: Object in nodes) {
-				updatePeopleLocation(n, uName);
+				updateNewLocation(n, uName);
 			}
 			for each (var n2: Object in nodes2) {
-				updatePeopleLocation(n2, uName);
+				updateNewLocation(n2, uName);
 			}
 		}
 		
-		protected function updatePeopleLocation(node: *, person: String): void {
-			if (node == undefined || node == null) {
-				return;
+		protected function removePersonLocation(person: String): void {
+			var p: XMLList = this.xml.source;
+			var p2: XMLList = this.xml.source..feature;
+			for each (var o: Object in p) {
+				removeLocationFromTree(o, person);
 			}
-			node.@person = person;
-			updatePeopleLocation(XML(node).parent(), person);
+			for each (var o2: Object in p2) {
+				removeLocationFromTree(o2, person);
+			}
+		}
+		protected function removeLocationFromTree(node: Object, person: String): void {
+			var people: Array = String(node.@person).split(/,\s*/);
+			var rslt: String = "";
+			var notEmpty: Boolean = false;
+			for (var i: int = 0; i < people.length; i++) {
+				if (people[i] == person) {
+					continue;    // skip this person
+				}
+				if (notEmpty) {
+					rslt += ", ";
+				}
+				rslt += people[i];    // keep other people
+				notEmpty = true;
+			}
+			node.@person = rslt;
+		}
+		
+		protected function updateNewLocation(node: Object, person: String): void {
+			var s: String = node.@person;
+			if (s != "") {
+				s += ", ";
+			}
+			s += person;
+			node.@person = s;
 		}
 		
 		public function getNameById(id: String): String {
@@ -63,7 +105,7 @@ package collab.fm.client.data {
 			return null;
 		}
 
-		protected function refreshData(evt: ModelUpdateEvent): void {
+		protected function onLocalModelUpdate(evt: ModelUpdateEvent): void {
 			onDataUpdateStart();
 			
 			var refines: Dictionary = new Dictionary();
@@ -94,6 +136,7 @@ package collab.fm.client.data {
 			}
 
 			xml.source = root.feature;
+			
 			onDataUpdateComplete();
 		}
 

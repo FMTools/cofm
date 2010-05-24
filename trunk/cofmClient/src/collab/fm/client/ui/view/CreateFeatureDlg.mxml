@@ -20,7 +20,7 @@
 		</mx:FormItem>
 		
 		<mx:FormItem label="{RS.FEATURE_CREATE_PARENT}" >
-			<mx:RadioButtonGroup id="parentSwitch"  />
+			<mx:RadioButtonGroup id="parentSwitch" change="onSwitch();"  />
 			<mx:RadioButton groupName="parentSwitch" value="None" label="{RS.FEATURE_CREATE_PARENT_IS_ROOT}" />
 			<mx:HBox>
 				<mx:RadioButton groupName="parentSwitch" value="Exist"
@@ -46,7 +46,8 @@
 	
 	<!-- Validators -->
 	<v:FeatureNameValidator id="newNameV" triggerEvent="change" nameMustExist="false" source="{nameInput}" property="text" />
-	<v:FeatureNameValidator id="parentV" triggerEvent="change" nameMustExist="true" source="{parentInput}" property="text" />
+	<v:FeatureNameValidator id="parentV" allowEmpty="{!hasParent}"
+		triggerEvent="change" nameMustExist="true" source="{parentInput}" property="text" />
 	
 	<mx:Script>
 		<![CDATA[
@@ -61,12 +62,16 @@
 			import collab.fm.client.data.*;
 			import collab.fm.client.event.*;	
 			
+			[Bindable]
+			public var hasParent: Boolean;
+			
 			private var parentId: int;
 			
 			public function resetForm(): void {
 				nameInput.text = "";
-				parentSwitch.selectedValue = "";
+				parentSwitch.selectedValue = "None";
 				parentInput.text = "";
+				hasParent = false;
 			}
 			
 			private function initView(): void {
@@ -79,7 +84,12 @@
 			private function onFocusParent(): void {
 				if (parentSwitch.selectedValue != "Exist") {
 					parentSwitch.selectedValue = "Exist";
+					hasParent = true;
 				}
+			}
+			
+			private function onSwitch(): void {
+				hasParent = parentSwitch.selectedValue == "Exist";
 			}
 						
 			private function onClose(): void {

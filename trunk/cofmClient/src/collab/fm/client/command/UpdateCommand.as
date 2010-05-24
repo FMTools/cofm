@@ -21,7 +21,6 @@ package collab.fm.client.command {
 					"modelId": _modelId
 				};
 			Connector.instance.send(JsonUtil.objectToJson(request));
-			Console.info("UpdateCommand - send requrest (modelId = " + _modelId + ")");
 		}
 
 		public function redo(): void {
@@ -34,7 +33,6 @@ package collab.fm.client.command {
 		}
 
 		public function handleResponse(data:Object): void {
-			Console.info("UpdateCommand - recv response (" + data[Cst.FIELD_RSP_NAME] + ")");
 			if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME]
 				&& Cst.REQ_UPDATE == data[Cst.FIELD_RSP_SOURCE_NAME]) {
 
@@ -44,7 +42,6 @@ package collab.fm.client.command {
 						"features": data["features"],
 						"binaries": data["binaries"]
 					};
-				Console.info("UpdateCommand - dispatch ModelUpdateEvent.SUCCESS");
 				ClientEvtDispatcher.instance().dispatchEvent(
 					new ModelUpdateEvent(ModelUpdateEvent.SUCCESS, theModel));
 			}

@@ -51,6 +51,9 @@
 	<v:EqualStringValidator id="equalValidator" triggerEvent="change"
 			 checkEquals="false" message="{RS.ERROR_REL_SELF}" compareTo="{leftFeature.text}"
 			 source="{rightFeature}" property="text" />
+	<v:EqualStringValidator id="equalValidator2" triggerEvent="change"
+			 checkEquals="false" message="{RS.ERROR_REL_SELF}" compareTo="{rightFeature.text}"
+			 source="{leftFeature}" property="text" />
 			 
 	<mx:Script>
 		<![CDATA[
@@ -77,6 +80,7 @@
 				rslt.push(leftNameValidator.validate());
 				rslt.push(rightNameValidator.validate());
 				rslt.push(equalValidator.validate());
+				rslt.push(equalValidator2.validate());
 				for each (var o: Object in rslt) {
 					if (ValidationResultEvent(o).type == ValidationResultEvent.INVALID) {
 						return false;
