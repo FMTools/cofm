@@ -1,8 +1,8 @@
 package collab.fm.client.command {
 import collab.fm.client.cmn.*;
-	import collab.fm.client.data.*;
-	import collab.fm.client.event.*;
-	import collab.fm.client.util.*;
+import collab.fm.client.data.*;
+import collab.fm.client.event.*;
+import collab.fm.client.util.*;
 	public class LogoutCommand implements IDurableCommand {
 		private var _cmdId: int;
 
@@ -35,9 +35,8 @@ import collab.fm.client.cmn.*;
 
 				CommandBuffer.instance.removeCommand(_cmdId);
 				ClientEvtDispatcher.instance().dispatchEvent(
-					new LoginEvent(LoginEvent.LOGOUT, UserList.instance.myId,
-						UserList.instance.myName));
-			}
+					new LogoutEvent(LogoutEvent.LOGGED_OUT, UserList.instance.myId));
+				}
 		}
 
 	}

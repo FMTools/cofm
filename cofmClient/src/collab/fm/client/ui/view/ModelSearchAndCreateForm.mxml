@@ -34,10 +34,10 @@
 			private function initView(): void {
 				UIUtil.show(createForm, false);
 				ClientEvtDispatcher.instance().addEventListener(ModelSearchEvent.SUCCESS, onModelSearch);
-				ClientEvtDispatcher.instance().addEventListener(ContextChangeEvent.RETURN_TO_HOME_PAGE, onBackHome);
+				ClientEvtDispatcher.instance().addEventListener(PageSwitchEvent.RETURN_TO_HOME_PAGE, onBackHome);
 			}
 			
-			private function onBackHome(evt: ContextChangeEvent): void {
+			private function onBackHome(evt: PageSwitchEvent): void {
 				UIUtil.show(createForm, false);
 			}
 

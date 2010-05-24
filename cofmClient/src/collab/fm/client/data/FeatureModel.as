@@ -140,8 +140,6 @@ package collab.fm.client.data {
 							}
 						} else {
 							handleCreateBinaryRelationship(op);
-							trace("------FeatureModel.create relationship handled.");
-							trace(binaries.toXMLString());
 							for each (var v3: Object in _subViews) {
 								IOperationListener(v3).handleCreateBinaryRelationship(op);
 							}
@@ -292,7 +290,6 @@ package collab.fm.client.data {
 				</feature>);
 
 			if (op["local"] != null) {
-				Console.info("FeatureModel - new feature created locally (ID = " + op["featureId"] + ")");
 				ClientEvtDispatcher.instance().dispatchEvent(
 					new ModelMinorChangeEvent(ModelMinorChangeEvent.FEATURE_CREATED_LOCALLY, op["featureId"]));
 			}
@@ -301,7 +298,6 @@ package collab.fm.client.data {
 		public function handleCreateBinaryRelationship(op:Object): void {
 			for (var cursor: IViewCursor = binaries.createCursor(); !cursor.afterLast; cursor.moveNext()) {
 				if (cursor.current.@id == op["relationshipId"]) {
-					Console.info("FeatureModel - handle voting to binary relationship: " + op["type"] + "(" + op["leftFeatureId"] + ", " + op["rightFeatureId"] + ")");
 					// A voting operation
 					if (ModelUtil.updateVoters(op["vote"], op["userid"], XML(cursor.current)) == false) {
 						cursor.remove();
@@ -311,7 +307,6 @@ package collab.fm.client.data {
 
 				}
 			}
-			Console.info("FeatureModel - handle creation of binary relationship: " + op["type"] + "(" + op["leftFeatureId"] + ", " + op["rightFeatureId"] + ")");
 			// A creating operation
 			op[FeatureModel.IS_NEW_ELEMENT] = true;
 
@@ -342,7 +337,6 @@ package collab.fm.client.data {
 			features.source = fs.feature;
 			binaries.source = bs.binary;
 
-			Console.info("FeatureModel - Model refreshed. Dispatch ModelUpdateEvent.LOCAL_MODEL_COMPLETE");
 			ClientEvtDispatcher.instance().dispatchEvent(
 				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_COMPLETE, null));
 			

@@ -65,6 +65,7 @@ package collab.fm.client.data {
 			children.source = [];
 			binaryConstraints.source = [];
 			basicInfo.source = null;
+			
 		}
 		
 		private function onModelUpdate(evt: ModelUpdateEvent): void {
@@ -76,11 +77,11 @@ package collab.fm.client.data {
 			// Broadcast my location
 			new StartEditFeatureCommand(evt.id).execute();
 			
+			this.clear();
+			
 			// Set the feature id
 			id = evt.id;
 			_feature = XML(FeatureModel.instance.features.source.(@id==String(evt.id))[0]);
-
-			basicInfo.source = null;
 
 			updateVotes(); // votes to this feature
 			updateNames();

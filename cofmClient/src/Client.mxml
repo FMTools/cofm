@@ -26,7 +26,7 @@
 					<mx:LinkButton paddingLeft="0" paddingRight="0" 
 						label="{RS.BTN_FEEDBACK}" click="doFeedback();" />
 					<mx:LinkButton paddingLeft="0" paddingRight="0" 
-						label="{RS.BTN_BACK_TO_HOME}" click="refreshHomePage();" id="btnBack" />
+						label="{RS.BTN_BACK_TO_HOME}" click="backToHomePage();" id="btnBack" />
 					<v:MessageBar width="300"/>
 				</mx:HBox>
 				<mx:HBox right="4">
@@ -52,6 +52,7 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import collab.fm.client.command.ExitModelCommand;
 			import collab.fm.client.ui.view.FeedBackDlg;
 			import mx.events.CloseEvent;
 			import mx.controls.Alert;
@@ -84,10 +85,10 @@
 				UIUtil.show(btnLogout, false);
 				ClientEvtDispatcher.instance().addEventListener(ModelSelectEvent.SELECTED, onModelSelect);
 				ClientEvtDispatcher.instance().addEventListener(ModelUpdateEvent.WORKING_VIEW_COMPLETE, onWorkingViewComplete);
-				ClientEvtDispatcher.instance().addEventListener(ClientEvent.CONNECT_SUCCESS, onConnected);
 				ClientEvtDispatcher.instance().addEventListener(LoginEvent.SUCCESS, onLogin);
-				ClientEvtDispatcher.instance().addEventListener(LoginEvent.LOGOUT, onLogout);
+				ClientEvtDispatcher.instance().addEventListener(LogoutEvent.LOGGED_OUT, onLogout);
 				ClientEvtDispatcher.instance().addEventListener(ModelSearchEvent.SUCCESS, onModelListed);
+				ClientEvtDispatcher.instance().addEventListener(PageSwitchEvent.ENTER_HOME_PAGE, onInitHome);
 				initData();
 				userName.text = "";
 			}
@@ -104,10 +105,15 @@
 				
 			}
 			
+			private function backToHomePage(): void {
+				new ExitModelCommand(ModelCollection.instance.currentModelId).execute();
+				refreshHomePage();
+				Console.info("Client - Back to home page.");
+			}
+			
 			private function refreshHomePage(): void {
-				ClientEvtDispatcher.instance().dispatchEvent(new ContextChangeEvent(ContextChangeEvent.RETURN_TO_HOME_PAGE));
+				ClientEvtDispatcher.instance().dispatchEvent(new PageSwitchEvent(PageSwitchEvent.RETURN_TO_HOME_PAGE));
 				ModelListUpdater.instance.update();
-				
 			}
 			
 			private function onModelListed(evt: ModelSearchEvent): void {
@@ -120,10 +126,12 @@
 				}
 			}
 			
-			private function onConnected(evt: ClientEvent): void {
-				UIUtil.show(btnLogin, true);
-				UIUtil.show(btnReg, true);
-				UIUtil.show(btnLogout, false);
+			private function onInitHome(evt: PageSwitchEvent): void {
+				if (evt.type == PageSwitchEvent.ENTER_HOME_PAGE) {
+					UIUtil.show(btnLogin, true);
+					UIUtil.show(btnReg, true);
+					UIUtil.show(btnLogout, false);
+				}
 			}
 			
 			private function onModelSelect(evt: ModelSelectEvent): void {
@@ -135,7 +143,7 @@
 				UIUtil.show(work, true);
 				UIUtil.show(btnBack, true);
 				currentPage = WORK_PAGE;
-				Console.info("Client - Working view completed. Show the work page and home button.");
+				Console.info("Client - Entered work page.");
 			}
 			
 			private function onLogin(evt: LoginEvent): void {
@@ -146,16 +154,18 @@
 				UIUtil.show(btnLogout, true);
 			}
 			
-			private function onLogout(evt: LoginEvent): void {
-				UserList.instance.isLogin = false;
-				UserList.instance.myId = -1;
-				UserList.instance.myName = "";
-				userName.text = "";
-				UIUtil.show(btnLogin, true);
-				UIUtil.show(btnReg, true);
-				UIUtil.show(btnLogout, false);
-				refreshHomePage();
-				
+			private function onLogout(evt: LogoutEvent): void {
+				if (evt.user == UserList.instance.myId) {
+					UserList.instance.isLogin = false;
+					UserList.instance.myId = -1;
+					UserList.instance.myName = "";
+					userName.text = "";
+					UIUtil.show(btnLogin, true);
+					UIUtil.show(btnReg, true);
+					UIUtil.show(btnLogout, false);
+					refreshHomePage();
+					Console.info("Client - User has logged out.");
+				}
 			}
 			
 			private function doFeedback(): void {
