@@ -65,10 +65,29 @@ public class Controller {
 		((ActionDispatcher)this.actionDispatcher).registerAction(names, action);
 	}
 	
-	public void disconnectUser(String addr) {
-		accessValidator.onClientDisconnected(addr);
-		actionDispatcher.onClientDisconnected(addr);
-		protocolFilter.onClientDisconnected(addr);
+	public ResponseGroup disconnectUser(String addr) {
+		ResponseGroup rg = new ResponseGroup();
+		rg.setBack(null);
+		rg.setBroadcast(null);
+		rg.setPeer(null);
+		
+		FilterChain chain = buildChainForDisconnection();
+		chain.doDisconnectUser(addr, rg);
+		
+		try {
+			convertResponsesToJson(rg);
+		} catch (Exception ex) {
+			logger.error("Internal error: couldn't convert responses to JSON.", ex);
+			return null;
+		}
+		
+		return rg;
+	}
+	
+	private FilterChain buildChainForDisconnection() {
+		FilterChain fc = new FilterChain();
+		fc.addFilter(accessValidator);
+		return fc;
 	}
 	
 	public ResponseGroup execute(String message, String sourceAddress) {

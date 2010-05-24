@@ -28,7 +28,11 @@ public abstract class Filter {
 			}
 	}
 	
-	public abstract void onClientDisconnected(String address);
+	public void doDisconnectUser(String address, ResponseGroup rg, FilterChain chain) {
+		this.doDisconnection(address, rg);
+		
+		chain.doDisconnectUser(address, rg);
+	}
 	
 	/**
 	 * 
@@ -48,4 +52,5 @@ public abstract class Filter {
 	 */
 	protected abstract boolean doBackwardFilter(Request req, ResponseGroup rg) throws FilterException;
 	
+	protected abstract void doDisconnection(String addr, ResponseGroup rg);
 }

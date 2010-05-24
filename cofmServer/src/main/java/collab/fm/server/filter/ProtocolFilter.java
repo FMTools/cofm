@@ -49,7 +49,7 @@ public class ProtocolFilter extends Filter {
 	}
 
 	@Override
-	public void onClientDisconnected(String address) {
+	protected void doDisconnection(String addr, ResponseGroup rg) {
 		// TODO Auto-generated method stub
 		
 	}

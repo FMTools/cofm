@@ -42,7 +42,7 @@ public class AccessValidator extends Filter {
 				}
 			}
 			if (Resources.REQ_LOGOUT.equals(req.getName())) {
-				logoutUser(req.getRequesterId());
+				logoutUser(req.getRequesterId(), rg);
 			}
 			logger.info("Access validation OK for: " + req.getName());
 			return true;
@@ -90,24 +90,30 @@ public class AccessValidator extends Filter {
 		}
 		return false;
 	}
-
-	@Override
-	public void onClientDisconnected(String address) {
-		for (Map.Entry<Long, String> entry: loginUserAddrs.entrySet()) {
-			if (entry.getValue().equals(address)) {
-				logger.info("Client <" + entry.getKey() + ", " + entry.getValue() + "> disconnected.");
-				logoutUser(entry.getKey());
-				return;
-			}
-		}
-	}
 	
-	private void logoutUser(Long id) {
+	private void logoutUser(Long id, ResponseGroup rg) {
 		String addr = loginUserAddrs.get(id);
 		if (addr != null) {
 			loginUserAddrs.remove(id);
 			logger.info(LogUtil.logOp(id, LogUtil.OP_LOGOUT, addr));
 		}
+		Response r = new Response();
+		r.setName(Resources.RSP_FORWARD);
+		r.setRequestName(Resources.REQ_LOGOUT);
+		r.setRequesterId(id);
+		rg.setBroadcast(r);
+	}
+
+	@Override
+	protected void doDisconnection(String addr, ResponseGroup rg) {
+		for (Map.Entry<Long, String> entry: loginUserAddrs.entrySet()) {
+			if (entry.getValue().equals(addr)) {
+				logger.info("Client <" + entry.getKey() + ", " + entry.getValue() + "> disconnected.");
+				logoutUser(entry.getKey(), rg);
+				return;
+			}
+		}
+		
 	}
 	
 }
