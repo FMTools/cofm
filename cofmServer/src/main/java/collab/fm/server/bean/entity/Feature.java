@@ -38,6 +38,7 @@ public class Feature extends VersionedEntity implements Votable {
 	public Feature2 transfer() {
 		Feature2 f = new Feature2();
 		f.setId(this.getId());
+		f.setCid(this.getCreator());
 		f.setV0(BeanUtil.cloneSet(this.getExistence().getOpponents()));
 		f.setV1(BeanUtil.cloneSet(this.getExistence().getSupporters()));
 		f.setOpt0(BeanUtil.cloneSet(this.getOptionality().getOpponents()));

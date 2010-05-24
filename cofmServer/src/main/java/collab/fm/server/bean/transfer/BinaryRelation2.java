@@ -4,6 +4,7 @@ import java.util.Set;
 
 public class BinaryRelation2 {
 	private Long id;
+	private Long cid;  //Creator ID
 	private String type;
 	private Set<Long> v1;
 	private Set<Long> v0;
@@ -15,6 +16,12 @@ public class BinaryRelation2 {
 	}
 	public void setId(Long id) {
 		this.id = id;
+	}
+	public Long getCid() {
+		return cid;
+	}
+	public void setCid(Long cid) {
+		this.cid = cid;
 	}
 	public String getType() {
 		return type;

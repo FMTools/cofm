@@ -72,6 +72,7 @@ public class BinaryRelationship extends Relationship {
 	public BinaryRelation2 transfer() {
 		BinaryRelation2 br = new BinaryRelation2();
 		br.setId(this.getId());
+		br.setCid(this.getCreator());
 		br.setLeft(this.getLeftFeatureId());
 		br.setRight(this.getRightFeatureId());
 		br.setType(this.getType());

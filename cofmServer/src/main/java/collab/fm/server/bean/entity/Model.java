@@ -40,6 +40,7 @@ public class Model extends VersionedEntity {
 	public Model2 transfer() {
 		Model2 m = new Model2();
 		m.setId(this.getId());
+		m.setCid(this.getCreator());
 		
 		Set<Long> us = new HashSet<Long>();
 		for (User u: this.getUsersInternal()) {
