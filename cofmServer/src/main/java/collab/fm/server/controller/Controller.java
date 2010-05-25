@@ -46,6 +46,7 @@ public class Controller {
 	}
 	
 	public static void init() {
+		actions.add(new AddCommentAction());
 		actions.add(new CommitAction());
 		actions.add(new LoginAction());
 		actions.add(new RegisterAction());

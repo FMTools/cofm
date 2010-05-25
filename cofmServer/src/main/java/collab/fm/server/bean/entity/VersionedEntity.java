@@ -11,6 +11,11 @@ public class VersionedEntity {
 		creator = creatorId;
 		created = new Date();
 	}
+	
+	public VersionedEntity() {
+		creator = -1L;
+		created = new Date();
+	}
 
 	public Long getCreator() {
 		return creator;
@@ -20,10 +25,6 @@ public class VersionedEntity {
 		this.creator = creator;
 	}
 
-	public VersionedEntity() {
-		creator = -1L;
-		created = new Date();
-	}
 	
 	public Date getCreated() {
 		return created;

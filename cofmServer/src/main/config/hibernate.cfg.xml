@@ -17,6 +17,7 @@
         
         <property name="hibernate.show_sql">false</property>
         
+        <mapping resource="collab/fm/server/bean/entity/Comment.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/entity/Feature.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/entity/FeatureName.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/entity/FeatureDescription.hbm.xml"/>

@@ -12,6 +12,7 @@ public class Resources {
 	public static final String REQ_ERROR_AUTHORITY = get("req.error.authority");
 	public static final String REQ_ERROR_FORMAT = get("req.error.format");
 	
+	public static final String REQ_COMMENT = get("req.comment");
 	public static final String REQ_EXIT_MODEL = get("req.exitModel");
 	public static final String REQ_EDIT = get("req.edit");
 	public static final String REQ_UPDATE = get("req.update");
