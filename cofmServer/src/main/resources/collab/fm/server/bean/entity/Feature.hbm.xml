@@ -49,7 +49,7 @@
   	</set>
   	
   	<!-- One-to-many association to Comment -->
-  	<list name="comments" table="FEATURE_COMMENTS">
+  	<list name="comments" table="FEATURE_COMMENTS" cascade="all, delete-orphan">
   		<key column="FEATURE_ID"></key>
   		<list-index column="COMMENT_INDEX"></list-index>
   		<many-to-many class="Comment" column="COMMENT_ID" unique="true"></many-to-many>
