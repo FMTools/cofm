@@ -27,6 +27,8 @@ public class Feature extends VersionedEntity implements Votable {
 	
 	private Set<Relationship> relationships = new HashSet<Relationship>();
 	
+	private List<Comment> comments = new ArrayList<Comment>();
+	
 	public Feature() {
 		super();
 	}
@@ -75,6 +77,10 @@ public class Feature extends VersionedEntity implements Votable {
 		this.id = id;
 	}
 	
+	public void addComment(Comment c) {
+		this.getComments().add(c);
+		c.setFeatureId(this.getId());
+	}
 /*	private <T> List<T> toValue(List<Vote<T>> container) {
 		List<T> t = new ArrayList<T>();
 		for (Vote<T> v: container) {
@@ -300,6 +306,14 @@ public class Feature extends VersionedEntity implements Votable {
 
 	private Set<Relationship> getRelationshipsInternal() {
 		return relationships;
+	}
+	
+	public List<Comment> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<Comment> comments) {
+		this.comments = comments;
 	}
 	
 	public boolean equals(Object v) {

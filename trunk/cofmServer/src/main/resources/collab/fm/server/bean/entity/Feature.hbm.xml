@@ -48,6 +48,13 @@
   		<many-to-many class="FeatureDescription" column="DESCRIPTION_ID" unique="true"></many-to-many>
   	</set>
   	
+  	<!-- One-to-many association to Comment -->
+  	<list name="comments" table="FEATURE_COMMENTS">
+  		<key column="FEATURE_ID"></key>
+  		<list-index column="COMMENT_INDEX"></list-index>
+  		<many-to-many class="Comment" column="COMMENT_ID" unique="true"></many-to-many>
+  	</list>
+  	
   	<!-- Many-to-many association to Relationship.
   	   The statement "inverse=true" tells Hibernate that the two statements in class Feature and Relationship
   	   (namely "aFeature.addRelationship(aRel)" and "aRel.addFeature(aFeature)")  
