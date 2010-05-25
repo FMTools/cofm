@@ -18,7 +18,7 @@
     <appender name="F2" class="org.apache.log4j.DailyRollingFileAppender">
     		<param name="Encoding" value="UTF-8" />
     		<param name="Append" value="true"/>
-    		<param name="DatePattern" value=".yyyy-ww"/>
+    		<param name="DatePattern" value=".yyyy-MM-dd"/>
     		<param name="Threshold" value="INFO"/>
     		<param name="File" value="log/Activity/activity.log"/>
     		<layout class="org.apache.log4j.PatternLayout">
