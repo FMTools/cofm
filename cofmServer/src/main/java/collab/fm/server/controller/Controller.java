@@ -24,6 +24,7 @@ public class Controller {
 	static Logger logger = Logger.getLogger(Controller.class);
 	
 	private static final String[] databaseAccessRequests = {
+		Resources.REQ_COMMENT,
 		Resources.REQ_COMMIT,
 		Resources.REQ_LOGIN,
 		Resources.REQ_REGISTER,
