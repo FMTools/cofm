@@ -102,7 +102,7 @@
 				//Trees
 				GlobalTreeData.instance.xml;
 				WorkingTreeData.instance.xml;
-				
+				PersonalTreeData.instance.xml;
 			}
 			
 			private function backToHomePage(): void {

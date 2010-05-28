@@ -1,7 +1,7 @@
 package collab.fm.client.data {
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
-
+	
 	import mx.collections.IViewCursor;
 	import mx.collections.XMLListCollection;
 
@@ -35,6 +35,7 @@ package collab.fm.client.data {
 
 		public static const IS_NEW_ELEMENT: String = "IsNewElement";
 		public static const SHOULD_DELETE_ELEMENT: String = "ShouldDeleteElement";
+		public static const FROM_OPPONENT_TO_SUPPORTER: String = "FromOpponentToSupporter";
 		public static const VOTE_NO_TO_FEATURE: String = "VoteNoToFeature";
 
 		private var _features: XMLListCollection;
@@ -63,7 +64,15 @@ package collab.fm.client.data {
 		public function registerSubView(view: IOperationListener): void {
 			_subViews.push(view);
 		}
-
+		
+		public function getRefinementId(parent: String, child: String): String {
+			var rs: XMLList = this.binaries.source.(@type==Cst.BIN_REL_REFINES && @left==parent && @right==child);
+			if (rs.length() > 0) {
+				return rs.@id;
+			}
+			return null;
+		}
+		
 		public function containsFeature(featureId: String): Boolean {
 			var fs: XMLList = features.source.(@id==featureId);
 			return fs.length() > 0;
@@ -75,11 +84,35 @@ package collab.fm.client.data {
 			// TODO: extend if there are other types of relationships (group or complex)
 		}
 
-		public function isBinaryRelationshipOpponent(relationshipId: String): Boolean {
+		public function isRelationshipOpponent(relationshipId: String): Boolean {
 			var me: String = String(UserList.instance.myId);
 			return findVoter(this.binaries, relationshipId, me, false);
 		}
-
+		
+		public function getFeatureSupportRate(id: String): Number {
+			var elements: XMLList = this.features.source.(@id==id);
+			if (elements.length() > 0) {
+				return this.getSupportRate(elements[0]);
+			}
+			return 0;
+		}
+		
+		public function getRelationshipSupportRate(id: String): Number {
+			var elements: XMLList = this.binaries.source.(@id==id);
+			if (elements.length() > 0) {
+				return this.getSupportRate(elements[0]);
+			}
+			return 0;
+			// TODO: extend for group/complex relationships
+		}
+		
+		public function getSupportRate(element: XML): Number {
+			var y: int = XMLList(element.yes.user).length();
+			var n: int = XMLList(element.no.user).length();
+			var sr: Number = (n <= 0) ? 1 : (y / (y+n));
+			return sr;
+		}
+		
 		private function findVoter(target: XMLListCollection, id: String, voter: String, yes: Boolean): Boolean {
 			if (yes) {
 				return XMLList(target.source.(@id==id).yes.user.(text().toString()==voter)
@@ -178,12 +211,19 @@ package collab.fm.client.data {
 				for (var cursor: IViewCursor = binaries.createCursor(); !cursor.afterLast; cursor.moveNext()) {
 					if (cursor.current.@id == String(o)) {
 						if (ModelUtil.updateVoters(op["vote"], op["userid"], XML(cursor.current)) == false) {
+							var info: Object = {
+								id: cursor.current.@id,
+								type: cursor.current.@type,
+								left: cursor.current.@left,
+								right: cursor.current.@right
+							};
 							cursor.remove();
-							// Record the target which needs to be deleted.
+							// Record the relationship which needs to be deleted.
 							if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == null) {
 								op[FeatureModel.SHOULD_DELETE_ELEMENT] = new Array();
 							}
-							(op[FeatureModel.SHOULD_DELETE_ELEMENT] as Array).push(String(o));
+							
+							(op[FeatureModel.SHOULD_DELETE_ELEMENT] as Array).push(info);
 						}
 						break;
 					}
@@ -276,7 +316,7 @@ package collab.fm.client.data {
 			// If we reach here, it is a creating operation.
 			op[FeatureModel.IS_NEW_ELEMENT] = true;
 
-			features.addItem(<feature id={op["featureId"]}>
+			features.addItem(<feature id={op["featureId"]} creator={op["userid"]}>
 					<yes><user>{op["userid"]}</user></yes>
 					<no/>
 					<names>
@@ -298,10 +338,14 @@ package collab.fm.client.data {
 		public function handleCreateBinaryRelationship(op:Object): void {
 			for (var cursor: IViewCursor = binaries.createCursor(); !cursor.afterLast; cursor.moveNext()) {
 				if (cursor.current.@id == op["relationshipId"]) {
+					var opposed: Boolean = isRelationshipOpponent(String(op["relationshipId"]));
 					// A voting operation
 					if (ModelUtil.updateVoters(op["vote"], op["userid"], XML(cursor.current)) == false) {
 						cursor.remove();
 						op[FeatureModel.SHOULD_DELETE_ELEMENT] = true;
+					}
+					if (opposed && ModelUtil.isTrue(op["vote"])) {
+						op[FeatureModel.FROM_OPPONENT_TO_SUPPORTER] = true;
 					}
 					return;
 
@@ -311,6 +355,7 @@ package collab.fm.client.data {
 			op[FeatureModel.IS_NEW_ELEMENT] = true;
 
 			binaries.addItem(<binary id={op["relationshipId"]}
+					creator={op["userid"]}
 					type={op["type"]}
 					left={op["leftFeatureId"]}
 					right={op["rightFeatureId"]}>
@@ -344,7 +389,7 @@ package collab.fm.client.data {
 
 
 		private function createXmlFromFeature(f: Object): XML {
-			var result: XML = <feature id={f.id} />;
+			var result: XML = <feature id={f.id} creator={f.cid} />;
 			// Votes on the feature
 			appendVotes(result, f);
 
@@ -379,7 +424,7 @@ package collab.fm.client.data {
 
 		private function createXmlFromBinary(b: Object): XML {
 			var result: XML = 
-				<binary id={b.id} type={b.type} left={b.left} right={b.right}/>;
+				<binary id={b.id} creator={b.cid} type={b.type} left={b.left} right={b.right}/>;
 			appendVotes(result, b);
 			return result;
 		}

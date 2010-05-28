@@ -82,7 +82,11 @@ package collab.fm.client.data {
 			// Set the feature id
 			id = evt.id;
 			_feature = XML(FeatureModel.instance.features.source.(@id==String(evt.id))[0]);
-
+			
+			// update creator info
+			var creator: String = UserList.instance.getNameById(int(_feature.@creator));
+			basicInfo.addItem(<attr key="creator" type={Cst.ATTR_TYPE_STRING} label="Creator:" value={creator}/>);
+			
 			updateVotes(); // votes to this feature
 			updateNames();
 			updateDescriptions();
@@ -99,7 +103,7 @@ package collab.fm.client.data {
 			// no votes
 			var noNum: int = XMLList(_feature.no.user).length();
 			var yesNum: int = XMLList(_feature.yes.user).length();
-			var yesRatio: Number = (noNum == 0) ? 100 : (100 * yesNum / (yesNum + noNum));
+			var yesRatio: Number = (noNum <= 0) ? 100 : (100 * yesNum / (yesNum + noNum));
 			var noRatio: Number = 100 - yesRatio;
 
 			votes.addItem({
@@ -122,7 +126,7 @@ package collab.fm.client.data {
 			// Construct the "names" array for Feature_Name_DataGrid.
 			// Columns: name, supporters (with percentage), opponents.
 			var primary: String;
-			var rate: Number = -1;
+			var rate: Number = 0;
 			for each (var _name: Object in _feature.names.name) {
 				var y: int = XMLList(_name.yes.user).length();
 				var n: int = XMLList(_name.no.user).length();
@@ -336,6 +340,9 @@ package collab.fm.client.data {
 						this.updateOptionality();
 					}
 				}
+				
+				// update basic info
+				ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
 			}
 		}
 
@@ -350,24 +357,36 @@ package collab.fm.client.data {
 						this.updateBinaryConstraints();
 						break;
 				}
+				
+				// update basic info
+				ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
 			}
 		}
 
 		public function handleSetOpt(op:Object): void {
 			if (op["featureId"] == String(id)) {
 				this.updateOptionality();
+				
+				// update basic info
+				ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
 			}
 		}
 
 		public function handleFeatureVotePropagation(op:Object): void {
 			if (op["featureId"] == String(id)) {
 				this.updateVotes();
+				
+				// update basic info
+				ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
 			}
 		}
 
 		public function handleRelationshipVotePropagation(op:Object): void {
 			updateRefinements();
 			updateBinaryConstraints();
+			
+			// update basic info
+			ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
 		}
 	}
 }

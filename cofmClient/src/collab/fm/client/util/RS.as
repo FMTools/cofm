@@ -25,6 +25,7 @@ package collab.fm.client.util {
 		public static const BTN_ADD: String =s("btn.add");
 		public static const BTN_OK: String = s("btn.ok");
 		public static const BTN_CANCEL: String = s("btn.cancel");
+		public static const BTN_RESET: String = s("btn.reset");
 		public static const BTN_CREATE: String = s("btn.create");
 		public static const BTN_ENTER: String = s("btn.enter");
 		public static const BTN_CREATE_FEATURE: String = s("btn.createFeature");
@@ -126,7 +127,10 @@ package collab.fm.client.util {
 		public static const EDIT_TAB_DES: String = s("edit.tab.des");
 		public static const EDIT_TAB_REFINE: String = s("edit.tab.refine");
 		public static const EDIT_TAB_CONS: String = s("edit.tab.cons");
-
+		
+		public static const COMMENT_INTRO: String = s("comment.intro");
+		public static const COMMENT_TITLE: String = s("comment.title");
+		
 		public static const OP_LIST_TITLE: String = s("op.list.title");
 
 		private static function s(key: String): String {
