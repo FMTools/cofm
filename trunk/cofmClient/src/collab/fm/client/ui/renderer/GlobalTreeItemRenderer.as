@@ -12,7 +12,9 @@ package collab.fm.client.ui.renderer {
 				super.data = value;
 				var curItems: XMLList = new XMLList(TreeListData(super.listData).item);
 				// Bold the controversial features
-				if (Number(curItems[0].@controversy) < 1) {
+				var rate: Number = Number(curItems[0].@support);
+				
+				if (rate < 1) {
 					setStyle("fontWeight", 'bold');
 				} else {
 					setStyle("fontWeight", 'normal');
@@ -25,15 +27,16 @@ package collab.fm.client.ui.renderer {
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
 			if (super.data) {
 				var curItems: XMLList = new XMLList(TreeListData(super.listData).item);
-				var rate: Number = Number(curItems[0].@controversy);
+				var extraInfo: String = "";
+				var rate: Number = Number(curItems[0].@support);
 				if (rate < 1) {
-					super.label.text = TreeListData(super.listData).label +
-						" (" + (rate * 100).toPrecision(3) + "%)";
+					extraInfo += " (" + (rate * 100).toPrecision(3) + "%)";
 				}
-				var person: String = String(curItems[0].@person);
-				if (person != null && mx.utils.StringUtil.trim(person) != "") {
-					super.label.text = TreeListData(super.listData).label + "             <----- (" + person + ")";
+				var people: String = String(curItems[0].@people);
+				if (people != null && mx.utils.StringUtil.trim(people) != "") {
+					extraInfo += "    <----- (" + people + ")";
 				}
+				super.label.text = TreeListData(super.listData).label + extraInfo;
 			}
 		}
 	}

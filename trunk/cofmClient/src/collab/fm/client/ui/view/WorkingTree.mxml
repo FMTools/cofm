@@ -2,6 +2,7 @@
 <mx:Tree xmlns:mx="http://www.adobe.com/2006/mxml"	 
 	 itemRenderer="collab.fm.client.ui.renderer.WorkingTreeItemRenderer"
      labelField="@name"
+     showRoot="false"
      dataProvider="{WorkingTreeData.instance.xml}"
      doubleClickEnabled="true"
      itemDoubleClick="onDoubleClick(event);"

@@ -6,18 +6,26 @@ package collab.fm.client.data {
 	
 	import mx.collections.XMLListCollection;
 
-	public /*abstract*/class TreeData {
+	public /*abstract*/class TreeData implements IOperationListener {
 
-		/** The XML of global trees:
-		 *    <feature id=X name=X controversy=0..to..1>
-		 * 		<feature/>
-		 * 		<feature/>
-		 * 	  </feature>
+		/** The XML of tree
+		 *  <feature>
+		 *      <feature ... >
+		 * </feature>
+		 *  Tree nodes:
+		 *      <feature id= creator= support= 
+		 *                  parents={number of parents} name= people=>
+		 *          <feature .../>
+		 *      </feature>
 		 */
 		protected var _data: XMLListCollection;
+		
+		protected var refinements: Dictionary = new Dictionary();
+		
+		public static const UNNAMED: String = "<unnamed>";
 
 		public function TreeData() {
-			_data = new XMLListCollection();
+			this.xml = new XMLListCollection(new XMLList(<feature/>));
 			
 			ClientEvtDispatcher.instance().addEventListener(
 				FeatureSelectEvent.OTHER_PEOPLE_SELECT_ON_TREE, onOtherPeopleSelect);
@@ -27,6 +35,363 @@ package collab.fm.client.data {
 				LogoutEvent.LOGGED_OUT, onPeopleLogout);
 			ClientEvtDispatcher.instance().addEventListener(
 				PageSwitchEvent.OTHERS_EXIT_WORK_PAGE, onPeopleExitModel);
+			
+			FeatureModel.instance.registerSubView(this);
+		}
+		
+		//--------------------------------------------------
+		//   Tree Manipulation
+		//--------------------------------------------------
+		protected function get root(): XML {
+			return XML(this.xml.getItemAt(0));
+		}
+		
+		protected function getFeatureById(id: String): XMLList {
+			return this.root..feature.(@id==id);		
+		}
+		
+		protected function createFeature(id: String): XML {
+			var fs: XMLList = FeatureModel.instance.features.source.(@id==id);
+			if (fs.length() <= 0 || !isPartOfTree(fs[0])) {
+				return null;
+			}
+			var name: String = getFeatureName(fs[0]);
+			return <feature id={id} 
+								  creator={fs[0].@creator}
+								  support={FeatureModel.instance.getSupportRate(fs[0])}
+								  parents="0"
+								  name={name}
+								  people="" />; 
+		}
+		
+		protected function checkAndAddFeature(id: String): void {
+			if (!this.containsFeature(id)) {
+				var f: XML = this.createFeature(id);
+				if (f != null) {
+					this.root.appendChild(f);
+				}
+			}
+		}
+		
+		protected function removeFeatureById(id: String): void {
+			var targets: XMLList = getFeatureById(id);
+			// for all children of targets, we should remove refinement of them first.
+			// After that, we remove the targets.
+			if (targets.length() > 0) {
+				var p: XML = targets[0];
+				for each (var c: Object in p.children()) {
+					removeRefinement(FeatureModel.instance.getRefinementId(p.@id, c.@id));
+				}
+				ModelUtil.clearXMLList(targets);
+			}
+		}
+		
+		protected function addRefinement(id: String): void {
+			if (this.refinements[id] == true) {
+				return;
+			}
+			var rs: XMLList = FeatureModel.instance.binaries.source.(@id==id);
+			if (rs.length() <= 0 || rs[0].@type != Cst.BIN_REL_REFINES || !isPartOfTree(rs[0])) {
+				return;
+			}
+			var parent: String = rs[0].@left;
+			var child: String = rs[0].@right;
+			var p: XMLList = this.getFeatureById(parent);
+			var c: XMLList = this.getFeatureById(child);
+			
+			checkEmptyList(p, parent);
+			checkEmptyList(c, child);
+			
+			if (c.length() > 0 && p.length() > 0) {
+				// if c.parents == 0, c is a root feature, then we move c to p (by deleting c first, and copy c to p later.)
+				// else c is already a child feature, then we just need to copy c to p;
+				// in both cases we increase c.parents by 1.
+				var ch: XML = XML(c[0]).copy();
+				if (c[0].@parents == "0") {
+					ModelUtil.clearXMLList(c);
+				}
+				var hasNewParent: Boolean = false;
+				for each (var pa: Object in p) {
+					// if ch is not pa's child yet
+					if (XMLList(pa.feature.(@id==ch.@id)).length() <= 0) {
+						hasNewParent = true;
+						XML(pa).appendChild(ch.copy());
+					}
+				}
+				if (hasNewParent) {
+					// Increase child.parents by 1.
+					for each (var chd: Object in this.getFeatureById(child)) {
+						chd.@parents = int(chd.@parents) + 1;
+					}
+				}
+				// Record in refinements dictionary
+				this.refinements[id] = true;
+			}
+		}
+		
+		/**
+		 * If parentId == null or childId == null, then this method will get relationship data from the feature model.
+		 */
+		protected function removeRefinement(id: String, parentId: String=null, childId: String=null): void {
+			if (id == null || this.refinements[id] != true) {
+				return;
+			}
+			
+			var parent: String;
+			var child: String;
+			if (parentId == null && childId == null) {
+				var rs: XMLList = FeatureModel.instance.binaries.source.(@id==id);
+				if (rs.length() <= 0 || rs[0].@type != Cst.BIN_REL_REFINES) {
+					return;
+				}
+			    parent = rs[0].@left;
+				child = rs[0].@right;
+			} else {
+				parent = parentId;
+				child = childId;
+			}
+			
+			var p: XMLList = this.getFeatureById(parent);
+			var c: XMLList = this.getFeatureById(child);
+			
+			if (c.length() > 0 && p.length() > 0) {
+				var ch: XML = XML(c[0]).copy();
+				
+				// if ch.parents == 0 (ch is a root feature), then we do noting.
+				// if ch.parents == 1, we remove c from p, and then make c a root feature
+				// otherwise we just remove c from p
+				// in the later two cases, we decrease ch.parents by 1
+				if (ch.@parents == "0") {
+					return;
+				}
+				for each (var pa: Object in p) {
+					ModelUtil.clearXMLList(XMLList(pa.feature.(@id==ch.@id)));
+				}
+				if (ch.@parents == "1") {  // make ch a root feature
+					this.root.appendChild(ch);
+				}
+				for each (var chd: Object in this.getFeatureById(child)) {
+					chd.@parents = int(chd.@parents) - 1;
+				}
+				
+				// Remove refinement from dictionary
+				delete this.refinements[id];
+			}
+		}
+		
+		private function checkEmptyList(list: XMLList, id: String): void {
+			if (list.length() <= 0) {
+				var node: XML = this.createFeature(id);
+				if (node != null) {
+					this.root.appendChild(node);
+					list[0] = node;
+				}
+			}
+		}
+		
+		protected function addPersonLocation(id: String, person: String): void {
+			for each (var feature: Object in getFeatureById(id)) {
+				var people: String = feature.@people;
+				if (people != "") {
+					people += ", ";   // append a person to other people.
+				}
+				people += person;
+				feature.@people = people;
+			}
+		}
+		
+		protected function removePersonLocation(person: String): void {
+			for each (var feature: Object in this.root..feature) {	
+				var people: Array = String(feature.@people).split(/,\s*/);
+				var rslt: String = "";
+				var notEmpty: Boolean = false;
+				for (var i: int = 0; i < people.length; i++) {
+					if (people[i] == person) {
+						continue;    // skip this person
+					}
+					if (notEmpty) {
+						rslt += ", ";
+					}
+					rslt += people[i];    // keep other people
+					notEmpty = true;
+				}
+				feature.@people = rslt;
+			}
+		}
+		
+		protected function updateFeatureSupportRate(id: String): void {
+			var sr: Number = FeatureModel.instance.getFeatureSupportRate(id);
+			for each (var f: Object in this.getFeatureById(id)) {
+				f.@support = sr;
+			}
+		}
+		
+		/**
+		 * Clear and re-build the tree
+		 */
+		protected function refresh(): void {
+			onDataUpdateStart();
+			
+			this.refinements = new Dictionary();
+
+			this.xml = new XMLListCollection(new XMLList(<feature/>));
+			
+			for each (var f: Object in FeatureModel.instance.features.source) {
+				var feature: XML = this.createFeature(f.@id);
+				if (feature != null) {
+					this.root.appendChild(feature);
+				}
+			}	
+			for each (var r: Object in FeatureModel.instance.binaries.source) {
+				if (r.@type == Cst.BIN_REL_REFINES) {
+					addRefinement(r.@id);
+				}
+			}
+			
+			onDataUpdateComplete();
+		}
+		
+		/*abstract*/
+		protected function getFeatureName(o: Object): String {
+			return UNNAMED;
+		}
+		
+		/*abstract*/
+		protected function isPartOfTree(o: Object): Boolean {
+			return true;
+		}
+		
+		/*abstract*/
+		protected function onDataUpdateComplete(): void {
+		}
+		
+		/*abstract*/
+		protected function onDataUpdateStart(): void {
+			
+		}
+		
+		// ------------------------------------------------
+		//         Event Handlers
+		// ------------------------------------------------
+		public function handleFeatureVotePropagation(op: Object): void {
+			for each (var o: Object in op["targetIds"]) {
+				// Only "YES" votes can be propagated to a feature, so we don't consider deletion here.
+				checkAndAddFeature(String(o));
+				updateFeatureSupportRate(String(o));
+			}
+		}
+		
+		public function handleRelationshipVotePropagation(op: Object): void {
+			for each (var id: Object in op["targetIds"]) {
+				var removal: Boolean = false;
+				var info: Object = null;
+				var rel: XML = null;
+				
+				// See if the relationship has already been removed from the feature model
+				if (op[FeatureModel.SHOULD_DELETE_ELEMENT] != null) {
+					for each (var o:Object in op[FeatureModel.SHOULD_DELETE_ELEMENT]) {
+						if (o.id == String(id)) {
+							removal = true;
+							info = o;
+							break;
+						}
+					}
+				}
+				
+				// See if the relationship is not removed from the feature model, but removed 
+				// from this tree. (e.g. if I vote NO to a refinement and this is a working tree.)
+				if (!removal) {
+					var rs: XMLList = FeatureModel.instance.binaries.source.(@id==id);
+					if (rs.length() > 0) {
+						rel = rs[0];
+						removal = !isPartOfTree(rel);
+					}
+				}
+				
+				if (removal) {
+					// remove the refinement
+					if (info != null && info.type == Cst.BIN_REL_REFINES) {
+						removeRefinement(info.id, info.left, info.right);
+					} else if (rel != null && rel.@type == Cst.BIN_REL_REFINES) {
+						removeRefinement(rel.@id);
+					}
+				}
+			}
+		}
+
+		public function handleAddDescription(op:Object): void {
+			// Do nothing (the tree doesn't show the desciptions.)
+		}
+
+		public function handleAddName(op:Object): void {
+			// recalculate the displayed name (primary name)
+			var fs: XMLList = FeatureModel.instance.features.source.(@id==op["featureId"]);
+			if (fs.length() <= 0) {
+				return;
+			}
+			var name: String = this.getFeatureName(fs[0]);
+			for each (var f: Object in this.getFeatureById(op["featureId"])) {
+				f.@name = name;
+			}
+		}
+
+		public function handleCreateFeature(op:Object): void {
+			// if create, add the feature to the root
+			if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
+				var f: XML = this.createFeature(op["featureId"]);
+				if (f != null) {
+					this.root.appendChild(f);
+				}
+				return;
+			}
+			
+			// Handle deletion. (Not part of model or not part of tree.)
+			if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
+				removeFeatureById(op["featureId"]);
+				return;
+			}
+			var fs: XMLList = FeatureModel.instance.features.source.(@id==op["featureId"]);
+			if (fs.length() > 0 && !isPartOfTree(fs[0])) {
+				removeFeatureById(fs[0].@id);
+				return;
+			}
+			
+			// Handle voting (update support rate)
+			if (ModelUtil.isTrue(op["vote"])) {
+				checkAndAddFeature(op["featureId"]);
+			}
+			updateFeatureSupportRate(op["featureId"]);
+		}
+
+		public function handleCreateBinaryRelationship(op:Object): void {
+			// The tree only deals with refinement relationships.
+			if (op["type"] == Cst.BIN_REL_REFINES) {
+				
+				// Handle creation
+				if (op[FeatureModel.IS_NEW_ELEMENT] == true || ModelUtil.isTrue(op["vote"])) {
+					this.addRefinement(op["relationshipId"]);
+					return;
+				}
+				
+				// Handle deletion
+				var left: String = String(op["leftFeatureId"]);
+				var right: String = String(op["rightFeatureId"]);
+				if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
+					removeRefinement(op["relationshipId"], left, right);
+					return;
+				}
+				
+				var rs: XMLList = FeatureModel.instance.binaries.source.(@id==op["relationshipId"]);
+				if (rs.length() > 0 && !isPartOfTree(rs[0])) {
+					removeRefinement(op["relationshipId"]);
+					return;
+				}
+					
+			}
+		}
+
+		public function handleSetOpt(op:Object): void {
+			// Do nothing (the optionality is not shown in trees.)
 		}
 		
 		protected function onPeopleLogout(evt: LogoutEvent): void {
@@ -44,61 +409,13 @@ package collab.fm.client.data {
 		}
 		
 		protected function onOtherPeopleSelect(evt: FeatureSelectEvent): void {
-			// 1. Remove this person's previous location.
 			var uName: String = UserList.instance.getNameById(evt.user);
 			removePersonLocation(uName);
-			
-			var nodes: XMLList = ModelUtil.getRootFeatureById(this.xml.source, String(evt.id));
-			var nodes2: XMLList = ModelUtil.getNonRootFeatureById(this.xml.source, String(evt.id));
-			for each (var n: Object in nodes) {
-				updateNewLocation(n, uName);
-			}
-			for each (var n2: Object in nodes2) {
-				updateNewLocation(n2, uName);
-			}
+			addPersonLocation(String(evt.id), uName);			
 		}
 		
-		protected function removePersonLocation(person: String): void {
-			var p: XMLList = this.xml.source;
-			var p2: XMLList = this.xml.source..feature;
-			for each (var o: Object in p) {
-				removeLocationFromTree(o, person);
-			}
-			for each (var o2: Object in p2) {
-				removeLocationFromTree(o2, person);
-			}
-		}
-		protected function removeLocationFromTree(node: Object, person: String): void {
-			var people: Array = String(node.@person).split(/,\s*/);
-			var rslt: String = "";
-			var notEmpty: Boolean = false;
-			for (var i: int = 0; i < people.length; i++) {
-				if (people[i] == person) {
-					continue;    // skip this person
-				}
-				if (notEmpty) {
-					rslt += ", ";
-				}
-				rslt += people[i];    // keep other people
-				notEmpty = true;
-			}
-			node.@person = rslt;
-		}
-		
-		protected function updateNewLocation(node: Object, person: String): void {
-			var s: String = node.@person;
-			if (s != "") {
-				s += ", ";
-			}
-			s += person;
-			node.@person = s;
-		}
-		
-		public function getNameById(id: String): String {
-			var fs: XMLList = ModelUtil.getRootFeatureById(this.xml.source, id);
-			if (fs.length() <= 0) {
-				fs = ModelUtil.getNonRootFeatureById(this.xml.source, id);
-			}
+		public function getFeatureNameById(id: String): String {
+			var fs: XMLList = this.getFeatureById(id);
 			if (fs.length() > 0) {
 				return fs[0].@name;
 			}
@@ -108,79 +425,16 @@ package collab.fm.client.data {
 		protected function onLocalModelUpdate(evt: ModelUpdateEvent): void {
 			onDataUpdateStart();
 			
-			var refines: Dictionary = new Dictionary();
-			// refines: key = id, value = parent & children
-			//   parent == [] (empty array) indicates a root feature.
-			//   parent == null indicates an non-positioned feature.
-			for each (var item: Object in FeatureModel.instance.binaries.source) {
-				var r: XML = XML(item);
-				if (String(r.@type).toLowerCase() != "refines") {
-					continue;
-				}
-				addRefinement(refines, r);
-			}
-			var topNodes: Array = [];
-			for each (var node: Object in FeatureModel.instance.features.source) {
-				var curId: String = XML(node).@id;
-				if (isTopNode(curId, refines)) {
-					topNodes.push(curId);
-				}
-			}
-
-			var root: XML = <root/>;
-			for each (var id: Object in topNodes) {
-				var nd: XML = createTreeNode(String(id), refines);
-				if (nd != null) {
-					root.appendChild(nd);
-				}
-			}
-
-			xml.source = root.feature;
+			this.refresh();
 			
 			onDataUpdateComplete();
 		}
-
-		protected function createTreeNode(id: String, refines: Dictionary): XML {
-			var node: XML = createSpecificTreeNode(id, refines);
-			if (refines[id] == null) {
-				return node;
-			}
-			for each (var item: Object in refines[id].child) {
-				var c: XML = createTreeNode(String(item), refines);
-				if (c != null) {
-					node.appendChild(c);
-				}
-			}
-			return node;
-		}
-
-		/*abstract, return null if this node should not present in the tree.*/
-		protected function createSpecificTreeNode(id: String, refines: Dictionary): XML {
-			return <feature />;
-		}
-
-		/*abstract*/
-		protected function addRefinement(refines: Dictionary, relation: XML): void {
-		}
-
-		/*abstract*/
-		protected function isTopNode(id: String, refines: Dictionary): Boolean {
-			return true;
-		}
-
-		/*abstract*/
-		protected function getPrimaryName(feature: XML): String {
-			return null;
-		}
-
-		/*abstract*/
-		protected function onDataUpdateComplete(): void {
+		
+		protected function containsFeature(id: String): Boolean {
+			return this.getFeatureById(id).length() > 0;
 		}
 		
-		/*abstract*/
-		protected function onDataUpdateStart(): void {
-			
-		}
+
 
 		[Bindable]
 		public function get xml(): XMLListCollection {

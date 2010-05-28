@@ -1,23 +1,33 @@
 package collab.fm.client.util {
 	import collab.fm.client.data.*;
-
+	
 	import mx.collections.IViewCursor;
 	import mx.collections.XMLListCollection;
 
 	public class ModelUtil {
 
+		public static function isTrue(b: String): Boolean {
+			return b.toLowerCase() == (new Boolean(true).toString().toLowerCase());	
+		}
+		
 		public static function getFeatureNameById(fId: String): String {
 			// First, try to get name from working tree
-			var n: String = WorkingTreeData.instance.getNameById(fId);
+			var n: String = WorkingTreeData.instance.getFeatureNameById(fId);
 			if (n != null) {
 				return n;
 			}
 			// Then try to get name from global tree
-			n = GlobalTreeData.instance.getNameById(fId);
+			n = GlobalTreeData.instance.getFeatureNameById(fId);
 			if (n != null) {
 				return n;
 			}
 			return "#" + fId;
+		}
+		
+		public static function clearXMLList(list: XMLList): void {
+			for (var i: int = list.length() - 1; i >= 0; i--) {
+				delete list[i];
+			}
 		}
 
 		// TODO: move this method into FeaureModel
@@ -26,7 +36,7 @@ package collab.fm.client.util {
 			var user: XML = <user>{userId}</user>;
 			var userInYes: Boolean = XMLList(root.yes.user).contains(user);
 			var userInNo: Boolean = XMLList(root.no.user).contains(user);
-			if (vote.toLowerCase() == (new Boolean(true).toString().toLowerCase())) {
+			if (isTrue(vote)) {
 				if (!userInYes) {
 					XML(root.yes[0]).appendChild(user);
 					if (userInNo) {

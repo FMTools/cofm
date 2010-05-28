@@ -6,15 +6,15 @@
 	
 	<!-- Feature model tree view -->
 	<mx:Panel id="leftPanel" paddingBottom="0">
-		<mx:TabNavigator id="treeTab" selectedIndex="1" paddingTop="0">
-			<mx:Canvas label="GLobal Tree" width="{Size.TREE_W}" height="{Size.TREE_H}">
-				<v:GlobalTree id="globalTree" width="100%" height="100%" fontSize="11" />
+		<mx:TabNavigator id="treeTab" paddingTop="0">
+			<mx:Canvas id="tree1" label="GLobal Tree" width="{Size.TREE_W}" height="{Size.TREE_H}">
+				<v:GlobalTree id="globalTree" width="100%" height="100%" fontSize="12" />
 			</mx:Canvas>
-			<mx:Canvas label="Working Tree" width="{Size.TREE_W}" height="{Size.TREE_H}">
-				<v:WorkingTree id="workingTree" width="100%" height="100%" fontSize="11" />
+			<mx:Canvas id="tree2" label="Working Tree" width="{Size.TREE_W}" height="{Size.TREE_H}">
+				<v:WorkingTree id="workingTree" width="100%" height="100%" fontSize="12" />
 			</mx:Canvas>
-			<mx:Canvas label="Personal Tree" width="{Size.TREE_W}" height="{Size.TREE_H}">
-				<mx:Tree id="personalTree" width="100%" height="100%" fontSize="11" />
+			<mx:Canvas id="tree3" label="Personal Tree" width="{Size.TREE_W}" height="{Size.TREE_H}">
+				<v:PersonalTree id="personalTree" width="100%" height="100%" fontSize="12" />
 			</mx:Canvas>
 		</mx:TabNavigator>
 	</mx:Panel>
@@ -29,6 +29,11 @@
 			<mx:Canvas label="{RS.OP_LIST_TITLE}" width="{Size.MISC_W}" height="{Size.MISC_H}">
 				<v:OperationList width="100%" height="100%" />
 			</mx:Canvas>
+			<!--
+			<mx:Canvas label="{RS.COMMENT_TITLE}" width="{Size.MISC_W}" height="{Size.MISC_H}">
+				<v:FeatureCommenter width="100%" height="100%" />
+			</mx:Canvas>
+			-->
 		</mx:TabNavigator>
 	</mx:VBox>
 	
@@ -45,6 +50,7 @@
 			
 			private function initView(): void {
 				ClientEvtDispatcher.instance().addEventListener(ModelSelectEvent.SELECTED, onModelSelected);
+				treeTab.selectedChild = tree2;
 			}
 			
 			private function onModelSelected(evt: ModelSelectEvent): void {

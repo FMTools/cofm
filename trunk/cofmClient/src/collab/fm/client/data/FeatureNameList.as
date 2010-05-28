@@ -87,11 +87,7 @@ package collab.fm.client.data {
 				}
 			}
 			if (op[FeatureModel.VOTE_NO_TO_FEATURE] == true) {
-				trace("---- FeatureNmeList - vote no to feature");
 				reset();
-				for each (var o: Object in data.source) {
-					trace(o.id + ", " + o.name);
-				}
 			}
 		}
 
@@ -110,10 +106,6 @@ package collab.fm.client.data {
 
 		private function reset(): void {
 			data.source = [];
-//			trace("---- reset()  data.removeAll() ---");
-//			for each (var ob: Object in data.source) {
-//					trace(ob.id + ", " + ob.name);
-//			}
 			for each (var o: Object in FeatureModel.instance.features.source) {
 				var f: XML = XML(o);
 				//trace (f.toXMLString());
