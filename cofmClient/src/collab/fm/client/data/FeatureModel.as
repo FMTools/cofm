@@ -441,7 +441,36 @@ package collab.fm.client.data {
 			root.appendChild(yes);
 			root.appendChild(no);
 		}
-
+		
+		public function stats(): String {
+			// Number of features
+			var numFeature: int = this.features.source.length();
+			// Number of common features (NO vote == 0)
+			var numCommon: int = 0;
+			// Number of optional features (NO vote == 1, 2, 3, ...)
+			var numOpt: Array = [];
+			
+			for each (var f: Object in this.features.source) {
+				var n: int = XMLList(f.no.user).length();
+				if (n == 0) {
+					numCommon++;
+				} else {
+					if (numOpt[n] == undefined) {
+						numOpt[n] = 1;
+					} else {
+						numOpt[n] = numOpt[n] + 1;
+					}
+				}
+			}
+			
+			var s: String = "FeatureModel - Total: " + numFeature + " features; Common: " +
+				numCommon + "; ";
+			for (var a: Object in numOpt) {
+				s += "NO by " + a + " user(s): " + numOpt[a] + " features; ";
+			}
+			return s;
+		}
+		
 		[Bindable]
 		public function get features(): XMLListCollection {
 			return _features;

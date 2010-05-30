@@ -8,6 +8,7 @@
 	 	<mx:Label text="{RS.FEEDBACK_LOG}" />
 	 	<mx:TextArea editable="false" wordWrap="false" width="550" height="260" id="console" />
 	 	<mx:HBox>
+	 		<mx:Button label="Stats" click="doStats();" />
 	 		<mx:Button label="{RS.BTN_ISSUE_TRACK}" click="gotoFeedback();" />
 	 		<mx:Button label="{RS.BTN_ISSUE_OTHER}" click="close();" />
 	 	</mx:HBox>
@@ -18,9 +19,16 @@
 		<![CDATA[
 			import mx.managers.PopUpManager;
 			import collab.fm.client.util.*;
+			import collab.fm.client.data.*;
 			
 			private function initView(): void {
 				console.htmlText = Console.content;
+				
+			}
+			
+			private function doStats(): void {
+				console.htmlText += FeatureModel.instance.stats() + "<br/>";
+				console.htmlText += PersonalTreeData.instance.stats() + "<br/>";
 			}
 			
 			private function gotoFeedback(): void {
