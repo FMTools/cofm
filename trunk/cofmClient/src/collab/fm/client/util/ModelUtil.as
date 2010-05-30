@@ -54,54 +54,6 @@ package collab.fm.client.util {
 			return XMLList(root.yes.user).length() > 0;
 		}
 
-		// TODO: move these methods into TreeData
-		public static function getRootFeatureById(source: XMLList, id: String): XMLList {
-			return source.(@id==id);
-		}
-
-		public static function getNonRootFeatureById(source: XMLList, id: String): XMLList {
-			return source..feature.(@id==id);
-		}
-
-		public static function removeRootFeatureById(col: XMLListCollection, id: String): void {
-			for (var cursor: IViewCursor = col.createCursor(); !cursor.afterLast; ) {
-				if (cursor.current.@id == id) {
-					cursor.remove();
-				} else {
-					cursor.moveNext();
-				}
-			}
-		}
-
-		public static function removeNonRootFeatureById(col: XMLListCollection, id: String): void {
-			while (XMLList(col.source..feature.(@id==id)).length() > 0) {
-				delete col.source..feature.(@id==id)[0];
-			}
-		}
-
-		public static function addChildFeatureById(parent: XML, child: XML, childId: String): void {
-			if (XMLList(parent.children().(@id==childId)).length() <= 0) {
-				parent.appendChild(child.copy());
-			}
-		}
-
-		public static function addChildFeatureToAllParents(parents: XMLList, child: XML, childId: String): void {
-			for each (var obj: Object in parents) {
-				addChildFeatureById(XML(obj), child, childId);
-			}
-		}
-
-		public static function removeChildFeatureById(parent: XML, childId: String): void {
-			delete parent.children().(@id==childId)[0];
-		}
-
-		public static function removeChildFeatureFromAllParents(parents: XMLList, childId: String): void {
-			for each (var obj: Object in parents) {
-				removeChildFeatureById(XML(obj), childId);
-			}
-		}
-
-
 		/**
 		 * Sort by approval rating (yesNumber / totalNumer)
 		 */

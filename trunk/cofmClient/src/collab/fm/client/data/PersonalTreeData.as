@@ -71,5 +71,8 @@ package collab.fm.client.data
 		override protected function onDataUpdateStart(): void {
 		}
 		
+		override public function stats(): String {
+			return "PersonalTree - " + super.stats();
+		}
 	}
 }

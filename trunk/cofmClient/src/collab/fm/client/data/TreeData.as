@@ -435,7 +435,28 @@ package collab.fm.client.data {
 		}
 		
 
-
+		public function stats(): String {
+			//1. The number of features
+			var numFeature: int = 0;
+			var features: Dictionary = new Dictionary();
+			for each (var o: Object in this.root..feature) {
+				if (features[o.@id] != undefined) {
+					continue;
+				}
+				features[o.@id] = o;
+				numFeature ++;
+			}
+			
+			//2. The number of my creation
+			var numMy: int = 0;
+			for each (var o2: Object in features) {
+				if (o2.@creator == String(UserList.instance.myId)) {
+					numMy++;
+				}
+			}
+			return "Total: " + numFeature + " features; My creation: " + numMy;
+		}
+		
 		[Bindable]
 		public function get xml(): XMLListCollection {
 			return _data;
