@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.apache.log4j.Logger;
 
+import collab.fm.server.bean.transfer.Comment2;
 import collab.fm.server.bean.transfer.Feature2;
 import collab.fm.server.bean.transfer.VotableString;
 import collab.fm.server.util.BeanUtil;
@@ -65,6 +66,13 @@ public class Feature extends VersionedEntity implements Votable {
 			ds.add(fd.transfer());
 		}
 		f.setDscs(ds);
+		
+		List<Comment2> cs = new ArrayList<Comment2>();
+		for (Comment c: this.getComments()) {
+			cs.add(0, c.transfer());
+		}
+
+		f.setComments(cs);
 		
 		return f;
 	}
