@@ -19,7 +19,7 @@ public class Comment extends VersionedEntity {
 		Comment2 rslt = new Comment2();
 		rslt.setCid(this.getCreator());
 		rslt.setContent(this.getContent());
-		rslt.setTime(this.getCreated().toString());
+		rslt.setTime(this.strCreated());
 		return rslt;
 	}
 	

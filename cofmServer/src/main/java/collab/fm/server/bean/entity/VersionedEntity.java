@@ -1,12 +1,26 @@
 package collab.fm.server.bean.entity;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class VersionedEntity {
 	protected Date created;
 	protected Date lastUpdated;
 	protected Long creator;
-
+	
+	public static String dateToString(Date d) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		return sdf.format(d);
+	}
+	
+	public String strCreated() {
+		return VersionedEntity.dateToString(this.getCreated());
+	}
+	
+	public String strLastUpdated() {
+		return VersionedEntity.dateToString(this.getLastUpdated());
+	}
+	
 	public VersionedEntity(Long creatorId) {
 		creator = creatorId;
 		created = new Date();
