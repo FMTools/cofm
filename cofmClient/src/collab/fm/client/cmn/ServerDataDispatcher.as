@@ -68,6 +68,14 @@ package collab.fm.client.cmn {
 							new ListUserEvent(ListUserEvent.APPEND, 
 							d));
 						break;
+					case Cst.REQ_COMMENT:
+						ClientEvtDispatcher.instance().dispatchEvent(
+							new AddCommentEvent(AddCommentEvent.SUCCESS,
+							int(data[Cst.FIELD_RSP_SOURCE_USER_ID]),
+							int(data["featureId"]),
+							data["content"],
+							data["dateTime"]));
+						break;
 				}
 			} else if (Cst.RSP_SERVER_ERROR == name) {
 				//TODO: report internal error
