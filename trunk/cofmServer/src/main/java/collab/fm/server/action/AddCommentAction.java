@@ -39,7 +39,7 @@ public class AddCommentAction extends Action {
 			AddCommentResponse rsp = new AddCommentResponse();
 			rsp.setContent(acr.getContent());
 			rsp.setFeatureId(acr.getFeatureId());
-			rsp.setDateTime(c.getCreated().toString());
+			rsp.setDateTime(c.strCreated());
 			rsp.setName(Resources.RSP_SUCCESS);
 			
 			rg.setBack(rsp);
@@ -47,7 +47,7 @@ public class AddCommentAction extends Action {
 			AddCommentResponse rsp2 = new AddCommentResponse();
 			rsp2.setContent(acr.getContent());
 			rsp2.setFeatureId(acr.getFeatureId());
-			rsp2.setDateTime(c.getCreated().toString());
+			rsp2.setDateTime(c.strCreated());
 			rsp2.setName(Resources.RSP_FORWARD);
 			
 			rg.setBroadcast(rsp2);
