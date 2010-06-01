@@ -59,6 +59,8 @@ package collab.fm.client.data {
 				OperationCommitEvent.COMMIT_SUCCESS, onOperationCommit);
 			ClientEvtDispatcher.instance().addEventListener(
 				OperationCommitEvent.FORWARDED, onOperationCommit);
+			ClientEvtDispatcher.instance().addEventListener(
+				AddCommentEvent.SUCCESS, onCommentAdded);
 		}
 
 		public function registerSubView(view: IOperationListener): void {
@@ -127,7 +129,17 @@ package collab.fm.client.data {
 			features.source = new XMLList(_defaultXml.feature);
 			binaries.source = new XMLList(_defaultXml.binary);
 		}
-
+		
+		private function onCommentAdded(evt: AddCommentEvent): void {
+			var fs: XMLList = this.features.source.(@id==String(evt.feature));
+			if (fs.length() > 0) {
+				XML(fs[0].comments).insertChildAfter(null, 
+					<comment creator={evt.user} time={evt.time}>
+						{evt.content}
+					</comment>);
+			}
+		}
+		
 		// For details about operations, see server.bean.operation package.
 		private function onOperationCommit(evt: OperationCommitEvent): void {
 			for each (var op: Object in evt.operations) {
@@ -326,6 +338,7 @@ package collab.fm.client.data {
 						</name>
 					</names>
 					<descriptions/>
+					<comments/>
 					<optional><yes/><no/></optional>
 				</feature>);
 
@@ -414,11 +427,18 @@ package collab.fm.client.data {
 			// Optionality of the feature
 			var optional: XML = <optional/>;
 			appendVotes(optional, f, "opt1", "opt0");
-
+			
+			// Comments of the feature
+			var cs: XML = <comments/>;
+			for each (var c: Object in f.comments) {
+				cs.appendChild(<comment creator={c.cid} time={c.time}>{c.content}</comment>);
+			}
+			
 			result.appendChild(names);
 			result.appendChild(descs);
 			result.appendChild(optional);
-
+			result.appendChild(cs);
+			
 			return result;
 		}
 
@@ -451,8 +471,8 @@ package collab.fm.client.data {
 			var numOpt: Array = [];
 			
 			for each (var f: Object in this.features.source) {
-				var n: int = XMLList(f.no.user).length();
-				if (n == 0) {
+				var n: int = XMLList(f.yes.user).length();
+				if (n == 4) {
 					numCommon++;
 				} else {
 					if (numOpt[n] == undefined) {
@@ -466,7 +486,7 @@ package collab.fm.client.data {
 			var s: String = "FeatureModel - Total: " + numFeature + " features; Common: " +
 				numCommon + "; ";
 			for (var a: Object in numOpt) {
-				s += "NO by " + a + " user(s): " + numOpt[a] + " features; ";
+				s += "YES by " + a + " user(s): " + numOpt[a] + " features; ";
 			}
 			return s;
 		}

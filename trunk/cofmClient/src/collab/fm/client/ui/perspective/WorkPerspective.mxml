@@ -26,14 +26,14 @@
 		</mx:Panel>
 		
 		<mx:TabNavigator id="rightBottomTab" paddingTop="0" paddingBottom="0">
-			<mx:Canvas label="{RS.OP_LIST_TITLE}" width="{Size.MISC_W}" height="{Size.MISC_H}">
+			<mx:Canvas id="misc1" label="{RS.OP_LIST_TITLE}" width="{Size.MISC_W}" height="{Size.MISC_H}">
 				<v:OperationList width="100%" height="100%" />
 			</mx:Canvas>
-			<!--
-			<mx:Canvas label="{RS.COMMENT_TITLE}" width="{Size.MISC_W}" height="{Size.MISC_H}">
+			
+			<mx:Canvas id="misc2" label="{RS.COMMENT_TITLE}" width="{Size.MISC_W}" height="{Size.MISC_H}">
 				<v:FeatureCommenter width="100%" height="100%" />
 			</mx:Canvas>
-			-->
+		
 		</mx:TabNavigator>
 	</mx:VBox>
 	
@@ -51,6 +51,7 @@
 			private function initView(): void {
 				ClientEvtDispatcher.instance().addEventListener(ModelSelectEvent.SELECTED, onModelSelected);
 				treeTab.selectedChild = tree2;
+				rightBottomTab.selectedChild = misc2;
 			}
 			
 			private function onModelSelected(evt: ModelSelectEvent): void {

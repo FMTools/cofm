@@ -40,7 +40,7 @@ package collab.fm.client.ui.validator
 		override protected function doValidation(value:Object):Array {
 			var rslt: Array = [];
 			var s: String = StringUtil.trim(String(value));
-
+trace("**************** '" + s + "'");
 			if (s == "") {
 				if (allowEmpty) {
 					return rslt;   // Validate OK

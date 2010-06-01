@@ -69,9 +69,21 @@
 			
 			public function resetForm(): void {
 				nameInput.text = "";
-				parentSwitch.selectedValue = "None";
+				
+				if (CurrentFeature.instance.id > 0) {
+					var n: String = ModelUtil.getFeatureNameById(String(CurrentFeature.instance.id));
+					if (n != null) {
+						parentInput.text = n;
+						parentInput.search();
+						parentId = CurrentFeature.instance.id;
+						hasParent = true;
+						parentSwitch.selectedValue = "Exist";
+						return;
+					} 
+				}
 				parentInput.text = "";
 				hasParent = false;
+				parentSwitch.selectedValue = "None";
 			}
 			
 			private function initView(): void {

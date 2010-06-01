@@ -21,7 +21,7 @@ package collab.fm.client.util {
 			if (n != null) {
 				return n;
 			}
-			return "#" + fId;
+			return null;
 		}
 		
 		public static function clearXMLList(list: XMLList): void {
