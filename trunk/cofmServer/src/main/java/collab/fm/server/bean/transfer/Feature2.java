@@ -12,6 +12,7 @@ public class Feature2 {
 	private Set<Long> v0;
 	private Set<Long> opt1;
 	private Set<Long> opt0;
+	private List<Comment2> comments;
 	
 	private Set<Long> rels;
 
@@ -77,6 +78,14 @@ public class Feature2 {
 
 	public void setOpt0(Set<Long> opt0) {
 		this.opt0 = opt0;
+	}
+
+	public List<Comment2> getComments() {
+		return comments;
+	}
+
+	public void setComments(List<Comment2> comments) {
+		this.comments = comments;
 	}
 
 	public Set<Long> getRels() {
