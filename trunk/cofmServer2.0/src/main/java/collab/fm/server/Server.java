@@ -21,6 +21,11 @@ import collab.fm.server.persistence.HibernateUtil;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 
+/**
+ * @version 2.0
+ * @author mark
+ *
+ */
 public class Server {
 	
 	static Logger logger = Logger.getLogger(Server.class);
