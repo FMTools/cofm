@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="collab.fm.server.bean.entity">
+  <class name="Feature" table="FEATURE">
+  	<id name="id" column="FEATURE_ID" type="long">
+  		<generator class="native"></generator>
+  	</id>
+  	
+  	<timestamp name="lastUpdated" column="LAST_UPDATED" />
+  	
+  	<property name="created" type="timestamp" column="CREATED" />
+  	<property name="creator" type="long" column="CREATOR_ID" />
+  	
+  	<component name="existence" class="Vote">
+  		<set name="supportersInternal" table="FEATURE_SUPPORTER">
+  			<key column="FEATURE_ID"></key>
+  			<element type="long" column="SUPPORTER" not-null="true"></element>
+  		</set>
+  		<set name="opponentsInternal" table="FEATURE_OPPONENT">
+  			<key column="FEATURE_ID"></key>
+  			<element type="long" column="OPPONENT" not-null="true"></element>
+  		</set>
+  	</component>
+  	
+  	<component name="optionality" class="Vote">
+  		<set name="supportersInternal" table="FEATURE_OPTIONAL_SUPPORTER">
+  			<key column="FEATURE_ID"></key>
+  			<element type="long" column="SUPPORTER" not-null="true"></element>
+  		</set>
+  		<set name="opponentsInternal" table="FEATURE_OPTIONAL_OPPONENT">
+  			<key column="FEATURE_ID"></key>
+  			<element type="long" column="OPPONENT" not-null="true"></element>
+  		</set>
+  	</component>
+  	
+  	<!-- One-to-many association to FeatureName.
+  	-->
+  	<set name="namesInternal" table="FEATURE_POSSIBLE_NAME" cascade="all, delete-orphan">
+  		<key column="FEATURE_ID"></key>
+  		<many-to-many class="FeatureName" column="NAME_ID" unique="true"></many-to-many>
+  	</set>
+  	
+  	<!-- One-to-many association to FeatureDescription -->
+  	<set name="descriptionsInternal" table="FEATURE_POSSIBLE_DESCRIPTION" cascade="all, delete-orphan">
+  		<key column="FEATURE_ID"></key>
+  		<many-to-many class="FeatureDescription" column="DESCRIPTION_ID" unique="true"></many-to-many>
+  	</set>
+  	
+  	<!-- One-to-many association to Comment -->
+  	<list name="comments" table="FEATURE_COMMENTS" cascade="all, delete-orphan">
+  		<key column="FEATURE_ID"></key>
+  		<list-index column="COMMENT_INDEX"></list-index>
+  		<many-to-many class="Comment" column="COMMENT_ID" unique="true"></many-to-many>
+  	</list>
+  	
+  	<!-- Many-to-many association to Relationship.
+  	   The statement "inverse=true" tells Hibernate that the two statements in class Feature and Relationship
+  	   (namely "aFeature.addRelationship(aRel)" and "aRel.addFeature(aFeature)")  
+  	   happens on the same row in the table which persists the association. -->
+  	<set inverse="true" name="relationshipsInternal" table="FEATURE_RELATIONSHIP_INVOLVEMENT">
+  		<key column="FEATURE_ID"></key>
+  		<many-to-many column="RELATIONSHIP_ID" class="Relationship"></many-to-many>
+  	</set>
+  	
+  	<!-- Many-to-one association to Model -->
+  	<many-to-one name="model" column="MODEL_ID" class="Model" not-null="true" />
+  	
+  </class>
+</hibernate-mapping>
