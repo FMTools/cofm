@@ -7,7 +7,8 @@ import org.hibernate.Session;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.persistence.HibernateUtil;
-import collab.fm.server.util.exception.FilterException;
+import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.InvalidOperationException;
 
 public class HibernateSessionFilter extends Filter {
 
@@ -20,20 +21,21 @@ public class HibernateSessionFilter extends Filter {
 	
 	@Override
 	protected boolean doBackwardFilter(Request req, ResponseGroup rg)
-			throws FilterException {
+		throws EntityPersistenceException {
 		try {
 			session.getTransaction().commit();
 			logger.info("Transaction closed.");
 			return true;
 		} catch (HibernateException he) {
 			logger.error("Couldn't commit transaction.", he);
-			throw finalizeAndReport(he);
+			EntityPersistenceException e = finalizeAndReport(he);
+			throw e;
 		}
 	}
 
 	@Override
 	protected boolean doForwardFilter(Request req, ResponseGroup rg)
-			throws FilterException {
+			throws EntityPersistenceException {
 		try {
 			session = HibernateUtil.getSessionFactory().getCurrentSession();
 			session.beginTransaction();
@@ -41,17 +43,18 @@ public class HibernateSessionFilter extends Filter {
 			return true;
 		} catch (HibernateException he) {
 			logger.error("Couldn't begin transaction.", he);
-			throw finalizeAndReport(he);
+			EntityPersistenceException e = finalizeAndReport(he);
+			throw e;
 		}
 	}
 	
-	private FilterException finalizeAndReport(HibernateException he) {
+	private EntityPersistenceException finalizeAndReport(HibernateException he) {
 		try {
 			session.getTransaction().rollback();
-			return new FilterException(he);
+			return new EntityPersistenceException(he);
 		} catch (Exception rbe) {
 			logger.warn("Couldn't rollback transaction.", rbe);
-			return new FilterException(he);
+			return new EntityPersistenceException(he);
 		} finally {
 			session.close();		
 		}

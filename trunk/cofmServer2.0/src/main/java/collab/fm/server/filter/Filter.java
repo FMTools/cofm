@@ -4,11 +4,12 @@ import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.FilterException;
+import collab.fm.server.util.exception.*;
 
 public abstract class Filter {
 	
-	public void doFilter(Request req, ResponseGroup rg, FilterChain chain) throws FilterException {
+	public void doFilter(Request req, ResponseGroup rg, FilterChain chain)
+		throws EntityPersistenceException, InvalidOperationException {
 			if (!doForwardFilter(req, rg)) {
 				if (req.getLastError() == null) {
 					// Ensure the last error is set.
@@ -41,7 +42,8 @@ public abstract class Filter {
 	 * @return false if filter fails.
 	 * @throws FilterException
 	 */
-	protected abstract boolean doForwardFilter(Request req, ResponseGroup rg) throws FilterException;
+	protected abstract boolean doForwardFilter(Request req, ResponseGroup rg)
+		throws EntityPersistenceException, InvalidOperationException;
 	
 	/**
 	 * 
@@ -50,7 +52,8 @@ public abstract class Filter {
 	 * @return false if filter fails.
 	 * @throws FilterException
 	 */
-	protected abstract boolean doBackwardFilter(Request req, ResponseGroup rg) throws FilterException;
+	protected abstract boolean doBackwardFilter(Request req, ResponseGroup rg)
+		throws EntityPersistenceException, InvalidOperationException;
 	
 	protected abstract void doDisconnection(String addr, ResponseGroup rg);
 }

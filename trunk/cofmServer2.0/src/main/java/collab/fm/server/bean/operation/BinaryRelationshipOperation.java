@@ -13,7 +13,7 @@ import collab.fm.server.bean.entity.Relationship;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.LogUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 
@@ -53,7 +53,7 @@ public class BinaryRelationshipOperation extends RelationshipOperation {
 		op.setType(this.getType());
 	}
 	
-	public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
+	public List<Operation> apply() throws EntityPersistenceException, InvalidOperationException, StaleDataException {
 		
 		if (!valid()) {
 			throw new InvalidOperationException("Invalid op fields.");

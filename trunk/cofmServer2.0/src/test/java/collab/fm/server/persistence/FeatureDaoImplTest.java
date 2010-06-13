@@ -9,7 +9,7 @@ import org.junit.*;
 import collab.fm.server.bean.entity.Feature;
 import collab.fm.server.bean.entity.Model;
 import collab.fm.server.util.DaoUtil;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 import static org.junit.Assert.*;
 public class FeatureDaoImplTest {
@@ -25,7 +25,7 @@ public class FeatureDaoImplTest {
 		m.voteName("hahahaha domain", true, 9L);
 		try {
 			m = DaoUtil.getModelDao().save(m);
-		} catch (BeanPersistenceException e) {
+		} catch (EntityPersistenceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (StaleDataException e) {
@@ -52,7 +52,7 @@ public class FeatureDaoImplTest {
 			feature = dao.save(feature);
 			DaoUtil.getModelDao().save(m);
 			logger.debug("Feature = " + feature.toString());
-		} catch (BeanPersistenceException e) {
+		} catch (EntityPersistenceException e) {
 			logger.error(e);
 			assertEquals("Shouldn't reach here", "");
 			
@@ -75,7 +75,7 @@ public class FeatureDaoImplTest {
 			feature = dao.save(feature);
 			DaoUtil.getModelDao().save(m);
 			logger.debug("Feature = " + feature.toString());
-		} catch (BeanPersistenceException e) {
+		} catch (EntityPersistenceException e) {
 			logger.error(e);
 			assertEquals("Shouldn't reach here", "");
 			
@@ -105,7 +105,7 @@ public class FeatureDaoImplTest {
 			feature2.setId(feature.getId());
 			feature2 = dao.save(feature2);
 			assertTrue(false);
-		} catch (BeanPersistenceException e) {
+		} catch (EntityPersistenceException e) {
 			//logger.info("Couldn't save samething twice.");
 			assertTrue(true);
 			
@@ -129,7 +129,7 @@ public class FeatureDaoImplTest {
 			Feature feature2 = dao.getById(feature.getId(), false);
 			logger.debug("Feature fetched");
 			assertTrue(feature == feature2);
-		} catch (BeanPersistenceException e) {
+		} catch (EntityPersistenceException e) {
 			logger.error("Get after save failed.", e);
 			assertTrue(false);
 			
@@ -143,7 +143,7 @@ public class FeatureDaoImplTest {
 	public void testGetNullById() {
 		try {
 			assertNull(dao.getById(1000L, false));
-		} catch (BeanPersistenceException e) {
+		} catch (EntityPersistenceException e) {
 			logger.error(e);
 			assertTrue(false);
 		} catch (StaleDataException e) {
@@ -229,7 +229,7 @@ public class FeatureDaoImplTest {
 			dao.deleteById(feature.getId());
 			
 			assertNull(dao.getById(feature.getId(), false));
-		} catch (BeanPersistenceException e) {
+		} catch (EntityPersistenceException e) {
 			logger.error(e);
 			assertEquals("Shouldn't reach here", "");
 			
@@ -254,7 +254,7 @@ public class FeatureDaoImplTest {
 			
 			feature.voteName("No-This-Name-Please", false, 3L, m.getId());
 			dao.save(feature);
-		} catch (BeanPersistenceException e) {
+		} catch (EntityPersistenceException e) {
 			logger.error(e);
 			assertEquals("Shouldn't reach here", "");
 			

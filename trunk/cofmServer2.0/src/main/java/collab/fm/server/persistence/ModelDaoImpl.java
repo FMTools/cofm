@@ -5,24 +5,24 @@ import java.util.List;
 import org.hibernate.StaleObjectStateException;
 
 import collab.fm.server.bean.entity.Model;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public class ModelDaoImpl extends GenericDaoImpl<Model, Long> implements
 		ModelDao {
 
-	public List getAll() throws BeanPersistenceException,
+	public List getAll() throws EntityPersistenceException,
 			StaleDataException {
 		return super.getAll();
 	}
 
-	public List getAll(Long modelId) throws BeanPersistenceException,
+	public List getAll(Long modelId) throws EntityPersistenceException,
 			StaleDataException {
 		// TODO Auto-generated method stub
 		return getAll();
 	}
 	
-	public List getBySimilarName(String name) throws BeanPersistenceException,
+	public List getBySimilarName(String name) throws EntityPersistenceException,
 			StaleDataException {
 		try {
 			List result = HibernateUtil.getCurrentSession()
@@ -38,11 +38,11 @@ public class ModelDaoImpl extends GenericDaoImpl<Model, Long> implements
 			throw new StaleDataException(sose);
 		} catch (Exception e) {
 			logger.warn("Query failed.", e);
-			throw new BeanPersistenceException("Query failed.", e);
+			throw new EntityPersistenceException("Query failed.", e);
 		}
 	}
 	
-	public Model getByName(String name) throws BeanPersistenceException, StaleDataException {
+	public Model getByName(String name) throws EntityPersistenceException, StaleDataException {
 		try {
 			return (Model)HibernateUtil.getCurrentSession()
 				.createQuery("select model " +
@@ -56,7 +56,7 @@ public class ModelDaoImpl extends GenericDaoImpl<Model, Long> implements
 			throw new StaleDataException(sose);
 		} catch (Exception e) {
 			logger.warn("Query failed.", e);
-			throw new BeanPersistenceException("Query failed.", e);
+			throw new EntityPersistenceException("Query failed.", e);
 		}
 	}
 

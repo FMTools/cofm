@@ -22,8 +22,7 @@ import collab.fm.server.persistence.HibernateUtil;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.ProtocolUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.ActionException;
-import collab.fm.server.util.exception.ProtocolInterpretException;
+import collab.fm.server.util.exception.JsonConvertException;
 
 public class CommitActionTest {
 	
@@ -41,7 +40,7 @@ public class CommitActionTest {
 		HibernateUtil.getCurrentSession().getTransaction().commit();
 	}
 		
-	private static void showResponse(Response rsp) throws ProtocolInterpretException {
+	private static void showResponse(Response rsp) throws JsonConvertException {
 		logger.info(ProtocolUtil.ResponseToJson(rsp));
 	}
 	

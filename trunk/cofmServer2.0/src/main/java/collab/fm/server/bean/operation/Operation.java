@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.naming.OperationNotSupportedException;
 
 import collab.fm.server.util.BeanUtil;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 
@@ -44,11 +44,11 @@ public class Operation {
 	 *  5) Returns the (modified) origin operation.<br/>
 	 *  
 	 * @return The origin operation whose null fields were set during persistence.
-	 * @throws BeanPersistenceException If the changes made by the operation can't be persisted.
+	 * @throws EntityPersistenceException If the changes made by the operation can't be persisted.
 	 * @throws InvalidOperationException If the operation can't be analyzed and applied correctly. 
 	 * @throws OperationNotSupportedException 
 	 */
-	public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
+	public List<Operation> apply() throws EntityPersistenceException, InvalidOperationException, StaleDataException {
 		return null;
 	}
 	

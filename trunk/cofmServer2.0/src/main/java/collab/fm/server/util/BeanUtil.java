@@ -20,7 +20,6 @@ import net.sf.json.util.PropertyFilter;
 
 import org.apache.log4j.Logger;
 
-import collab.fm.server.util.exception.BeanConvertException;
 import collab.fm.server.util.exception.JsonConvertException;
 
 public final class BeanUtil {
@@ -34,7 +33,7 @@ public final class BeanUtil {
 	}
 	
 	public static <T> T mapToBean(Class<T> beanClass, Map<String, Object> map)
-		throws BeanConvertException {
+		throws JsonConvertException {
 		if (map == null) {
 			return null;
 		}
@@ -46,7 +45,7 @@ public final class BeanUtil {
 		try {
 			bean = beanClass.newInstance();
 		} catch (Exception e) {
-			throw new BeanConvertException("Cannot create the bean.", e);
+			throw new JsonConvertException("Cannot create bean.", e);
 		}
 		for (Field field: fields) {
 			Object value = map.get(field.getName());
@@ -59,9 +58,9 @@ public final class BeanUtil {
 						field.set(bean,	null);
 					}
 				} catch (IllegalArgumentException e) {
-					throw new BeanConvertException("Cannot set field of the bean.", e);
+					throw new JsonConvertException("Cannot set field of the bean.", e);
 				} catch (IllegalAccessException e) {
-					throw new BeanConvertException("Cannot set field of the bean.", e);
+					throw new JsonConvertException("Cannot set field of the bean.", e);
 				}
 		}
 		return bean;
@@ -114,7 +113,7 @@ public final class BeanUtil {
 	} 
 	
 	public static <T> T jsonToBean(Object srcJson, Class<T> beanClass, Map<String, Class> clsMap) 
-		throws BeanConvertException {
+		throws JsonConvertException {
 		return jsonToBean(srcJson, beanClass, clsMap, null);
 	}
 	
@@ -132,7 +131,7 @@ public final class BeanUtil {
 	 * @return The bean
 	 */
 	public static <T> T jsonToBean(Object srcJson, Class<T> beanClass, Map<String, Class> clsMap, final String[] fields) 
-		throws BeanConvertException {
+		throws JsonConvertException {
 		logger.debug("json is: " + srcJson);
 		try {
 			JSON json = JSONSerializer.toJSON(srcJson);
@@ -156,7 +155,7 @@ public final class BeanUtil {
 
 			return beanClass.cast(JSONSerializer.toJava(json, cfg));
 		} catch (Exception e) {
-			throw new BeanConvertException("Convert json to bean failed.", e);
+			throw new JsonConvertException("Convert json to bean failed.", e);
 		}
 	}
 	
@@ -166,7 +165,7 @@ public final class BeanUtil {
 	 * @param beanClass The result type of the beans
 	 * @return The casted list of bean
 	 */
-	public static List castBeanList(List src, Class beanClass ) throws BeanConvertException {
+	public static List castBeanList(List src, Class beanClass ) throws JsonConvertException {
 		try {
 			MorpherRegistry reg = JSONUtils.getMorpherRegistry();
 			reg.registerMorpher(new BeanMorpher(beanClass, reg));
@@ -176,7 +175,7 @@ public final class BeanUtil {
 			}
 			return list;
 		} catch (Exception e) {
-			throw new BeanConvertException("Convert bean list failed.", e);
+			throw new JsonConvertException("Convert bean list failed.", e);
 		}
 	}
 }

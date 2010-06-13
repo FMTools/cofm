@@ -12,8 +12,7 @@ import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.bean.transfer.User2;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.ActionException;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public class ListUserAction extends Action {
@@ -21,14 +20,12 @@ public class ListUserAction extends Action {
 	static Logger logger = Logger.getLogger(ListUserAction.class);
 	
 	public ListUserAction() {
-		super(new String[] { Resources.REQ_LISTUSER });
+		super(new String[] { Resources.REQ_LIST_USER });
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected boolean doExecute(Request req, ResponseGroup rg)
-			throws ActionException, StaleDataException {
-		try {
+	protected boolean doExecute(Request req, ResponseGroup rg) throws EntityPersistenceException, StaleDataException {
 			List<User> all = DaoUtil.getUserDao().getAll();
 			List<User2> result = new ArrayList<User2>();
 			if (all != null) {
@@ -42,10 +39,6 @@ public class ListUserAction extends Action {
 			
 			rg.setBack(lur);
 			return true;
-		} catch (BeanPersistenceException e) {
-			logger.warn("Bean Persistence Failed.", e);
-			throw new ActionException(e);
-		} 
 	}
 
 }

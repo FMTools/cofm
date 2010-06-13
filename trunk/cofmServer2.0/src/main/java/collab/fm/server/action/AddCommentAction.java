@@ -10,8 +10,7 @@ import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.ActionException;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public class AddCommentAction extends Action {
@@ -23,10 +22,8 @@ public class AddCommentAction extends Action {
 	}
 
 	@Override
-	protected boolean doExecute(Request req, ResponseGroup rg)
-			throws ActionException, StaleDataException {
+	protected boolean doExecute(Request req, ResponseGroup rg) throws EntityPersistenceException, StaleDataException {
 		AddCommentRequest acr = (AddCommentRequest) req;
-		try {
 			Feature f = DaoUtil.getFeatureDao().getById(acr.getFeatureId(), false);
 			if (f == null) {
 				return false;
@@ -51,11 +48,6 @@ public class AddCommentAction extends Action {
 			rsp2.setName(Resources.RSP_FORWARD);
 			
 			rg.setBroadcast(rsp2);
-
-		} catch (BeanPersistenceException e) {
-			logger.warn("Bean Persistence Failed.", e);
-			throw new ActionException(e);
-		}
 		
 		return true;
 	}

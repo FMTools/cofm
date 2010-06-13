@@ -16,7 +16,7 @@ import collab.fm.server.persistence.FeatureDao;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.LogUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 
@@ -58,7 +58,7 @@ public class FeatureOperation extends Operation {
 		return op;
 	}
 	
-	public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
+	public List<Operation> apply() throws EntityPersistenceException, InvalidOperationException, StaleDataException {
 		if (!valid()) {
 			throw new InvalidOperationException("Invalid op fields.");
 		}
@@ -102,7 +102,7 @@ public class FeatureOperation extends Operation {
 		op.setValue(this.getValue());
 	}
 	
-	private List<Operation> applyAddDes() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
+	private List<Operation> applyAddDes() throws EntityPersistenceException, InvalidOperationException, StaleDataException {
 		Feature feature = DaoUtil.getFeatureDao().getById(featureId, false);
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
@@ -113,7 +113,7 @@ public class FeatureOperation extends Operation {
 		return result;
 	}
 	
-	private List<Operation> applyAddName() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
+	private List<Operation> applyAddName() throws EntityPersistenceException, InvalidOperationException, StaleDataException {
 		Feature feature = DaoUtil.getFeatureDao().getById(featureId, false);
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);
@@ -124,7 +124,7 @@ public class FeatureOperation extends Operation {
 		return result;
 	}
 	
-	private List<Operation> applyCreateFeature() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
+	private List<Operation> applyCreateFeature() throws EntityPersistenceException, InvalidOperationException, StaleDataException {
 		if (featureId == null) {
 			if (vote.equals(false)) {
 				throw new InvalidOperationException("Invalid: vote NO to non-existed feature.");
@@ -180,7 +180,7 @@ public class FeatureOperation extends Operation {
 		return result;
 	}
 	
-	private List<Operation> applySetOpt() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
+	private List<Operation> applySetOpt() throws EntityPersistenceException, InvalidOperationException, StaleDataException {
 		Feature feature = DaoUtil.getFeatureDao().getById(featureId, false);
 		if (feature == null) {
 			throw new InvalidOperationException("No feature has ID: " + featureId);

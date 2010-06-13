@@ -10,7 +10,7 @@ import org.hibernate.*;
 import org.hibernate.criterion.Example;
 import org.hibernate.criterion.Restrictions;
 
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 /**
@@ -35,7 +35,7 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 		return entityClass;
 	}
 	
-	protected List getAll() throws BeanPersistenceException ,StaleDataException {
+	protected List getAll() throws EntityPersistenceException ,StaleDataException {
 		try {
 			Criteria crit = HibernateUtil.getCurrentSession()
 				.createCriteria(getEntityClass());
@@ -46,11 +46,11 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 			throw new StaleDataException(sose);
 		} catch (RuntimeException e) {
 			logger.warn("Couldn't get all.", e);
-			throw new BeanPersistenceException(e);
+			throw new EntityPersistenceException(e);
 		}
 	}
 	
-	protected List getAll(IdType modelId, String modelPropertyName) throws BeanPersistenceException, StaleDataException {
+	protected List getAll(IdType modelId, String modelPropertyName) throws EntityPersistenceException, StaleDataException {
 		try {
 			Criteria crit = HibernateUtil.getCurrentSession()
 				.createCriteria(getEntityClass())
@@ -63,11 +63,11 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 			throw new StaleDataException(sose);
 		} catch (RuntimeException e) {
 			logger.warn("Couldn't get all.", e);
-			throw new BeanPersistenceException(e);
+			throw new EntityPersistenceException(e);
 		}
 	}
 	
-	public EntityType getById(IdType id, boolean lock) throws BeanPersistenceException, StaleDataException {
+	public EntityType getById(IdType id, boolean lock) throws EntityPersistenceException, StaleDataException {
 		try {
 			if (lock) {
 				return (EntityType) HibernateUtil.getCurrentSession().get(getEntityClass(), id, LockMode.UPGRADE);
@@ -79,11 +79,11 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 			throw new StaleDataException(sose);
 		} catch (RuntimeException e) {
 			logger.warn("Get by ID failed. (ID=" + id + ")", e);
-			throw new BeanPersistenceException(e);
+			throw new EntityPersistenceException(e);
 		}
 	}
 
-	public EntityType save(EntityType entity) throws BeanPersistenceException, StaleDataException {
+	public EntityType save(EntityType entity) throws EntityPersistenceException, StaleDataException {
 		try {
 			Session session = HibernateUtil.getCurrentSession();
 						
@@ -95,23 +95,23 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 			throw new StaleDataException(sose);
 		} catch (RuntimeException e) {
 			logger.warn("Couldn't save entity", e);
-			throw new BeanPersistenceException(e);
+			throw new EntityPersistenceException(e);
 		}
 	}
 
 	public List<EntityType> saveAll(List<EntityType> entities)
-			throws BeanPersistenceException, StaleDataException {
+			throws EntityPersistenceException, StaleDataException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 	
 	public void deleteById(IdType id)
-		throws BeanPersistenceException, StaleDataException {
+		throws EntityPersistenceException, StaleDataException {
 		HibernateUtil.getCurrentSession().delete(this.getById(id, false));
 	}
 	
 	public void delete(EntityType entity) 
-		throws BeanPersistenceException, StaleDataException{
+		throws EntityPersistenceException, StaleDataException{
 		HibernateUtil.getCurrentSession().delete(entity);
 	}
 

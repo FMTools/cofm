@@ -19,8 +19,7 @@ import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.util.BeanUtil;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.ActionException;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 import collab.fm.server.controller.*;
@@ -34,8 +33,7 @@ public class CommitAction extends Action {
 		super(new String[] { Resources.REQ_COMMIT });
 	}
 
-	protected boolean doExecute(Request req, ResponseGroup rg) throws ActionException, StaleDataException {
-		try {
+	protected boolean doExecute(Request req, ResponseGroup rg) throws EntityPersistenceException, InvalidOperationException, StaleDataException {
 			List<Operation> ops = ((CommitRequest)req).getOperation().apply();
 			
 			// Create the association between this user and current model.
@@ -59,13 +57,6 @@ public class CommitAction extends Action {
 			rg.setBroadcast(cr2);
 			
 			return true;
-		} catch (BeanPersistenceException bpe) {
-			logger.warn("Execution failed.", bpe);
-			throw new ActionException("Action execution failed."); 
-		} catch (InvalidOperationException ioe) {
-			logger.warn("Execution failed.", ioe);
-			throw new ActionException("Action execution failed."); 
-		}
 	}
 
 }

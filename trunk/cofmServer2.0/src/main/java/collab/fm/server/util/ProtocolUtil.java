@@ -19,7 +19,7 @@ import collab.fm.server.bean.protocol.LoginRequest;
 import collab.fm.server.bean.protocol.RegisterRequest;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
-import collab.fm.server.util.exception.ProtocolInterpretException;
+import collab.fm.server.util.exception.JsonConvertException;
 
 public class ProtocolUtil {
 	
@@ -43,7 +43,7 @@ public class ProtocolUtil {
 		requestHandlerMap.put(Resources.REQ_REGISTER, "doGenericRequest");
 		requestHandlerMap.put(Resources.REQ_LIST_MODEL, "doGenericRequest");
 		requestHandlerMap.put(Resources.REQ_CREATE_MODEL, "doGenericRequest");
-		requestHandlerMap.put(Resources.REQ_LISTUSER, "doGenericRequest");
+		requestHandlerMap.put(Resources.REQ_LIST_USER, "doGenericRequest");
 		requestHandlerMap.put(Resources.REQ_UPDATE, "doGenericRequest");
 		requestHandlerMap.put(Resources.REQ_EDIT, "doGenericRequest");
 		requestHandlerMap.put(Resources.REQ_EXIT_MODEL, "doGenericRequest");
@@ -67,78 +67,66 @@ public class ProtocolUtil {
 		relTypeClassMap.put(Resources.BIN_REL_REQUIRES, BinaryRelationshipOperation.class);
 	}
 	
-	public static String ResponseToJson(Response rsp) throws ProtocolInterpretException {
+	public static String ResponseToJson(Response rsp) throws JsonConvertException {
 		if (rsp == null) {
 			return null;
 		}
-		try {
-			return BeanUtil.beanToJson(rsp);
-		} catch (Exception e) {
-			logger.warn("Couldn't convert response to JSON.", e);
-			throw new ProtocolInterpretException(e);
-		}
+		return BeanUtil.beanToJson(rsp);
 	}
 	
-	public static Request jsonToRequest(String json) throws ProtocolInterpretException {
+	public static Request jsonToRequest(String json) throws JsonConvertException {
 		if (json == null) {
 			return null;
 		}
-		try {
 			// 1. Convert to the base class Request to get the request name.
 			Request abstractReq = BeanUtil.jsonToBean(json, Request.class, null, 
 					new String[] {"id", "name", "requesterId", "modelId"});
 			if (!abstractReq.valid()) {
-				throw new ProtocolInterpretException("Invalid request JSON string.");
+				throw new JsonConvertException("Invalid request JSON string.");
 				
 			}
 			// 2. Convert to a concrete request class according to the request name.
 			String handlerInfo = requestHandlerMap.get(abstractReq.getName());
 			if (handlerInfo == null) {
-				throw new ProtocolInterpretException("Invalid request name.");
+				throw new JsonConvertException("Invalid request name.");
 			}
+			try {
 			Method handler = ProtocolUtil.class.getDeclaredMethod(handlerInfo, Request.class, String.class);
 			return (Request)handler.invoke(null, abstractReq, json);
-		} catch (Exception e) {
-			logger.warn("Json to Request failed.", e);
-			throw new ProtocolInterpretException(e);
-		}		
+			} catch (Exception e) {
+				throw new JsonConvertException("Unrecognized request class.", e);
+			}
 	}
 	
 	@SuppressWarnings("unused")
-	private static Request doGenericRequest(Request req, String json) throws ProtocolInterpretException {
-		try {
+	private static Request doGenericRequest(Request req, String json) throws JsonConvertException {
 			Class<? extends Request> concreteRequestClass = requestClassMap.get(req.getName());
 			if (concreteRequestClass == null) {
 				concreteRequestClass = Request.class;
 			}
 			Request result = BeanUtil.jsonToBean(json, concreteRequestClass, null);
 			if (!result.valid()) {
-				throw new ProtocolInterpretException("Invalid request JSON string. (request='" + concreteRequestClass.toString() + "')");
+				throw new JsonConvertException("Invalid request JSON string. (request='" + concreteRequestClass.toString() + "')");
 			}
 			result.setId(req.getId());
 			result.setName(req.getName());
 			result.setRequesterId(req.getRequesterId());
 			return result;
-		} catch (Exception e) {
-			logger.warn(e);
-			throw new ProtocolInterpretException(e);
-		}
 	}
 	
 	@SuppressWarnings("unused")
-	private static Request doCommitRequest(Request req, String json) throws ProtocolInterpretException {
-		try {
+	private static Request doCommitRequest(Request req, String json) throws JsonConvertException {
 			// 1. Convert to CommitRequest with abstract operation
 			CommitRequest result = BeanUtil.jsonToBean(json, CommitRequest.class, null);
 
 			if (!result.valid()) {
-				throw new ProtocolInterpretException("Invalid CommitRequest JSON String.");
+				throw new JsonConvertException("Invalid CommitRequest JSON String.");
 			}
 			
 			// 2. Get concrete operation class from the abstract operation
 			Class<? extends Operation> concreteOpClass = opNameClassMap.get(result.getOperation().getName());
 			if (concreteOpClass == null) {
-				throw new ProtocolInterpretException("Invalid CommitRequest operation name.");
+				throw new JsonConvertException("Invalid CommitRequest operation name.");
 			}
 			logger.debug("Operation class is '" + concreteOpClass.getName() + "'");
 			
@@ -162,14 +150,10 @@ public class ProtocolUtil {
 			
 			logger.debug(result);
 			if (!result.valid()) {
-				throw new ProtocolInterpretException("Invalid operation JSON string in CommitRequest: " +
+				throw new JsonConvertException("Invalid operation JSON string in CommitRequest: " +
 						"declared '" + concreteOpClass.getName() + "', but convert failed.");
 			}
 			return result;
-		} catch (Exception e) {
-			logger.warn("Json to CommitRequest failed.", e);
-			throw new ProtocolInterpretException(e);
-		}
 	}
 	
 	public static class OperationHolder {

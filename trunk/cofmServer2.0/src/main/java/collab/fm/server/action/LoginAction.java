@@ -15,8 +15,7 @@ import collab.fm.server.persistence.*;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.LogUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.ActionException;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 import collab.fm.server.controller.*;
 
@@ -29,8 +28,7 @@ public class LoginAction extends Action {
 		super(new String[] { Resources.REQ_LOGIN });
 	}
 
-	protected boolean doExecute(Request req, ResponseGroup rg) throws ActionException, StaleDataException {
-		try {
+	protected boolean doExecute(Request req, ResponseGroup rg) throws EntityPersistenceException, StaleDataException {
 			LoginRequest lr = (LoginRequest)req;
 			Response rsp = new Response();
 			
@@ -56,10 +54,6 @@ public class LoginAction extends Action {
 			rg.setBack(rsp);
 			
 			return true;
-		} catch (BeanPersistenceException e) {
-			logger.warn("Couldn't login.", e);
-			throw new ActionException("Login failed.", e);
-		}
 	}
 	
 }

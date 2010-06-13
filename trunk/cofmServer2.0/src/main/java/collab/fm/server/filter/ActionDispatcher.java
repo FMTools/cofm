@@ -6,9 +6,11 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.protocol.Request;
+import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
-import collab.fm.server.util.exception.ActionException;
-import collab.fm.server.util.exception.FilterException;
+import collab.fm.server.util.Resources;
+import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.action.Action;
 
 public class ActionDispatcher extends Filter {
@@ -28,27 +30,23 @@ public class ActionDispatcher extends Filter {
 	}
 	
 	@Override
-	protected boolean doBackwardFilter(Request req, ResponseGroup rg)
-			throws FilterException {
+	protected boolean doBackwardFilter(Request req, ResponseGroup rg) {
 		// Do nothing now
 		return true;
 	}
 
 	@Override
 	protected boolean doForwardFilter(Request req, ResponseGroup rg)
-			throws FilterException {
-		try {
+		throws EntityPersistenceException, InvalidOperationException {
 			Action action = reqActionMap.get(req.getName());
 			if (action != null) {
 				logger.info("Action is about to be executing.");
 				return action.execute(req, rg);
+			} else {
+				// No matched action, write back SUCCESS.
+				rg.setBack(new Response(Resources.RSP_SUCCESS, req, null));
+				return true;
 			}
-			return true; 
-		} catch (ActionException ae) {
-			req.setLastError("ActionException: " + ae.getMessage());
-			logger.error("Action failed.", ae);
-			throw new FilterException(ae);
-		}
 	}
 
 	@Override

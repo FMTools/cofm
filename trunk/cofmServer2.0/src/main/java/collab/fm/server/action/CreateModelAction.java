@@ -12,8 +12,8 @@ import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.LogUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.ActionException;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public class CreateModelAction extends Action {
@@ -24,17 +24,15 @@ public class CreateModelAction extends Action {
 	}
 
 	@Override
-	protected boolean doExecute(Request req, ResponseGroup rg)
-			throws ActionException, StaleDataException {
+	protected boolean doExecute(Request req, ResponseGroup rg) throws EntityPersistenceException, StaleDataException, InvalidOperationException {
 		
 		CreateModelRequest cmr = (CreateModelRequest) req;
 		CreateModelResponse rsp = new CreateModelResponse();
-		try {
 			if (DaoUtil.getModelDao().getByName(cmr.getModelName()) == null) {
 				Model m = new Model();
 				User me = DaoUtil.getUserDao().getById(cmr.getRequesterId(), false);
 				if (me == null) {
-					throw new ActionException("Invalid user id");
+					throw new InvalidOperationException("Invalid user id");
 				}
 				m.voteName(cmr.getModelName(), true, cmr.getRequesterId());
 				m.voteDescription(cmr.getDescription(), true, cmr.getRequesterId());
@@ -55,10 +53,6 @@ public class CreateModelAction extends Action {
 			}
 			rg.setBack(rsp);
 			return true;
-		} catch (BeanPersistenceException e) {
-			logger.warn("Bean Persistence Failed.", e);
-			throw new ActionException(e);
-		}
 	}
 
 }

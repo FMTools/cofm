@@ -11,9 +11,7 @@ import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.util.LogUtil;
-import collab.fm.server.util.Pair;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.FilterException;
 
 public class AccessValidator extends Filter {
 	
@@ -30,10 +28,8 @@ public class AccessValidator extends Filter {
 	private static ConcurrentHashMap<Long, String> loginUserAddrs =	new ConcurrentHashMap<Long, String>();
 	
 	@Override
-	protected boolean doForwardFilter(Request req, ResponseGroup rg)
-			throws FilterException {
-		try {	
-			if (isRestricted(req.getName())) {
+	protected boolean doForwardFilter(Request req, ResponseGroup rg) {
+		if (isRestricted(req.getName())) {
 				String address = loginUserAddrs.get(req.getRequesterId());
 				if (address == null || !address.equals(req.getAddress())) {
 					req.setLastError(Resources.MSG_ERROR_USER_DENIED);
@@ -46,16 +42,10 @@ public class AccessValidator extends Filter {
 			}
 			logger.info("Access validation OK for: " + req.getName());
 			return true;
-		} catch (Exception e) {
-			logger.error("Exception caught.", e);
-			throw new FilterException(e);
-		}	
 	}
 	
 	@Override
-	protected boolean doBackwardFilter(Request req, ResponseGroup rg)
-			throws FilterException {
-		try {
+	protected boolean doBackwardFilter(Request req, ResponseGroup rg) {
 			Response rsp = rg.getBack();
 			if (rsp == null) {
 				return true;
@@ -75,10 +65,6 @@ public class AccessValidator extends Filter {
 				logger.info("User login succeed.");
 			}
 			return true;
-		} catch (Exception e) {
-			logger.error("Exception caught.", e);
-			throw new FilterException(e);
-		}
 	}
 	
 

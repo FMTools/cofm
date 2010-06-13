@@ -13,7 +13,7 @@ import org.junit.Test;
 import collab.fm.server.bean.entity.Model;
 import collab.fm.server.bean.entity.User;
 import collab.fm.server.util.DaoUtil;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 public class UserDaoImplTest {
 	static Logger logger = Logger.getLogger(UserDaoImplTest.class);
@@ -43,7 +43,7 @@ public class UserDaoImplTest {
 			saveUser(m, "hoho", "ddd");
 			saveUser(m, "hehe", "00000");
 			DaoUtil.getModelDao().save(m);
-		} catch (BeanPersistenceException e) {
+		} catch (EntityPersistenceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (StaleDataException e) {

@@ -8,7 +8,7 @@ import collab.fm.server.bean.entity.Feature;
 import collab.fm.server.bean.entity.Relationship;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 
@@ -88,7 +88,7 @@ public class ImplicitVoteOperation extends Operation {
 		/**
 		 * Rule 1 & 3: Vote NO on feature F -> Vote NO on involved relationships and attributes 
 		 */
-		public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
+		public List<Operation> apply() throws EntityPersistenceException, InvalidOperationException, StaleDataException {
 			try {
 				if (sourceOp.getVote().equals(false)) {
 					setBasicInfo(Resources.OP_CREATE_RELATIONSHIP, false, sourceOp.getUserid());
@@ -123,7 +123,7 @@ public class ImplicitVoteOperation extends Operation {
 				return null;
 			} catch (ClassCastException cce) {
 				throw new InvalidOperationException("Couldn't get the source feature.", cce);
-			} catch (BeanPersistenceException bpe) {
+			} catch (EntityPersistenceException bpe) {
 				throw bpe;
 			}
 		}
@@ -173,7 +173,7 @@ public class ImplicitVoteOperation extends Operation {
 		/**
 		 * Rule 2: Vote YES on relationship R -> Vote YES on features involved in R
 		 */
-		public List<Operation> apply() throws BeanPersistenceException, InvalidOperationException, StaleDataException {
+		public List<Operation> apply() throws EntityPersistenceException, InvalidOperationException, StaleDataException {
 			try {
 				if (sourceOp.getVote().equals(true)) {
 					setBasicInfo(Resources.OP_CREATE_FEATURE, true, sourceOp.getUserid());
@@ -191,7 +191,7 @@ public class ImplicitVoteOperation extends Operation {
 					return result;
 				}
 				return null;
-			} catch (BeanPersistenceException bpe) {
+			} catch (EntityPersistenceException bpe) {
 				throw bpe;
 			} catch (Exception e) {
 				throw new InvalidOperationException("Couldn't get the source operation.", e); 
@@ -200,7 +200,7 @@ public class ImplicitVoteOperation extends Operation {
 	}
 
 	@Override
-	public List<Operation> apply() throws BeanPersistenceException,
+	public List<Operation> apply() throws EntityPersistenceException,
 			InvalidOperationException, StaleDataException {
 		// TODO Auto-generated method stub
 		return null;

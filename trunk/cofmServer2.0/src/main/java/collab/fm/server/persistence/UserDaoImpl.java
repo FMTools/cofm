@@ -5,12 +5,12 @@ import java.util.List;
 import org.hibernate.StaleObjectStateException;
 
 import collab.fm.server.bean.entity.User;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public class UserDaoImpl extends GenericDaoImpl<User, Long> implements UserDao {
 
-	public User getByName(String name) throws BeanPersistenceException, StaleDataException {
+	public User getByName(String name) throws EntityPersistenceException, StaleDataException {
 		try {
 			return (User) HibernateUtil.getCurrentSession()
 				.createQuery("from User as user " +
@@ -22,11 +22,11 @@ public class UserDaoImpl extends GenericDaoImpl<User, Long> implements UserDao {
 			throw new StaleDataException(sose);
 		} catch(RuntimeException e) {
 			logger.warn("Couldn't get by name.", e);
-			throw new BeanPersistenceException(e);
+			throw new EntityPersistenceException(e);
 		}
 	}
 
-	public User checkThenGet(User user) throws BeanPersistenceException, StaleDataException {
+	public User checkThenGet(User user) throws EntityPersistenceException, StaleDataException {
 		try {
 			return (User) HibernateUtil.getCurrentSession()
 				.createQuery("from User as user " +
@@ -40,11 +40,11 @@ public class UserDaoImpl extends GenericDaoImpl<User, Long> implements UserDao {
 			throw new StaleDataException(sose);
 		} catch(RuntimeException e) {
 			logger.warn("Couldn't get by name.", e);
-			throw new BeanPersistenceException(e);
+			throw new EntityPersistenceException(e);
 		}
 	}
 
-	public List getAll(Long modelId) throws BeanPersistenceException,
+	public List getAll(Long modelId) throws EntityPersistenceException,
 			StaleDataException {
 		try {
 			List result = HibernateUtil.getCurrentSession()
@@ -59,11 +59,11 @@ public class UserDaoImpl extends GenericDaoImpl<User, Long> implements UserDao {
 			throw new StaleDataException(sose);
 		} catch (Exception e) {
 			logger.warn("Query failed.", e);
-			throw new BeanPersistenceException("Query failed.", e);
+			throw new EntityPersistenceException("Query failed.", e);
 		}
 	}
 	
-	public List getAll() throws BeanPersistenceException, StaleDataException {
+	public List getAll() throws EntityPersistenceException, StaleDataException {
 		return super.getAll();
 	}
 }
