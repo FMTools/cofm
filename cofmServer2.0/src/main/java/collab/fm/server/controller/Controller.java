@@ -9,15 +9,10 @@ import collab.fm.server.action.*;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
-import collab.fm.server.filter.AccessValidator;
-import collab.fm.server.filter.ActionDispatcher;
-import collab.fm.server.filter.Filter;
-import collab.fm.server.filter.FilterChain;
-import collab.fm.server.filter.HibernateSessionFilter;
-import collab.fm.server.filter.ProtocolFilter;
+import collab.fm.server.filter.*;
 import collab.fm.server.util.ProtocolUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.ProtocolInterpretException;
+import collab.fm.server.util.exception.JsonConvertException;
 
 public class Controller {
 	
@@ -31,7 +26,7 @@ public class Controller {
 		Resources.REQ_UPDATE,
 		Resources.REQ_CREATE_MODEL,
 		Resources.REQ_LIST_MODEL,
-		Resources.REQ_LISTUSER
+		Resources.REQ_LIST_USER
 	};
 	
 	private static Controller controller = new Controller();
@@ -40,7 +35,6 @@ public class Controller {
 	
 	private Filter accessValidator = new AccessValidator();
 	private Filter actionDispatcher = new ActionDispatcher();
-	private Filter protocolFilter = new ProtocolFilter();
 	
 	public static Controller instance() {
 		return controller;
@@ -136,7 +130,6 @@ public class Controller {
 	
 	private FilterChain buildChain(String requestName) {
 		FilterChain chain = new FilterChain();
-		chain.addFilter(protocolFilter);
 		chain.addFilter(accessValidator);
 		if (needDatabaseAccess(requestName)) {
 			// Session per request
@@ -174,7 +167,7 @@ public class Controller {
 		logger.warn(errorCode + " " + req.getLastError());
 	}
 	
-	private void convertResponsesToJson(ResponseGroup rg) throws ProtocolInterpretException {
+	private void convertResponsesToJson(ResponseGroup rg) throws JsonConvertException {
 		rg.setJsonBack(ProtocolUtil.ResponseToJson(rg.getBack()));
 		rg.setJsonBroadcast(ProtocolUtil.ResponseToJson(rg.getBroadcast()));
 		rg.setJsonPeer(ProtocolUtil.ResponseToJson(rg.getPeer()));

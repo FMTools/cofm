@@ -15,8 +15,7 @@ import collab.fm.server.persistence.*;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.LogUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.ActionException;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 import collab.fm.server.controller.*;
 
@@ -29,8 +28,7 @@ public class RegisterAction extends Action {
 		super(new String[]{Resources.REQ_REGISTER});
 	}
 
-	protected boolean doExecute(Request req, ResponseGroup rg) throws ActionException, StaleDataException {
-		try {
+	protected boolean doExecute(Request req, ResponseGroup rg) throws EntityPersistenceException, StaleDataException {
 			RegisterRequest r = (RegisterRequest) req;
 			
 			logger.info("Register received: <name=" + r.getUser() + ", pwd=" + r.getPwd() + ">");
@@ -63,10 +61,6 @@ public class RegisterAction extends Action {
 			rg.setBack(rsp);
 			
 			return true;
-		} catch (BeanPersistenceException e) {
-			logger.warn("Couldn't register.", e);
-			throw new ActionException("Register failed.", e);
-		}
 	}
 
 }

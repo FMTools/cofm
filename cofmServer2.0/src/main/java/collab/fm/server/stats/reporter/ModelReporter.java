@@ -12,7 +12,7 @@ import collab.fm.server.bean.entity.*;
 import collab.fm.server.stats.StatsUtil;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 
@@ -110,7 +110,7 @@ public class ModelReporter implements Reporter {
 					}
 				}
 			}
-		} catch (BeanPersistenceException e) {
+		} catch (EntityPersistenceException e) {
 			logger.error("Reporter error.", e);
 		} catch (StaleDataException e) {
 			logger.error("Stale data error.", e);
@@ -143,7 +143,7 @@ public class ModelReporter implements Reporter {
 							targets.add(0, String.valueOf(sz - i));
 						}
 					}
-				} catch (BeanPersistenceException e) {
+				} catch (EntityPersistenceException e) {
 					e.printStackTrace();
 				} catch (StaleDataException e) {
 					e.printStackTrace();
@@ -160,7 +160,7 @@ public class ModelReporter implements Reporter {
 	}
 	
 	@SuppressWarnings("unchecked")
-	protected void reportModel(Model m) throws BeanPersistenceException, StaleDataException {
+	protected void reportModel(Model m) throws EntityPersistenceException, StaleDataException {
 		String rslt = TEMPLATE_INTRO.replaceFirst("\\$id", m.getId().toString());
 		// Model name
 		Set<ModelName> names = (Set<ModelName>) m.getNames();

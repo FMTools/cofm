@@ -17,6 +17,14 @@ public class Response {
 	public Response() {
 		
 	}
+	
+	public Response(String n, Request r, String msg) {
+		this.setRequesterId(r.getRequesterId());
+		this.setRequestId(r.getId());
+		this.setRequestName(r.getName());
+		this.setName(n);
+		this.setMessage(msg);
+	}
 
 	public boolean valid() {
 		return name != null;

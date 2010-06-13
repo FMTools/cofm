@@ -104,7 +104,7 @@ public class ProtocolUtilTest {
 	@Test
 	public void testListUserRequest() {
 		Request r = new Request();
-		r.setName(Resources.REQ_LISTUSER);
+		r.setName(Resources.REQ_LIST_USER);
 		r.setId(1L);
 		try {
 			String json = BeanUtil.beanToJson(r);

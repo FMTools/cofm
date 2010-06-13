@@ -6,7 +6,8 @@ import java.util.List;
 
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.ResponseGroup;
-import collab.fm.server.util.exception.FilterException;
+import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.InvalidOperationException;
 
 public class FilterChain {
 
@@ -22,7 +23,8 @@ public class FilterChain {
 		chain.add(f);
 	}
 	
-	public void doNextFilter(Request req, ResponseGroup rg) throws FilterException {
+	public void doNextFilter(Request req, ResponseGroup rg) 
+		throws EntityPersistenceException, InvalidOperationException {
 		if (itr == null) {
 			itr = chain.iterator();
 		} 

@@ -8,7 +8,6 @@ import collab.fm.server.bean.protocol.ExitModelResponse;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.ActionException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public class SimpleBroadcastingAction extends Action {
@@ -20,8 +19,7 @@ public class SimpleBroadcastingAction extends Action {
 	}
 
 	@Override
-	protected boolean doExecute(Request req, ResponseGroup rg)
-			throws ActionException, StaleDataException {
+	protected boolean doExecute(Request req, ResponseGroup rg) {
 		if (Resources.REQ_EDIT.equals(req.getName())) {
 			EditFeatureRequest r = (EditFeatureRequest) req;
 			

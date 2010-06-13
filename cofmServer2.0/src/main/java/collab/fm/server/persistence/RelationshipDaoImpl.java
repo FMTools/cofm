@@ -8,7 +8,7 @@ import org.hibernate.StaleObjectStateException;
 import collab.fm.server.bean.entity.BinaryRelationship;
 import collab.fm.server.bean.entity.Feature;
 import collab.fm.server.bean.entity.Relationship;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public class RelationshipDaoImpl extends GenericDaoImpl<Relationship, Long>
@@ -17,7 +17,7 @@ public class RelationshipDaoImpl extends GenericDaoImpl<Relationship, Long>
 	static Logger logger = Logger.getLogger(RelationshipDaoImpl.class);
 
 	public List<Relationship> getByExample(Long modelId, BinaryRelationship example)
-			throws BeanPersistenceException, StaleDataException {
+			throws EntityPersistenceException, StaleDataException {
 		try {
 			List result = HibernateUtil.getCurrentSession()
 				.createQuery("select rel from BinaryRelationship as rel " +
@@ -37,11 +37,11 @@ public class RelationshipDaoImpl extends GenericDaoImpl<Relationship, Long>
 			throw new StaleDataException(sose);
 		} catch (RuntimeException e) {
 			logger.warn("Query failed.", e);
-			throw new BeanPersistenceException("Query failed.", e);
+			throw new EntityPersistenceException("Query failed.", e);
 		}
 	}
 
-	public List getAll(Long modelId) throws BeanPersistenceException,
+	public List getAll(Long modelId) throws EntityPersistenceException,
 			StaleDataException {
 		return super.getAll(modelId, "model");
 	}

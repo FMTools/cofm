@@ -12,7 +12,7 @@ import org.junit.*;
 import collab.fm.server.bean.entity.*;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 public class RelationshipDaoImplTest {
 	
@@ -41,7 +41,7 @@ public class RelationshipDaoImplTest {
 		try {
 			m = DaoUtil.getModelDao().save(m);
 			modelId = m.getId();
-		} catch (BeanPersistenceException e) {
+		} catch (EntityPersistenceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (StaleDataException e) {

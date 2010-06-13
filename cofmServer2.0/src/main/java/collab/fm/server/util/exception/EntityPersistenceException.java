@@ -1,18 +1,18 @@
 package collab.fm.server.util.exception;
 
-public class ActionException extends Exception {
+public class EntityPersistenceException extends Exception {
 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 2809582688216222185L;
-
+	private static final long serialVersionUID = -6860377940506760592L;
+	
 	/**
      * Constructs a new exception with <code>null</code> as its detail message.
      * The cause is not initialized, and may subsequently be initialized by a
      * call to {@link #initCause}.
      */
-    public ActionException() {
+    public EntityPersistenceException() {
     	super();
     }
 
@@ -24,7 +24,7 @@ public class ActionException extends Exception {
      * @param   message   the detail message. The detail message is saved for 
      *          later retrieval by the {@link #getMessage()} method.
      */
-    public ActionException(String message) {
+    public EntityPersistenceException(String message) {
     	super(message);
     }
 
@@ -42,7 +42,7 @@ public class ActionException extends Exception {
      *         unknown.)
      * @since  1.4
      */
-    public ActionException(String message, Throwable cause) {
+    public EntityPersistenceException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -60,7 +60,7 @@ public class ActionException extends Exception {
      *         unknown.)
      * @since  1.4
      */
-    public ActionException(Throwable cause) {
+    public EntityPersistenceException(Throwable cause) {
         super(cause);
     }
 }

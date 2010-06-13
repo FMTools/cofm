@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import collab.fm.server.bean.entity.*;
 import collab.fm.server.persistence.*;
 import collab.fm.server.util.DaoUtil;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 /** Report overview of all feature models
@@ -32,7 +32,7 @@ public class ModelOverviewReporter implements Reporter {
 			rslt = rslt.replaceFirst("\\$nu", (users == null ? "0" : String.valueOf(users.size())));
 			
 			logger.info(rslt);
-		} catch (BeanPersistenceException e) {
+		} catch (EntityPersistenceException e) {
 			logger.warn("Model overview report failed.", e);
 		} catch (StaleDataException e) {
 			logger.warn("Model overview report failed.", e);

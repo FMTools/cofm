@@ -8,14 +8,14 @@ import org.hibernate.StaleObjectStateException;
 
 import collab.fm.server.bean.entity.Feature;
 import collab.fm.server.bean.entity.Relationship;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public class FeatureDaoImpl extends GenericDaoImpl<Feature, Long> implements FeatureDao  {
 
 	static Logger logger = Logger.getLogger(FeatureDaoImpl.class);
 
-	public Feature getByName(Long modelId, String name) throws BeanPersistenceException, StaleDataException {
+	public Feature getByName(Long modelId, String name) throws EntityPersistenceException, StaleDataException {
 		try {
 			return (Feature) HibernateUtil.getCurrentSession()
 				.createQuery("select feature " +
@@ -31,11 +31,11 @@ public class FeatureDaoImpl extends GenericDaoImpl<Feature, Long> implements Fea
 			throw new StaleDataException(sose);
 		} catch (Exception e) {
 			logger.warn("Query failed.", e);
-			throw new BeanPersistenceException("Query failed.", e);
+			throw new EntityPersistenceException("Query failed.", e);
 		}
 	}
 	
-	public List getBySimilarName(Long modelId, String name) throws BeanPersistenceException, StaleDataException {
+	public List getBySimilarName(Long modelId, String name) throws EntityPersistenceException, StaleDataException {
 		try {
 			List result = HibernateUtil.getCurrentSession()
 				.createQuery("select feature " +
@@ -52,11 +52,11 @@ public class FeatureDaoImpl extends GenericDaoImpl<Feature, Long> implements Fea
 			throw new StaleDataException(sose);
 		} catch (Exception e) {
 			logger.warn("Query failed.", e);
-			throw new BeanPersistenceException("Query failed.", e);
+			throw new EntityPersistenceException("Query failed.", e);
 		}
 	}
 	
-	public List getAll(Long modelId) throws BeanPersistenceException,
+	public List getAll(Long modelId) throws EntityPersistenceException,
 			StaleDataException {
 		return super.getAll(modelId, "model");
 	}

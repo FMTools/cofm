@@ -15,8 +15,7 @@ import collab.fm.server.bean.transfer.BinaryRelation2;
 import collab.fm.server.bean.transfer.Feature2;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.ActionException;
-import collab.fm.server.util.exception.BeanPersistenceException;
+import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 
@@ -30,8 +29,7 @@ public class UpdateAction extends Action {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected boolean doExecute(Request req, ResponseGroup rg) throws ActionException, StaleDataException {
-		try {
+	protected boolean doExecute(Request req, ResponseGroup rg) throws EntityPersistenceException, StaleDataException {
 			// Return all features
 			List<Feature> allFeatures = DaoUtil.getFeatureDao().getAll(req.getModelId());
 			
@@ -62,10 +60,6 @@ public class UpdateAction extends Action {
 			rg.setBack(response);
 			
 			return true;
-		} catch (BeanPersistenceException e) {
-			logger.warn("Bean Persistence Failed.", e);
-			throw new ActionException(e);
-		} 	
 	}
 	
 	private boolean isBinary(String type) {
