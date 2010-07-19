@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="collab.fm.server.bean.entity">
+  <class name="Feature" table="FEATURE">
+  	<!-- Properties of VotableEntity class -->
+    <id name="id" type="long" column="FEATURE_ID">
+  		<generator class="native"></generator>
+  	</id>
+  	
+  	<timestamp name="lastModifyTime" column="LAST_MODIFIED" />
+  	
+  	<property name="createTime" type="timestamp" column="CREATED" />
+  	<property name="creator" type="long" column="CREATOR_ID" />
+	
+	<component name="vote" class="Vote">
+  		<set name="supporters" table="FEATURE_SUPPORTER">
+  			<key column="FEATURE_ID"></key>
+  			<element type="long" column="SUPPORTER" not-null="true"></element>
+  		</set>
+  		<set name="opponents" table="FEATURE_OPPONENT">
+  			<key column="FEATURE_ID"></key>
+  			<element type="long" column="OPPONENT" not-null="true"></element>
+  		</set>
+  	</component>
+  	
+  	<!-- Properties of Feature class -->
+  	<!-- One-to-many association with Attributes -->
+  	<map name="attrs" table="FEATURE_ATTR_ASSOC" cascade="all, delete-orphan">
+  		<key column="FEATURE_ID"></key>
+  		<map-key type="string" column="ATTR_NAME"></map-key>
+  		<one-to-many class="collab.fm.server.bean.entity.attr.Attribute"></one-to-many>
+  	</map>
+  	
+  	<!-- One-to-many association to Comment -->
+  	<list name="comments" table="FEATURE_COMMENTS" cascade="all, delete-orphan">
+  		<key column="FEATURE_ID"></key>
+  		<list-index column="COMMENT_INDEX"></list-index>
+  		<many-to-many class="Comment" column="COMMENT_ID" unique="true"></many-to-many>
+  	</list>
+  	
+  	<!-- Many-to-many association to Relationship.
+  	   The statement "inverse=true" tells Hibernate that the two statements in class Feature and Relationship
+  	   (namely "aFeature.addRelationship(aRel)" and "aRel.addFeature(aFeature)")  
+  	   happens on the same row in the table which persists the association. -->
+  	<set inverse="true" name="rels" table="FEATURE_RELATIONSHIP_ASSOC">
+  		<key column="FEATURE_ID"></key>
+  		<many-to-many column="RELATIONSHIP_ID" class="Relationship"></many-to-many>
+  	</set>
+  	
+  	<!-- Many-to-one association to Model -->
+  	<many-to-one name="model" column="MODEL_ID" class="Model" not-null="true" />
+  	
+  </class>
+</hibernate-mapping>

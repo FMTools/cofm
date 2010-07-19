@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC
+		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        
+        
+        <property name="hibernate.c3p0.min_size">5</property>
+        <property name="hibernate.c3p0.max_size">20</property>
+        <property name="hibernate.c3p0.timeout">300</property>
+        <property name="hibernate.c3p0.max_statements">50</property>
+        <property name="hibernate.c3p0.idle_test_period">3000</property>
+        
+        <!-- Enable Hibernate's automatic session context management -->
+        <property name="current_session_context_class">thread</property>
+        
+        <property name="hibernate.show_sql">false</property>
+        
+        <mapping resource="collab/fm/server/bean/entity/Comment.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/entity/Feature.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/entity/Model.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/entity/Relationship.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/entity/User.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/entity/attr/Attribute.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/entity/attr/Value.hbm.xml"/>
+    </session-factory>
+</hibernate-configuration>
