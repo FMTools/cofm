@@ -1,1 +1,0 @@
-mvn -Dexec.mainClass=collab.fm.server.Server exec:java
