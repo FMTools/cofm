@@ -32,12 +32,20 @@ package collab.fm.client.data {
 		}
 		
 		public function getIdByName(name: String): int {
+			var o: Object = getByName(name);
+			if (o != null) {
+				return int(o.id);
+			}
+			return -1;
+		}
+		
+		public function getByName(name: String): Object {
 			for each (var obj: Object in data.source) {
 				if (obj.name == name) {
-					return int(obj.id);
+					return obj;
 				}
 			}	
-			return -1;
+			return null;
 		}
 		
 		public function handleFeatureVotePropagation(op: Object): void {

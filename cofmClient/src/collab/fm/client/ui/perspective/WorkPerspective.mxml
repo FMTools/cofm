@@ -22,16 +22,16 @@
 	<mx:VBox>
 		<mx:Panel id="rightTopPanel" title="{RS.EDIT_PANEL_TITLE}" paddingBottom="0">
 			<v:TopElementCreateForm width="100%" height="100%" />
-			<v:FeatureEditForm id="featureEdit" width="100%" height="100%" fontSize="11" />
+			<v:FeatureEditForm id="featureEdit" width="100%" height="100%" fontSize="12" />
 		</mx:Panel>
 		
 		<mx:TabNavigator id="rightBottomTab" paddingTop="0" paddingBottom="0">
 			<mx:Canvas id="misc1" label="{RS.OP_LIST_TITLE}" width="{Size.MISC_W}" height="{Size.MISC_H}">
-				<v:OperationList width="100%" height="100%" />
+				<v:OperationList width="100%" height="100%" fontSize="12" />
 			</mx:Canvas>
 			
 			<mx:Canvas id="misc2" label="{RS.COMMENT_TITLE}" width="{Size.MISC_W}" height="{Size.MISC_H}">
-				<v:FeatureCommenter width="100%" height="100%" />
+				<v:FeatureCommenter width="100%" height="100%" fontSize="12" />
 			</mx:Canvas>
 		
 		</mx:TabNavigator>

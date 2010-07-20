@@ -50,8 +50,7 @@
 					return;
 				}
 				timer.stop();
-				this.setStyle("backgroundColor", "red");
-				this.alpha = 0.3;
+				this.setStyle("backgroundColor", "#ffeac0");
 				this.visible = true;
 				msg.text = evt.msg;
 				msg.visible = true;
@@ -63,8 +62,7 @@
 					return;
 				}
 				timer.stop();
-				this.setStyle("backgroundColor", "red");
-				this.alpha = 0.7;
+				this.setStyle("backgroundColor", "#ffeac0");
 				this.visible = true;
 				msg.text = evt.msg;
 				msg.visible = true;

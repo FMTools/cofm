@@ -58,11 +58,11 @@ package collab.fm.client.cmn {
 		}
 
 		private function onIoError(evt: IOErrorEvent): void {
-			Alert.show("Unable to connect server..", "Couldn't connect server");
+			Alert.show("Unable to connect the server, or the server hasn't started up.", "Cannot establish connection");
 		}
 
 		private function onSecurityError(evt: SecurityErrorEvent): void {
-			Alert.show("Unfortunately, a security error has occured: " + evt.text, "Security Error");
+			Alert.show("Unable to connect the server, or the server hasn't started up.", "Cannot establish connection");
 		}
 	}
 }

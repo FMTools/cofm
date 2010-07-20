@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
 	 creationComplete="initView();">
-	<mx:TextArea id="viewer" wordWrap="true" editable="false" height="100%" width="100%" />
+	<mx:TextArea id="viewer" wordWrap="true" editable="false" height="100%" width="{Size.COMMENT_W}" />
 	<mx:VBox width="100%" height="100%">
-		<mx:Label text="{RS.COMMENT_INTRO}"/>
-		<mx:TextArea id="editor" wordWrap="true" width="200" height="90" />
+		<mx:Label text="{RS.COMMENT_INTRO}" paddingBottom="2"/>
+		<mx:TextArea id="editor" wordWrap="true" width="{Size.COMMENT_EDITOR_W}" height="{Size.COMMENT_EDITOR_H}" />
 		<mx:HBox>
-			<mx:Button label="{RS.BTN_OK}" click="submit();"/>
-			<mx:Button label="{RS.BTN_RESET}" click="reset();" />
+			<mx:Button label="{RS.BTN_OK}" click="submit();" fontSize="10"/>
+			<mx:Button label="{RS.BTN_RESET}" click="reset();" fontSize="10"/>
 		</mx:HBox>
 	</mx:VBox>
 	
