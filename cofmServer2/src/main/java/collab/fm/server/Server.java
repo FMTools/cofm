@@ -30,7 +30,7 @@ public class Server {
 	
 	static Logger logger = Logger.getLogger(Server.class);
 	
-	private static final int PORT = 8000;
+	private static final int PORT = 7000;
 	
 	private static void prepareDataBuffer() {
 		ByteBuffer.setUseDirectBuffers(false);
