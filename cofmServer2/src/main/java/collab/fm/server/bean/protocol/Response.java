@@ -1,7 +1,5 @@
 package collab.fm.server.bean.protocol;
 
-import collab.fm.server.util.JsonUtil;
-import collab.fm.server.util.exception.JsonConvertException;
 
 public class Response implements Cloneable {
 	public static final String TERMINATOR = "\0";

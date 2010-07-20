@@ -1,7 +1,5 @@
 package collab.fm.server.util;
 
-import collab.fm.server.bean.entity.Relationship;
-import collab.fm.server.bean.entity.Votable;
 
 public class LogUtil {
 

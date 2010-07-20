@@ -1,6 +1,7 @@
 package collab.fm.server.bean.entity.attr;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import collab.fm.server.bean.transfer.EnumAttribute2;
 

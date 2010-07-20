@@ -1,7 +1,6 @@
 package collab.fm.server.bean.entity;
 
 import collab.fm.server.bean.transfer.BinaryRelation2;
-import collab.fm.server.util.EntityUtil;
 
 public class BinaryRelationship extends Relationship {
 	

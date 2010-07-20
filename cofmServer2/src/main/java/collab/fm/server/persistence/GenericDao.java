@@ -1,6 +1,5 @@
 package collab.fm.server.persistence;
 
-import java.util.Collection;
 import java.util.List;
 
 import collab.fm.server.util.exception.EntityPersistenceException;

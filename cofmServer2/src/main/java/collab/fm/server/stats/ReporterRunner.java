@@ -8,7 +8,8 @@ import org.apache.log4j.Logger;
 import org.hibernate.Session;
 
 import collab.fm.server.persistence.HibernateUtil;
-import collab.fm.server.stats.reporter.*;
+import collab.fm.server.stats.reporter.ModelOverviewReporter;
+import collab.fm.server.stats.reporter.Reporter;
 
 /**
  * Report information about existing feature models and tool users.

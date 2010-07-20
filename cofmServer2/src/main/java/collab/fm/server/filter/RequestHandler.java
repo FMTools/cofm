@@ -1,8 +1,5 @@
 package collab.fm.server.filter;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.protocol.Request;

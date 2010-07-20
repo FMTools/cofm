@@ -1,13 +1,8 @@
 package collab.fm.server.bean.protocol.op;
 
-import java.util.List;
-
 import collab.fm.server.bean.entity.attr.Attribute;
-import collab.fm.server.bean.entity.attr.EnumAttribute;
 import collab.fm.server.bean.entity.attr.NumericAttribute;
 import collab.fm.server.bean.protocol.Request;
-import collab.fm.server.bean.protocol.op.AddAttributeRequest.AddAttributeProcessor;
-import collab.fm.server.bean.protocol.op.AddEnumAttributeRequest.DefResponse;
 import collab.fm.server.processor.Processor;
 
 public class AddNumericAttributeRequest extends AddAttributeRequest {

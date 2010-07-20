@@ -5,7 +5,6 @@ import org.apache.log4j.Logger;
 import collab.fm.server.bean.entity.User;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
-import collab.fm.server.util.LogUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;

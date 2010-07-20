@@ -2,16 +2,16 @@ package collab.fm.server.persistence;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.hibernate.*;
-import org.hibernate.criterion.Example;
+import org.hibernate.Criteria;
+import org.hibernate.LockMode;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.StaleObjectStateException;
 import org.hibernate.criterion.Restrictions;
 
-import collab.fm.server.bean.entity.Feature;
-import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 

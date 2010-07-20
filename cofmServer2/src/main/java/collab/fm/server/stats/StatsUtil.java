@@ -1,7 +1,7 @@
 package collab.fm.server.stats;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.Collection;
 
 public class StatsUtil {
 	
