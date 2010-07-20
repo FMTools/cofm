@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="600" height="400"
+	 creationComplete="initView();"
+	 title="{RS.FEEDBACK_TITLE}">
+	 <mx:VBox>
+	 	<mx:Text text="{RS.FEEDBACK_INFO}" width="550" />
+	 	<mx:Spacer/>
+	 	<mx:Label text="{RS.FEEDBACK_LOG}" />
+	 	<mx:TextArea editable="false" wordWrap="false" width="550" height="260" id="console" />
+	 	<mx:HBox>
+	 		<mx:Button label="Stats" click="doStats();" />
+	 		<mx:Button label="{RS.BTN_ISSUE_TRACK}" click="gotoFeedback();" />
+	 		<mx:Button label="{RS.BTN_ISSUE_OTHER}" click="close();" />
+	 	</mx:HBox>
+	 </mx:VBox>
+	
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import collab.fm.client.util.*;
+			import collab.fm.client.data.*;
+			
+			private function initView(): void {
+				console.htmlText = Console.content;
+				
+			}
+			
+			private function doStats(): void {
+				console.htmlText += FeatureModel.instance.stats() + "<br/>";
+				console.htmlText += PersonalTreeData.instance.stats() + "<br/>";
+			}
+			
+			private function gotoFeedback(): void {
+				Console.clear();
+				close();
+				navigateToURL(new URLRequest(
+					"http://code.google.com/p/cofm/issues/list"), "_blank");
+			}
+			
+			private function close(): void {
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</mx:Script>
+</mx:TitleWindow>

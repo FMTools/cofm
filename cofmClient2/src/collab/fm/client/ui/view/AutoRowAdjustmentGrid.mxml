@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:AdvancedDataGrid xmlns:mx="http://www.adobe.com/2006/mxml"
+    creationComplete="initView();" updateComplete="adjustHeight();">
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			
+			public var maxDisplayedRows: int = 10;
+			public var minDisplayedRows: int = 1;
+			
+			protected function initView(): void {
+				adjustHeight();
+			}
+			
+			protected function adjustHeight(): void {
+				var itemCount: int = ArrayCollection(this.dataProvider).length;
+				if (itemCount > maxDisplayedRows) {
+					itemCount = maxDisplayedRows;
+				}
+				if (itemCount < minDisplayedRows) {
+					itemCount = minDisplayedRows; 
+				}
+				this.height = this.measureHeightOfItems(-1, itemCount); 
+			}
+			
+		]]>
+	</mx:Script>
+</mx:AdvancedDataGrid>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<!-- The color of the votes -->
+	<mx:SolidColor id="sc" color="blue" alpha=".3"/>
+	<mx:Stroke id="s" color="blue" weight="1" />
+	
+	<!-- The bar chart showing the votes -->
+	<mx:BarChart dataProvider="{CurrentFeature.instance.votes}"
+		 showDataTips="true" dataTipFunction="dtFun" 
+		 height="80" width="250">
+		
+		<mx:verticalAxis>
+		 	<mx:CategoryAxis id="a1" dataProvider="{CurrentFeature.instance.votes}"
+		 	 categoryField="label" />
+		</mx:verticalAxis>
+		<mx:horizontalAxis>
+			<mx:LinearAxis id="a2" interval="1" maximumLabelPrecision="0"/>
+		</mx:horizontalAxis>
+		
+		<mx:horizontalAxisRenderers>
+			<mx:AxisRenderer axis="{a2}" labelGap="0" fontSize="30"/>
+		</mx:horizontalAxisRenderers>
+		
+		<mx:series>
+			<mx:BarSeries yField="label" xField="num" fill="{sc}" stroke="{s}" maxHeight="5"/> 
+		</mx:series>
+	</mx:BarChart>
+	
+	<!-- Buttons for voting on the feature -->
+	<mx:VBox>
+		<mx:Button label="{RS.BTN_VOTE_FEATURE_YES}" click="voteYesOnFeature();"/>
+    	<mx:Button label="{RS.BTN_VOTE_FEATURE_NO}" click="voteNoOnFeature();"/>
+	</mx:VBox>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.charts.HitData;
+			import collab.fm.client.data.*;
+			import collab.fm.client.util.*;
+			import collab.fm.client.command.*;
+			
+			private function voteYesOnFeature(): void {
+				new CreateOrVoteFeatureCommand("", CurrentFeature.instance.id, true).execute();
+			}
+		
+			private function voteNoOnFeature(): void {
+				new CreateOrVoteFeatureCommand("", CurrentFeature.instance.id, false).execute();
+			}
+			
+			private function dtFun(hd: HitData): String {
+				var v: String = "vote"
+				if (hd.item.num > 1) {
+					v += "s";
+				}
+				return hd.item.num + " " + v + " (" + hd.item.ratio + ")";
+			}
+		]]>
+	</mx:Script>
+</mx:HBox>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="400" height="300"
+	 title="{RS.EDIT_ADD_DES_TITLE}"
+	 showCloseButton="true"
+	 close="onClose();"
+	 creationComplete="initView();">
+	
+	<mx:Form>
+		<mx:VBox>
+			<mx:Label text="{RS.EDIT_ADD_DES}" />
+     		<mx:TextArea width="300" height="160" id="dta"/>
+		</mx:VBox>			
+		<mx:FormItem direction="horizontal">
+			<mx:Button id="btnOk" label="{RS.BTN_OK}" click="onOk();"/>
+			<mx:Button label="{RS.BTN_CANCEL}" click="onClose();"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.utils.StringUtil;
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			import collab.fm.client.command.*;
+			import collab.fm.client.util.*;
+			import collab.fm.client.data.*;
+			
+			private function initView(): void {
+				dta.setFocus();
+			}
+			
+			private function onClose(): void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function onOk(): void {
+				if (StringUtil.trim(dta.text) != "") {
+					new CreateOrVoteDescriptionCommand(
+						CurrentFeature.instance.id, 
+						dta.text, true).execute();
+					onClose();
+				}
+			}
+			
+		]]>
+	</mx:Script>
+</mx:TitleWindow>

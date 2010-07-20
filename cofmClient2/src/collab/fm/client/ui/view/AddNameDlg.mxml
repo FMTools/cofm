@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="400" height="160"
+	 xmlns:a="com.hillelcoren.components.*"
+	 xmlns:v="collab.fm.client.ui.validator.*"
+	 title="{RS.EDIT_ADD_NAME_TITLE}"
+	 showCloseButton="true"
+	 close="onClose();"
+	 creationComplete="initView();">
+	
+	<mx:Form>
+		<mx:FormItem label="{RS.EDIT_ADD_NAME}" required="true" >
+			 <a:AutoComplete id="nameInput" allowMultipleSelection="false"
+					 allowNewValues="true" allowEditingNewValues="true"
+					 matchType="anyPart" 
+					 autoSelectEnabled="false"
+					 selectedItemStyleName="macMail" width="150"
+					 labelField="name"
+					 dataProvider="{FeatureNameList.instance.data}"/>
+					 
+		</mx:FormItem>
+		<mx:FormItem direction="horizontal">
+			<mx:Button id="btnOk" label="{RS.BTN_OK}" click="onOk();" />
+			<mx:Button label="{RS.BTN_CANCEL}" click="onClose();"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+	<!-- Validators -->
+	<v:FeatureNameValidator id="dfnv"
+		nameMustExist="false" source="{nameInput}" property="text" triggerEvent="change" />
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.events.ValidationResultEvent;
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			import collab.fm.client.command.*;
+			import collab.fm.client.util.*;
+			import collab.fm.client.data.*;
+			
+			private function initView(): void {
+				nameInput.setFocus();
+			}
+			
+			private function onClose(): void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function validateName(): Boolean {
+				var result: Array = [];
+				result.push(dfnv.validate());
+				for each (var evt: Object in result) {
+					if (ValidationResultEvent(evt).type == ValidationResultEvent.INVALID) {
+						return false;
+					}
+				}
+				return true;
+			}
+			private function onOk(): void {
+				if (validateName()) {
+					new CreateOrVoteNameCommand(CurrentFeature.instance.id, nameInput.text, true).execute();
+					onClose();
+				}
+			}
+
+			
+		]]>
+	</mx:Script>
+</mx:TitleWindow>

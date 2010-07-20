@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="100%"
+	 creationComplete="initView();"
+	 paddingLeft="20" paddingRight="20" hideEffect="{fadeOut}">
+	 <mx:Fade id="fadeOut" duration="1000" alphaFrom="1.0" alphaTo="0.0"/>  
+	<mx:Label id="msg" width="100%" fontWeight="bold" fontSize="12" color="black" hideEffect="{fadeOut}"/>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.utils.StringUtil;
+			import flash.utils.Timer;
+			import collab.fm.client.event.*;
+			
+			private var timer: Timer = new Timer(3000); 
+			
+			private function initView(): void {
+				ClientEvtDispatcher.instance().addEventListener(
+					MsgEvent.INFO, onInfo);
+				ClientEvtDispatcher.instance().addEventListener(
+					MsgEvent.WARN, onWarn);
+				ClientEvtDispatcher.instance().addEventListener(
+					MsgEvent.ERROR, onError);	
+					
+				timer.addEventListener(TimerEvent.TIMER, hideMsg);
+			}
+			
+			private function hideMsg(evt: TimerEvent): void {
+				msg.visible = false;
+				this.visible = false;
+			}
+			
+			private function isEmpty(m: String): Boolean {
+				return m == null || StringUtil.trim(m) == "";
+			}
+			
+			private function onInfo(evt: MsgEvent): void {
+				if (isEmpty(evt.msg)) {
+					return;
+				}
+				timer.stop();
+				this.setStyle("backgroundColor", "#f6bc5d");
+				this.visible = true;
+				msg.text = evt.msg;
+				msg.visible = true;
+				timer.start();
+			}
+			
+			private function onWarn(evt: MsgEvent): void {
+				if (isEmpty(evt.msg)) {
+					return;
+				}
+				timer.stop();
+				this.setStyle("backgroundColor", "#ffeac0");
+				this.visible = true;
+				msg.text = evt.msg;
+				msg.visible = true;
+				timer.start();
+			}
+			
+			private function onError(evt: MsgEvent): void {
+				if (isEmpty(evt.msg)) {
+					return;
+				}
+				timer.stop();
+				this.setStyle("backgroundColor", "#ffeac0");
+				this.visible = true;
+				msg.text = evt.msg;
+				msg.visible = true;
+				timer.start();
+			}
+		]]>
+	</mx:Script>
+</mx:HBox>

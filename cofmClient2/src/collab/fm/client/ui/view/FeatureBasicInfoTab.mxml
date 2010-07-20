@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	xmlns:v="collab.fm.client.ui.view.*" creationComplete="initView();">
+	<mx:Spacer/>
+	<mx:Label text="{RS.EDIT_FEATURE_VOTES}"/>
+	<v:FeatureVotesChart width="100%" height="100" />
+	<mx:VBox id="infoBox">
+		
+	</mx:VBox>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.TextArea;
+			import mx.controls.Label;
+			import mx.containers.HBox;
+			import mx.core.Container;
+			import mx.managers.PopUpManager;
+			import collab.fm.client.command.*;
+			import collab.fm.client.data.*;
+			import collab.fm.client.event.*;
+			import collab.fm.client.util.*;
+			
+			private function initView(): void {
+				ClientEvtDispatcher.instance().addEventListener(
+					ClientEvent.BASIC_INFO_UPDATED, updateBasicInfo);
+			}
+			
+			private function updateBasicInfo(evt: ClientEvent): void {
+				infoBox.removeAllChildren();
+				trace(CurrentFeature.instance.basicInfo.toXMLString());
+				for each (var obj: Object in CurrentFeature.instance.basicInfo) {
+					// wrapped by a HBox
+					var box: HBox = new HBox();
+					var label: Label = new Label();
+					label.text = obj.@label;
+					box.addChild(label);
+					
+					switch (String(obj.@type)) {
+						case Cst.ATTR_TYPE_ENUM:
+							addEnum(obj, box);
+							break;
+						case Cst.ATTR_TYPE_NUMBER:
+							addNumber(obj, box);
+							break;
+						case Cst.ATTR_TYPE_STRING:
+							addString(obj, box);
+							break;
+						case Cst.ATTR_TYPE_TEXT:
+							addText(obj, box);
+							break;
+					}
+					
+					// append suppport rate
+					if (obj.@rate != undefined) {
+						var rate: Label = new Label();
+						rate.text = "(" + obj.@rate + ")";
+						box.addChild(rate);
+					}
+					
+					infoBox.addChild(box);
+				}
+			}
+			
+			private function addEnum(obj: Object, box: Container): void {
+				
+			}
+			
+			private function addNumber(obj: Object, box: Container): void {
+				
+			}
+		
+			private function addString(obj: Object, box: Container): void {
+				var label: Label = new Label();
+				label.text = obj.@value;
+				box.addChild(label);	
+			}
+			
+			private function addText(obj: Object, box: Container): void {
+				var t: TextArea = new TextArea();
+				t.text = obj.@value;
+				t.wordWrap = true;
+				t.editable = false;
+				t.width = 300;
+				t.height = 100;
+				box.addChild(t);
+			}
+		]]>
+	</mx:Script>
+</mx:VBox>

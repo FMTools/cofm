@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="510" height="420"
+	 xmlns:a="com.hillelcoren.components.*"
+	 xmlns:v="collab.fm.client.ui.validator.*"
+	 creationComplete="initView();"
+	 title="{RS.FEATURE_CREATE_TITLE}"
+	 showCloseButton="true"
+	 close="onClose();">
+	
+	<mx:Form width="100%" height="100%">
+	
+		<mx:FormItem label="{RS.FEATURE_CREATE_NAME}">
+			<a:AutoComplete id="nameInput" allowMultipleSelection="false"
+				 allowNewValues="true" allowEditingNewValues="true"
+				 autoSelectEnabled="false"
+				 matchType="anyPart" selectedItemStyleName="macMail"
+				 labelField="name"
+				 dataProvider="{FeatureNameList.instance.data}"
+				 width="150" />
+		</mx:FormItem>
+		
+		<mx:FormItem label="{RS.FEATURE_CREATE_PARENT}" >
+			<mx:RadioButtonGroup id="parentSwitch" change="onSwitch();"  />
+			<mx:RadioButton groupName="parentSwitch" value="None" label="{RS.FEATURE_CREATE_PARENT_IS_ROOT}" />
+			<mx:HBox>
+				<mx:RadioButton groupName="parentSwitch" value="Exist"
+					label="{RS.FEATURE_CREATE_PARENT_SEARCH}"/>
+				<a:AutoComplete id="parentInput" allowMultipleSelection="false"
+					 allowNewValues="false" matchType="anyPart" 
+					 autoSelectEnabled="true"
+					 selectedItemStyleName="macMail" width="150"
+					 labelField="name"
+					 focusIn="onFocusParent();"
+					 dataProvider="{FeatureNameList.instance.data}" />
+			</mx:HBox>
+		</mx:FormItem>
+		
+		<mx:FormItem label="{RS.FEATURE_CREATE_DES}" >
+			<mx:TextArea id="desInput" width="300" height="200" />
+		</mx:FormItem>
+		
+		<mx:FormItem direction="horizontal">
+			<mx:Button id="cOK" label="{RS.BTN_OK}" click="endCreateFeature();"/>
+			<mx:Button label="{RS.BTN_CANCEL}" click="onClose();"/>
+		</mx:FormItem>			
+	</mx:Form>
+	
+	<!-- Validators -->
+	<v:FeatureNameValidator id="newNameV" triggerEvent="change" nameMustExist="false" source="{nameInput}" property="text" />
+	<v:FeatureNameValidator id="parentV" allowEmpty="{!hasParent}"
+		triggerEvent="change" nameMustExist="true" source="{parentInput}" property="text" />
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.utils.StringUtil;
+			import mx.events.ValidationResultEvent;
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			import mx.events.ItemClickEvent;
+			
+			import collab.fm.client.command.*;
+			import collab.fm.client.util.*;
+			import collab.fm.client.data.*;
+			import collab.fm.client.event.*;	
+			
+			[Bindable]
+			public var hasParent: Boolean;
+			
+			private var parentId: int;
+			
+			public function resetForm(): void {
+				nameInput.text = "";
+				
+				if (CurrentFeature.instance.id > 0) {
+					var n: String = ModelUtil.getFeatureNameById(String(CurrentFeature.instance.id));
+					if (n != null) {
+						parentInput.selectedItem = FeatureNameList.instance.getByName(n);
+						//parentInput.text = n;
+						//parentInput.search();
+						parentId = CurrentFeature.instance.id;
+						hasParent = true;
+						parentSwitch.selectedValue = "Exist";
+						return;
+					} 
+				}
+				parentInput.text = "";
+				hasParent = false;
+				parentSwitch.selectedValue = "None";
+			}
+			
+			private function initView(): void {
+				ClientEvtDispatcher.instance().addEventListener(
+					ModelMinorChangeEvent.FEATURE_CREATED_LOCALLY, onFeatureCreatedLocally);
+				resetForm();
+				nameInput.setFocus();
+			}
+			
+			private function onFocusParent(): void {
+				if (parentSwitch.selectedValue != "Exist") {
+					parentSwitch.selectedValue = "Exist";
+					hasParent = true;
+				}
+			}
+			
+			private function onSwitch(): void {
+				hasParent = parentSwitch.selectedValue == "Exist";
+			}
+						
+			private function onClose(): void {
+				// Prevent multi-listener bug
+				ClientEvtDispatcher.instance().removeEventListener(
+					ModelMinorChangeEvent.FEATURE_CREATED_LOCALLY, onFeatureCreatedLocally);
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function endCreateFeature(): void {
+				if (!validateNames()) {
+					return;
+				}
+				if (parentSwitch.selectedValue == "Exist") {
+					parentId = FeatureNameList.instance.getIdByName(parentInput.text);
+				} else {
+					parentId = -1;
+				}
+				// commit create_feature and create_relationship (see onFeatureCreatedLocally)
+				new CreateOrVoteFeatureCommand(nameInput.text).execute();
+			}
+			
+			private function validateNames(): Boolean {
+				var rslt:Array = [];
+				rslt.push(newNameV.validate());
+				rslt.push(parentV.validate());
+				for each (var o: Object in rslt) {
+					if (ValidationResultEvent(o).type == ValidationResultEvent.INVALID) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			private function onFeatureCreatedLocally(evt: ModelMinorChangeEvent): void {
+				if (parentId > 0) {
+					new CreateOrVoteBinaryRelationshipCommand(
+						Cst.BIN_REL_REFINES, parentId, int(evt.data)).execute();
+				}
+				if (mx.utils.StringUtil.trim(desInput.text) != "") {
+					new CreateOrVoteDescriptionCommand(int(evt.data), desInput.text).execute();
+				}
+				onClose();
+			}
+			
+		]]>
+	</mx:Script>
+</mx:TitleWindow>

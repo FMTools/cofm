@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Button label="{RS.BTN_VOTE_YES}" click="onVoteYes();"/>
+	<mx:Button label="{RS.BTN_VOTE_NO}" click="onVoteNo();"/>
+	<mx:Script>
+		<![CDATA[
+			import collab.fm.client.util.*;
+			import mx.controls.AdvancedDataGrid;
+			protected function onVoteYes(): void {
+			} 
+			
+			protected function onVoteNo(): void {
+			}
+		]]>
+	</mx:Script>
+</mx:HBox>

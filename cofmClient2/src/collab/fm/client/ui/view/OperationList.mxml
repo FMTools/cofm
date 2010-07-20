@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TextArea xmlns:mx="http://www.adobe.com/2006/mxml" 
+    creationComplete="initView();" 
+    width="100%" height="100%"
+    editable="false" wordWrap="false"
+    implements="collab.fm.client.data.IOperationListener">
+	
+	<mx:Script>
+		<![CDATA[
+			import collab.fm.client.event.*;
+			import collab.fm.client.util.*;
+			import collab.fm.client.data.*;
+			
+			private function initView(): void {
+				FeatureModel.instance.registerSubView(this);	
+				
+				ClientEvtDispatcher.instance().addEventListener(ModelUpdateEvent.SUCCESS, onModelUpdate);
+			}		
+			
+			private function onModelUpdate(evt: ModelUpdateEvent): void {
+				this.htmlText = "";	
+			}
+			
+			private function getFeatureHtmlName(fId: String): String {
+				return "Feature <i>" + ModelUtil.getFeatureNameById(fId) + "</i>";
+			}
+			
+			private function getBinaryRelationshipHtml(type: String, left: String, right: String): String {
+				if (type == Cst.BIN_REL_REFINES) {
+					return "Refinement <b><i>" + 
+						ModelUtil.getFeatureNameById(right) + " refines " +
+						ModelUtil.getFeatureNameById(left) + "</i></b>";
+				} else {
+					return "Constraint <b><i>" + 
+						ModelUtil.getFeatureNameById(left) + " " + 
+						type + " " +
+						ModelUtil.getFeatureNameById(right) + "</i></b>";
+				}
+				
+			}
+			
+			private function showVoting(userId: String, vote: String, target: String): void {
+				var action: String;
+				if (vote.toLowerCase() == (new Boolean(true).toString().toLowerCase())) {
+					action = "voted YES to";
+				} else {
+					action = "voted NO to";
+				}
+				showOp(userId, action, target);
+			} 
+			
+			private function showCreating(userId: String, target: String): void {
+				showOp(userId, "created", target);
+			}
+			
+			private function showOp(userId: String, action: String, target: String): void {
+				// 1. get user name from id;
+				var subject: String;
+				var u: XMLList = UserList.instance.users.source.(@id==userId);
+				if (u.length() > 0) {
+					subject = u[0].@name;
+				} else {
+					subject = "User #" + userId;
+				}
+				
+				// 2. show op
+				this.htmlText = subject + " " + action + " " + target + ".<br/>" + this.htmlText;
+			}
+			
+			public function handleFeatureVotePropagation(op: Object): void {
+				// Do nothing. (Do not show the propagated voting operations.)
+			}
+	
+			public function handleRelationshipVotePropagation(op: Object): void {
+				// Do nothing. (Do not show the propagated voting operations.)
+			}
+	
+			public function handleAddDescription(op:Object): void {
+				if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
+					this.showCreating(op["userid"], 
+						"a new description for " + this.getFeatureHtmlName(op["featureId"]));
+				} else {
+					this.showVoting(op["userid"], op["vote"],
+						"one of the descriptions of " + this.getFeatureHtmlName(op["featureId"]));
+				}
+			}
+	
+			public function handleAddName(op:Object): void {
+				if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
+					this.showCreating(op["userid"], 
+						"a new name " +
+						"<b><i>" + op["value"] + "</i></b>" +
+						" for " + this.getFeatureHtmlName(op["featureId"]));
+				} else {
+					this.showVoting(op["userid"], op["vote"],
+						"the name " +
+						"<b><i>" + op["value"] + "</i></b>" +
+						" of " + this.getFeatureHtmlName(op["featureId"]));
+				}
+			}
+	
+			public function handleCreateFeature(op:Object): void {
+				if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
+					this.showCreating(op["userid"], 
+						"a new feature " +
+						"<b><i>" + op["value"] + "</i></b>");
+				} else {
+					this.showVoting(op["userid"], op["vote"],
+						"the feature " +
+						"<b><i>" + ModelUtil.getFeatureNameById(op["featureId"]) + "</i></b>");
+				}
+			}
+	
+			public function handleCreateBinaryRelationship(op:Object): void {
+				if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
+					this.showCreating(op["userid"], 
+						"a new " + 
+						this.getBinaryRelationshipHtml(op["type"], op["leftFeatureId"], op["rightFeatureId"]));
+				} else {
+					this.showVoting(op["userid"], op["vote"],
+						"the " +
+						this.getBinaryRelationshipHtml(op["type"], op["leftFeatureId"], op["rightFeatureId"]));
+				}
+			}
+	
+			public function handleSetOpt(op:Object): void {
+				this.showVoting(op["userid"], op["vote"],
+					"the optionality of " + this.getFeatureHtmlName(op["featureId"]));
+			}
+			
+		]]>
+	</mx:Script>
+</mx:TextArea>
