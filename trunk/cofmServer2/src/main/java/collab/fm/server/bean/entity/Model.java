@@ -81,8 +81,7 @@ public class Model extends Entity implements AttributeSet {
 		}
 		Value v = new Value(userId);
 		v.setStrVal(val);
-		attr.voteOrAddValue(v, yes, userId);
-		return true;
+		return attr.voteOrAddValue(v, yes, userId);
 	}
 	
 	public Map<String, Attribute> getAttrs() {

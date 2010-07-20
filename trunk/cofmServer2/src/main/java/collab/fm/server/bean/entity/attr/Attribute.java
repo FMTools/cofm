@@ -87,9 +87,10 @@ public class Attribute extends Entity {
 		this.enableGlobalDupValues = enableGlobalDupValues;
 	}
 	
-	public void voteOrAddValue(Value value, boolean yes, Long userId) {
+	// return true if the value has already existed.
+	public boolean voteOrAddValue(Value value, boolean yes, Long userId) {
 		if (!valueIsValid(value)) {
-			return;
+			return false;
 		}
 		boolean isVoting = false;
 		// Check for voting
@@ -110,12 +111,12 @@ public class Attribute extends Entity {
 				values.remove(v);
 			}
 		}
-		if (isVoting) {
-			return;
+		if (!isVoting) {
+			// The value does not exist, we create it here.
+			value.vote(true, userId);
+			values.add(value);
 		}
-		// The value does not exist, we create it here.
-		value.vote(true, userId);
-		values.add(value);
+		return true;
 	}
 	
 	protected boolean valueIsValid(Value v) {

@@ -61,8 +61,7 @@ public class Feature extends VotableEntity implements AttributeSet {
 		}
 		Value v = new Value(userId);
 		v.setStrVal(val);
-		attr.voteOrAddValue(v, yes, userId);
-		return true;
+		return attr.voteOrAddValue(v, yes, userId);
 	}
 	
 	// Voting NO to a feature needs vote inference, i.e. voting NO to all involved relationships.
