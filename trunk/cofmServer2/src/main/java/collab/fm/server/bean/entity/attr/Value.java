@@ -1,6 +1,7 @@
 package collab.fm.server.bean.entity.attr;
 
 import collab.fm.server.bean.entity.VotableEntity;
+import collab.fm.server.bean.transfer.Value2;
 
 /**
  * All types of value (string, number, enumeration, etc.) can be converted into string, so
@@ -50,6 +51,11 @@ public class Value extends VotableEntity {
 	protected void removeThis() {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public void transfer(Value2 v2) {
+		super.transfer(v2);
+		v2.setVal(this.getStrVal());
 	}
 
 }
