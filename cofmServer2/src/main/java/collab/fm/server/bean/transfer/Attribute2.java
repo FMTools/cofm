@@ -8,7 +8,7 @@ public class Attribute2 extends Entity2 {
 	protected String type;
 	protected boolean multi;
 	protected boolean dup; // global duplicate
-	protected List<String> vals = new ArrayList<String>();
+	protected List<Value2> vals = new ArrayList<Value2>();
 	public String getName() {
 		return name;
 	}
@@ -33,14 +33,14 @@ public class Attribute2 extends Entity2 {
 	public void setDup(boolean dup) {
 		this.dup = dup;
 	}
-	public List<String> getVals() {
+	public List<Value2> getVals() {
 		return vals;
 	}
-	public void setVals(List<String> vals) {
+	public void setVals(List<Value2> vals) {
 		this.vals = vals;
 	}
 	
-	public void addVal(String v) {
+	public void addVal(Value2 v) {
 		this.vals.add(v);
 	}
 	

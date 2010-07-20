@@ -5,6 +5,7 @@ import java.util.List;
 
 import collab.fm.server.bean.entity.Entity;
 import collab.fm.server.bean.transfer.Attribute2;
+import collab.fm.server.bean.transfer.Value2;
 
 /**
  * @author mark
@@ -128,7 +129,9 @@ public class Attribute extends Entity {
 		a2.setName(this.getName());
 		a2.setType(this.getType());
 		for (Value v: this.getValues()) {
-			a2.addVal(v.getStrVal());
+			Value2 v2 = new Value2();
+			v.transfer(v2);
+			a2.addVal(v2);
 		}
 	}
 }
