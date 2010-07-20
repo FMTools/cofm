@@ -106,10 +106,21 @@ public class VoteAddValueRequest extends Request {
 				}
 				if (as2 != null) { // if the same value exists, then the target must be this object.
 					target = as2;
+					if (r.getFeatureId() == null) {
+						rsp.setModelId(((Model)as2).getId());
+					} else {
+						rsp.setFeatureId(((Feature)as2).getId());
+					}
 				}
 			}
 			
-			target.voteOrAddValue(r.getAttr(), r.getVal(), r.getYes(), r.getRequesterId());
+			boolean isValidValue = target.voteOrAddValue(r.getAttr(), r.getVal(), r.getYes(), r.getRequesterId());
+			
+			if (!isValidValue) {
+				req.setLastError("Invalid value: " + r.getVal());
+				return false;
+			}
+			
 			if (r.getFeatureId() == null) {
 				DaoUtil.getModelDao().save((Model)target);
 			} else {
