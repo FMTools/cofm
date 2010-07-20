@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FeatureGridActionRenderer xmlns="collab.fm.client.ui.renderer.*" xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import collab.fm.client.data.*;
+			import collab.fm.client.util.*;
+			import collab.fm.client.command.*;
+			
+			override protected function onVoteYes(): void {
+				//TODO: change "-1" to left feature id and right feature id
+				new CreateOrVoteBinaryRelationshipCommand(
+						data.type, int(data.left), int(data.right), int(data.id), true)
+					.execute();
+				
+			} 
+			
+			override protected function onVoteNo(): void {
+				new CreateOrVoteBinaryRelationshipCommand(
+						data.type, int(data.left), int(data.right), int(data.id), false)
+					.execute();
+			}
+		]]>
+	</mx:Script>	
+</FeatureGridActionRenderer>

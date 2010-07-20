@@ -1,0 +1,21 @@
+Things I need to do for model list and creation:
+1. Create UI for creating new model, so that I can have some "real" data on the server.
+<DONE> Search: the others-model list will display the results (note that search result will omit my models)
+<DONE> if search returns no exactly match, display the "create model form" to create the model.
+<DONE> 2. Call ListModelCommand and ListUserCommand in the proper place in order to get these real data.
+<DONE> 3. Complete the Login UI for user login.
+<DONE> 4. Complete the Register UI and RegisterCommand so that I can add some users. 
+5. Insert code for listening events and hiding/showing proper UI components, in detail:
+	Startup: show ConnectDlg and hide others.
+	When connected: show Login/Register form, others-model list and hide others.
+	When logined: show my-model-view(including a 'search-or-create' view), update other-model-list,
+		and hide others.
+(??Is it necessary??) 6. Modify the server code of construction of the list model response: calculate primary name and
+   description on the server so the network load can be greatly reduced.
+7. Define default size for components.
+8. Show a "Join" button on each model in others' model list. 
+  Similiarly, show a "Enter" button on each model in my model list.
+  NOTE: use xmlNode.@attr == "false" to compare a boolean attr with false.
+9. The Application will listen to the ModelSelectedEvent.SELECTED, then hide EntryPerspective
+  and change to ModelingPerspective
+		

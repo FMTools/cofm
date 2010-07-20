@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<v:AutoRowAdjustmentGrid xmlns:v="collab.fm.client.ui.view.*"
+	xmlns:mx="http://www.adobe.com/2006/mxml"
+	dataProvider="{CurrentFeature.instance.names}">
+	
+	<v:columns>
+		<mx:AdvancedDataGridColumn dataField="name" headerText="{RS.EDIT_NAME_GRID_NAME}"
+			 resizable="true"/>
+			
+		<mx:AdvancedDataGridColumn dataField="supporters" headerText="{RS.EDIT_GRID_YES}"
+			 resizable="true"/>
+			
+		<mx:AdvancedDataGridColumn dataField="opponents" headerText="{RS.EDIT_GRID_NO}"
+			 resizable="true"/>
+			
+		<mx:AdvancedDataGridColumn headerText="{RS.EDIT_GRID_ACTION}" 
+			 resizable="false" width="200" sortable="false"
+			 itemRenderer="collab.fm.client.ui.renderer.FeatureNameGridActionRenderer"/>
+			
+	</v:columns>
+	<mx:Script>
+		<![CDATA[
+			import collab.fm.client.data.*;
+			import collab.fm.client.util.*;
+		]]>
+	</mx:Script>
+</v:AutoRowAdjustmentGrid>

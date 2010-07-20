@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+	 xmlns:a="com.hillelcoren.components.*" >
+	
+	<mx:Button id="featureBtn" label="{RS.BTN_CREATE_FEATURE}" click="beginCreateFeature();"/>
+	<mx:Button id="relBtn" label="{RS.BTN_CREATE_RELATIONSHIP}" click="beginCreateRel();"/>
+	
+		
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import collab.fm.client.util.*;		
+			
+			private var featureWindow: CreateFeatureDlg;
+			private var relWindow: CreateRelationshipDlg;
+			
+			private function beginCreateFeature(): void {
+				featureWindow = CreateFeatureDlg(PopUpManager.createPopUp(this, CreateFeatureDlg, true));
+				PopUpManager.centerPopUp(featureWindow);
+			}
+			
+			private function beginCreateRel(): void {
+				relWindow = CreateRelationshipDlg(PopUpManager.createPopUp(this, CreateRelationshipDlg, true));
+				PopUpManager.centerPopUp(relWindow);
+			}
+		]]>
+	</mx:Script>
+</mx:HBox>

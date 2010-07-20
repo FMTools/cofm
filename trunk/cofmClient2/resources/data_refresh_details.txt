@@ -1,0 +1,46 @@
+------------------------------
+--  Data Creation Events
+------------------------------
+[FORMAT]
+<command>
+	<listeners>
+
+<command> ListModel
+	<listeners> ModelCollection
+
+
+------------------------------
+--  Data Change Events
+------------------------------
+[FORMAT]
+<event>: <meaning>    
+   <properties> 
+   <dispatcher command>
+   <listeners> 
+
+myInfoUpdated:  my user info has updated or created.
+   myId: int
+   myName: String
+   <command> Login
+   <listeners> ModelCollection, User
+   
+userNamesUpdated:  user names and their IDs have updated.
+   list: array of {id, name}
+   <command> ListUser
+   <listeners> ModelCollection -> ModelInfo,
+    		   User
+
+othersModelUpdated:  others' model list has updated, because of search
+   models: array of model
+   searchWord: the keyword in search
+   <command> ListModel
+   <listeners> ModelCollection
+
+myModelCreated: the user has created a new model. We should add it to my model list
+   model: <model id=... name=... userNum=1><des>...</des>...</model>
+   <command> CreateModel
+   <listeners> ModelCollection
+
+    	
+
+    

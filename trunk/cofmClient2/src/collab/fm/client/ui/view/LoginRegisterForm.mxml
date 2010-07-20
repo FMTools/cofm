@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="300" height="200"
+	 xmlns:v="collab.fm.client.ui.validator.*"
+	 creationComplete="initView()">
+	
+	<!-- Login Form -->
+	<mx:Form id="loginForm" visible="{showLogin}" includeInLayout="{showLogin}">
+		<mx:FormHeading label="{RS.LOGIN_HEADING}"/>
+		<mx:FormItem label="{RS.LOGIN_INPUT_NAME}" required="true">
+			<mx:TextInput id="uName" />
+		</mx:FormItem>
+		<mx:FormItem label="{RS.LOGIN_INPUT_PWD}" required="true">
+			<mx:TextInput id="uPwd" displayAsPassword="true" />
+		</mx:FormItem>
+		<mx:FormItem>
+			<mx:Button label="{RS.BTN_OK}" click="doLogin()" />
+			<mx:FormItem>
+				<mx:Label text="{RS.LOGIN_GO_REGISTER}" 
+					 paddingRight="0"/>
+				<mx:LinkButton label="{RS.LOGIN_REGISTER_BTN}" click="showLogin=false;"
+					  paddingBottom="0" paddingLeft="0" paddingRight="0" paddingTop="0"/>
+			</mx:FormItem>
+		</mx:FormItem>
+	</mx:Form>
+	
+	<!-- Register Form -->
+	<mx:Form id="regForm" visible="{!showLogin}" includeInLayout="{!showLogin}">
+		<mx:FormHeading label="{RS.REG_HEADING}" />		
+		<mx:FormItem label="{RS.REG_NAME}" required="true">
+			<mx:TextInput id="regName" />
+		</mx:FormItem>
+		<mx:FormItem label="{RS.REG_PWD}" required="true">
+			<mx:TextInput id="regPwd" displayAsPassword="true" />
+		</mx:FormItem>
+		<mx:FormItem label="{RS.REG_PWD_CONFIRM}" required="true">
+			<mx:TextInput id="regPwd2" displayAsPassword="true" />
+		</mx:FormItem>
+		<mx:FormItem>
+			<mx:Button label="{RS.BTN_OK}" click="doRegister()" />
+		</mx:FormItem>
+	</mx:Form>
+	
+	<!-- Validators -->
+	<mx:StringValidator id="rnValidator" source="{regName}" property="text" minLength="3" maxLength="12" />
+	<mx:StringValidator id="pValidator" source="{regPwd}" property="text" minLength="1" />
+	<v:EqualStringValidator id="pcValidator" pwd="{regPwd.text}" source="{regPwd2}" property="text" />
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.ValidationResultEvent;
+			import collab.fm.client.util.RS;
+			import collab.fm.client.command.*;
+			import collab.fm.client.event.*;
+			import collab.fm.client.data.*;
+			
+			[Bindable]
+			public var showLogin: Boolean = true;
+			
+			private function initView(): void {
+				ClientEvtDispatcher.instance().addEventListener(ClientEvent.REGISTER_SUCCESS, doRegisterOK);
+			}
+			
+			private function validateLoginForm(): Boolean {
+				return uName.text.length > 0 && uPwd.text.length > 0;
+			}
+			
+			private function validateRegisterForm(): Boolean {
+				var vre: Array = new Array();
+				vre.push(pcValidator.validate());
+				vre.push(rnValidator.validate());
+				vre.push(pValidator.validate());
+				for each (var evt: Object in vre) {
+					if (ValidationResultEvent(evt).type == ValidationResultEvent.INVALID) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			private function doLogin(): void {
+				if (validateLoginForm()) {
+					new LoginCommand(uName.text, uPwd.text).execute();
+				}
+			}
+			
+			private function doRegister(): void {
+				if (validateRegisterForm()) {
+				    new RegisterCommand(regName.text, regPwd.text).execute();
+				}
+			}
+			
+			private function doRegisterOK(evt: ClientEvent): void {
+				// hide the register form
+				showLogin = true;
+			}
+		]]>
+	</mx:Script>
+</mx:VBox>
