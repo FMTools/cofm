@@ -46,7 +46,7 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 			"join entity.attrs as a " +
 			"join a.values as v " +
 			"where index(a) = '" + attrName + "' " +
-			(modelId != null ? "and m.Id = :mId " : "") +
+			(modelId != null ? "and m.id = :mId " : "") +
 			(like ? "and v.strVal like :val" : "and v.strVal = :val");
 		Query qry = HibernateUtil.getCurrentSession().createQuery(queryString);
 		if (modelId != null) {

@@ -70,6 +70,7 @@ public class LoginRequest extends Request {
 				rsp.setMessage(Resources.MSG_ERROR_USER_LOGIN_FAILED);
 				rsp.setName(Resources.RSP_ERROR);
 			} else {
+				req.setRequesterId(user.getId());
 				rsp.setRequesterId(user.getId());
 				rsp.setMessage(Resources.MSG_LOGIN);
 				rsp.setName(Resources.RSP_SUCCESS);
