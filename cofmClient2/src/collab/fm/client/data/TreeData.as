@@ -13,8 +13,8 @@ package collab.fm.client.data {
 		 *      <feature ... >
 		 * </feature>
 		 *  Tree nodes:
-		 *      <feature id= creator= support= 
-		 *                  parents={number of parents} name= people=>
+		 *      <feature id= creator= time= support= 
+		 *                  parents={number of parents} name= people={people who are editing on me}>
 		 *          <feature .../>
 		 *      </feature>
 		 */
@@ -55,9 +55,10 @@ package collab.fm.client.data {
 			if (fs.length() <= 0 || !isPartOfTree(fs[0])) {
 				return null;
 			}
-			var name: String = getFeatureName(fs[0]);
+			var name: String = getFeatureDisplayName(fs[0]);
 			return <feature id={id} 
 								  creator={fs[0].@creator}
+								  time={fs[0].@time}
 								  support={FeatureModel.instance.getSupportRate(fs[0])}
 								  parents="0"
 								  name={name}
@@ -139,7 +140,7 @@ package collab.fm.client.data {
 			
 			var parent: String;
 			var child: String;
-			if (parentId == null && childId == null) {
+			if (parentId == null || childId == null) {
 				var rs: XMLList = FeatureModel.instance.binaries.source.(@id==id);
 				if (rs.length() <= 0 || rs[0].@type != Cst.BIN_REL_REFINES) {
 					return;
@@ -252,7 +253,7 @@ package collab.fm.client.data {
 		}
 		
 		/*abstract*/
-		protected function getFeatureName(o: Object): String {
+		protected function getFeatureDisplayName(o: Object): String {
 			return UNNAMED;
 		}
 		
@@ -273,16 +274,16 @@ package collab.fm.client.data {
 		// ------------------------------------------------
 		//         Event Handlers
 		// ------------------------------------------------
-		public function handleFeatureVotePropagation(op: Object): void {
-			for each (var o: Object in op["targetIds"]) {
+		public function handleInferVoteOnFeature(op: Object): void {
+			for each (var o: Object in op[Cst.FIELD_RSP_INFER_VOTES]) {
 				// Only "YES" votes can be propagated to a feature, so we don't consider deletion here.
 				checkAndAddFeature(String(o));
 				updateFeatureSupportRate(String(o));
 			}
 		}
 		
-		public function handleRelationshipVotePropagation(op: Object): void {
-			for each (var id: Object in op["targetIds"]) {
+		public function handleInferVoteOnRelation(op: Object): void {
+			for each (var id: Object in op[Cst.FIELD_RSP_INFER_VOTES]) {
 				var removal: Boolean = false;
 				var info: Object = null;
 				var rel: XML = null;
@@ -318,24 +319,35 @@ package collab.fm.client.data {
 				}
 			}
 		}
-
-		public function handleAddDescription(op:Object): void {
-			// Do nothing (the tree doesn't show the desciptions.)
+		
+		public function handleAddAttribute(op: Object): void {
+			// Do nothing, the tree doesn't show customized attributes
 		}
-
-		public function handleAddName(op:Object): void {
+		public function handleAddEnumAttribute(op: Object): void {
+			// Do nothing
+		}
+		public function handleAddNumericAttribute(op: Object): void {
+			//Do nothing
+		}
+		
+		public function handleVoteAddValue(op: Object): void {
+			// Only handles "Feature Name" attribute
+			if (op["featureId"] == null || op["attr"] != Cst.ATTR_FEATURE_NAME) {
+				return;
+			}
+			
 			// recalculate the displayed name (primary name)
 			var fs: XMLList = FeatureModel.instance.features.source.(@id==op["featureId"]);
 			if (fs.length() <= 0) {
 				return;
 			}
-			var name: String = this.getFeatureName(fs[0]);
+			var name: String = this.getFeatureDisplayName(fs[0]);
 			for each (var f: Object in this.getFeatureById(op["featureId"])) {
 				f.@name = name;
 			}
 		}
-
-		public function handleCreateFeature(op:Object): void {
+		
+		public function handleVoteAddFeature(op:Object): void {
 			// if create, add the feature to the root
 			if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
 				var f: XML = this.createFeature(op["featureId"]);
@@ -357,18 +369,18 @@ package collab.fm.client.data {
 			}
 			
 			// Handle voting (update support rate)
-			if (ModelUtil.isTrue(op["vote"])) {
+			if (ModelUtil.isTrue(op[Cst.FIELD_RSP_VOTE])) {
 				checkAndAddFeature(op["featureId"]);
 			}
 			updateFeatureSupportRate(op["featureId"]);
 		}
 
-		public function handleCreateBinaryRelationship(op:Object): void {
+		public function handleVoteAddBinRel(op:Object): void {
 			// The tree only deals with refinement relationships.
 			if (op["type"] == Cst.BIN_REL_REFINES) {
 				
 				// Handle creation
-				if (op[FeatureModel.IS_NEW_ELEMENT] == true || ModelUtil.isTrue(op["vote"])) {
+				if (op[FeatureModel.IS_NEW_ELEMENT] == true || ModelUtil.isTrue(op[Cst.FIELD_RSP_VOTE])) {
 					this.addRefinement(op["relationshipId"]);
 					return;
 				}
@@ -390,10 +402,6 @@ package collab.fm.client.data {
 			}
 		}
 
-		public function handleSetOpt(op:Object): void {
-			// Do nothing (the optionality is not shown in trees.)
-		}
-		
 		protected function onPeopleLogout(evt: LogoutEvent): void {
 			if (evt.user != UserList.instance.myId) {  // when other people logged out...
 				var name: String = UserList.instance.getNameById(evt.user);
@@ -423,11 +431,7 @@ package collab.fm.client.data {
 		}
 
 		protected function onLocalModelUpdate(evt: ModelUpdateEvent): void {
-			onDataUpdateStart();
-			
 			this.refresh();
-			
-			onDataUpdateComplete();
 		}
 		
 		protected function containsFeature(id: String): Boolean {

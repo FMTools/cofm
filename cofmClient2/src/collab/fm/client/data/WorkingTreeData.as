@@ -13,14 +13,15 @@ package collab.fm.client.data {
 			super();
 		}
 
-		override protected function getFeatureName(feature: Object): String {
-			// Build an array from the XML.
-			if (XMLList(feature.names.name).length() <= 0) {
+		override protected function getFeatureDisplayName(feature: Object): String {
+			var allNames: XMLList = FeatureModel.instance.getValuesOfAttr(XML(feature), Cst.ATTR_FEATURE_NAME);
+			if (allNames.length() <= 0) {
 				return UNNAMED;
 			}
-
+			
+			// Build an array from the XML.
 			var ns: Array = [];
-			for each (var n: Object in feature.names.name) {
+			for each (var n: Object in allNames) {
 				var nameInMyWorkingView: Boolean = true;
 				var yes: Array = [];
 				for each (var u: Object in n.yes.user) {
@@ -35,7 +36,7 @@ package collab.fm.client.data {
 				}
 				if (nameInMyWorkingView) {
 					ns.push({
-							val: n.@val,
+							val: XML(n.str).text().toString(),
 							v1: yes,
 							v0: no
 						});

@@ -8,11 +8,11 @@
 			 height="100%">
 		<mx:FormItem label="{RS.CON_PANEL_HOST}">
 			<mx:TextInput id="con_host"
-						  text="192.168.4.133"/>
+						  text="localhost"/>
 		</mx:FormItem>
 		<mx:FormItem label="{RS.CON_PANEL_PORT}">
 			<mx:TextInput id="con_port"
-						  text="8000"/>
+						  text="7000"/>
 		</mx:FormItem>
 		<mx:FormItem>
 			<mx:Button label="{RS.BTN_OK}"

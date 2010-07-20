@@ -99,7 +99,7 @@
 					left = FeatureNameList.instance.getIdByName(leftFeature.text);
 					right = FeatureNameList.instance.getIdByName(rightFeature.text);
 					if (left > 0 && right > 0) {
-						new CreateOrVoteBinaryRelationshipCommand(relType, left, right).execute();
+						new VoteAddBinRelationCommand(relType, left, right).execute();
 					} else {
 						Console.error("CreateRelationshipDlg - couldn't get ID by feature name.");
 					}

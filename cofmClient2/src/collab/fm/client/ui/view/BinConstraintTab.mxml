@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	 xmlns:v="collab.fm.client.ui.view.*">
+	<v:BinaryRelationshipGrid width="100%" 
+    	    	firstColumnName="{RS.EDIT_CONS_GRID_NAME}"
+    	    	dataProvider="{CurrentFeature.instance.binaryConstraints}"/> 
+    <mx:Script>
+    	<![CDATA[
+    		import collab.fm.client.util.*;
+    		import collab.fm.client.data.*;
+    	]]>
+    </mx:Script>
+</mx:VBox>

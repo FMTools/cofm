@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	 implements="collab.fm.client.ui.view.IAttributeDisplayer">
+	
+	<!-- Display List-type values in a repeater -->
+	<mx:Repeater id="rep" dataProvider="{values}">
+		<mx:HBox>
+			<mx:Label text="{rep.currentIndex + 1}: {rep.currentItem.value}"/>
+			<mx:Label text="(YES: {rep.currentItem.num1}, NO: {rep.currentItem.num0})"/>
+			<mx:Button label="{RS.BTN_VOTE_YES}" click="onVoteYes(event.currentTarget.getRepeaterItem());"/>
+			<mx:Button label="{RS.BTN_VOTE_NO}" click="onVoteNo(event.currentTarget.getRepeaterItem());"/>
+		</mx:HBox>
+	</mx:Repeater>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import collab.fm.client.data.*;
+			import collab.fm.client.util.*;
+			
+			[Bindable]
+			public var values: ArrayCollection;
+			
+			public var attrName: String;
+			
+			private function onVoteYes(item: Object): void {
+				
+			}
+			
+			private function onVoteNo(item: Object): void {
+				
+			}
+			
+			public function updateValues(vals: XMLList): void {
+				values.source = [];
+				for each (var obj: Object in vals) {
+					values.addItem({
+						"a": attrName,
+						"type": Cst.ATTR_TYPE_LIST,
+						"value": XML(obj.str).text().toString(),
+						"num1": XMLList(obj.yes.user).length(),
+						"num0": XMLList(obj.no.user).length()
+					});
+				}
+			} 
+		]]>
+	</mx:Script>
+</mx:VBox>

@@ -48,27 +48,41 @@ package collab.fm.client.data {
 			return null;
 		}
 		
-		public function handleFeatureVotePropagation(op: Object): void {
-
+		public function handleInferVoteOnFeature(op: Object): void {
+			// Do nothing
 		}
 
-		public function handleRelationshipVotePropagation(op: Object): void {
-
+		public function handleInferVoteOnRelation(op: Object): void {
+			// Do nothing
 		}
-
-		public function handleAddDescription(op:Object): void {
-
+		
+		public function handleAddAttribute(op: Object): void {
+			// Do nothing
 		}
-
-		public function handleAddName(op:Object): void {
-			if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
-				data.addItem({id: op["featureId"], name: op["value"]});
-				Console.info("FeatureNameList - add item (" + op["featureId"] + ", " + op["value"] + ")");
+		
+		public function handleAddEnumAttribute(op: Object): void {
+			// Do nothing
+		}
+		
+		public function handleAddNumericAttribute(op: Object): void {
+			// Do nothing
+		}
+		
+		public function handleVoteAddValue(op: Object): void {
+			// Only handle add "FeatureName" to a feature
+			if (op["featureId"] == null || op["attr"] != Cst.ATTR_FEATURE_NAME) {
+				return;
 			}
+			
+			if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
+				data.addItem({id: op["featureId"], name: op["val"]});
+				Console.info("FeatureNameList - add item (" + op["featureId"] + ", " + op["val"] + ")");
+			}
+			
 			if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
 				for (var cursor: IViewCursor = data.createCursor(); !cursor.afterLast; ) {
 					if (cursor.current.id == op["featureId"] &&
-						cursor.current.name == op["value"]) {
+						cursor.current.name == op["val"]) {
 						cursor.remove();
 						break;
 					} else {
@@ -77,12 +91,12 @@ package collab.fm.client.data {
 				}
 			}
 		}
-
-		public function handleCreateFeature(op:Object): void {
+		
+		public function handleVoteAddFeature(op:Object): void {
 			// if new feature
 			if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
-				data.addItem({id: op["featureId"], name: op["value"]});
-				Console.info("FeatureNameList - add item (" + op["featureId"] + ", " + op["value"] + ")");
+				data.addItem({id: op["featureId"], name: op["featureName"]});
+				Console.info("FeatureNameList - add item (" + op["featureId"] + ", " + op["featureName"] + ")");
 			}
 			if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
 				for (var cursor: IViewCursor = data.createCursor(); !cursor.afterLast; ) {
@@ -94,17 +108,13 @@ package collab.fm.client.data {
 					}
 				}
 			}
-			if (op[FeatureModel.VOTE_NO_TO_FEATURE] == true) {
-				reset();
-			}
+//			if (op[FeatureModel.VOTE_NO_TO_FEATURE] == true) {
+//				reset();
+//			}
 		}
 
-		public function handleCreateBinaryRelationship(op:Object): void {
+		public function handleVoteAddBinRel(op:Object): void {
 			// do nothing
-		}
-
-		public function handleSetOpt(op:Object): void {
-
 		}
 
 		private function onLocalModelUpdate(evt: ModelUpdateEvent): void {
@@ -118,11 +128,11 @@ package collab.fm.client.data {
 				var f: XML = XML(o);
 				//trace (f.toXMLString());
 				// Get all names of the feature f.
-				for each (var obj: Object in f..name) {
+				for each (var obj: Object in FeatureModel.instance.getValuesOfAttr(f, Cst.ATTR_FEATURE_NAME)) {
 					//trace ("Name: " + XML(obj).toXMLString());
 					var info: Object = new Object();
 					info.id = String(f.@id);
-					info.name = String(obj.@val);
+					info.name = XML(obj.str).text().toString();
 					data.addItem(info);
 				//	trace ("*Added: " + info.id + ", " + info.name);
 				}

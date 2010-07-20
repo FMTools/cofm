@@ -4,63 +4,35 @@
     implements="collab.fm.client.data.IOperationListener">
     
     <mx:TabNavigator id="infoTab" selectedIndex="0" paddingTop="2">
-    	<v:FeatureBasicInfoTab label="{RS.EDIT_TAB_BASIC}" width="{Size.EDITOR_W}" height="{Size.EDITOR_H}">
-    		
-    		
-    	</v:FeatureBasicInfoTab>
     	
-		<mx:VBox label="{RS.EDIT_TAB_NAME}" width="{Size.EDITOR_W}" height="{Size.EDITOR_H}">
-			<mx:Button label="{RS.BTN_ADD}" click="addName();"/>
-			<v:FeatureNameGrid width="100%"  maxDisplayedRows="10"/>
-		</mx:VBox>
-		
-		<mx:VBox label="{RS.EDIT_TAB_DES}" width="{Size.EDITOR_W}" height="{Size.EDITOR_H}">
-			<mx:Button label="{RS.BTN_ADD}" click="addDes();"/>
-			<v:FeatureDescriptionGrid width="100%" maxDisplayedRows="3" />
-		</mx:VBox>
-		
-		<mx:VBox label="{RS.EDIT_TAB_REFINE}" width="{Size.EDITOR_W}" height="{Size.EDITOR_H}">
-			<mx:Label text="{RS.EDIT_REFINE_PARENT}"/>
-    		<v:BinaryRelationshipGrid width="100%" 
-    	    	firstColumnName="{RS.EDIT_REFINE_GRID_NAME}"
-    	    	dataProvider="{CurrentFeature.instance.parents}"/>
-    	    	
-    	    <mx:Label text="{RS.EDIT_REFINE_CHILD}"/>
-    		<v:BinaryRelationshipGrid width="100%" 
-    	    	firstColumnName="{RS.EDIT_REFINE_GRID_NAME}"
-    	    	dataProvider="{CurrentFeature.instance.children}"/>    	
-		</mx:VBox>
-		
-		<mx:VBox label="{RS.EDIT_TAB_CONS}" width="{Size.EDITOR_W}" height="{Size.EDITOR_H}">
-    		<v:BinaryRelationshipGrid width="100%" 
-    	    	firstColumnName="{RS.EDIT_CONS_GRID_NAME}"
-    	    	dataProvider="{CurrentFeature.instance.binaryConstraints}"/>
-		</mx:VBox>	
 	</mx:TabNavigator>
     
 	<mx:Script>
 		<![CDATA[
 			import mx.managers.PopUpManager;
+			import flash.utils.Dictionary;
 			import collab.fm.client.command.*;
 			import collab.fm.client.data.*;
 			import collab.fm.client.event.*;
 			import collab.fm.client.util.*;
 			
-			private var nameWindow: AddNameDlg;
-			private var desWindow: AddDesDlg;
+			//private var nameWindow: AddNameDlg;
+			//private var desWindow: AddDesDlg;
 			
-			private function addName(): void {
-				nameWindow = AddNameDlg(PopUpManager.createPopUp(this, AddNameDlg, true));
-				PopUpManager.centerPopUp(nameWindow);
-			}
+			private var featureId: int;
+			private var displayedAttrs: Dictionary;
 			
-			private function addDes(): void {
-				desWindow = AddDesDlg(PopUpManager.createPopUp(this, AddDesDlg, true));
-				PopUpManager.centerPopUp(desWindow);
-			}
+//			private function addName(): void {
+//				nameWindow = AddNameDlg(PopUpManager.createPopUp(this, AddNameDlg, true));
+//				PopUpManager.centerPopUp(nameWindow);
+//			}
+//			
+//			private function addDes(): void {
+//				desWindow = AddDesDlg(PopUpManager.createPopUp(this, AddDesDlg, true));
+//				PopUpManager.centerPopUp(desWindow);
+//			}
 			
 			private function initView(): void {
-				UIUtil.show(this, false);
 				FeatureModel.instance.registerSubView(this);
 				ClientEvtDispatcher.instance().addEventListener(
 					FeatureSelectEvent.DB_CLICK_ON_TREE, onSelect);
@@ -69,43 +41,183 @@
 			}
 			
 			private function onSelect(evt: FeatureSelectEvent): void {
-				UIUtil.show(this, true);
+				this.featureId = evt.id;
+				this.reloadAllTabs();
 			}
 			
 			private function onDelete(evt: ClientEvent): void {
-				UIUtil.show(this, false);
+			}
+			
+			private function reloadAllTabs(): void {
+				infoTab.removeAllChildren();
+				this.displayedAttrs = new Dictionary();
+				var fs: XMLList = FeatureModel.instance.features.source.(@id==String(this.featureId));
+				if (fs.length() <= 0) {
+					return;
+				}
+				
+				// Add basic info tab first
+				var basic: FeatureBasicInfoTab = new FeatureBasicInfoTab();
+				basic.label = RS.EDIT_TAB_BASIC;
+				setTabSize(basic);
+				infoTab.addChild(basic);
+				
+				// Add name, description and optionality
+				addTab(fs[0].attrs.attr.(@name==Cst.ATTR_FEATURE_NAME)[0]);
+				addTab(fs[0].attrs.attr.(@name==Cst.ATTR_FEATURE_DES)[0]);	
+				addTab(fs[0].attrs.attr.(@name==Cst.ATTR_FEATURE_OPT)[0]);
+				
+				// Add refinement and binary constraints
+				var refine: RefinementTab = new RefinementTab();
+				refine.label = RS.EDIT_TAB_REFINE;
+				setTabSize(refine);
+				infoTab.addChild(refine);
+				
+				var cons: BinConstraintTab = new BinConstraintTab();
+				cons.label = RS.EDIT_TAB_CONS;
+				setTabSize(cons);
+				infoTab.addChild(cons);
+				
+				// Add other tabs
+				for each (var attr: Object in fs[0].attrs.attr) {
+					if (attr.@name == Cst.ATTR_FEATURE_DES ||
+						attr.@name == Cst.ATTR_FEATURE_NAME ||
+						attr.@name == Cst.ATTR_FEATURE_OPT) {
+							continue;
+					}
+					addTab(attr);
+				}
+			}
+			
+			private function addTab(attr: Object): void {
+				switch (attr.@type) {
+					case Cst.ATTR_TYPE_ENUM:
+						infoTab.addChild(createEnumTab(attr));
+						break;
+					case Cst.ATTR_TYPE_LIST:
+						infoTab.addChild(createListTab(attr));
+						break;
+					case Cst.ATTR_TYPE_NUMBER:
+						infoTab.addChild(createNumberTab(attr));
+						break;
+					case Cst.ATTR_TYPE_STRING:
+						infoTab.addChild(createStrTab(attr));
+						break;
+					case Cst.ATTR_TYPE_TEXT:
+						infoTab.addChild(createTextTab(attr));
+						break;
+				}
+			}
+			
+			private function setTabSize(tab: DisplayObject): void {
+				tab.width = Size.EDITOR_W;
+				tab.height = Size.EDITOR_H;
+			}
+			
+			private function createEnumTab(attr: Object): EnumTab {
+				var tab: EnumTab = new EnumTab();
+				tab.label = attr.@name;
+				tab.attrName = attr.@name;
+				tab.enums = attr.enums.enum;
+				setTabSize(tab);
+				tab.updateValues(attr.values.value);
+				this.displayedAttrs[attr.@name] = tab;
+				return tab;
+			}
+			
+			private function createListTab(attr: Object): ListTab {
+				var tab: ListTab = new ListTab();
+				tab.label = attr.@name;
+				tab.attrName = attr.@name;
+				setTabSize(tab);
+				tab.updateValues(attr.values.value);
+				this.displayedAttrs[attr.@name] = tab;
+				return tab;
+			}
+			
+			private function createNumberTab(attr: Object): NumberTab {
+				var tab: NumberTab = new NumberTab();
+				tab.label = attr.@name;
+				tab.attrName = attr.@name;
+				tab.unit = XML(attr.unit).text().toString();
+				tab.min = Number(XML(attr.min).text().toString());
+				tab.max = Number(XML(attr.max).text().toString());
+				setTabSize(tab);
+				tab.updateValues(attr.values.value);
+				this.displayedAttrs[attr.@name] = tab;
+				return tab;
+			}
+			
+			private function createStrTab(attr: Object): StringTab {
+				var tab: StringTab = new StringTab();
+				tab.label = attr.@name;
+				tab.attrName = attr.@name;
+				setTabSize(tab);
+				tab.updateValues(attr.values.value);
+				this.displayedAttrs[attr.@name] = tab;
+				return tab;
+			}
+			
+			private function createTextTab(attr: Object): TextTab {
+				var tab: TextTab = new TextTab();
+				tab.label = attr.@name;
+				tab.attrName = attr.@name;
+				setTabSize(tab);
+				tab.updateValues(attr.values.value);
+				this.displayedAttrs[attr.@name] = tab;
+				return tab;
 			}
 			
 			
-			
-			// OperationListener methods
+			// IOperationListener methods
 			//
-			public function handleAddDescription(op: Object): void {
-				
+			public function handleVoteAddFeature(op: Object): void {
+				// Only handles the removal of current feature
+				if (op["featureId"] == String(this.featureId) &&
+					op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
+					infoTab.removeAllChildren();
+				}
 			}
 			
-			public function handleAddName(op: Object): void {
-	
+			public function handleVoteAddBinRel(op: Object): void{
+				// Do nothing (the relationship tabs will update themselves.)
+			}
+		
+			public function handleAddAttribute(op: Object): void {
+				// Do nothing (only add tab when creating new values)
 			}
 			
-			public function handleCreateFeature(op: Object): void {
-				
+			public function handleAddEnumAttribute(op: Object): void {
+				// Do nothing
 			}
 			
-			public function handleCreateBinaryRelationship(op: Object): void {
-				
+			public function handleAddNumericAttribute(op: Object): void {
+				// Do nothing
 			}
 			
-			public function handleSetOpt(op: Object): void {
-				
-			}
-	
-			public function handleFeatureVotePropagation(op: Object): void {
-				
+			public function handleVoteAddValue(op: Object): void {
+				if (op["featureId"] == String(this.featureId)) {
+					var a: XMLList = 
+							FeatureModel.instance.features.source.(@id==op["featureId"])..attr.(@name==op["attr"]);
+					if (a.length() <= 0) {
+						return;
+					}
+					if (this.displayedAttrs[op["attr"]] == null) {
+						this.addTab(a[0]);
+					} else {
+						var tab: IAttributeDisplayer = IAttributeDisplayer(this.displayedAttrs[op["attr"]]);
+						tab.updateValues(a[0].values.value);
+					}
+				}
 			}
 			
-			public function handleRelationshipVotePropagation(op: Object): void {
-				
+			public function handleInferVoteOnFeature(op: Object): void {
+				// Do nothing (because only YES votes can be inferred, and this change can be updated in 
+				// Basic Info Tab
+			}
+			
+			public function handleInferVoteOnRelation(op: Object): void {
+				// Do nothing (Changes will be reflected in relationship tabs)
 			}
 		
 		]]>

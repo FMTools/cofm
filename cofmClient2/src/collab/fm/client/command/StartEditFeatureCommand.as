@@ -15,7 +15,7 @@ package collab.fm.client.command
 		public function execute():void
 		{
 			var request: Object = {
-				name: Cst.REQ_EDIT,
+				name: Cst.REQ_FOCUS,
 				requesterId: UserList.instance.myId,
 				modelId: ModelCollection.instance.currentModelId,
 				featureId: this.featureId

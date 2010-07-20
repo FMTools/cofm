@@ -1,9 +1,7 @@
 package collab.fm.client.data {
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
-
-	import flash.utils.Dictionary;
-
+	
 	import mx.collections.XMLListCollection;
 
 	/**
@@ -11,10 +9,6 @@ package collab.fm.client.data {
 	 */
 	public class ModelCollection {
 		public var currentModelId: int = -1;
-
-		// TODO: 1. calculate the primary name and description
-		// 2. When the data was first loaded, separate it into "my" and "others"
-		// 3. calculate the number of contributers
 
 		//private var _my: XMLListCollection;
 		private var _others: XMLListCollection;
@@ -89,9 +83,11 @@ package collab.fm.client.data {
 				//if (updateMyList && rslt.isMine == true) {
 				//	myXml.appendChild(rslt.xml);
 				//} else {
-				if (rslt.exactlyMatch) {
+				if (evt.exactlyMatches) {
+					// Put in the front
 					othersXml.insertChildAfter(null, rslt.xml);
 				} else {
+					// Append at the end
 					othersXml.appendChild(rslt.xml);
 				}
 				//}
@@ -117,11 +113,9 @@ package collab.fm.client.data {
 		/**
 		 * Input format: (see server.ListModelResponse for details)
 		 *    Array of {
-		 *       id: Long, users: [Long],
-		 *       names: [
-		 *          {val: String, v1: [Long], v0: [Long]}
-		 *       ],
-		 *       dscs: [ (same as names) ]
+		 *       id, cid, ctime, users, attrs: [
+		 *           { name, ..., vals: [ {val, v1, v0} ...] }
+		 *       ]
 		 *    }
 		 */
 		private function createXmlFromModel(input: Object, search: String = null): Object {
@@ -129,25 +123,39 @@ package collab.fm.client.data {
 			var _id: int = int(input.id);
 			var _totalUserNum: int = 0;
 			var _users: XML = <users></users>;
-			for each (var u: Object in(input.users as Array)) {
+			for each (var u: Object in (input.users as Array)) {
 				++_totalUserNum;
 				_users.appendChild(<user>{int(u)}</user>);
 				if (int(u) == UserList.instance.myId) {
 					_isMine = true;
 				}
 			}
-
-			// Sort the name, if we are searching name, then the searched name should become first
-			ModelUtil.sortOnRating(
-				input.names as Array, "v1", "v0", UserList.instance.myId,
-				"val", search);
-			var _primary_name: String = (input.names as Array)[0].val; // primary == first
-
-			ModelUtil.sortOnRating(input.dscs as Array, "v1", "v0", UserList.instance.myId);
-			var _primary_des: String = (input.dscs as Array)[0].val;
-
+			
+			var _primary_name: String = null;
+			var _primary_des: String = null;
+			
+			// Get the feature model's primary name & description
+			for each (var attr: Object in input.attrs) {
+				if (_primary_name != null && _primary_des != null) {
+					break;
+				}
+				if (_primary_name == null && attr.name == Cst.ATTR_MODEL_NAME) {
+					// Sort the name, if we are searching name, then the searched name should become first
+					ModelUtil.sortOnRating(
+						attr.vals as Array, "v1", "v0", UserList.instance.myId,
+						"val", search);
+					_primary_name = (attr.vals)[0].val; // primary == first
+					continue;
+				}
+				if (_primary_des == null && attr.name == Cst.ATTR_MODEL_DES) {
+					ModelUtil.sortOnRating(attr.vals as Array, "v1", "v0", UserList.instance.myId);
+					_primary_des = (attr.vals)[0].val;
+				}
+			}
+			
 			var result: XML = 
-				<model isMine={_isMine} id={_id} name={_primary_name} userNum={_totalUserNum}>
+				<model isMine={_isMine} id={_id} creator={input.cid} time={input.ctime} 
+					name={_primary_name} userNum={_totalUserNum}>
 					<des>{_primary_des}</des>
 				</model>;
 			result.appendChild(_users);

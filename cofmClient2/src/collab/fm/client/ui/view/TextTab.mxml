@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	 xmlns:v="collab.fm.client.ui.view.*"
+	 implements="collab.fm.client.ui.view.IAttributeDisplayer">
+	
+	<!-- Display Text-type values in a grid -->
+	<v:AutoRowAdjustmentGrid dataProvider="{values}" maxDisplayedRows="4">
+		<v:columns>
+		
+			<mx:AdvancedDataGridColumn headerText="{RS.EDIT_GRID_VALUE}"
+				 resizable="true" sortable="false" width="150">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:TextArea text="{data.value}" editable="false" height="40" />
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:AdvancedDataGridColumn>
+			
+		<mx:AdvancedDataGridColumn dataField="num1" headerText="{RS.EDIT_GRID_YES}"
+			 resizable="true"/>
+			
+		<mx:AdvancedDataGridColumn dataField="num0" headerText="{RS.EDIT_GRID_NO}"
+			 resizable="true"/>
+			
+		<mx:AdvancedDataGridColumn headerText="{RS.EDIT_GRID_ACTION}" 
+			 resizable="false" width="100" sortable="false">
+				<mx:itemRenderer>
+					<mx:Component>
+						<mx:VBox>
+							<mx:Button label="{RS.BTN_VOTE_YES}" click="onVoteYes();"/>
+							<mx:Button label="{RS.BTN_VOTE_NO}" click="onVoteNo();"/>
+							<mx:Script>
+								<![CDATA[
+									import collab.fm.client.util.*;
+									protected function onVoteYes(): void {
+										//TODO
+									} 
+									
+									protected function onVoteNo(): void {
+										// TODO
+									}
+								]]>
+							</mx:Script>
+						</mx:VBox>
+					</mx:Component>
+				</mx:itemRenderer>
+			</mx:AdvancedDataGridColumn>
+			
+		</v:columns>
+	</v:AutoRowAdjustmentGrid>
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import collab.fm.client.data.*;
+			import collab.fm.client.util.*;
+			
+			[Bindable]
+			public var values: ArrayCollection;
+			
+			public var attrName: String;
+			
+			public function updateValues(vals: XMLList): void {
+				values.source = [];
+				for each (var obj: Object in vals) {
+					values.addItem({
+						"a": attrName,
+						"type": Cst.ATTR_TYPE_TEXT,
+						"value": XML(obj.str).text().toString(),
+						"num1": XMLList(obj.yes.user).length(),
+						"num0": XMLList(obj.no.user).length()
+					});
+				}
+			} 
+		]]>
+	</mx:Script>
+</mx:VBox>

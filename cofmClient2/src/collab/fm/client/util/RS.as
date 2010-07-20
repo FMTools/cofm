@@ -97,7 +97,13 @@ package collab.fm.client.util {
 		public static const EDIT_GRID_YES: String = s("edit.grid.yes");
 		public static const EDIT_GRID_NO: String = s("edit.grid.no");
 		public static const EDIT_GRID_ACTION: String = s("edit.grid.action");
-
+		
+		public static const EDIT_GRID_VALUE: String = s("edit.grid.value");
+		
+		public static const EDIT_NUMBER_UNIT: String = s("edit.number.unit");
+		public static const EDIT_NUMBER_MIN: String = s("edit.number.min");
+		public static const EDIT_NUMBER_MAX: String = s("edit.number.max");
+		
 		public static const EDIT_DES: String = s("edit.des");
 		public static const EDIT_DES_GRID_NAME: String = s("edit.des.grid.name");
 		public static const EDIT_ADD_DES: String = s("edit.add.des");

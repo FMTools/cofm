@@ -8,18 +8,15 @@ package collab.fm.client.data {
 	import mx.collections.SortField;
 	import mx.collections.XMLListCollection;
 
+	/**
+	 * Only store the basic info and relatioinships.
+	 */
 	public class CurrentFeature implements IOperationListener {
 		private static var _instance: CurrentFeature = new CurrentFeature();
 
 		private var _feature: XML;
 
 		public var id: int;
-
-		[Bindable]
-		public var names: ArrayCollection = new ArrayCollection();
-
-		[Bindable]
-		public var descriptions: ArrayCollection = new ArrayCollection();
 
 		[Bindable]
 		public var votes: ArrayCollection = new ArrayCollection();
@@ -60,7 +57,6 @@ package collab.fm.client.data {
 		private function clear(): void {
 			id = -1;
 			votes.source = [];
-			names.source = [];
 			parents.source = [];
 			children.source = [];
 			binaryConstraints.source = [];
@@ -88,9 +84,6 @@ package collab.fm.client.data {
 			basicInfo.addItem(<attr key="creator" type={Cst.ATTR_TYPE_STRING} label="Creator:" value={creator}/>);
 			
 			updateVotes(); // votes to this feature
-			updateNames();
-			updateDescriptions();
-			updateOptionality();
 			updateRefinements();
 			updateBinaryConstraints();
 
@@ -121,6 +114,7 @@ package collab.fm.client.data {
 				});
 		}
 
+/** TODO: integrate attributes with basic info.
 		private function updateNames(): void {
 			names.source = [];
 			// Construct the "names" array for Feature_Name_DataGrid.
@@ -208,7 +202,7 @@ package collab.fm.client.data {
 		private function updateOptionality(): void {
 
 		}
-
+*/
 		private function updateRefinements(): void {
 			parents.source = [];
 			children.source = [];
@@ -308,7 +302,7 @@ package collab.fm.client.data {
 			binaryConstraints.refresh();
 		}
 
-
+/*
 
 		public function handleAddDescription(op:Object): void {
 			if (op["featureId"] == String(id)) {
@@ -325,28 +319,20 @@ package collab.fm.client.data {
 					ClientEvent.BASIC_INFO_UPDATED));
 			}
 		}
-
-		public function handleCreateFeature(op:Object): void {
+*/
+		public function handleVoteAddFeature(op:Object): void {
 			if (op["featureId"] == String(id)) {
 				if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
 					this.clear();
-					ClientEvtDispatcher.instance().dispatchEvent(
-						new ClientEvent(ClientEvent.CURRENT_FEATURE_DELETED));
 				} else {
 					this.updateVotes();
-					if (op[FeatureModel.VOTE_NO_TO_FEATURE] == true) {
-						this.updateNames();
-						this.updateDescriptions();
-						this.updateOptionality();
-					}
 				}
-				
 				// update basic info
 				ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
 			}
 		}
 
-		public function handleCreateBinaryRelationship(op:Object): void {
+		public function handleVoteAddBinRel(op:Object): void {
 			if (op["leftFeatureId"] == String(id) || op["rightFeatureId"] == String(id)) {
 				switch (op["type"]) {
 					case Cst.BIN_REL_REFINES:
@@ -359,20 +345,26 @@ package collab.fm.client.data {
 				}
 				
 				// update basic info
-				ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
+				//ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
 			}
 		}
-
-		public function handleSetOpt(op:Object): void {
-			if (op["featureId"] == String(id)) {
-				this.updateOptionality();
-				
-				// update basic info
-				ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
-			}
+		
+		// Do nothing with add attribute methods
+		public function handleAddAttribute(op: Object): void {
+			
 		}
-
-		public function handleFeatureVotePropagation(op:Object): void {
+		public function handleAddEnumAttribute(op: Object): void {
+			
+		}
+		public function handleAddNumericAttribute(op: Object): void {
+			
+		}
+		
+		public function handleVoteAddValue(op: Object): void {
+			// TODO: inttegrate with basic info
+		}
+		
+		public function handleInferVoteOnFeature(op:Object): void {
 			if (op["featureId"] == String(id)) {
 				this.updateVotes();
 				
@@ -381,12 +373,12 @@ package collab.fm.client.data {
 			}
 		}
 
-		public function handleRelationshipVotePropagation(op:Object): void {
+		public function handleInferVoteOnRelation(op:Object): void {
 			updateRefinements();
 			updateBinaryConstraints();
 			
 			// update basic info
-			ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
+			//ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
 		}
 	}
 }

@@ -8,14 +8,14 @@
 			
 			override protected function onVoteYes(): void {
 				//TODO: change "-1" to left feature id and right feature id
-				new CreateOrVoteBinaryRelationshipCommand(
+				new VoteAddBinRelationCommand(
 						data.type, int(data.left), int(data.right), int(data.id), true)
 					.execute();
 				
 			} 
 			
 			override protected function onVoteNo(): void {
-				new CreateOrVoteBinaryRelationshipCommand(
+				new VoteAddBinRelationCommand(
 						data.type, int(data.left), int(data.right), int(data.id), false)
 					.execute();
 			}
