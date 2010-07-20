@@ -27,6 +27,7 @@
 					label="{RS.FEATURE_CREATE_PARENT_SEARCH}"/>
 				<a:AutoComplete id="parentInput" allowMultipleSelection="false"
 					 allowNewValues="false" matchType="anyPart" 
+					 autoSelectEnabled="true"
 					 selectedItemStyleName="macMail" width="150"
 					 labelField="name"
 					 focusIn="onFocusParent();"
@@ -73,8 +74,9 @@
 				if (CurrentFeature.instance.id > 0) {
 					var n: String = ModelUtil.getFeatureNameById(String(CurrentFeature.instance.id));
 					if (n != null) {
-						parentInput.text = n;
-						parentInput.search();
+						parentInput.selectedItem = FeatureNameList.instance.getByName(n);
+						//parentInput.text = n;
+						//parentInput.search();
 						parentId = CurrentFeature.instance.id;
 						hasParent = true;
 						parentSwitch.selectedValue = "Exist";
@@ -115,9 +117,12 @@
 				if (!validateNames()) {
 					return;
 				}
-				parentId = FeatureNameList.instance.getIdByName(parentInput.text);
+				if (parentSwitch.selectedValue == "Exist") {
+					parentId = FeatureNameList.instance.getIdByName(parentInput.text);
+				} else {
+					parentId = -1;
+				}
 				// commit create_feature and create_relationship (see onFeatureCreatedLocally)
-				Console.info("CreateFeatureDlg - start creating feature: " + nameInput.text);
 				new CreateOrVoteFeatureCommand(nameInput.text).execute();
 			}
 			
@@ -135,7 +140,6 @@
 			
 			private function onFeatureCreatedLocally(evt: ModelMinorChangeEvent): void {
 				if (parentId > 0) {
-					trace("Create relation in creation form: " + parentId + " refined by " + int(evt.data));
 					new CreateOrVoteBinaryRelationshipCommand(
 						Cst.BIN_REL_REFINES, parentId, int(evt.data)).execute();
 				}

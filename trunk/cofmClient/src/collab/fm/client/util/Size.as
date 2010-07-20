@@ -24,5 +24,9 @@ package collab.fm.client.util {
 		// Misc Tabs
 		public static const MISC_W: int = 675;
 		public static const MISC_H: int = 147;
+		
+		public static const COMMENT_W: int = 420;
+		public static const COMMENT_EDITOR_W: int = 230;
+		public static const COMMENT_EDITOR_H: int = 80;
 	}
 }

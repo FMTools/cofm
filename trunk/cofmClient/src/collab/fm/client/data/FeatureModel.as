@@ -471,8 +471,8 @@ package collab.fm.client.data {
 			var numOpt: Array = [];
 			
 			for each (var f: Object in this.features.source) {
-				var n: int = XMLList(f.yes.user).length();
-				if (n == 4) {
+				var n: int = XMLList(f.no.user).length();
+				if (n == 0) {
 					numCommon++;
 				} else {
 					if (numOpt[n] == undefined) {
@@ -486,7 +486,7 @@ package collab.fm.client.data {
 			var s: String = "FeatureModel - Total: " + numFeature + " features; Common: " +
 				numCommon + "; ";
 			for (var a: Object in numOpt) {
-				s += "YES by " + a + " user(s): " + numOpt[a] + " features; ";
+				s += "NO by " + a + " user(s): " + numOpt[a] + " features; ";
 			}
 			return s;
 		}
