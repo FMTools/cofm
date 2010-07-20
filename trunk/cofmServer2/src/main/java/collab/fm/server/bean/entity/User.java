@@ -1,6 +1,5 @@
 package collab.fm.server.bean.entity;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 

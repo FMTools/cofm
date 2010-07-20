@@ -1,8 +1,9 @@
 package collab.fm.server.persistence;
 
 import org.apache.log4j.Logger;
-import org.hibernate.*;
-import org.hibernate.cfg.*;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 
 public class HibernateUtil {
 	

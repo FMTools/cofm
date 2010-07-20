@@ -11,7 +11,8 @@ import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.entity.attr.Attribute;
 import collab.fm.server.bean.entity.attr.Value;
-import collab.fm.server.bean.transfer.*;
+import collab.fm.server.bean.transfer.Comment2;
+import collab.fm.server.bean.transfer.Feature2;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.EntityUtil;
 import collab.fm.server.util.exception.EntityPersistenceException;

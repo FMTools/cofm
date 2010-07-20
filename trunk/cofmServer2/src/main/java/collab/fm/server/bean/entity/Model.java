@@ -1,10 +1,7 @@
 package collab.fm.server.bean.entity;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,11 +10,7 @@ import org.apache.log4j.Logger;
 import collab.fm.server.bean.entity.attr.Attribute;
 import collab.fm.server.bean.entity.attr.Value;
 import collab.fm.server.bean.transfer.Model2;
-import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.EntityUtil;
-import collab.fm.server.util.LogUtil;
-import collab.fm.server.util.exception.EntityPersistenceException;
-import collab.fm.server.util.exception.StaleDataException;
 
 public class Model extends Entity implements AttributeSet {
 	private static Logger logger = Logger.getLogger(Model.class);

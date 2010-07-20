@@ -1,6 +1,5 @@
 package collab.fm.server.bean.entity;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import collab.fm.server.bean.transfer.Entity2;

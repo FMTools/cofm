@@ -1,6 +1,5 @@
 package collab.fm.server.bean.transfer;
 
-import java.util.Set;
 
 public class BinaryRelation2 extends VotableEntity2 {
 	private String type;

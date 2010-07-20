@@ -6,7 +6,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.util.DaoUtil;
-import collab.fm.server.util.LogUtil;
 import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 

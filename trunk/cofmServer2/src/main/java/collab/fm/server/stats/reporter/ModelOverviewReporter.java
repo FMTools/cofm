@@ -4,8 +4,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import collab.fm.server.bean.entity.*;
-import collab.fm.server.persistence.*;
+import collab.fm.server.bean.entity.Model;
+import collab.fm.server.bean.entity.User;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;

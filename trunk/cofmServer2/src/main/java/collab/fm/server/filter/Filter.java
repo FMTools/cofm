@@ -1,10 +1,9 @@
 package collab.fm.server.filter;
 
 import collab.fm.server.bean.protocol.Request;
-import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
-import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.*;
+import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.InvalidOperationException;
 
 public abstract class Filter {
 	

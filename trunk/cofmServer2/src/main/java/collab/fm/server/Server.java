@@ -2,24 +2,25 @@ package collab.fm.server;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.nio.charset.Charset;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
-import org.apache.mina.common.ByteBuffer; 
-import org.apache.mina.common.IoAcceptor; 
-import org.apache.mina.common.SimpleByteBufferAllocator; 
+import org.apache.mina.common.ByteBuffer;
+import org.apache.mina.common.IoAcceptor;
+import org.apache.mina.common.SimpleByteBufferAllocator;
 import org.apache.mina.common.ThreadModel;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.codec.textline.*;
-import org.apache.mina.transport.socket.nio.SocketAcceptor; 
+import org.apache.mina.filter.codec.textline.LineDelimiter;
+import org.apache.mina.filter.codec.textline.TextLineDecoder;
+import org.apache.mina.filter.codec.textline.TextLineEncoder;
+import org.apache.mina.transport.socket.nio.SocketAcceptor;
 import org.apache.mina.transport.socket.nio.SocketAcceptorConfig;
 
-import collab.fm.server.controller.*;
-import collab.fm.server.persistence.HibernateUtil;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
+import collab.fm.server.controller.Controller;
+import collab.fm.server.controller.EventHandler;
 
 /**
  * @version 2.0

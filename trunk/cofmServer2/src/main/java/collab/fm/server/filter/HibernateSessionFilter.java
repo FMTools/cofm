@@ -8,7 +8,6 @@ import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.persistence.HibernateUtil;
 import collab.fm.server.util.exception.EntityPersistenceException;
-import collab.fm.server.util.exception.InvalidOperationException;
 
 public class HibernateSessionFilter extends Filter {
 
