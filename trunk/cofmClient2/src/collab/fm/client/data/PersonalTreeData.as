@@ -15,20 +15,21 @@ package collab.fm.client.data
 			super();
 		}
 		
-		override protected function getFeatureName(feature: Object): String {
-			// Build an array from the XML.
-			if (XMLList(feature.names.name).length() <= 0) {
+		override protected function getFeatureDisplayName(feature: Object): String {
+			var allNames: XMLList = FeatureModel.instance.getValuesOfAttr(XML(feature), Cst.ATTR_FEATURE_NAME);
+			if (allNames.length() <= 0) {
 				return UNNAMED;
 			}
-
+			
+			// Build an array from the XML.
 			var ns: Array = [];
-			var onlyOneName: Boolean = XMLList(feature.names.name).length() == 1;
-			for each (var n: Object in feature.names.name) {
+			var onlyOneName: Boolean = allNames.length() == 1;
+			for each (var n: Object in allNames) {
 				if (onlyOneName) {
 					if (XMLList(n.no.user.(text().toString()==String(UserList.instance.myId))).length() > 0) {
 						return UNNAMED;
 					} else {
-						return n.@val;
+						return XML(n.str).text().toString();
 					}
 				}
 				var nameInTree: Boolean = false;
@@ -45,7 +46,7 @@ package collab.fm.client.data
 				}
 				if (nameInTree) {
 					ns.push({
-							val: n.@val,
+							val: XML(n.str).text().toString(),
 							v1: yes,
 							v0: no
 						});

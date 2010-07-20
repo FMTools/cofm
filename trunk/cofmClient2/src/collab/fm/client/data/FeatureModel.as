@@ -2,36 +2,52 @@ package collab.fm.client.data {
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
 	
-	import mx.collections.IViewCursor;
 	import mx.collections.XMLListCollection;
 
 	// The data of current feature model
 	public class FeatureModel implements IOperationListener {
 		/*
-		 * See server.data.protocol.UpdateResponse for details about the data structure.
-		 *	<feature id=X>
+		 * See server.data.protocol.UpdateRequest.UpdateResponse for details about the data structure.
+		 *	<feature id= creator= time=>
 		   <yes><user></user></yes>
 		   <no><user></user></no>
-		   <names>
-		   <name val=TheName>
-		   <yes/>
-		   <no/>
-		   </name>
-		   </names>
-		   <descriptions><description>
-		   <value></value>
-		   <yes/>
-		   <no/></description>
-		   </descriptions>
-		   <optional> <yes/> <no/> <optional>
-		 *  </feature>
-
+		   <comments> <comment/> 
+		   </comments>
+		   <attrs>
+		       <attr name= type= multi= dup= >
+		           <values>
+		               <value creator= time=>
+		               		<str> ... </str>
+		                   <yes> <user></user> </yes>
+		                   <no> <user></user> </no>
+		               </value>
+		           </values>
+		       </attr>
+		   </attrs>
+		   </feature>
+		   
+		 * <attr name=... type=... multi=... dup=...>
+		       <enums...>  <min, max, unit>
+		   </attr>
+		   
 		 * <binary id=X type=Type left=Id1 right=Id2>
 		   <yes/> <no/>
 		 * </binary>
 		 */
 
 		private static const _defaultXml: XML = <model><feature/><binary/></model>;
+		private static const _defaultAttrs: XML = <attrs>
+				<attr name={Cst.ATTR_FEATURE_NAME} type={Cst.ATTR_TYPE_STRING} multi="true" dup="false">
+				</attr>
+				<attr name={Cst.ATTR_FEATURE_DES} type={Cst.ATTR_TYPE_TEXT} multi="true" dup="true">
+				</attr>
+				<attr name={Cst.ATTR_FEATURE_OPT} type={Cst.ATTR_TYPE_ENUM} multi="false" dup="true">
+					<enums>
+						<enum>{Cst.VAL_OPT_MAN}</enum>
+						<enum>{Cst.VAL_OPT_OPT}</enum>
+					</enums>
+				</attr>
+			</attrs>;
 
 		public static const IS_NEW_ELEMENT: String = "IsNewElement";
 		public static const SHOULD_DELETE_ELEMENT: String = "ShouldDeleteElement";
@@ -40,6 +56,7 @@ package collab.fm.client.data {
 
 		private var _features: XMLListCollection;
 		private var _binaries: XMLListCollection;
+		private var _attrs: XMLListCollection;
 
 		private var _subViews: Array = new Array();
 
@@ -52,6 +69,7 @@ package collab.fm.client.data {
 		public function FeatureModel() {
 			_features = new XMLListCollection(new XMLList(_defaultXml.feature));
 			_binaries = new XMLListCollection(new XMLList(_defaultXml.binary));
+			_attrs = new XMLListCollection(new XMLList(_defaultAttrs.attr));
 
 			ClientEvtDispatcher.instance().addEventListener(
 				ModelUpdateEvent.SUCCESS, onModelUpdate);
@@ -65,6 +83,10 @@ package collab.fm.client.data {
 
 		public function registerSubView(view: IOperationListener): void {
 			_subViews.push(view);
+		}
+		
+		public function getValuesOfAttr(feature: XML, attrName: String): XMLList {
+			return feature.attrs.attr.(@name==attrName).values.value;
 		}
 		
 		public function getRefinementId(parent: String, child: String): String {
@@ -142,244 +164,249 @@ package collab.fm.client.data {
 		
 		// For details about operations, see server.bean.operation package.
 		private function onOperationCommit(evt: OperationCommitEvent): void {
-			for each (var op: Object in evt.operations) {
-				var opModel: String = op["modelId"];
-				if (ModelCollection.instance.currentModelId != int(opModel)) {
-					return;
-				}
-				var opName: String = op["name"];
-				if (evt.type == OperationCommitEvent.COMMIT_SUCCESS) {
-					op["local"] = true;
-				}
-				switch (opName) {
-					case Cst.OP_ADD_DES:
-						handleAddDescription(op);
-						for each (var v: Object in _subViews) {
-							IOperationListener(v).handleAddDescription(op);
-						}
-						break;
-					case Cst.OP_ADD_NAME:
-						handleAddName(op);
-						for each (var v1: Object in _subViews) {
-							IOperationListener(v1).handleAddName(op);
-						}
-						break;
-					case Cst.OP_CREATE_FEATURE:
-						if (op["targetIds"] != null) {
-							handleFeatureVotePropagation(op);
-							for each (var v2_: Object in _subViews) {
-								IOperationListener(v2_).handleFeatureVotePropagation(op);
-							}
-						} else {
-							handleCreateFeature(op);
-							for each (var v2: Object in _subViews) {
-								IOperationListener(v2).handleCreateFeature(op);
-							}
-						}
-						break;
-					case Cst.OP_CREATE_RELATIONSHIP:
-						if (op["targetIds"] != null) {
-							handleRelationshipVotePropagation(op);
-							for each (var v3_: Object in _subViews) {
-								IOperationListener(v3_).handleRelationshipVotePropagation(op);
-							}
-						} else {
-							handleCreateBinaryRelationship(op);
-							for each (var v3: Object in _subViews) {
-								IOperationListener(v3).handleCreateBinaryRelationship(op);
-							}
-						}
-						break;
-					case Cst.OP_SET_OPT:
-						handleSetOpt(op);
-						for each (var v4: Object in _subViews) {
-							IOperationListener(v4).handleSetOpt(op);
-						}
-						break;
-				}
-			}
-		}
-
-		public function handleFeatureVotePropagation(op: Object): void {
-			for each (var o: Object in op["targetIds"]) {
-				for (var cursor: IViewCursor = features.createCursor(); !cursor.afterLast; cursor.moveNext()) {
-					if (cursor.current.@id == String(o)) {
-						if (ModelUtil.updateVoters(op["vote"], op["userid"], XML(cursor.current)) == false) {
-							cursor.remove();
-							// Record the target which needs to be deleted.
-							if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == null) {
-								op[FeatureModel.SHOULD_DELETE_ELEMENT] = new Array();
-							}
-							(op[FeatureModel.SHOULD_DELETE_ELEMENT] as Array).push(String(o));
-						}
-						break;
-					}
-				}
-			}
-		}
-
-		public function handleRelationshipVotePropagation(op: Object): void {
-			for each (var o: Object in op["targetIds"]) {
-				for (var cursor: IViewCursor = binaries.createCursor(); !cursor.afterLast; cursor.moveNext()) {
-					if (cursor.current.@id == String(o)) {
-						if (ModelUtil.updateVoters(op["vote"], op["userid"], XML(cursor.current)) == false) {
-							var info: Object = {
-								id: cursor.current.@id,
-								type: cursor.current.@type,
-								left: cursor.current.@left,
-								right: cursor.current.@right
-							};
-							cursor.remove();
-							// Record the relationship which needs to be deleted.
-							if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == null) {
-								op[FeatureModel.SHOULD_DELETE_ELEMENT] = new Array();
-							}
-							
-							(op[FeatureModel.SHOULD_DELETE_ELEMENT] as Array).push(info);
-						}
-						break;
-					}
-				}
-			}
-		}
-
-		public function handleAddDescription(op:Object): void {
-			var des: XMLList = features.source..description.(value.text().toString()==op["value"]);
-			// if voting
-			if (des.length() > 0) {
-				if (ModelUtil.updateVoters(op["vote"], op["userid"], XML(des[0])) == false) {
-					delete features.source..description.(value.text().toString()==op["value"])[0];
-					op[FeatureModel.SHOULD_DELETE_ELEMENT] = true;
-				}
+			var op: Object = evt.response;
+			var opModel: String = op["modelId"];
+			if (ModelCollection.instance.currentModelId != int(opModel)) {
 				return;
 			}
-			// if creation
-			op[FeatureModel.IS_NEW_ELEMENT] = true;
-
-			XML(features.source.(@id==op["featureId"]).descriptions[0]).appendChild(
-				<description>
-					<value>{op["value"]}</value>
-					<yes><user>{op["userid"]}</user></yes>
-					<no/>
-				</description>
-				);
-
-		}
-
-		public function handleAddName(op:Object): void {
-			var theName: XMLList = features.source..name.(@val==op["value"]);
-			// if voting
-			if (theName.length() > 0) {
-				if (ModelUtil.updateVoters(op["vote"], op["userid"], XML(theName[0])) == false) {
-					delete features.source..name.(@val==op["value"])[0];
-					op[FeatureModel.SHOULD_DELETE_ELEMENT] = true;
-				}
-				return;
+			if (evt.type == OperationCommitEvent.COMMIT_SUCCESS) {
+				op["local"] = true;
 			}
-			// if creation
-			op[FeatureModel.IS_NEW_ELEMENT] = true;
-
-			// add the name to the feature
-			XML(features.source.(@id==op["featureId"]).names[0]).appendChild(
-				<name val={op["value"]}>
-					<yes><user>{op["userid"]}</user></yes>
-					<no/>
-				</name>
-				);
+			switch (op[Cst.FIELD_RSP_SOURCE_NAME]) {
+				case Cst.REQ_VA_ATTR:
+					this.handleAddAttribute(op);
+					for each (var v: Object in _subViews) {
+						IOperationListener(v).handleAddAttribute(op);
+					}
+					break;
+				case Cst.REQ_VA_ATTR_ENUM:
+					this.handleAddEnumAttribute(op);
+					for each (var v0: Object in _subViews) {
+						IOperationListener(v0).handleAddEnumAttribute(op);
+					}
+					break;
+				case Cst.REQ_VA_ATTR_NUMBER:
+					this.handleAddNumericAttribute(op);
+					for each (var v1: Object in _subViews) {
+						IOperationListener(v1).handleAddNumericAttribute(op);
+					}
+					break;
+				case Cst.REQ_VA_FEATURE:
+					handleVoteAddFeature(op);
+					handleInferVoteOnRelation(op);  // Vote/add feature may cause inferred votes on relations
+					for each (var v2: Object in _subViews) {
+						IOperationListener(v2).handleVoteAddFeature(op);
+						IOperationListener(v2).handleInferVoteOnRelation(op);
+					}
+					break;
+				case Cst.REQ_VA_BIN_REL:
+					handleVoteAddBinRel(op);
+					handleInferVoteOnFeature(op);
+					for each (var v3: Object in _subViews) {
+						IOperationListener(v3).handleVoteAddBinRel(op);
+						IOperationListener(v3).handleInferVoteOnFeature(op);
+					}
+					break;
+				case Cst.REQ_VA_VALUE:
+					this.handleVoteAddValue(op);
+					for each (var v4: Object in _subViews) {
+						IOperationListener(v4).handleVoteAddValue(op);
+					}
+					break;
+			}
+		}
+		
+		/**
+		 * Only "YES" votes ("true") can be inferred on features
+		 */
+		public function handleInferVoteOnFeature(op: Object): void {
+			for each (var o: Object in op[Cst.FIELD_RSP_INFER_VOTES]) {
+				var targets: XMLList = features.source.(@id==String(o));
+				if (targets.length() > 0) {
+					ModelUtil.updateVoters("true", op[Cst.FIELD_RSP_SOURCE_USER_ID], XML(targets[0]));
+				}
+			}
+		}
+		
+		/**
+		 * Only "NO" votes ("false") can be inferred on relations.
+		 */
+		public function handleInferVoteOnRelation(op: Object): void {
+			for each (var o: Object in op[Cst.FIELD_RSP_INFER_VOTES]) {
+				var targets: XMLList = binaries.source.(@id==String(o));
+				if (targets.length() > 0) {
+					var current: XML = targets[0];
+					if (ModelUtil.updateVoters("false", op[Cst.FIELD_RSP_SOURCE_USER_ID], current) == false) {
+						var info: Object = {
+							id: current.@id,
+							type: current.@type,
+							left: current.@left,
+							right: current.@right
+						};
+						// Record the relationship which needs to be deleted.
+						if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == null) {
+							op[FeatureModel.SHOULD_DELETE_ELEMENT] = new Array();
+						}
+						
+						(op[FeatureModel.SHOULD_DELETE_ELEMENT] as Array).push(info);
+						delete targets[0];
+					}
+				}
+			}
 		}
 
-		public function handleCreateFeature(op:Object): void {
-			for (var cursor: IViewCursor = features.createCursor(); !cursor.afterLast; cursor.moveNext()) {
-				if (cursor.current.@id == op["featureId"]) {
-					// A voting operation
-					if (ModelUtil.updateVoters(op["vote"], op["userid"], XML(cursor.current)) == false) {
-						cursor.remove();
-						op[FeatureModel.SHOULD_DELETE_ELEMENT] = true;
-					}
-					// If voting NO, then vote NO to all names and descriptions, and remove vote from opt
-					else if (String(op["vote"]).toLowerCase() == (new Boolean(false).toString().toLowerCase())) {
-						op[FeatureModel.VOTE_NO_TO_FEATURE] = true;
-						for each (var n: Object in cursor.current.names.name) {
-							ModelUtil.updateVoters("false", op["userid"], XML(n));
-						}
-						// delete all-NO names
-						var _removedNames: XMLList = cursor.current.names.name;
-						for (var i: int = _removedNames.length()-1; i >= 0; i--) {
-							if (XMLList(_removedNames[i].yes.user).length() == 0) {
-								delete _removedNames[i];
-							}
-						}
-
-						for each (var d: Object in cursor.current.descriptions.description) {
-							ModelUtil.updateVoters("false", op["userid"], XML(d));
-						}
-						// delete all-NO descriptions
-						var _removedDes: XMLList = cursor.current.descriptions.description;
-						for (var i2: int = _removedDes.length()-1; i2 >= 0; i2--) {
-							if (XMLList(_removedDes[i2].yes.user).length() == 0) {
-								delete _removedDes[i2];
-							}
-						}
-					}
-					return;
-				}
+		public function handleVoteAddValue(op: Object): void {
+			// TODO: handle the "multiple support" and "duplicate" options
+			// Feature ID must not be null
+			if (op["featureId"] == null) {
+				return;
 			}
 			
-			// If we reach here, it is a creating operation.
-			op[FeatureModel.IS_NEW_ELEMENT] = true;
-
-			features.addItem(<feature id={op["featureId"]} creator={op["userid"]}>
-					<yes><user>{op["userid"]}</user></yes>
-					<no/>
-					<names>
-						<name val={op["value"]}>
-							<yes><user>{op["userid"]}</user></yes>
-							<no/>
-						</name>
-					</names>
-					<descriptions/>
-					<comments/>
-					<optional><yes/><no/></optional>
-				</feature>);
-
-			if (op["local"] != null) {
-				ClientEvtDispatcher.instance().dispatchEvent(
-					new ModelMinorChangeEvent(ModelMinorChangeEvent.FEATURE_CREATED_LOCALLY, op["featureId"]));
+			var a: XMLList = 
+				features.source.(@id==op["featureId"])    // Find the feature with specific ID...
+				..attr.(@name==op["attr"]);         // then find the specific attribute in this feature
+			if (a.length() <= 0) {
+				return;    // No such attribute, return.
+			}
+			var targets: XMLList = a[0].values.value.(str.text().toString() == op["val"]); // Find the value
+			if (targets.length() > 0) {
+				// A voting operation
+				if (ModelUtil.updateVoters(op[Cst.FIELD_RSP_VOTE], 
+						op[Cst.FIELD_RSP_SOURCE_USER_ID], XML(targets[0])) == false) {
+					delete targets[0];
+					op[FeatureModel.SHOULD_DELETE_ELEMENT] = true;
+				}
+			} else {
+				// A creating operation
+				op[FeatureModel.IS_NEW_ELEMENT] = true;
+				XML(a[0].values).appendChild(<value creator={op[Cst.FIELD_RSP_SOURCE_USER_ID]}>
+						<str>{op["val"]}</str>
+						<yes><user>{op[Cst.FIELD_RSP_SOURCE_USER_ID]}</user></yes>
+						<no/>
+					</value>);
+			}
+		}
+		
+		/**
+		 * Add String/Text/List attribute
+		 */
+		public function handleAddAttribute(op: Object): void {
+			if (XMLList(this.attrs.source.(@name==op["attr"])).length() <= 0) {
+				this.attrs.addItem(<attr name={op["attr"]}
+					type={op["type"]}
+					multi={op["multiYes"]}
+					dup={op["allowDup"]}/>
+				);
+			}
+		}
+		
+		public function handleAddEnumAttribute(op: Object): void {
+			if (XMLList(this.attrs.source.(@name==op["attr"])).length() <= 0) {
+				var a: XML = <attr name={op["attr"]}
+					type={op["type"]}
+					multi={op["multiYes"]}
+					dup={op["allowDup"]}/>;
+				var xmlEnum: XML = <enums/>;
+				for each (var en: Object in op.vlist) {
+					xmlEnum.appendChild(<enum>{en}</enum>);
+				}
+				a.appendChild(xmlEnum);
+				this.attrs.addItem(a);
+			}
+		}
+		
+		public function handleAddNumericAttribute(op: Object): void {
+			if (XMLList(this.attrs.source.(@name==op["attr"])).length() <= 0) {
+				this.attrs.addItem(<attr name={op["attr"]}
+					type={op["type"]}
+					multi={op["multiYes"]}
+					dup={op["allowDup"]}>
+						<min>{op.min}</min>
+						<max>{op.max}</max>
+						<unit>{op.unit}</unit>
+					</attr>);
 			}
 		}
 
-		public function handleCreateBinaryRelationship(op:Object): void {
-			for (var cursor: IViewCursor = binaries.createCursor(); !cursor.afterLast; cursor.moveNext()) {
-				if (cursor.current.@id == op["relationshipId"]) {
-					var opposed: Boolean = isRelationshipOpponent(String(op["relationshipId"]));
-					// A voting operation
-					if (ModelUtil.updateVoters(op["vote"], op["userid"], XML(cursor.current)) == false) {
-						cursor.remove();
-						op[FeatureModel.SHOULD_DELETE_ELEMENT] = true;
-					}
-					if (opposed && ModelUtil.isTrue(op["vote"])) {
-						op[FeatureModel.FROM_OPPONENT_TO_SUPPORTER] = true;
-					}
-					return;
+		public function handleVoteAddFeature(op:Object): void {
+			var targets: XMLList = features.source.(@id==op["featureId"]);
+			if (targets.length() > 0) {
+				// A voting operation
+				var current: XML = targets[0];
+				if (ModelUtil.updateVoters(op[Cst.FIELD_RSP_VOTE], 
+						op[Cst.FIELD_RSP_SOURCE_USER_ID], current) == false) {
+					delete targets[0];
+					op[FeatureModel.SHOULD_DELETE_ELEMENT] = true;
+				} else if (ModelUtil.isTrue(op[Cst.FIELD_RSP_VOTE]) == false) {
+					op[FeatureModel.VOTE_NO_TO_FEATURE] = true;					
+				}
+			} else {
+				op[FeatureModel.IS_NEW_ELEMENT] = true;
 
+				features.addItem(<feature id={op["featureId"]} creator={op[Cst.FIELD_RSP_SOURCE_USER_ID]}>
+					<yes><user>{op[Cst.FIELD_RSP_SOURCE_USER_ID]}</user></yes>
+					<no/>
+					<attrs>
+						<attr name={Cst.ATTR_FEATURE_NAME} type={Cst.ATTR_TYPE_STRING} multi="true" dup="false">
+							<values>
+								<value creator={op[Cst.FIELD_RSP_SOURCE_USER_ID]}>
+									<str>{op["featureName"]}</str>
+									<yes><user>op[Cst.FIELD_RSP_SOURCE_USER_ID]</user></yes>
+									<no/>
+								</value>
+							</values>
+						</attr>
+						<attr name={Cst.ATTR_FEATURE_DES} type={Cst.ATTR_TYPE_TEXT} multi="true" dup="true">
+							<values/>
+						</attr>
+						<attr name={Cst.ATTR_FEATURE_OPT} type={Cst.ATTR_TYPE_ENUM} multi="false" dup="true">
+							<values/>
+							<enums>
+								<enum>{Cst.VAL_OPT_MAN}</enum>
+								<enum>{Cst.VAL_OPT_OPT}</enum>
+							</enums>
+						</attr>
+					</attrs>
+					<comments/>
+				</feature>);
+
+				if (op["local"] != null) {
+					ClientEvtDispatcher.instance().dispatchEvent(
+						new ModelMinorChangeEvent(ModelMinorChangeEvent.FEATURE_CREATED_LOCALLY, op["featureId"]));
 				}
 			}
-			// A creating operation
-			op[FeatureModel.IS_NEW_ELEMENT] = true;
+		}
 
-			binaries.addItem(<binary id={op["relationshipId"]}
-					creator={op["userid"]}
+		public function handleVoteAddBinRel(op:Object): void {
+			var targets: XMLList = binaries.source.(@id==op["relationshipId"]);
+			if (targets.length() > 0) {
+				// A voting operation
+				var current: XML = targets[0];
+				var opposed: Boolean = isRelationshipOpponent(String(op["relationshipId"]));
+				if (ModelUtil.updateVoters(op[Cst.FIELD_RSP_VOTE], 
+						op[Cst.FIELD_RSP_SOURCE_USER_ID], current) == false) {
+					delete targets[0];
+					op[FeatureModel.SHOULD_DELETE_ELEMENT] = true;
+				}
+				if (opposed && ModelUtil.isTrue(op[Cst.FIELD_RSP_VOTE])) {
+					op[FeatureModel.FROM_OPPONENT_TO_SUPPORTER] = true;
+				}
+			} else {
+				// A creating operation
+					
+		    	op[FeatureModel.IS_NEW_ELEMENT] = true;
+			
+				// TODO: add creation time
+				binaries.addItem(<binary id={op["relationshipId"]}
+					creator={op[Cst.FIELD_RSP_SOURCE_USER_ID]}
 					type={op["type"]}
 					left={op["leftFeatureId"]}
 					right={op["rightFeatureId"]}>
-					<yes><user>{op["userid"]}</user></yes>
+					<yes><user>{op[Cst.FIELD_RSP_SOURCE_USER_ID]}</user></yes>
 					<no/>
 				</binary>
 				);
-		}
-
-		public function handleSetOpt(op:Object): void {
-
+			}
 		}
 
 		private function onModelUpdate(evt: ModelUpdateEvent): void {
@@ -402,41 +429,24 @@ package collab.fm.client.data {
 
 
 		private function createXmlFromFeature(f: Object): XML {
-			var result: XML = <feature id={f.id} creator={f.cid} />;
+			var result: XML = <feature id={f.id} creator={f.cid} time={f.ctime} />;
 			// Votes on the feature
 			appendVotes(result, f);
 
-			// Names of the feature
-			var names: XML = <names/>;
-			for each (var n: Object in f.names) {
-				var curName: XML = <name val={n.val}/>;
-				appendVotes(curName, n);
-				names.appendChild(curName);
+			// Attributes of the feature (also write to attribute-set (this.attrs))
+			var attrs: XML = <attrs/>;
+			var attrSet: XML = _defaultAttrs;
+			for each (var a: Object in f.attrs) {
+				appendAttr(attrs, attrSet, a);
 			}
-
-			// Desciptions of the feature
-			var descs: XML = <descriptions/>;
-			for each (var d: Object in f.dscs) {
-				var curDes: XML = <description>
-						<value>{d.val}</value>
-					</description>;
-				appendVotes(curDes, d);
-				descs.appendChild(curDes);
-			}
-
-			// Optionality of the feature
-			var optional: XML = <optional/>;
-			appendVotes(optional, f, "opt1", "opt0");
+			result.appendChild(attrs);
+			this.attrs.source = attrSet.attr;
 			
 			// Comments of the feature
 			var cs: XML = <comments/>;
 			for each (var c: Object in f.comments) {
-				cs.appendChild(<comment creator={c.cid} time={c.time}>{c.content}</comment>);
+				cs.appendChild(<comment creator={c.cid} time={c.ctime}>{c.content}</comment>);
 			}
-			
-			result.appendChild(names);
-			result.appendChild(descs);
-			result.appendChild(optional);
 			result.appendChild(cs);
 			
 			return result;
@@ -444,7 +454,7 @@ package collab.fm.client.data {
 
 		private function createXmlFromBinary(b: Object): XML {
 			var result: XML = 
-				<binary id={b.id} creator={b.cid} type={b.type} left={b.left} right={b.right}/>;
+				<binary id={b.id} creator={b.cid} time={b.ctime} type={b.type} left={b.left} right={b.right}/>;
 			appendVotes(result, b);
 			return result;
 		}
@@ -460,6 +470,41 @@ package collab.fm.client.data {
 			}
 			root.appendChild(yes);
 			root.appendChild(no);
+		}
+		
+		private function appendAttr(root: XML, attrSet: XML, obj: Object): void {
+			var attr: XML = <attr name={obj.name} type={obj.type} multi={obj.multi} dup={obj.dup} />;
+			
+			// Append other parts of "Enum-Attributes" and "Numeric-Attributes"
+			switch (obj["type"]) {
+				case Cst.ATTR_TYPE_ENUM:
+					var xmlEnum: XML = <enums/>;
+					for each (var en: Object in obj.enums) {
+						xmlEnum.appendChild(<enum>{en}</enum>);
+					}
+					attr.appendChild(xmlEnum);
+					break;
+				case Cst.ATTR_TYPE_NUMBER:
+					attr.appendChild(<min>{obj.min}</min>);
+					attr.appendChild(<max>{obj.max}</max>);
+					attr.appendChild(<unit>{obj.unit}</unit>);
+					break;
+			}
+			// Check and add the attribute to attrSet
+			if (XMLList(attrSet.attr.(@name==obj.name)).length() <= 0) {
+				attrSet.appendChild(attr.copy());
+			}
+			
+			// Append values of the attributes (The attribute-set doesn't contain the values)
+			var vs: XML = <values/>
+			for each (var val: Object in obj.vals) {
+				var xmlVal: XML = <value creator={val.cid} time={val.ctime}><str>{val.val}</str></value>;
+				appendVotes(xmlVal, val);
+				vs.appendChild(xmlVal);
+			}
+			attr.appendChild(vs);
+			
+			root.appendChild(attr);
 		}
 		
 		public function stats(): String {
@@ -507,6 +552,15 @@ package collab.fm.client.data {
 
 		public function set binaries(xml: XMLListCollection): void {
 			_binaries = xml;
+		}
+		
+		[Bindable]
+		public function get attrs(): XMLListCollection {
+			return _attrs;
+		}
+		
+		public function set attrs(xml: XMLListCollection) : void {
+			_attrs = xml;
 		}
 	}
 }

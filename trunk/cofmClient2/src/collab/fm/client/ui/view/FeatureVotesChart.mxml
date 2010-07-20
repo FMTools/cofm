@@ -40,11 +40,11 @@
 			import collab.fm.client.command.*;
 			
 			private function voteYesOnFeature(): void {
-				new CreateOrVoteFeatureCommand("", CurrentFeature.instance.id, true).execute();
+				new VoteAddFeatureCommand("", CurrentFeature.instance.id, true).execute();
 			}
 		
 			private function voteNoOnFeature(): void {
-				new CreateOrVoteFeatureCommand("", CurrentFeature.instance.id, false).execute();
+				new VoteAddFeatureCommand("", CurrentFeature.instance.id, false).execute();
 			}
 			
 			private function dtFun(hd: HitData): String {

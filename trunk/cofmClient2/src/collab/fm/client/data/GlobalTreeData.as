@@ -14,13 +14,14 @@ package collab.fm.client.data {
 			super();
 		}
 		
-		override protected function getFeatureName(feature: Object): String {
-			// Build an array from the XML.
-			if (XMLList(feature.names.name).length() <= 0) {
+		override protected function getFeatureDisplayName(feature: Object): String {
+			var allNames: XMLList = FeatureModel.instance.getValuesOfAttr(XML(feature), Cst.ATTR_FEATURE_NAME);
+			if (allNames.length() <= 0) {
 				return UNNAMED;
 			}
+			// Build an array to sort.
 			var ns: Array = [];
-			for each (var n: Object in feature.names.name) {
+			for each (var n: Object in allNames) {
 				var yes: Array = [];
 				for each (var u: Object in n.yes.user) {
 					yes.push(XML(u).text().toString());
@@ -30,7 +31,7 @@ package collab.fm.client.data {
 					no.push(XML(u1).text().toString());
 				}
 				ns.push({
-						val: n.@val,
+						val: XML(n.str).text().toString(),
 						v1: yes,
 						v0: no
 					});
@@ -40,7 +41,7 @@ package collab.fm.client.data {
 		}
 		
 		override protected function isPartOfTree(o: Object): Boolean {
-			return true;  // Every undeleted element is a part of global tree
+			return true;  // Every element is a part of global tree
 		}
 
 		override protected function onDataUpdateComplete(): void {

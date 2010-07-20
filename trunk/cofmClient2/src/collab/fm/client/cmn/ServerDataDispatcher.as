@@ -31,13 +31,18 @@ package collab.fm.client.cmn {
 				// do forwarded command
 				name = data[Cst.FIELD_RSP_SOURCE_NAME] as String;
 				switch (name) {
-					case Cst.REQ_COMMIT:
+					case Cst.REQ_VA_ATTR:
+					case Cst.REQ_VA_ATTR_ENUM:
+					case Cst.REQ_VA_ATTR_NUMBER:
+					case Cst.REQ_VA_BIN_REL:
+					case Cst.REQ_VA_FEATURE:
+					case Cst.REQ_VA_VALUE:
 						ClientEvtDispatcher.instance().dispatchEvent(
 							new OperationCommitEvent(
 							OperationCommitEvent.FORWARDED, 
-							data["operations"] as Array));
+							data));
 						break;
-					case Cst.REQ_EDIT:
+					case Cst.REQ_FOCUS:
 						// Handle current feature model only.
 						if (ModelCollection.instance.currentModelId == int(data["modelId"])) {
 							ClientEvtDispatcher.instance().dispatchEvent(

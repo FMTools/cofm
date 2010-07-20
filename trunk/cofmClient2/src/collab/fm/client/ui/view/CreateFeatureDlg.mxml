@@ -123,7 +123,7 @@
 					parentId = -1;
 				}
 				// commit create_feature and create_relationship (see onFeatureCreatedLocally)
-				new CreateOrVoteFeatureCommand(nameInput.text).execute();
+				new VoteAddFeatureCommand(nameInput.text).execute();
 			}
 			
 			private function validateNames(): Boolean {
@@ -140,11 +140,13 @@
 			
 			private function onFeatureCreatedLocally(evt: ModelMinorChangeEvent): void {
 				if (parentId > 0) {
-					new CreateOrVoteBinaryRelationshipCommand(
+					new VoteAddBinRelationCommand(
 						Cst.BIN_REL_REFINES, parentId, int(evt.data)).execute();
 				}
 				if (mx.utils.StringUtil.trim(desInput.text) != "") {
-					new CreateOrVoteDescriptionCommand(int(evt.data), desInput.text).execute();
+					new VoteAddValueCommand(Cst.ATTR_FEATURE_DES,
+						desInput.text,
+						int(evt.data)).execute();
 				}
 				onClose();
 			}

@@ -5,15 +5,15 @@ package collab.fm.client.event {
 		public static const COMMIT_SUCCESS: String = "OperationCommitSuccess";
 		public static const FORWARDED: String = "OperationForwarded";
 
-		public var operations: Array;
+		public var response: Object;
 
-		public function OperationCommitEvent(type:String, operations: Array, bubbles:Boolean=false, cancelable:Boolean=false) {
+		public function OperationCommitEvent(type:String, response: Object, bubbles:Boolean=false, cancelable:Boolean=false) {
 			super(type, bubbles, cancelable);
-			this.operations = operations;
+			this.response = response;
 		}
 
 		override public function clone(): Event {
-			return new OperationCommitEvent(type, operations, bubbles, cancelable);
+			return new OperationCommitEvent(type, response, bubbles, cancelable);
 		}
 
 	}
