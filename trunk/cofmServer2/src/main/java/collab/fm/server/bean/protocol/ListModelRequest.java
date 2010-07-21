@@ -3,6 +3,8 @@ package collab.fm.server.bean.protocol;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import collab.fm.server.bean.entity.Model;
 import collab.fm.server.bean.entity.attr.Attribute;
 import collab.fm.server.bean.entity.attr.Value;
@@ -15,6 +17,9 @@ import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public class ListModelRequest extends Request {
+	
+	private static Logger logger = Logger.getLogger(ListModelRequest.class);
+	
 	private String searchWord;
 
 	@Override
@@ -56,6 +61,8 @@ public class ListModelRequest extends Request {
 			} else {
 				all = DaoUtil.getModelDao().getBySimilarName(r.getSearchWord());
 			}
+			
+			logger.debug(all == null ? "get all returns null" : all.toString());
 			
 			// if no search word or search_word == "", then treat as exactly matches.
 			if (r.getSearchWord() == null) {
