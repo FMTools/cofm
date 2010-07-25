@@ -1,5 +1,7 @@
 package collab.fm.server.bean.entity.attr;
 
+import collab.fm.server.bean.transfer.Attribute2;
+import collab.fm.server.bean.transfer.Entity2;
 import collab.fm.server.bean.transfer.NumericAttribute2;
 
 public class NumericAttribute extends Attribute {
@@ -50,7 +52,9 @@ public class NumericAttribute extends Attribute {
 		}
 	}
 	
-	public void transfer(NumericAttribute2 a2) {
+	@Override
+	public void transfer(Entity2 a) {
+		NumericAttribute2 a2 = (NumericAttribute2) a;
 		super.transfer(a2);
 		a2.setMin(this.getMin());
 		a2.setMax(this.getMax());

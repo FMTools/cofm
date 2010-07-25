@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ResponseGroup {
 	
-	private static final int DEBUG_LENGTH = 500;
+	private static final int DEBUG_LENGTH = 100;
 	
 	private Response back;
 	private Response peer;

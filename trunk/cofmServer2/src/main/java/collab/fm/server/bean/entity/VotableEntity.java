@@ -1,5 +1,6 @@
 package collab.fm.server.bean.entity;
 
+import collab.fm.server.bean.transfer.Entity2;
 import collab.fm.server.bean.transfer.VotableEntity2;
 
 public abstract class VotableEntity extends Entity implements Votable {
@@ -45,7 +46,9 @@ public abstract class VotableEntity extends Entity implements Votable {
 	abstract public int hashCode();
 	abstract protected void removeThis();
 	
-	public void transfer(VotableEntity2 ve2) {
+	@Override
+	public void transfer(Entity2 ve) {
+		VotableEntity2 ve2 = (VotableEntity2) ve;
 		super.transfer(ve2);
 		for (Long n: vote.getSupporters()) {
 			ve2.addV1(n);

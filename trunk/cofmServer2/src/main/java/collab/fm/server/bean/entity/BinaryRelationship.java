@@ -1,6 +1,7 @@
 package collab.fm.server.bean.entity;
 
 import collab.fm.server.bean.transfer.BinaryRelation2;
+import collab.fm.server.bean.transfer.Entity2;
 
 public class BinaryRelationship extends Relationship {
 	
@@ -40,7 +41,9 @@ public class BinaryRelationship extends Relationship {
 		right.addRelationship(this);
 	}
 	
-	public void transfer(BinaryRelation2 r2) {
+	@Override
+	public void transfer(Entity2 r) {
+		BinaryRelation2 r2 = (BinaryRelation2) r;
 		super.transfer(r2);
 		r2.setLeft(this.getLeftFeatureId());
 		r2.setRight(this.getRightFeatureId());

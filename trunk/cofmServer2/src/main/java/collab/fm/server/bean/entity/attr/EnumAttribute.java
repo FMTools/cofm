@@ -3,6 +3,10 @@ package collab.fm.server.bean.entity.attr;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
+import collab.fm.server.bean.transfer.Attribute2;
+import collab.fm.server.bean.transfer.Entity2;
 import collab.fm.server.bean.transfer.EnumAttribute2;
 
 /**
@@ -11,6 +15,8 @@ import collab.fm.server.bean.transfer.EnumAttribute2;
  *
  */
 public class EnumAttribute extends Attribute {
+	
+	private static Logger logger = Logger.getLogger(EnumAttribute.class);
 	
 	private List<String> validValues = new ArrayList<String>();
 
@@ -39,7 +45,9 @@ public class EnumAttribute extends Attribute {
 		this.validValues = validValues;
 	}
 	
-	public void transfer(EnumAttribute2 a2) {
+	@Override
+	public void transfer(Entity2 a) {
+		EnumAttribute2 a2 = (EnumAttribute2) a;
 		super.transfer(a2);
 		for (String s: this.getValidValues()) {
 			a2.addEnum(s);

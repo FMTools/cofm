@@ -5,6 +5,7 @@ import java.util.List;
 
 import collab.fm.server.bean.entity.Entity;
 import collab.fm.server.bean.transfer.Attribute2;
+import collab.fm.server.bean.transfer.Entity2;
 import collab.fm.server.bean.transfer.Value2;
 
 /**
@@ -123,7 +124,9 @@ public class Attribute extends Entity {
 		return true;
 	}
 	
-	public void transfer(Attribute2 a2) {
+	@Override
+	public void transfer(Entity2 a) {
+		Attribute2 a2 = (Attribute2) a;
 		super.transfer(a2);
 		a2.setDup(this.isEnableGlobalDupValues());
 		a2.setMulti(this.isMultipleSupport());

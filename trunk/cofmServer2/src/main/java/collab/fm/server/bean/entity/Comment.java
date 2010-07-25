@@ -1,6 +1,7 @@
 package collab.fm.server.bean.entity;
 
 import collab.fm.server.bean.transfer.Comment2;
+import collab.fm.server.bean.transfer.Entity2;
 
 public class Comment extends Entity {
 	private String content;
@@ -20,7 +21,9 @@ public class Comment extends Entity {
 		this.content = content;
 	}
 	
-	public void transfer(Comment2 c2) {
+	@Override
+	public void transfer(Entity2 c) {
+		Comment2 c2 = (Comment2) c;
 		super.transfer(c2);
 		c2.setContent(this.getContent());
 	}

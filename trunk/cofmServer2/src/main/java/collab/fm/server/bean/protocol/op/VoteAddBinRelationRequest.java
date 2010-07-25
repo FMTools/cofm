@@ -192,6 +192,7 @@ public class VoteAddBinRelationRequest extends Request {
 		
 		private Long modelId;
 		private Long relationshipId;
+		private String type;
 		private Boolean yes;
 		private Long leftFeatureId;
 		private Long rightFeatureId;
@@ -202,6 +203,7 @@ public class VoteAddBinRelationRequest extends Request {
 			super(r);
 			this.setModelId(r.getModelId());
 			this.setRelationshipId(r.getRelationshipId());
+			this.setType(r.getType());
 			this.setYes(r.getYes());
 			this.setLeftFeatureId(r.getLeftFeatureId());
 			this.setRightFeatureId(r.getRightFeatureId());
@@ -229,6 +231,14 @@ public class VoteAddBinRelationRequest extends Request {
 
 		public void setRelationshipId(Long relationshipId) {
 			this.relationshipId = relationshipId;
+		}
+
+		public String getType() {
+			return type;
+		}
+
+		public void setType(String type) {
+			this.type = type;
 		}
 
 		public Boolean getYes() {
