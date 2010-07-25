@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
 	xmlns:v="collab.fm.client.ui.view.*"
-    implements="collab.fm.client.data.IOperationListener">
+    implements="collab.fm.client.data.IOperationListener"
+    creationComplete="initView();">
     
     <mx:TabNavigator id="infoTab" selectedIndex="0" paddingTop="2">
     	
@@ -38,9 +39,15 @@
 					FeatureSelectEvent.DB_CLICK_ON_TREE, onSelect);
 				ClientEvtDispatcher.instance().addEventListener(
 					ClientEvent.CURRENT_FEATURE_DELETED, onDelete);
+				trace ("FeatureEditForm inited.");
+				
 			}
 			
 			private function onSelect(evt: FeatureSelectEvent): void {
+				trace ("FeatureEditForm - begin selected.(id=" + evt.id + ")");
+				if (this.featureId == evt.id) {
+					return;
+				}
 				this.featureId = evt.id;
 				this.reloadAllTabs();
 			}
@@ -61,6 +68,8 @@
 				basic.label = RS.EDIT_TAB_BASIC;
 				setTabSize(basic);
 				infoTab.addChild(basic);
+				
+				trace ("*****Basic info added.");
 				
 				// Add name, description and optionality
 				addTab(fs[0].attrs.attr.(@name==Cst.ATTR_FEATURE_NAME)[0]);
@@ -90,7 +99,7 @@
 			}
 			
 			private function addTab(attr: Object): void {
-				switch (attr.@type) {
+				switch (String(attr.@type)) {
 					case Cst.ATTR_TYPE_ENUM:
 						infoTab.addChild(createEnumTab(attr));
 						break;
@@ -115,6 +124,7 @@
 			}
 			
 			private function createEnumTab(attr: Object): EnumTab {
+				trace ("FeatureEditForm - createEnumTab. attr = " + XML(attr).toXMLString());
 				var tab: EnumTab = new EnumTab();
 				tab.label = attr.@name;
 				tab.attrName = attr.@name;

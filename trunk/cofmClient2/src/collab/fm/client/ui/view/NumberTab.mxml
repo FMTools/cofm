@@ -52,7 +52,7 @@
 			import collab.fm.client.util.*;
 			
 			[Bindable]
-			public var values: ArrayCollection;
+			public var values: ArrayCollection = new ArrayCollection();
 	
 			[Bindable]
 			public var min: Number;

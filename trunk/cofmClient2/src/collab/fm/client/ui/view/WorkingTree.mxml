@@ -10,6 +10,7 @@
 
 	<mx:Script>
 		<![CDATA[
+			import mx.controls.Alert;
 			import mx.events.ListEvent;
 			import collab.fm.client.data.*;
 			import collab.fm.client.event.*;
