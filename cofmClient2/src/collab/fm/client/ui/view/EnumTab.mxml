@@ -49,13 +49,14 @@
 			import collab.fm.client.util.*;
 			
 			[Bindable]
-			public var values: ArrayCollection;
+			public var values: ArrayCollection = new ArrayCollection();
 			
 			public var attrName: String;
 			
 			public var enums: XMLList;
 			
 			public function updateValues(vals: XMLList): void {
+				trace("EnumTab - update values begin. Enums = " + enums.toXMLString());
 				values.source = [];
 				
 				var enumDict: Dictionary = new Dictionary();
@@ -73,6 +74,7 @@
 				
 				// Always shows all enumeration values
 				for each (var e: Object in enums) {
+					trace("EnumTab - check enum: " + XML(e).toXMLString());
 					var ve: String = XML(e).text().toString();
 					if (enumDict[ve] != true) {
 						values.addItem({

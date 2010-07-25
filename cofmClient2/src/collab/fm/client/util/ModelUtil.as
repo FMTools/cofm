@@ -1,11 +1,44 @@
 package collab.fm.client.util {
 	import collab.fm.client.data.*;
-	
-	import mx.collections.IViewCursor;
-	import mx.collections.XMLListCollection;
 
 	public class ModelUtil {
 
+		public static function getPrimaryValueAndRate(vals: XMLList): Object {
+			// Build an array from the XMLList and sort on rating.
+			var vs: Array = [];
+			for each (var v: Object in vals) {
+				var yes: Array = [];
+				for each (var u: Object in v.yes.user) {
+					yes.push(u);
+				}
+				var no: Array = [];
+				for each (var u1: Object in v.no.user) {
+					no.push(u1);
+				}
+				vs.push({
+					val: XML(v.str).text().toString(),
+					v1: yes,
+					v0: no,
+					rate: getRatio(yes.length, no.length)
+				});
+			}
+			if (vs.length == 0) {
+				return {value: null, rate: "0"};
+			}
+			ModelUtil.sortOnRating(vs, "v1", "v0", UserList.instance.myId);
+			return {value: vs[0].val, rate: vs[0].rate};
+		}
+		
+		public static function getSupportRateOfValue(val: String, vals: XMLList): String {
+			var v: XMLList = vals.(str.text().toString()==val);
+			if (v.length() <= 0) {
+				return "0";
+			}
+			var yes: uint = XMLList(v[0].yes.user).length();
+			var no: uint = XMLList(v[0].no.user).length();
+			return ModelUtil.getRatio(yes, no);
+		}
+		
 		public static function isTrue(b: String): Boolean {
 			return b.toLowerCase() == (new Boolean(true).toString().toLowerCase());	
 		}
@@ -53,7 +86,25 @@ package collab.fm.client.util {
 			}
 			return XMLList(root.yes.user).length() > 0;
 		}
-
+		
+		public static function getRatio(yes: uint, no: uint): String {
+			if (yes == 0) {
+				return "0";
+			}
+			if (no == 0) {
+				return "100";
+			}
+			var rslt: String = Number(100 * Number(yes) / (yes + no)).toPrecision(2);
+			// Stripe the ending zeros.
+			while (rslt.charAt(rslt.length - 1) == "0") {
+				rslt = rslt.substr(0, rslt.length - 1);
+			}
+			if (rslt.charAt(rslt.length - 1) == ".") {
+				rslt = rslt.substr(0, rslt.length - 1);
+			}
+			return rslt;
+		}
+		
 		/**
 		 * Sort by approval rating (yesNumber / totalNumer)
 		 */

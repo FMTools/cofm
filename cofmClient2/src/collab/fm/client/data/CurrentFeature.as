@@ -4,6 +4,7 @@ package collab.fm.client.data {
 	import collab.fm.client.util.*;
 	
 	import mx.collections.ArrayCollection;
+	import mx.collections.IViewCursor;
 	import mx.collections.Sort;
 	import mx.collections.SortField;
 	import mx.collections.XMLListCollection;
@@ -44,6 +45,8 @@ package collab.fm.client.data {
 				ModelUpdateEvent.SUCCESS, onModelUpdate);
 			ClientEvtDispatcher.instance().addEventListener(
 				FeatureSelectEvent.DB_CLICK_ON_TREE, onCurrentFeatureSelected);
+				
+			id = -1;
 		}
 
 		private function toUserArray(list: XMLList): Array {
@@ -70,6 +73,10 @@ package collab.fm.client.data {
 		}
 
 		private function onCurrentFeatureSelected(evt: FeatureSelectEvent): void {
+			if (id == evt.id) {
+				// Prevent repeatly update of the same feature selection.
+				return;
+			}
 			// Broadcast my location
 			new StartEditFeatureCommand(evt.id).execute();
 			
@@ -81,14 +88,17 @@ package collab.fm.client.data {
 			
 			// update creator info
 			var creator: String = UserList.instance.getNameById(int(_feature.@creator));
-			basicInfo.addItem(<attr key="creator" type={Cst.ATTR_TYPE_STRING} label="Creator:" value={creator}/>);
+			basicInfo.addItem(<attr name="creator" type={Cst.ATTR_TYPE_STRING} label="Creator:" value={creator}/>);
 			
 			updateVotes(); // votes to this feature
 			updateRefinements();
 			updateBinaryConstraints();
+			updateAllAttrbutes();
 
 			// update basic info
 			ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
+			
+			trace ("*** CurrentFeature updated.");
 		}
 
 		private function updateVotes(): void {
@@ -113,96 +123,51 @@ package collab.fm.client.data {
 					"y": toUserArray(XMLList(_feature.yes.user))
 				});
 		}
-
-/** TODO: integrate attributes with basic info.
-		private function updateNames(): void {
-			names.source = [];
-			// Construct the "names" array for Feature_Name_DataGrid.
-			// Columns: name, supporters (with percentage), opponents.
-			var primary: String;
-			var rate: Number = 0;
-			for each (var _name: Object in _feature.names.name) {
-				var y: int = XMLList(_name.yes.user).length();
-				var n: int = XMLList(_name.no.user).length();
-				names.addItem({
-						"name": _name.@val,
-						"supporters": y,
-						"opponents": n,
-						"y": toUserArray(XMLList(_name.yes.user)),
-						"n": toUserArray(XMLList(_name.no.user))
-					});
-				// update primary name (max supporting rate)
-				var r: Number = y / (y+n);
-				if (rate < r) {
-					rate = r;
-					primary = _name.@val;
+		
+		private function updateAllAttrbutes(): void {
+			for each (var attr: Object in _feature.attrs.attr) {
+				updateAttr(XML(attr));
+			}
+		}
+		
+		private function updateAttr(a: XML): void {
+			
+			var result: XML = <attr name={a.@name} type={a.@type} />;
+			
+			// result.@label = "{Name}:" (Capitalize the first letter of a.@name)
+			var label: String = a.@name;
+			label = label.charAt(0).toUpperCase() + label.substr(1) + ": ";
+			result.@label = label;
+			
+			if (String(a.@type) != Cst.ATTR_TYPE_ENUM) {
+				// result.@value = the primary value of a.values
+				var val: Object = ModelUtil.getPrimaryValueAndRate(a.values.value);
+				if (val.value == null) {
+					return;
+				}
+				result.@value = val.value;
+				result.@rate = val.rate;
+			} else {
+				for each (var e: Object in a.enums.enum) {
+					var en: XML = <enum value={XML(e).text().toString()} />;
+					en.@rate = ModelUtil.getSupportRateOfValue(en.@value, a.values.value);
+					result.appendChild(en);
 				}
 			}
-			var strRate: String = (rate * 100).toPrecision(3) + "%";
-			// remove previous name from basic info
-			var key: String = "name";
-			var previous: XMLList = this.basicInfo.source.(@key==key);
-			var xml: XML = <attr key={key} type={Cst.ATTR_TYPE_STRING} label="Name:" value={primary} rate={strRate}/>;
-			if (previous.length() <= 0) {
-				this.basicInfo.addItem(xml);
-			} else {
-				var pos: int = this.basicInfo.getItemIndex(previous[0]);
-				this.basicInfo.removeItemAt(pos);
-				this.basicInfo.addItemAt(xml, pos);
-			}
-		}
-
-		private function updateDescriptions(): void {
-			descriptions.source = [];
-			var des: Array = new Array();
-			for each (var d: Object in _feature.descriptions.description) {
-				var yesId: Array = toUserArray(XMLList(d.yes.user));
-				var noId: Array = toUserArray(XMLList(d.no.user));
-				des.push({
-						"des": XML(d.value).text().toString(),
-						"supporters": yesId.length,
-						"opponents": noId.length,
-						"y": yesId,
-						"n": noId,
-						"ratio": ((noId.length == 0) ? "100%" : 
-							Number(100 * yesId.length / (yesId.length + noId.length)).toPrecision(3) + "%")
-					});
-			}
-			ModelUtil.sortOnRating(des, "y", "n", UserList.instance.myId);
-			descriptions.source = des;
-
-			// update basic info
-			var key: String = "des";
-			if (des.length <= 0) {
-				var pre: XMLList = this.basicInfo.source.(@key==key);
-				if (pre.length() > 0) {
-					var p: int = this.basicInfo.getItemIndex(pre[0]);
-					this.basicInfo.removeItemAt(p);
+			
+			// replace the attribute with the same name in basicInfo
+			for (var cursor: IViewCursor = basicInfo.createCursor(); !cursor.afterLast; cursor.moveNext()) {
+				if (cursor.current.@name == result.@name) {
+					cursor.remove();
+					cursor.insert(result);
+					return;
 				}
-				return;
 			}
-			var primary: String = des[0].des;
-			var y: int = int(des[0].supporters);
-			var n: int = int(des[0].opponents);
-			var rate: Number = y / (y + n);
-			var strRate: String = (rate * 100).toPrecision(3) + "%";
-			// remove previous name from basic info
-
-			var previous: XMLList = this.basicInfo.source.(@key==key);
-			var xml: XML = <attr key={key} type={Cst.ATTR_TYPE_TEXT} label="Description:" value={primary} rate={strRate}/>;
-			if (previous.length() <= 0) {
-				this.basicInfo.addItem(xml);
-			} else {
-				var pos: int = this.basicInfo.getItemIndex(previous[0]);
-				this.basicInfo.removeItemAt(pos);
-				this.basicInfo.addItemAt(xml, pos);
-			}
+			// ... or create a new attribute
+			basicInfo.addItem(result);	
 		}
+		
 
-		private function updateOptionality(): void {
-
-		}
-*/
 		private function updateRefinements(): void {
 			parents.source = [];
 			children.source = [];
@@ -302,24 +267,6 @@ package collab.fm.client.data {
 			binaryConstraints.refresh();
 		}
 
-/*
-
-		public function handleAddDescription(op:Object): void {
-			if (op["featureId"] == String(id)) {
-				this.updateDescriptions();
-				ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(
-					ClientEvent.BASIC_INFO_UPDATED));
-			}
-		}
-
-		public function handleAddName(op:Object): void {
-			if (op["featureId"] == String(id)) {
-				this.updateNames();
-				ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(
-					ClientEvent.BASIC_INFO_UPDATED));
-			}
-		}
-*/
 		public function handleVoteAddFeature(op:Object): void {
 			if (op["featureId"] == String(id)) {
 				if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
@@ -344,8 +291,6 @@ package collab.fm.client.data {
 						break;
 				}
 				
-				// update basic info
-				//ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
 			}
 		}
 		
@@ -361,7 +306,19 @@ package collab.fm.client.data {
 		}
 		
 		public function handleVoteAddValue(op: Object): void {
-			// TODO: inttegrate with basic info
+			if (op["featureId"] == String(id)) {
+			
+				var a: XMLList = FeatureModel.instance
+					.features.source.(@id==op["featureId"])    // Find the feature with specific ID...
+					..attr.(@name==op["attr"]);         // then find the specific attribute in this feature
+				if (a.length() <= 0) {
+					return;    // No such attribute, return.
+				}
+				this.updateAttr(XML(a[0]));
+				
+				// update basic info
+				ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
+			}
 		}
 		
 		public function handleInferVoteOnFeature(op:Object): void {

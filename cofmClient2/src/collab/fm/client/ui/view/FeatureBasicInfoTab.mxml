@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-	xmlns:v="collab.fm.client.ui.view.*" creationComplete="initView();">
+	xmlns:v="collab.fm.client.ui.view.*" 
+    preinitialize="initView();">
 	<mx:Spacer/>
 	<mx:Label text="{RS.EDIT_FEATURE_VOTES}"/>
 	<v:FeatureVotesChart width="100%" height="100" />
@@ -23,11 +24,12 @@
 			private function initView(): void {
 				ClientEvtDispatcher.instance().addEventListener(
 					ClientEvent.BASIC_INFO_UPDATED, updateBasicInfo);
+					
+				trace ("**** event handler reg.");
 			}
 			
-			private function updateBasicInfo(evt: ClientEvent): void {
+			public function updateBasicInfo(evt: ClientEvent): void {
 				infoBox.removeAllChildren();
-				trace(CurrentFeature.instance.basicInfo.toXMLString());
 				for each (var obj: Object in CurrentFeature.instance.basicInfo) {
 					// wrapped by a HBox
 					var box: HBox = new HBox();
@@ -50,29 +52,31 @@
 							break;
 					}
 					
-					// append suppport rate
-					if (obj.@rate != undefined) {
-						var rate: Label = new Label();
-						rate.text = "(" + obj.@rate + ")";
-						box.addChild(rate);
-					}
-					
 					infoBox.addChild(box);
 				}
 			}
 			
 			private function addEnum(obj: Object, box: Container): void {
-				
+				for each (var en: Object in obj.enum) {
+					addString(en, box);
+				}				
 			}
 			
 			private function addNumber(obj: Object, box: Container): void {
-				
+				addString(obj, box);
 			}
 		
 			private function addString(obj: Object, box: Container): void {
 				var label: Label = new Label();
 				label.text = obj.@value;
 				box.addChild(label);	
+				
+				// append suppport rate
+				if (obj.@rate != null && obj.@rate != undefined) {
+					var rate: Label = new Label();
+					rate.text = "(" + obj.@rate + "%)";
+					box.addChild(rate);
+				}
 			}
 			
 			private function addText(obj: Object, box: Container): void {
@@ -83,6 +87,13 @@
 				t.width = 300;
 				t.height = 100;
 				box.addChild(t);
+				
+				// append suppport rate
+				if (obj.@rate != null && obj.@rate != undefined) {
+					var rate: Label = new Label();
+					rate.text = "(" + obj.@rate + "%)";
+					box.addChild(rate);
+				}
 			}
 		]]>
 	</mx:Script>

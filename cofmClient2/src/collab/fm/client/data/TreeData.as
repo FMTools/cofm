@@ -289,8 +289,8 @@ package collab.fm.client.data {
 				var rel: XML = null;
 				
 				// See if the relationship has already been removed from the feature model
-				if (op[FeatureModel.SHOULD_DELETE_ELEMENT] != null) {
-					for each (var o:Object in op[FeatureModel.SHOULD_DELETE_ELEMENT]) {
+				if (op[FeatureModel.INFERRED_REMOVAL_ELEMENTS] != null) {
+					for each (var o:Object in op[FeatureModel.INFERRED_REMOVAL_ELEMENTS]) {
 						if (o.id == String(id)) {
 							removal = true;
 							info = o;
@@ -380,7 +380,7 @@ package collab.fm.client.data {
 			if (op["type"] == Cst.BIN_REL_REFINES) {
 				
 				// Handle creation
-				if (op[FeatureModel.IS_NEW_ELEMENT] == true || ModelUtil.isTrue(op[Cst.FIELD_RSP_VOTE])) {
+				if (op[FeatureModel.IS_NEW_ELEMENT] == true || op[FeatureModel.FROM_OPPONENT_TO_SUPPORTER] == true) {
 					this.addRefinement(op["relationshipId"]);
 					return;
 				}

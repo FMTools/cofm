@@ -19,7 +19,7 @@
 			import collab.fm.client.util.*;
 			
 			[Bindable]
-			public var values: ArrayCollection;
+			public var values: ArrayCollection = new ArrayCollection();
 			
 			public var attrName: String;
 			

@@ -51,6 +51,7 @@ package collab.fm.client.data {
 
 		public static const IS_NEW_ELEMENT: String = "IsNewElement";
 		public static const SHOULD_DELETE_ELEMENT: String = "ShouldDeleteElement";
+		public static const INFERRED_REMOVAL_ELEMENTS: String = "InferredRemovalElements";
 		public static const FROM_OPPONENT_TO_SUPPORTER: String = "FromOpponentToSupporter";
 		public static const VOTE_NO_TO_FEATURE: String = "VoteNoToFeature";
 
@@ -244,11 +245,11 @@ package collab.fm.client.data {
 							right: current.@right
 						};
 						// Record the relationship which needs to be deleted.
-						if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == null) {
-							op[FeatureModel.SHOULD_DELETE_ELEMENT] = new Array();
+						if (op[FeatureModel.INFERRED_REMOVAL_ELEMENTS] == null) {
+							op[FeatureModel.INFERRED_REMOVAL_ELEMENTS] = new Array();
 						}
 						
-						(op[FeatureModel.SHOULD_DELETE_ELEMENT] as Array).push(info);
+						(op[FeatureModel.INFERRED_REMOVAL_ELEMENTS] as Array).push(info);
 						delete targets[0];
 					}
 				}
@@ -262,13 +263,27 @@ package collab.fm.client.data {
 				return;
 			}
 			
-			var a: XMLList = 
-				features.source.(@id==op["featureId"])    // Find the feature with specific ID...
-				..attr.(@name==op["attr"]);         // then find the specific attribute in this feature
-			if (a.length() <= 0) {
-				return;    // No such attribute, return.
+			var curAttr: XML = null, curFeature: XML = null;
+			var f: XMLList = features.source.(@id==op["featureId"]);    // Find the feature with specific ID.
+			if (f.length() <= 0) {
+				return;
 			}
-			var targets: XMLList = a[0].values.value.(str.text().toString() == op["val"]); // Find the value
+			curFeature = f[0];
+			var a: XMLList = curFeature..attr.(@name==op["attr"]); // then find the specific attribute in this feature
+			if (a.length() <= 0) {
+			    // No such attribute, create it first
+			    var attrSet: XMLList = this.attrs.source.(@name==op["attr"]);
+			    if (attrSet.length() > 0) {
+			    	curAttr = XML(attrSet[0]).copy();
+			    	curAttr.appendChild(<values/>);
+			    	curFeature.appendChild(curAttr);
+			    } else {
+			    	return;
+			    }
+			} else {
+				curAttr = a[0];
+			}
+			var targets: XMLList = curAttr.values.value.(str.text().toString() == op["val"]); // Find the value
 			if (targets.length() > 0) {
 				// A voting operation
 				if (ModelUtil.updateVoters(op[Cst.FIELD_RSP_VOTE], 
@@ -406,6 +421,7 @@ package collab.fm.client.data {
 					<no/>
 				</binary>
 				);
+				
 			}
 		}
 
@@ -476,11 +492,13 @@ package collab.fm.client.data {
 			var attr: XML = <attr name={obj.name} type={obj.type} multi={obj.multi} dup={obj.dup} />;
 			
 			// Append other parts of "Enum-Attributes" and "Numeric-Attributes"
-			switch (obj["type"]) {
+			switch (String(obj["type"])) {
 				case Cst.ATTR_TYPE_ENUM:
 					var xmlEnum: XML = <enums/>;
+					trace ("featureModel - append enum attribute, obj.enums = " + obj.enums);
 					for each (var en: Object in obj.enums) {
-						xmlEnum.appendChild(<enum>{en}</enum>);
+						trace ("FeatureModel - append enum attribute, enum = " + String(en));
+						xmlEnum.appendChild(<enum>{String(en)}</enum>);
 					}
 					attr.appendChild(xmlEnum);
 					break;
