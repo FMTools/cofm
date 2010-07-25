@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.entity.attr.Attribute;
 import collab.fm.server.bean.entity.attr.Value;
+import collab.fm.server.bean.transfer.Entity2;
 import collab.fm.server.bean.transfer.Model2;
 import collab.fm.server.util.EntityUtil;
 
@@ -120,7 +121,9 @@ public class Model extends Entity implements AttributeSet {
 		return attrs.get(attrName);
 	}
 	
-	public void transfer(Model2 m2) {
+	@Override
+	public void transfer(Entity2 m) {
+		Model2 m2 = (Model2) m;
 		super.transfer(m2);
 		
 		for (User u: this.getUsers()) {

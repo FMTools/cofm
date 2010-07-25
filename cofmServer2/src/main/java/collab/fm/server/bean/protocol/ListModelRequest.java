@@ -62,8 +62,6 @@ public class ListModelRequest extends Request {
 				all = DaoUtil.getModelDao().getBySimilarName(r.getSearchWord());
 			}
 			
-			logger.debug(all == null ? "get all returns null" : all.toString());
-			
 			// if no search word or search_word == "", then treat as exactly matches.
 			if (r.getSearchWord() == null) {
 				rsp.setExactlyMatches(true);

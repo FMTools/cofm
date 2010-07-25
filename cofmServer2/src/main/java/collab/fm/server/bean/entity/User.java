@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import collab.fm.server.bean.transfer.User2;
+import collab.fm.server.bean.transfer.Entity2;
 
 public class User extends Entity {
 	
@@ -16,7 +17,9 @@ public class User extends Entity {
 		super();
 	}
 	
-	public void transfer(User2 u2) {
+	@Override
+	public void transfer(Entity2 u) {
+		User2 u2 = (User2) u;
 		u2.setId(this.getId());
 		u2.setName(this.getName());
 	}

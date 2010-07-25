@@ -1,14 +1,8 @@
 package collab.fm.server.bean.transfer;
 
-public class User2 {
-	private Long id;
+public class User2 extends Entity2 {
 	private String name;
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
+
 	public String getName() {
 		return name;
 	}

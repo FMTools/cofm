@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import collab.fm.server.bean.entity.attr.Attribute;
 import collab.fm.server.bean.entity.attr.Value;
 import collab.fm.server.bean.transfer.Comment2;
+import collab.fm.server.bean.transfer.Entity2;
 import collab.fm.server.bean.transfer.Feature2;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.EntityUtil;
@@ -156,8 +157,10 @@ public class Feature extends VotableEntity implements AttributeSet {
 	public Attribute getAttribute(String attrName) {
 		return attrs.get(attrName);
 	}
-
-	public void transfer(Feature2 f2) {
+	
+	@Override
+	public void transfer(Entity2 f) {
+		Feature2 f2 = (Feature2) f;
 		super.transfer(f2);
 		f2.setModel(this.getModel().getId());
 		

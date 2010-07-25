@@ -1,6 +1,7 @@
 package collab.fm.server.bean.entity.attr;
 
 import collab.fm.server.bean.entity.VotableEntity;
+import collab.fm.server.bean.transfer.Entity2;
 import collab.fm.server.bean.transfer.Value2;
 
 /**
@@ -53,7 +54,9 @@ public class Value extends VotableEntity {
 		
 	}
 	
-	public void transfer(Value2 v2) {
+	@Override
+	public void transfer(Entity2 v) {
+		Value2 v2 = (Value2) v;
 		super.transfer(v2);
 		v2.setVal(this.getStrVal());
 	}
