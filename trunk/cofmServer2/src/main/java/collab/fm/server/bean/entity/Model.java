@@ -19,6 +19,9 @@ public class Model extends Entity implements AttributeSet {
 	// Attributes: key = Attr_Name
 	private Map<String, Attribute> attrs = new HashMap<String, Attribute>();
 	
+	// Attributes of features in this model
+	private Map<String, Attribute> featureAttrs = new HashMap<String, Attribute>();
+	
 	private Set<Feature> features = new HashSet<Feature>();
 	private Set<Relationship> relationships = new HashSet<Relationship>();
 	
@@ -68,6 +71,12 @@ public class Model extends Entity implements AttributeSet {
 		}
 	}
 	
+	public void addAttributeToFeatures(Attribute a) {
+		if (featureAttrs.get(a.getName()) == null) {
+			featureAttrs.put(a.getName(), a);
+		}
+	}
+	
 	public boolean voteOrAddValue(String attrName, String val, boolean yes, Long userId) {
 		Attribute attr = attrs.get(attrName);
 		if (attr == null) {
@@ -86,6 +95,14 @@ public class Model extends Entity implements AttributeSet {
 		this.attrs = attrs;
 	}
 	
+	public Map<String, Attribute> getFeatureAttrs() {
+		return featureAttrs;
+	}
+
+	public void setFeatureAttrs(Map<String, Attribute> featureAttrs) {
+		this.featureAttrs = featureAttrs;
+	}
+
 	public Set<Feature> getFeatures() {
 		return features;
 	}
