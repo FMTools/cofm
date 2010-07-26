@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="640" height="300" 
+	 xmlns:view="collab.fm.client.ui.view.*"
+	 title="{RS.ATTR_ADD_TITLE}"
+	 showCloseButton="true" close="onClose();"
+	 creationComplete="initView();">
+	<mx:HBox>
+		
+		<!-- 1. List current attributes. -->
+		<mx:VBox>
+			
+			<mx:Label text="{RS.ATTR_ADD_CUR}:" />
+			<view:AutoRowAdjustmentGrid minDisplayedRows="8" dataProvider="{FeatureModel.instance.attrs}"
+				 width="230">
+				
+				<view:columns>
+					<mx:AdvancedDataGridColumn dataField="@name" headerText="{RS.ATTR_ADD_CUR_NAME}" />
+					<mx:AdvancedDataGridColumn dataField="@type" headerText="{RS.ATTR_ADD_CUR_TYPE}" />
+				</view:columns>
+				
+			</view:AutoRowAdjustmentGrid>
+
+		</mx:VBox>
+				
+		<!-- 2. Add Attribute form. -->
+		<mx:Form>
+			<mx:FormHeading label="{RS.ATTR_ADD_NEW}"/>
+			<mx:FormItem label="{RS.ATTR_ADD_CUR_NAME}">
+				<mx:TextInput id="aName" maxChars="30" />
+			</mx:FormItem>
+			<mx:FormItem label="{RS.ATTR_ADD_CUR_TYPE}">
+				<mx:ComboBox change="onTypeChange(event);">
+					<mx:ArrayCollection>
+						<mx:Object label="{Cst.ATTR_TYPE_STRING}"/>
+						<mx:Object label="{Cst.ATTR_TYPE_TEXT}"/>
+						<mx:Object label="{Cst.ATTR_TYPE_LIST}"/>
+						<mx:Object label="{Cst.ATTR_TYPE_ENUM}"/>
+						<mx:Object label="{Cst.ATTR_TYPE_NUMBER}"/>
+					</mx:ArrayCollection>
+				</mx:ComboBox>
+			</mx:FormItem>
+			<mx:FormItem label="{RS.ATTR_ADD_NEW_ENUM}" id="aEnum">
+				<mx:HBox>
+					<mx:TextInput maxChars="30"  width="110"/>
+					<mx:TextInput maxChars="30"  width="110"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:TextInput maxChars="30"  width="110"/>
+					<mx:TextInput maxChars="30"  width="110"/>
+				</mx:HBox>
+				<mx:LinkButton label="{RS.ATTR_ADD_NEW_ROW}" click="addEnumRow(event);" />
+			</mx:FormItem>
+			<mx:FormItem label="{RS.ATTR_ADD_NEW_RANGE}" direction="horizontal" id="aRange">
+				<mx:TextInput id="aMin" maxChars="15" width="80"/>
+				<mx:Label text="--" />
+				<mx:TextInput id="aMax" maxChars="15" width="80"/>
+			</mx:FormItem>
+			<mx:FormItem label="{RS.ATTR_ADD_NEW_UNIT}" id="unit">
+				<mx:TextInput id="aUnit" maxChars="30" />
+			</mx:FormItem>
+			<mx:FormItem direction="horizontal">
+				<mx:Button label="{RS.BTN_OK}" click="doAddAttr();" />
+				<mx:Button label="{RS.BTN_CANCEL}" click="onClose();" />
+			</mx:FormItem>
+			
+		</mx:Form>
+	</mx:HBox>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.utils.StringUtil;
+			import mx.containers.FormItem;
+			import mx.controls.LinkButton;
+			import mx.containers.HBox;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.events.CloseEvent;
+			import collab.fm.client.command.*;
+			import collab.fm.client.util.*;
+			import collab.fm.client.data.*;
+			
+			private var aType: String = Cst.ATTR_TYPE_STRING;
+			
+			private function initView(): void {
+				UIUtil.show(aEnum, false);
+				UIUtil.show(aRange, false);
+				UIUtil.show(unit, false);
+			}
+			
+			private function onClose(): void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function doAddAttr(): void {
+				var n: String = StringUtil.trim(aName.text);
+				if (n.length <= 0) {
+					return;
+				}
+				// Make sure the new name isn't in the attr set
+				if (XMLList(FeatureModel.instance.attrs.source.(@name==n)).length() > 0) {
+					return;
+				}
+				
+				
+				switch (aType) {
+					case Cst.ATTR_TYPE_ENUM:
+						var ens: Array = getEnums();
+						new AddEnumAttributeCommand(n, ens).execute();
+						break;
+					case Cst.ATTR_TYPE_NUMBER:
+					// TODO: validate numbers
+						new AddNumericAttributeCommand(n,
+							Number(aMin.text),
+							Number(aMax.text),
+							StringUtil.trim(aUnit.text),
+							
+				}
+			}
+			
+			private function onTypeChange(evt: Event): void {
+				aType = evt.currentTarget.selectedItem.label;
+				
+				if (aType == Cst.ATTR_TYPE_ENUM) {
+					UIUtil.show(aEnum, true);
+					UIUtil.show(aRange, false);
+					UIUtil.show(unit, false);
+				} else if (aType == Cst.ATTR_TYPE_NUMBER) {
+					UIUtil.show(aEnum, false);
+					UIUtil.show(aRange, true);
+					UIUtil.show(unit, true);
+				} else {
+					UIUtil.show(aEnum, false);
+					UIUtil.show(aRange, false);
+					UIUtil.show(unit, false);
+				}
+			}
+			
+			private function addEnumRow(evt: Event): void {
+				var row: HBox = new HBox();
+				var input1: TextInput = new TextInput();
+				var input2: TextInput = new TextInput();
+				input1.width = 110;
+				input1.maxChars = 30;	
+				input2.width = 110;
+				input2.maxChars = 30;
+				row.addChild(input1);
+				row.addChild(input2);
+				
+				var btn: LinkButton = LinkButton(evt.currentTarget);
+				var parent: FormItem = FormItem(btn.parent);
+				parent.addChildAt(row, parent.getChildren().length - 1); // before the last child
+			}
+		]]>
+	</mx:Script>
+</mx:TitleWindow>

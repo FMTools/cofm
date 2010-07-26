@@ -4,17 +4,17 @@
 	
 	<mx:Script>
 		<![CDATA[
-			import mx.collections.ArrayCollection;
+			import mx.collections.ICollectionView;
 			
 			public var maxDisplayedRows: int = 10;
-			public var minDisplayedRows: int = 1;
+			public var minDisplayedRows: int = 2;
 			
 			protected function initView(): void {
 				adjustHeight();
 			}
 			
 			protected function adjustHeight(): void {
-				var itemCount: int = ArrayCollection(this.dataProvider).length;
+				var itemCount: int = ICollectionView(this.dataProvider).length;
 				if (itemCount > maxDisplayedRows) {
 					itemCount = maxDisplayedRows;
 				}

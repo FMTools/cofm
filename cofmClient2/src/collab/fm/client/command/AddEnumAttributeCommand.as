@@ -8,9 +8,9 @@ package collab.fm.client.command
 	public class AddEnumAttributeCommand extends AddAttributeCommand
 	{
 		private var _enums: Array;
-		public function AddEnumAttributeCommand(name: String, type: String, enums: Array, fid: int, multi: Boolean=true, dup: Boolean=true)
+		public function AddEnumAttributeCommand(name: String, enums: Array, multi: Boolean=true, dup: Boolean=true)
 		{
-			super(name, type, fid, multi, dup);
+			super(name, Cst.ATTR_TYPE_ENUM, multi, dup);
 			_enums = enums;
 		}
 		
@@ -21,9 +21,9 @@ package collab.fm.client.command
 					name: Cst.REQ_VA_ATTR_ENUM,
 					requesterId: UserList.instance.myId,
 					modelId: ModelCollection.instance.currentModelId,
-					featureId: _fid,
 					attr: _name,
 					type: _type,
+					toFeature: _toFeature,
 					multiYes: _multi,
 					allowDup: _dup,
 					vlist: _enums

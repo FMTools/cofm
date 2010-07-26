@@ -12,15 +12,15 @@ package collab.fm.client.command
 		private var _type: String;
 		private var _multi: Boolean;
 		private var _dup: Boolean;
-		private var _fid: int;
+		private var _toFeature: Boolean;
 		
-		public function AddAttributeCommand(name: String, type: String, fid: int, multi: Boolean=true, dup: Boolean=true)
+		public function AddAttributeCommand(name: String, type: String, toFeature: Boolean=true, multi: Boolean=true, dup: Boolean=true)
 		{
 			_name = name;
 			_type = type;
 			_multi = multi;
 			_dup = dup;
-			_fid = fid;
+			_toFeature = toFeature;
 		}
 
 		public function execute():void
@@ -31,9 +31,9 @@ package collab.fm.client.command
 					name: Cst.REQ_VA_ATTR,
 					requesterId: UserList.instance.myId,
 					modelId: ModelCollection.instance.currentModelId,
-					featureId: _fid,
 					attr: _name,
 					type: _type,
+					toFeature: _toFeature,
 					multiYes: _multi,
 					allowDup: _dup
 				};

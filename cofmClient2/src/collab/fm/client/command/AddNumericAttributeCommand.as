@@ -11,9 +11,9 @@ package collab.fm.client.command
 		private var _max: Number;
 		private var _unit: String;
 		
-		public function AddNumericAttributeCommand(name: String, type: String, min: Number, max: Number, unit: String, fid: int, multi: Boolean=true, dup: Boolean=true)
+		public function AddNumericAttributeCommand(name: String, min: Number, max: Number, unit: String, multi: Boolean=true, dup: Boolean=true)
 		{
-			super(name, type, fid, multi, dup);
+			super(name, Cst.ATTR_TYPE_NUMBER, multi, dup);
 			_min = min;
 			_max = max;
 			_unit = unit;
@@ -26,9 +26,9 @@ package collab.fm.client.command
 					name: Cst.REQ_VA_ATTR_NUMBER,
 					requesterId: UserList.instance.myId,
 					modelId: ModelCollection.instance.currentModelId,
-					featureId: _fid,
 					attr: _name,
 					type: _type,
+					toFeature: _toFeature,
 					multiYes: _multi,
 					allowDup: _dup,
 					min: _min,
