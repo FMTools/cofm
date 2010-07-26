@@ -12,7 +12,7 @@ import collab.fm.server.bean.transfer.Value2;
  * @author mark
  * An attribute is associated with a set of vote-able values; however, the attribute itself is NOT vote-able.
  */
-public class Attribute extends Entity {
+public class Attribute extends Entity implements Cloneable {
 	// Types
 	public static final String TYPE_STR = "string";
 	public static final String TYPE_TEXT = "text";
@@ -46,6 +46,16 @@ public class Attribute extends Entity {
 		this.type = type;
 		this.multipleSupport = true;
 		this.enableGlobalDupValues = true;
+	}
+	
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	public String getName() {

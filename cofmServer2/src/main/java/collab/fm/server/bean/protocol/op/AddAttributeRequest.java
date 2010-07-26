@@ -1,6 +1,5 @@
 package collab.fm.server.bean.protocol.op;
 
-import collab.fm.server.bean.entity.AttributeSet;
 import collab.fm.server.bean.entity.Feature;
 import collab.fm.server.bean.entity.Model;
 import collab.fm.server.bean.entity.attr.Attribute;
@@ -16,11 +15,13 @@ import collab.fm.server.util.exception.StaleDataException;
 
 public class AddAttributeRequest extends Request {
 	protected Long modelId;
-	protected Long featureId;
 	protected String attr;
 	protected String type;
 	protected Boolean multiYes;
 	protected Boolean allowDup;
+	
+	// Add attribute to feature (true) or model (false)
+	protected Boolean toFeature;
 	
 	@Override
 	protected Processor makeDefaultProcessor() {
@@ -33,12 +34,15 @@ public class AddAttributeRequest extends Request {
 	public void setModelId(Long modelId) {
 		this.modelId = modelId;
 	}
-	public Long getFeatureId() {
-		return featureId;
+
+	public Boolean getToFeature() {
+		return toFeature;
 	}
-	public void setFeatureId(Long featureId) {
-		this.featureId = featureId;
+
+	public void setToFeature(Boolean toFeature) {
+		this.toFeature = toFeature;
 	}
+
 	public String getAttr() {
 		return attr;
 	}
@@ -89,21 +93,16 @@ public class AddAttributeRequest extends Request {
 			
 			Attribute a = createAttribute(r);
 			
-			AttributeSet target = null;
-			if (r.getFeatureId() == null) {
-				target = DaoUtil.getModelDao().getById(r.getModelId(), false);
+			Model m = DaoUtil.getModelDao().getById(r.getModelId(), false);
+			if (m == null) {
+				throw new InvalidOperationException("Invalid model ID: " + r.getModelId());
+			}
+			if (r.getToFeature().booleanValue() == true) {
+				m.addAttributeToFeatures(a);
 			} else {
-				target = DaoUtil.getFeatureDao().getById(r.getFeatureId(), false);
+				m.addAttribute(a);
 			}
-			if (target == null) {
-				throw new InvalidOperationException("Invalid ID");
-			}
-			target.addAttribute(a);
-			if (r.getFeatureId() == null) {
-				DaoUtil.getModelDao().save((Model)target);
-			} else {
-				DaoUtil.getFeatureDao().save((Feature)target);
-			}
+			DaoUtil.getModelDao().save(m);
 			
 			rsp.setName(Resources.RSP_SUCCESS);
 			rg.setBack(rsp);
@@ -130,7 +129,7 @@ public class AddAttributeRequest extends Request {
 	
 	public static class DefaultResponse extends Response {
 		protected Long modelId;
-		protected Long featureId;
+		protected Boolean toFeature;
 		protected String attr;
 		protected String type;
 		protected Boolean multiYes;
@@ -139,7 +138,7 @@ public class AddAttributeRequest extends Request {
 		public DefaultResponse(AddAttributeRequest r) {
 			super(r);
 			this.setModelId(r.getModelId());
-			this.setFeatureId(r.getFeatureId());
+			this.setToFeature(r.getToFeature());
 			this.setAttr(r.getAttr());
 			this.setType(r.getType());
 			this.setMultiYes(r.getMultiYes());
@@ -152,12 +151,15 @@ public class AddAttributeRequest extends Request {
 		public void setModelId(Long modelId) {
 			this.modelId = modelId;
 		}
-		public Long getFeatureId() {
-			return featureId;
+		
+		public Boolean getToFeature() {
+			return toFeature;
 		}
-		public void setFeatureId(Long featureId) {
-			this.featureId = featureId;
+
+		public void setToFeature(Boolean toFeature) {
+			this.toFeature = toFeature;
 		}
+
 		public String getAttr() {
 			return attr;
 		}

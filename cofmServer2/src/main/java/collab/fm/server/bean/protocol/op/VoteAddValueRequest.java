@@ -64,8 +64,7 @@ public class VoteAddValueRequest extends Request {
 		public boolean checkRequest(Request req) {
 			if (!(req instanceof VoteAddValueRequest)) return false;
 			VoteAddValueRequest r = (VoteAddValueRequest) req;
-			if (r.getModelId() == null && r.getFeatureId() == null) return false;
-			return r.getAttr() != null && r.getVal() != null;
+			return r.getModelId() != null && r.getAttr() != null && r.getVal() != null;
 		}
 
 		public boolean process(Request req, ResponseGroup rg)
@@ -78,12 +77,13 @@ public class VoteAddValueRequest extends Request {
 			DefaultResponse rsp = new DefaultResponse(r);
 			
 			AttributeSet target = null;
+			Model m = DaoUtil.getModelDao().getById(r.getModelId(), false);
+			if (m == null) {
+				throw new InvalidOperationException("Invalid model ID: " + r.getModelId());
+			}
 			// If it is an operation on the Feature Model
 			if (r.getFeatureId() == null) {
-				target = DaoUtil.getModelDao().getById(r.getModelId(), false);
-				if (target == null) {
-					throw new InvalidOperationException("Invalid feature model ID: " + r.getModelId());
-				}
+				target = m;
 			} else {
 				// It is an operation on the Feature
 				target = DaoUtil.getFeatureDao().getById(r.getFeatureId(), false);
@@ -94,8 +94,16 @@ public class VoteAddValueRequest extends Request {
 			
 			Attribute a = target.getAttribute(r.getAttr());
 			if (a == null) {
-				throw new InvalidOperationException("Invalid attribute name: " + r.getAttr());
+				if (r.getFeatureId() == null) {
+					throw new InvalidOperationException("Unknown attribute of model: " + r.getAttr());
+				}
+				// This is a feature, and we can get the attribute instance from Model.featureAttrs
+				a = m.getFeatureAttrs().get(r.getAttr());
+				if (a == null) {
+					throw new InvalidOperationException("Unknown attribute of features: " + r.getAttr());
+				}
 			}
+			
 			// If the attribute is NOT allow to global replicated, we should check if the same value existed
 			if (!a.isEnableGlobalDupValues()) {
 				AttributeSet as2 = null;
@@ -114,6 +122,10 @@ public class VoteAddValueRequest extends Request {
 				}
 			}
 			
+			// If the target is a feature, we should make sure the attribute exists
+			if (r.getFeatureId() != null && target.getAttribute(r.getAttr()) == null) {
+				target.addAttribute((Attribute)a.clone());
+			}
 			boolean isValidValue = target.voteOrAddValue(r.getAttr(), r.getVal(), r.getYes(), r.getRequesterId());
 			
 			if (!isValidValue) {
