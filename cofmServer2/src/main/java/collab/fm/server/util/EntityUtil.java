@@ -43,4 +43,24 @@ public class EntityUtil {
 		return a2;
 	}
 	
+	public static Attribute cloneAttribute(Attribute a) {
+		Attribute a2 = null;
+		if (Attribute.TYPE_ENUM.equals(a.getType())) {
+			a2 = new EnumAttribute();
+			((EnumAttribute)a2).setValidValues(((EnumAttribute)a).getValidValues());
+		} else if (Attribute.TYPE_NUMBER.equals(a.getType())) {
+			a2 = new NumericAttribute();
+			((NumericAttribute)a2).setMax(((NumericAttribute)a).getMax());
+			((NumericAttribute)a2).setUnit(((NumericAttribute)a).getUnit());
+			((NumericAttribute)a2).setMin(((NumericAttribute)a).getMin());
+		} else {
+			a2 = new Attribute();
+		}
+		a2.setEnableGlobalDupValues(a.isEnableGlobalDupValues());
+		a2.setMultipleSupport(a.isMultipleSupport());
+		a2.setName(a.getName());
+		a2.setType(a.getType());
+		return a2;
+	}
+	
 }

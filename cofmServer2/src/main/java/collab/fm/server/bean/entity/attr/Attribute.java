@@ -1,6 +1,7 @@
 package collab.fm.server.bean.entity.attr;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import collab.fm.server.bean.entity.Entity;
@@ -12,7 +13,7 @@ import collab.fm.server.bean.transfer.Value2;
  * @author mark
  * An attribute is associated with a set of vote-able values; however, the attribute itself is NOT vote-able.
  */
-public class Attribute extends Entity implements Cloneable {
+public class Attribute extends Entity {
 	// Types
 	public static final String TYPE_STR = "string";
 	public static final String TYPE_TEXT = "text";
@@ -46,16 +47,6 @@ public class Attribute extends Entity implements Cloneable {
 		this.type = type;
 		this.multipleSupport = true;
 		this.enableGlobalDupValues = true;
-	}
-	
-	@Override
-	public Object clone() {
-		try {
-			return super.clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-			return null;
-		}
 	}
 	
 	public String getName() {
@@ -105,7 +96,8 @@ public class Attribute extends Entity implements Cloneable {
 		}
 		boolean isVoting = false;
 		// Check for voting
-		for (Value v: values) {
+		for (Iterator<Value> it = values.iterator(); it.hasNext();) {
+			Value v = it.next();
 			boolean hasVoted = false;
 			if (v.equals(value)) {
 				isVoting = true;
@@ -119,7 +111,7 @@ public class Attribute extends Entity implements Cloneable {
 			}
 			if (hasVoted && v.getSupporterNum() <= 0) {
 				// If there's no supporters after the vote, then remove this value.
-				values.remove(v);
+				it.remove();
 			}
 		}
 		if (!isVoting) {
