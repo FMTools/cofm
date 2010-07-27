@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="400" height="300"
+	 title="{RS.VAL_ADD_TITLE}"
+	 showCloseButton="true"
+	 close="onClose();"
+	 preinitialize="initData();"
+	 creationComplete="changeForm(this.attrs.source.(@name==this.attrSelect.selectedLabel)[0]);"
+	 xmlns:components="com.hillelcoren.components.*">
+	
+	<mx:Form>
+		<mx:FormItem label="{RS.VAL_ADD_NAME}">
+			<mx:ComboBox id="attrSelect" labelField="@name" dataProvider="{attrs}"
+				 change="onSelectChange(event);">
+				
+			</mx:ComboBox>
+		</mx:FormItem>
+		<mx:FormItem label="{RS.VAL_ADD_VALUE}" id="fname">
+			<components:AutoComplete id="nameInput" allowMultipleSelection="false"
+					 allowNewValues="true" allowEditingNewValues="true"
+					 matchType="anyPart" 
+					 autoSelectEnabled="false"
+					 selectedItemStyleName="macMail" width="150"
+					 labelField="name"
+					 dataProvider="{FeatureNameList.instance.data}">
+			</components:AutoComplete>
+		</mx:FormItem>
+		<mx:FormItem label="{RS.VAL_ADD_VALUE}" id="ftext">
+			<mx:TextArea width="250" height="160" id="dta"/>
+		</mx:FormItem>
+		<mx:FormItem label="{RS.VAL_ADD_VALUE}" id="fnum">
+			<mx:HBox>
+				<mx:TextInput id="numInput" maxChars="50" width="150" />
+				<mx:Label id="numUnit" />
+			</mx:HBox>
+			<mx:HBox>
+				<mx:Label id="numMin" />
+				<mx:Label text="--" />
+				<mx:Label id="numMax" />
+			</mx:HBox>		
+		</mx:FormItem>
+		<mx:FormItem label="{RS.VAL_ADD_VALUE}" id="other">
+			<mx:TextInput id="otherInput" maxChars="50" width="150" />
+		</mx:FormItem>
+		<mx:FormItem direction="horizontal">
+			<mx:Button label="{RS.BTN_OK}" click="doAddValue();" />
+			<mx:Button label="{RS.BTN_CANCEL}" click="onClose();" />
+		</mx:FormItem>
+	</mx:Form>
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			import mx.collections.XMLListCollection;
+			import mx.utils.StringUtil;
+			import collab.fm.client.command.*;
+			import collab.fm.client.data.*;
+			import collab.fm.client.event.*;
+			import collab.fm.client.util.*;
+			
+			[Bindable]
+			public var attrs: XMLListCollection = new XMLListCollection();
+			
+			private var _attrName: String = null;
+			
+			private var _type: String;
+			
+			private function initData(): void {
+				var a: XML = <a/>;
+				for each (var obj: Object in FeatureModel.instance.attrs.source) {
+					if (obj.@type != Cst.ATTR_TYPE_ENUM) {
+						a.appendChild(XML(obj).copy());
+					}
+				}
+				attrs.source = a.attr;
+			}
+			
+			private function changeForm(a: Object): void {
+				if (String(a.@name) == Cst.ATTR_FEATURE_NAME) {
+					UIUtil.show(fname, true);
+					UIUtil.show(ftext, false);
+					UIUtil.show(fnum, false);					
+					UIUtil.show(other, false);
+				} else {
+					_type = a.@type;
+					switch (String(a.@type)) {
+						case Cst.ATTR_TYPE_TEXT:
+							UIUtil.show(fname, false);
+							UIUtil.show(ftext, true);
+							UIUtil.show(fnum, false);					
+							UIUtil.show(other, false);
+							break;
+						case Cst.ATTR_TYPE_NUMBER:
+							numUnit.text = a.unit.text().toString();
+							numMin.text = a.min.text().toString();
+							numMax.text = a.max.text().toString();
+							UIUtil.show(fname, false);
+							UIUtil.show(ftext, false);
+							UIUtil.show(fnum, true);					
+							UIUtil.show(other, false);
+							break;
+						default:
+							UIUtil.show(fname, false);
+							UIUtil.show(ftext, false);
+							UIUtil.show(fnum, false);					
+							UIUtil.show(other, true);
+							break;
+					}
+				}
+			}
+			
+			public function set attrName(n: String): void {
+				this._attrName = n;
+				if (this._attrName != null) {
+					for each (var obj: Object in attrs.source) {
+						if (this._attrName == obj.@name) {
+							attrSelect.selectedItem = obj;
+						}
+					}
+				}
+			}
+			
+			private function onClose(): void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function onSelectChange(evt: Event): void {
+				changeForm(evt.currentTarget.selectedItem); 
+			}
+			
+			private function doAddValue(): void {
+				//TODO: validate
+				var val: String;
+				if (attrSelect.selectedLabel == Cst.ATTR_FEATURE_NAME) {
+					val = nameInput.text;
+				} else {
+					switch (_type) {
+						case Cst.ATTR_TYPE_TEXT:
+							val = dta.text;
+							break;
+						case Cst.ATTR_TYPE_NUMBER:
+							val = numInput.text;
+							break;
+						default:
+							val = otherInput.text;
+							break;
+					}
+				}
+				val = StringUtil.trim(val);
+				
+				new VoteAddValueCommand(attrSelect.selectedLabel, val, CurrentFeature.instance.id).execute();
+				onClose();
+			}
+		]]>
+	</mx:Script>
+</mx:TitleWindow>

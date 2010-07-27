@@ -17,6 +17,8 @@
 			import mx.collections.ArrayCollection;
 			import collab.fm.client.data.*;
 			import collab.fm.client.util.*;
+			import collab.fm.client.data.CurrentFeature;
+			import collab.fm.client.command.VoteAddValueCommand;
 			
 			[Bindable]
 			public var values: ArrayCollection = new ArrayCollection();
@@ -24,11 +26,13 @@
 			public var attrName: String;
 			
 			private function onVoteYes(item: Object): void {
-				
+				new VoteAddValueCommand(item.a, item.value,
+						CurrentFeature.instance.id, true).execute();
 			}
 			
 			private function onVoteNo(item: Object): void {
-				
+				new VoteAddValueCommand(item.a, item.value,
+						CurrentFeature.instance.id, false).execute();
 			}
 			
 			public function updateValues(vals: XMLList): void {

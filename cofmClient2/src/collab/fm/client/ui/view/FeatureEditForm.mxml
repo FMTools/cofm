@@ -131,7 +131,7 @@
 				tab.enums = attr.enums.enum;
 				setTabSize(tab);
 				tab.updateValues(attr.values.value);
-				this.displayedAttrs[attr.@name] = tab;
+				this.displayedAttrs[String(attr.@name)] = tab;
 				return tab;
 			}
 			
@@ -141,7 +141,7 @@
 				tab.attrName = attr.@name;
 				setTabSize(tab);
 				tab.updateValues(attr.values.value);
-				this.displayedAttrs[attr.@name] = tab;
+				this.displayedAttrs[String(attr.@name)] = tab;
 				return tab;
 			}
 			
@@ -154,7 +154,7 @@
 				tab.max = Number(XML(attr.max).text().toString());
 				setTabSize(tab);
 				tab.updateValues(attr.values.value);
-				this.displayedAttrs[attr.@name] = tab;
+				this.displayedAttrs[String(attr.@name)] = tab;
 				return tab;
 			}
 			
@@ -164,7 +164,7 @@
 				tab.attrName = attr.@name;
 				setTabSize(tab);
 				tab.updateValues(attr.values.value);
-				this.displayedAttrs[attr.@name] = tab;
+				this.displayedAttrs[String(attr.@name)] = tab;
 				return tab;
 			}
 			
@@ -174,7 +174,7 @@
 				tab.attrName = attr.@name;
 				setTabSize(tab);
 				tab.updateValues(attr.values.value);
-				this.displayedAttrs[attr.@name] = tab;
+				this.displayedAttrs[String(attr.@name)] = tab;
 				return tab;
 			}
 			
@@ -212,7 +212,7 @@
 					if (a.length() <= 0) {
 						return;
 					}
-					if (this.displayedAttrs[op["attr"]] == null) {
+					if (this.displayedAttrs[String(op["attr"])] == null) {
 						this.addTab(a[0]);
 					} else {
 						var tab: IAttributeDisplayer = IAttributeDisplayer(this.displayedAttrs[op["attr"]]);

@@ -284,7 +284,7 @@ package collab.fm.client.data {
 			} else {
 				// A creating operation
 				op[FeatureModel.IS_NEW_ELEMENT] = true;
-				XML(a[0].values).appendChild(<value creator={op[Cst.FIELD_RSP_SOURCE_USER_ID]}>
+				XML(curAttr.values).appendChild(<value creator={op[Cst.FIELD_RSP_SOURCE_USER_ID]}>
 						<str>{op["val"]}</str>
 						<yes><user>{op[Cst.FIELD_RSP_SOURCE_USER_ID]}</user></yes>
 						<no/>
