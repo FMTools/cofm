@@ -5,6 +5,7 @@
 	<mx:Spacer/>
 	<mx:Label text="{RS.EDIT_FEATURE_VOTES}"/>
 	<v:FeatureVotesChart width="100%" height="100" />
+	<mx:Button label="{RS.BTN_ADD_VAL}" click="openAddValDlg();" />
 	<mx:VBox id="infoBox">
 		
 	</mx:VBox>
@@ -21,11 +22,11 @@
 			import collab.fm.client.event.*;
 			import collab.fm.client.util.*;
 			
+			private var avd: AddValueDlg;
+			
 			private function initView(): void {
 				ClientEvtDispatcher.instance().addEventListener(
 					ClientEvent.BASIC_INFO_UPDATED, updateBasicInfo);
-					
-				trace ("**** event handler reg.");
 			}
 			
 			public function updateBasicInfo(evt: ClientEvent): void {
@@ -94,6 +95,11 @@
 					rate.text = "(" + obj.@rate + "%)";
 					box.addChild(rate);
 				}
+			}
+			
+			private function openAddValDlg(): void {
+				avd = AddValueDlg(PopUpManager.createPopUp(this, AddValueDlg, true));
+				PopUpManager.centerPopUp(avd);
 			}
 		]]>
 	</mx:Script>

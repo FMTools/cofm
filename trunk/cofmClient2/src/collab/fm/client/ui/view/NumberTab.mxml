@@ -28,13 +28,17 @@
 							<mx:Button label="{RS.BTN_VOTE_NO}" click="onVoteNo();"/>
 							<mx:Script>
 								<![CDATA[
+									import collab.fm.client.data.CurrentFeature;
+									import collab.fm.client.command.VoteAddValueCommand;
 									import collab.fm.client.util.*;
 									protected function onVoteYes(): void {
-										//TODO
+										new VoteAddValueCommand(data.a, data.value,
+											CurrentFeature.instance.id, true).execute();
 									} 
 									
 									protected function onVoteNo(): void {
-										// TODO
+										new VoteAddValueCommand(data.a, data.value,
+											CurrentFeature.instance.id, false).execute();
 									}
 								]]>
 							</mx:Script>

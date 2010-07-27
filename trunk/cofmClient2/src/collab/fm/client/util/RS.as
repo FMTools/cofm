@@ -32,6 +32,7 @@ package collab.fm.client.util {
 		public static const BTN_CREATE_FEATURE: String = s("btn.createFeature");
 		public static const BTN_CREATE_RELATIONSHIP: String = s("btn.createRelationship");
 		public static const BTN_ADD_ATTR: String = s("btn.add.attr");
+		public static const BTN_ADD_VAL: String = s("btn.add.val");
 		public static const BTN_VOTE_YES: String = s("btn.vote.yes");
 		public static const BTN_VOTE_NO: String = s("btn.vote.no");
 		public static const BTN_VOTE_FEATURE_YES: String = s("btn.vote.feature.yes");
@@ -98,6 +99,10 @@ package collab.fm.client.util {
 		public static const ATTR_ADD_NEW_ROW: String = s("attr.add.new.row");
 		public static const ATTR_ADD_NEW_RANGE: String = s("attr.add.new.range");
 		public static const ATTR_ADD_NEW_UNIT: String = s("attr.add.new.unit");
+
+		public static const VAL_ADD_TITLE: String = s("val.add.title");
+		public static const VAL_ADD_NAME: String = s("val.add.name");
+		public static const VAL_ADD_VALUE: String = s("val.add.value");
 
 		public static const REL_TYPE_REFINEMENT: String = "refinement";
 		public static const REL_TYPE_REQUIRE: String = "require";
