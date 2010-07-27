@@ -69,15 +69,9 @@ public class ListModelRequest extends Request {
 			if (all != null) {
 				for (Model m: all) {
 					// Check exactly matches.
-					if (rsp.isExactlyMatches() == false) {
-						Attribute modelNames = m.getAttribute(Resources.ATTR_MODEL_NAME);
-						if (modelNames != null) {
-							for (Value v: modelNames.getValues()) {
-								if (v.getStrVal().equals(r.getSearchWord())) {
-									rsp.setExactlyMatches(true);
-								}
-							}
-						}
+					if (rsp.isExactlyMatches() == false &&
+							m.getName().equals(r.getSearchWord())) {
+						rsp.setExactlyMatches(true);
 					}
 					
 					// Add to result list.

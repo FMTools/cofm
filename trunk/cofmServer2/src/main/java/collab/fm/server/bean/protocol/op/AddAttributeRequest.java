@@ -20,9 +20,6 @@ public class AddAttributeRequest extends Request {
 	protected Boolean multiYes;
 	protected Boolean allowDup;
 	
-	// Add attribute to feature (true) or model (false)
-	protected Boolean toFeature;
-	
 	@Override
 	protected Processor makeDefaultProcessor() {
 		return new AddAttributeProcessor();
@@ -33,14 +30,6 @@ public class AddAttributeRequest extends Request {
 	}
 	public void setModelId(Long modelId) {
 		this.modelId = modelId;
-	}
-
-	public Boolean getToFeature() {
-		return toFeature;
-	}
-
-	public void setToFeature(Boolean toFeature) {
-		this.toFeature = toFeature;
 	}
 
 	public String getAttr() {
@@ -97,11 +86,8 @@ public class AddAttributeRequest extends Request {
 			if (m == null) {
 				throw new InvalidOperationException("Invalid model ID: " + r.getModelId());
 			}
-			if (r.getToFeature().booleanValue() == true) {
-				m.addAttributeToFeatures(a);
-			} else {
-				m.addAttribute(a);
-			}
+
+			m.addAttributeToFeatures(a);
 			DaoUtil.getModelDao().save(m);
 			
 			rsp.setName(Resources.RSP_SUCCESS);
@@ -129,7 +115,6 @@ public class AddAttributeRequest extends Request {
 	
 	public static class DefaultResponse extends Response {
 		protected Long modelId;
-		protected Boolean toFeature;
 		protected String attr;
 		protected String type;
 		protected Boolean multiYes;
@@ -138,7 +123,6 @@ public class AddAttributeRequest extends Request {
 		public DefaultResponse(AddAttributeRequest r) {
 			super(r);
 			this.setModelId(r.getModelId());
-			this.setToFeature(r.getToFeature());
 			this.setAttr(r.getAttr());
 			this.setType(r.getType());
 			this.setMultiYes(r.getMultiYes());
@@ -152,14 +136,6 @@ public class AddAttributeRequest extends Request {
 			this.modelId = modelId;
 		}
 		
-		public Boolean getToFeature() {
-			return toFeature;
-		}
-
-		public void setToFeature(Boolean toFeature) {
-			this.toFeature = toFeature;
-		}
-
 		public String getAttr() {
 			return attr;
 		}

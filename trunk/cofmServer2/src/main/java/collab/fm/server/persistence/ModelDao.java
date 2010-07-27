@@ -12,5 +12,4 @@ public interface ModelDao extends GenericDao<Model, Long> {
 	public List getBySimilarName(String name) throws EntityPersistenceException, StaleDataException;
 	
 	public Model getByName(String name) throws EntityPersistenceException, StaleDataException;
-	public Model getByAttrValue(String attrName, String val) throws EntityPersistenceException, StaleDataException;
 }

@@ -13,11 +13,11 @@ import collab.fm.server.bean.transfer.Entity2;
 import collab.fm.server.bean.transfer.Model2;
 import collab.fm.server.util.EntityUtil;
 
-public class Model extends Entity implements AttributeSet {
+public class Model extends Entity {
 	private static Logger logger = Logger.getLogger(Model.class);
 	
-	// Attributes: key = Attr_Name
-	private Map<String, Attribute> attrs = new HashMap<String, Attribute>();
+	private String name;
+	private String description;
 	
 	// Attributes of features in this model
 	private Map<String, Attribute> featureAttrs = new HashMap<String, Attribute>();
@@ -25,6 +25,7 @@ public class Model extends Entity implements AttributeSet {
 	private Set<Feature> features = new HashSet<Feature>();
 	private Set<Relationship> relationships = new HashSet<Relationship>();
 	
+	// Contributors of this model
 	private Set<User> users = new HashSet<User>();
 	
 	public Model() {
@@ -65,36 +66,28 @@ public class Model extends Entity implements AttributeSet {
 		this.getUsers().add(u);
 	}
 	
-	public void addAttribute(Attribute a) {
-		if (attrs.get(a.getName()) == null) {
-			attrs.put(a.getName(), a);
-		}
-	}
-	
 	public void addAttributeToFeatures(Attribute a) {
 		if (featureAttrs.get(a.getName()) == null) {
 			featureAttrs.put(a.getName(), a);
 		}
 	}
 	
-	public boolean voteOrAddValue(String attrName, String val, boolean yes, Long userId) {
-		Attribute attr = attrs.get(attrName);
-		if (attr == null) {
-			return false;
-		}
-		Value v = new Value(userId);
-		v.setStrVal(val);
-		return attr.voteOrAddValue(v, yes, userId);
-	}
-	
-	public Map<String, Attribute> getAttrs() {
-		return attrs;
+	public String getName() {
+		return name;
 	}
 
-	public void setAttrs(Map<String, Attribute> attrs) {
-		this.attrs = attrs;
+	public void setName(String name) {
+		this.name = name;
 	}
-	
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public Map<String, Attribute> getFeatureAttrs() {
 		return featureAttrs;
 	}
@@ -131,24 +124,17 @@ public class Model extends Entity implements AttributeSet {
 		if (this.getId() != null) {
 			return this.getId().toString();
 		}
-		return String.valueOf(this.getAttrs().hashCode());
+		return String.valueOf(this.getName().hashCode());
 	}
 
-	public Attribute getAttribute(String attrName) {
-		return attrs.get(attrName);
-	}
-	
 	@Override
 	public void transfer(Entity2 m) {
 		Model2 m2 = (Model2) m;
 		super.transfer(m2);
-		
+		m2.setName(this.getName());
+		m2.setDes(this.getDescription());
 		for (User u: this.getUsers()) {
 			m2.addUser(u.getId());
-		}
-		
-		for (Map.Entry<String, Attribute> e: this.getAttrs().entrySet()) {
-			m2.addAttr(EntityUtil.transferFromAttr(e.getValue()));
 		}
 	}
 }

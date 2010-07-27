@@ -19,7 +19,7 @@ import collab.fm.server.util.EntityUtil;
 import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
-public class Feature extends VotableEntity implements AttributeSet {
+public class Feature extends VotableEntity {
 	
 	private static Logger logger = Logger.getLogger(Feature.class);
 	

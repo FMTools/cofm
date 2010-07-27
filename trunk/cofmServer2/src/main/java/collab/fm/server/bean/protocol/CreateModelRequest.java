@@ -3,6 +3,7 @@ package collab.fm.server.bean.protocol;
 import collab.fm.server.bean.entity.Model;
 import collab.fm.server.bean.entity.User;
 import collab.fm.server.bean.entity.attr.Attribute;
+import collab.fm.server.bean.entity.attr.EnumAttribute;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
@@ -57,19 +58,26 @@ public class CreateModelRequest extends Request {
 				if (me == null) {
 					throw new InvalidOperationException("Invalid user ID: " + cmr.getRequesterId());
 				}
-				// Create "name" and "description" attributes for the model.
-				Attribute name = new Attribute(cmr.getRequesterId(),
-						Resources.ATTR_MODEL_NAME, Attribute.TYPE_STR);
-				name.setEnableGlobalDupValues(false);
 				
-				Attribute des = new Attribute(cmr.getRequesterId(),
-						Resources.ATTR_MODEL_DES, Attribute.TYPE_TEXT);
-				m.addAttribute(name);
-				m.addAttribute(des);
+				m.setName(cmr.getModelName());
+				m.setDescription(cmr.getDescription());
 				
-				// Add values of "name" and "description" to the model.
-				m.voteOrAddValue(Resources.ATTR_MODEL_NAME, cmr.getModelName(), true, cmr.getRequesterId());
-				m.voteOrAddValue(Resources.ATTR_MODEL_DES, cmr.getDescription(), true, cmr.getRequesterId());
+				// Add the default feature attribute set to the model.
+				Attribute fname = new Attribute(cmr.getRequesterId(), 
+						Resources.ATTR_FEATURE_NAME, Attribute.TYPE_STR);
+				fname.setEnableGlobalDupValues(false);
+				
+				Attribute fdes = new Attribute(cmr.getRequesterId(), 
+						Resources.ATTR_FEATURE_DES, Attribute.TYPE_TEXT);
+				
+				EnumAttribute fopt = new EnumAttribute(cmr.getRequesterId(),
+						Resources.ATTR_FEATURE_OPT);
+				fopt.addValidValue(Resources.VAL_OPT_MANDATORY);
+				fopt.addValidValue(Resources.VAL_OPT_OPTIONAL);
+				
+				m.addAttributeToFeatures(fname);
+				m.addAttributeToFeatures(fdes);
+				m.addAttributeToFeatures(fopt);
 				
 				// Add the user as a contributor of the model.
 				me.addModel(m);

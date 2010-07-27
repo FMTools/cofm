@@ -1,6 +1,5 @@
 package collab.fm.server.bean.protocol.op;
 
-import collab.fm.server.bean.entity.AttributeSet;
 import collab.fm.server.bean.entity.Feature;
 import collab.fm.server.bean.entity.Model;
 import collab.fm.server.bean.entity.attr.Attribute;
@@ -76,28 +75,20 @@ public class VoteAddValueRequest extends Request {
 			VoteAddValueRequest r = (VoteAddValueRequest) req;
 			DefaultResponse rsp = new DefaultResponse(r);
 			
-			AttributeSet target = null;
 			Model m = DaoUtil.getModelDao().getById(r.getModelId(), false);
 			if (m == null) {
 				throw new InvalidOperationException("Invalid model ID: " + r.getModelId());
 			}
-			// If it is an operation on the Feature Model
-			if (r.getFeatureId() == null) {
-				target = m;
-			} else {
-				// It is an operation on the Feature
-				target = DaoUtil.getFeatureDao().getById(r.getFeatureId(), false);
-				if (target == null) {
-					throw new InvalidOperationException("Invalid feature ID: " + r.getFeatureId());
-				}
+
+			Feature target = DaoUtil.getFeatureDao().getById(r.getFeatureId(), false);
+			if (target == null) {
+				throw new InvalidOperationException("Invalid feature ID: "
+						+ r.getFeatureId());
 			}
 			
 			Attribute a = target.getAttribute(r.getAttr());
 			if (a == null) {
-				if (r.getFeatureId() == null) {
-					throw new InvalidOperationException("Unknown attribute of model: " + r.getAttr());
-				}
-				// This is a feature, and we can get the attribute instance from Model.featureAttrs
+				// We can get the attribute instance from Model.featureAttrs
 				a = m.getFeatureAttrs().get(r.getAttr());
 				if (a == null) {
 					throw new InvalidOperationException("Unknown attribute of features: " + r.getAttr());
@@ -106,24 +97,15 @@ public class VoteAddValueRequest extends Request {
 			
 			// If the attribute is NOT allow to global replicated, we should check if the same value existed
 			if (!a.isEnableGlobalDupValues()) {
-				AttributeSet as2 = null;
-				if (r.getFeatureId() == null) {
-					as2 = DaoUtil.getModelDao().getByAttrValue(r.getAttr(), r.getVal());
-				} else {
-					as2 = DaoUtil.getFeatureDao().getByAttrValue(r.getModelId(), r.getAttr(), r.getVal());
-				}
-				if (as2 != null) { // if the same value exists, then the target must be this object.
-					target = as2;
-					if (r.getFeatureId() == null) {
-						rsp.setModelId(((Model)as2).getId());
-					} else {
-						rsp.setFeatureId(((Feature)as2).getId());
-					}
+				Feature f = DaoUtil.getFeatureDao().getByAttrValue(r.getModelId(), r.getAttr(), r.getVal());
+				if (f != null) { // if the same value exists, then the target must be this object.
+					target = f;
+					rsp.setFeatureId(f.getId());
 				}
 			}
 			
 			// If the target is a feature, we should make sure the attribute exists
-			if (r.getFeatureId() != null && target.getAttribute(r.getAttr()) == null) {
+			if (target.getAttribute(r.getAttr()) == null) {
 				target.addAttribute((Attribute)a.clone());
 			}
 			boolean isValidValue = target.voteOrAddValue(r.getAttr(), r.getVal(), r.getYes(), r.getRequesterId());
@@ -133,11 +115,7 @@ public class VoteAddValueRequest extends Request {
 				return false;
 			}
 			
-			if (r.getFeatureId() == null) {
-				DaoUtil.getModelDao().save((Model)target);
-			} else {
-				DaoUtil.getFeatureDao().save((Feature)target);
-			}
+			DaoUtil.getFeatureDao().save(target);
 			
 			rsp.setName(Resources.RSP_SUCCESS);
 			rg.setBack(rsp);

@@ -13,12 +13,8 @@
   	<property name="createTime" type="timestamp" column="CREATED" />
   	<property name="creator" type="long" column="CREATOR_ID" />
   	
-  	<!-- One-to-many association with Attributes -->
-  	<map name="attrs" table="MODEL_ATTR_ASSOC" cascade="all, delete-orphan">
-  		<key column="MODEL_ID"></key>
-  		<map-key type="string" column="ATTR_NAME"></map-key>
-  		<one-to-many class="collab.fm.server.bean.entity.attr.Attribute"></one-to-many>
-  	</map>
+  	<property name="name" type="string" column="MODEL_NAME" />
+  	<property name="description" type="string" column="MODEL_DESCRIPTION" />
   	
   	<!-- One-to-many association with Feature Attribute Set -->
   	<map name="featureAttrs" table="MODEL_ATTR_SET" cascade="all, delete-orphan">
