@@ -1,7 +1,7 @@
 package collab.fm.client.data {
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
-	
+
 	import mx.collections.XMLListCollection;
 
 	/**
@@ -123,40 +123,18 @@ package collab.fm.client.data {
 			var _id: int = int(input.id);
 			var _totalUserNum: int = 0;
 			var _users: XML = <users></users>;
-			for each (var u: Object in (input.users as Array)) {
+			for each (var u: Object in(input.users as Array)) {
 				++_totalUserNum;
 				_users.appendChild(<user>{int(u)}</user>);
 				if (int(u) == UserList.instance.myId) {
 					_isMine = true;
 				}
 			}
-			
-			var _primary_name: String = null;
-			var _primary_des: String = null;
-			
-			// Get the feature model's primary name & description
-			for each (var attr: Object in input.attrs) {
-				if (_primary_name != null && _primary_des != null) {
-					break;
-				}
-				if (_primary_name == null && attr.name == Cst.ATTR_MODEL_NAME) {
-					// Sort the name, if we are searching name, then the searched name should become first
-					ModelUtil.sortOnRating(
-						attr.vals as Array, "v1", "v0", UserList.instance.myId,
-						"val", search);
-					_primary_name = (attr.vals)[0].val; // primary == first
-					continue;
-				}
-				if (_primary_des == null && attr.name == Cst.ATTR_MODEL_DES) {
-					ModelUtil.sortOnRating(attr.vals as Array, "v1", "v0", UserList.instance.myId);
-					_primary_des = (attr.vals)[0].val;
-				}
-			}
-			
+
 			var result: XML = 
 				<model isMine={_isMine} id={_id} creator={input.cid} time={input.ctime} 
-					name={_primary_name} userNum={_totalUserNum}>
-					<des>{_primary_des}</des>
+					name={input.name} userNum={_totalUserNum}>
+					<des>{input.des}</des>
 				</model>;
 			result.appendChild(_users);
 

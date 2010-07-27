@@ -1,7 +1,7 @@
 package collab.fm.client.data {
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
-	
+
 	import mx.collections.XMLListCollection;
 
 	// The data of current feature model
@@ -11,43 +11,32 @@ package collab.fm.client.data {
 		 *	<feature id= creator= time=>
 		   <yes><user></user></yes>
 		   <no><user></user></no>
-		   <comments> <comment/> 
+		   <comments> <comment/>
 		   </comments>
 		   <attrs>
-		       <attr name= type= multi= dup= >
-		           <values>
-		               <value creator= time=>
-		               		<str> ... </str>
-		                   <yes> <user></user> </yes>
-		                   <no> <user></user> </no>
-		               </value>
-		           </values>
-		       </attr>
+		   <attr name= type= multi= dup= >
+		   <values>
+		   <value creator= time=>
+		   <str> ... </str>
+		   <yes> <user></user> </yes>
+		   <no> <user></user> </no>
+		   </value>
+		   </values>
+		   </attr>
 		   </attrs>
 		   </feature>
-		   
+
 		 * <attr name=... type=... multi=... dup=...>
-		       <enums...>  <min, max, unit>
+		   <enums...>  <min, max, unit>
 		   </attr>
-		   
+
 		 * <binary id=X type=Type left=Id1 right=Id2>
 		   <yes/> <no/>
 		 * </binary>
 		 */
 
 		private static const _defaultXml: XML = <model><feature/><binary/></model>;
-		private static const _defaultAttrs: XML = <attrs>
-				<attr name={Cst.ATTR_FEATURE_NAME} type={Cst.ATTR_TYPE_STRING} multi="true" dup="false">
-				</attr>
-				<attr name={Cst.ATTR_FEATURE_DES} type={Cst.ATTR_TYPE_TEXT} multi="true" dup="true">
-				</attr>
-				<attr name={Cst.ATTR_FEATURE_OPT} type={Cst.ATTR_TYPE_ENUM} multi="false" dup="true">
-					<enums>
-						<enum>{Cst.VAL_OPT_MAN}</enum>
-						<enum>{Cst.VAL_OPT_OPT}</enum>
-					</enums>
-				</attr>
-			</attrs>;
+		private static const _defaultAttrs: XML = <attrs/>;
 
 		public static const IS_NEW_ELEMENT: String = "IsNewElement";
 		public static const SHOULD_DELETE_ELEMENT: String = "ShouldDeleteElement";
@@ -85,11 +74,11 @@ package collab.fm.client.data {
 		public function registerSubView(view: IOperationListener): void {
 			_subViews.push(view);
 		}
-		
+
 		public function getValuesOfAttr(feature: XML, attrName: String): XMLList {
 			return feature.attrs.attr.(@name==attrName).values.value;
 		}
-		
+
 		public function getRefinementId(parent: String, child: String): String {
 			var rs: XMLList = this.binaries.source.(@type==Cst.BIN_REL_REFINES && @left==parent && @right==child);
 			if (rs.length() > 0) {
@@ -97,7 +86,7 @@ package collab.fm.client.data {
 			}
 			return null;
 		}
-		
+
 		public function containsFeature(featureId: String): Boolean {
 			var fs: XMLList = features.source.(@id==featureId);
 			return fs.length() > 0;
@@ -113,7 +102,7 @@ package collab.fm.client.data {
 			var me: String = String(UserList.instance.myId);
 			return findVoter(this.binaries, relationshipId, me, false);
 		}
-		
+
 		public function getFeatureSupportRate(id: String): Number {
 			var elements: XMLList = this.features.source.(@id==id);
 			if (elements.length() > 0) {
@@ -121,7 +110,7 @@ package collab.fm.client.data {
 			}
 			return 0;
 		}
-		
+
 		public function getRelationshipSupportRate(id: String): Number {
 			var elements: XMLList = this.binaries.source.(@id==id);
 			if (elements.length() > 0) {
@@ -130,14 +119,14 @@ package collab.fm.client.data {
 			return 0;
 			// TODO: extend for group/complex relationships
 		}
-		
+
 		public function getSupportRate(element: XML): Number {
 			var y: int = XMLList(element.yes.user).length();
 			var n: int = XMLList(element.no.user).length();
 			var sr: Number = (n <= 0) ? 1 : (y / (y+n));
 			return sr;
 		}
-		
+
 		private function findVoter(target: XMLListCollection, id: String, voter: String, yes: Boolean): Boolean {
 			if (yes) {
 				return XMLList(target.source.(@id==id).yes.user.(text().toString()==voter)
@@ -151,8 +140,9 @@ package collab.fm.client.data {
 		public function resetAll(): void {
 			features.source = new XMLList(_defaultXml.feature);
 			binaries.source = new XMLList(_defaultXml.binary);
+			attrs.source = new XMLList(_defaultAttrs);
 		}
-		
+
 		private function onCommentAdded(evt: AddCommentEvent): void {
 			var fs: XMLList = this.features.source.(@id==String(evt.feature));
 			if (fs.length() > 0) {
@@ -162,7 +152,7 @@ package collab.fm.client.data {
 					</comment>);
 			}
 		}
-		
+
 		// For details about operations, see server.bean.operation package.
 		private function onOperationCommit(evt: OperationCommitEvent): void {
 			var op: Object = evt.response;
@@ -194,7 +184,7 @@ package collab.fm.client.data {
 					break;
 				case Cst.REQ_VA_FEATURE:
 					handleVoteAddFeature(op);
-					handleInferVoteOnRelation(op);  // Vote/add feature may cause inferred votes on relations
+					handleInferVoteOnRelation(op); // Vote/add feature may cause inferred votes on relations
 					for each (var v2: Object in _subViews) {
 						IOperationListener(v2).handleVoteAddFeature(op);
 						IOperationListener(v2).handleInferVoteOnRelation(op);
@@ -216,7 +206,7 @@ package collab.fm.client.data {
 					break;
 			}
 		}
-		
+
 		/**
 		 * Only "YES" votes ("true") can be inferred on features
 		 */
@@ -228,7 +218,7 @@ package collab.fm.client.data {
 				}
 			}
 		}
-		
+
 		/**
 		 * Only "NO" votes ("false") can be inferred on relations.
 		 */
@@ -239,16 +229,16 @@ package collab.fm.client.data {
 					var current: XML = targets[0];
 					if (ModelUtil.updateVoters("false", op[Cst.FIELD_RSP_SOURCE_USER_ID], current) == false) {
 						var info: Object = {
-							id: current.@id,
-							type: current.@type,
-							left: current.@left,
-							right: current.@right
-						};
+								id: current.@id,
+								type: current.@type,
+								left: current.@left,
+								right: current.@right
+							};
 						// Record the relationship which needs to be deleted.
 						if (op[FeatureModel.INFERRED_REMOVAL_ELEMENTS] == null) {
 							op[FeatureModel.INFERRED_REMOVAL_ELEMENTS] = new Array();
 						}
-						
+
 						(op[FeatureModel.INFERRED_REMOVAL_ELEMENTS] as Array).push(info);
 						delete targets[0];
 					}
@@ -262,24 +252,24 @@ package collab.fm.client.data {
 			if (op["featureId"] == null) {
 				return;
 			}
-			
+
 			var curAttr: XML = null, curFeature: XML = null;
-			var f: XMLList = features.source.(@id==op["featureId"]);    // Find the feature with specific ID.
+			var f: XMLList = features.source.(@id==op["featureId"]); // Find the feature with specific ID.
 			if (f.length() <= 0) {
 				return;
 			}
 			curFeature = f[0];
 			var a: XMLList = curFeature..attr.(@name==op["attr"]); // then find the specific attribute in this feature
 			if (a.length() <= 0) {
-			    // No such attribute, create it first
-			    var attrSet: XMLList = this.attrs.source.(@name==op["attr"]);
-			    if (attrSet.length() > 0) {
-			    	curAttr = XML(attrSet[0]).copy();
-			    	curAttr.appendChild(<values/>);
-			    	curFeature.appendChild(curAttr);
-			    } else {
-			    	return;
-			    }
+				// No such attribute, create it first
+				var attrSet: XMLList = this.attrs.source.(@name==op["attr"]);
+				if (attrSet.length() > 0) {
+					curAttr = XML(attrSet[0]).copy();
+					curAttr.appendChild(<values/>);
+					curFeature.appendChild(curAttr);
+				} else {
+					return;
+				}
 			} else {
 				curAttr = a[0];
 			}
@@ -287,7 +277,7 @@ package collab.fm.client.data {
 			if (targets.length() > 0) {
 				// A voting operation
 				if (ModelUtil.updateVoters(op[Cst.FIELD_RSP_VOTE], 
-						op[Cst.FIELD_RSP_SOURCE_USER_ID], XML(targets[0])) == false) {
+					op[Cst.FIELD_RSP_SOURCE_USER_ID], XML(targets[0])) == false) {
 					delete targets[0];
 					op[FeatureModel.SHOULD_DELETE_ELEMENT] = true;
 				}
@@ -301,26 +291,26 @@ package collab.fm.client.data {
 					</value>);
 			}
 		}
-		
+
 		/**
 		 * Add String/Text/List attribute
 		 */
 		public function handleAddAttribute(op: Object): void {
 			if (XMLList(this.attrs.source.(@name==op["attr"])).length() <= 0) {
 				this.attrs.addItem(<attr name={op["attr"]}
-					type={op["type"]}
-					multi={op["multiYes"]}
-					dup={op["allowDup"]}/>
-				);
+						type={op["type"]}
+						multi={op["multiYes"]}
+						dup={op["allowDup"]}/>
+					);
 			}
 		}
-		
+
 		public function handleAddEnumAttribute(op: Object): void {
 			if (XMLList(this.attrs.source.(@name==op["attr"])).length() <= 0) {
 				var a: XML = <attr name={op["attr"]}
-					type={op["type"]}
-					multi={op["multiYes"]}
-					dup={op["allowDup"]}/>;
+						type={op["type"]}
+						multi={op["multiYes"]}
+						dup={op["allowDup"]}/>;
 				var xmlEnum: XML = <enums/>;
 				for each (var en: Object in op.vlist) {
 					xmlEnum.appendChild(<enum>{en}</enum>);
@@ -329,13 +319,13 @@ package collab.fm.client.data {
 				this.attrs.addItem(a);
 			}
 		}
-		
+
 		public function handleAddNumericAttribute(op: Object): void {
 			if (XMLList(this.attrs.source.(@name==op["attr"])).length() <= 0) {
 				this.attrs.addItem(<attr name={op["attr"]}
-					type={op["type"]}
-					multi={op["multiYes"]}
-					dup={op["allowDup"]}>
+						type={op["type"]}
+						multi={op["multiYes"]}
+						dup={op["allowDup"]}>
 						<min>{op.min}</min>
 						<max>{op.max}</max>
 						<unit>{op.unit}</unit>
@@ -349,41 +339,41 @@ package collab.fm.client.data {
 				// A voting operation
 				var current: XML = targets[0];
 				if (ModelUtil.updateVoters(op[Cst.FIELD_RSP_VOTE], 
-						op[Cst.FIELD_RSP_SOURCE_USER_ID], current) == false) {
+					op[Cst.FIELD_RSP_SOURCE_USER_ID], current) == false) {
 					delete targets[0];
 					op[FeatureModel.SHOULD_DELETE_ELEMENT] = true;
 				} else if (ModelUtil.isTrue(op[Cst.FIELD_RSP_VOTE]) == false) {
-					op[FeatureModel.VOTE_NO_TO_FEATURE] = true;					
+					op[FeatureModel.VOTE_NO_TO_FEATURE] = true;
 				}
 			} else {
 				op[FeatureModel.IS_NEW_ELEMENT] = true;
 
 				features.addItem(<feature id={op["featureId"]} creator={op[Cst.FIELD_RSP_SOURCE_USER_ID]}>
-					<yes><user>{op[Cst.FIELD_RSP_SOURCE_USER_ID]}</user></yes>
-					<no/>
-					<attrs>
-						<attr name={Cst.ATTR_FEATURE_NAME} type={Cst.ATTR_TYPE_STRING} multi="true" dup="false">
-							<values>
-								<value creator={op[Cst.FIELD_RSP_SOURCE_USER_ID]}>
-									<str>{op["featureName"]}</str>
-									<yes><user>op[Cst.FIELD_RSP_SOURCE_USER_ID]</user></yes>
-									<no/>
-								</value>
-							</values>
-						</attr>
-						<attr name={Cst.ATTR_FEATURE_DES} type={Cst.ATTR_TYPE_TEXT} multi="true" dup="true">
-							<values/>
-						</attr>
-						<attr name={Cst.ATTR_FEATURE_OPT} type={Cst.ATTR_TYPE_ENUM} multi="false" dup="true">
-							<values/>
-							<enums>
-								<enum>{Cst.VAL_OPT_MAN}</enum>
-								<enum>{Cst.VAL_OPT_OPT}</enum>
-							</enums>
-						</attr>
-					</attrs>
-					<comments/>
-				</feature>);
+						<yes><user>{op[Cst.FIELD_RSP_SOURCE_USER_ID]}</user></yes>
+						<no/>
+						<attrs>
+							<attr name={Cst.ATTR_FEATURE_NAME} type={Cst.ATTR_TYPE_STRING} multi="true" dup="false">
+								<values>
+									<value creator={op[Cst.FIELD_RSP_SOURCE_USER_ID]}>
+										<str>{op["featureName"]}</str>
+										<yes><user>op[Cst.FIELD_RSP_SOURCE_USER_ID]</user></yes>
+										<no/>
+									</value>
+								</values>
+							</attr>
+							<attr name={Cst.ATTR_FEATURE_DES} type={Cst.ATTR_TYPE_TEXT} multi="true" dup="true">
+								<values/>
+							</attr>
+							<attr name={Cst.ATTR_FEATURE_OPT} type={Cst.ATTR_TYPE_ENUM} multi="false" dup="true">
+								<values/>
+								<enums>
+									<enum>{Cst.VAL_OPT_MAN}</enum>
+									<enum>{Cst.VAL_OPT_OPT}</enum>
+								</enums>
+							</attr>
+						</attrs>
+						<comments/>
+					</feature>);
 
 				if (op["local"] != null) {
 					ClientEvtDispatcher.instance().dispatchEvent(
@@ -399,7 +389,7 @@ package collab.fm.client.data {
 				var current: XML = targets[0];
 				var opposed: Boolean = isRelationshipOpponent(String(op["relationshipId"]));
 				if (ModelUtil.updateVoters(op[Cst.FIELD_RSP_VOTE], 
-						op[Cst.FIELD_RSP_SOURCE_USER_ID], current) == false) {
+					op[Cst.FIELD_RSP_SOURCE_USER_ID], current) == false) {
 					delete targets[0];
 					op[FeatureModel.SHOULD_DELETE_ELEMENT] = true;
 				}
@@ -408,39 +398,46 @@ package collab.fm.client.data {
 				}
 			} else {
 				// A creating operation
-					
-		    	op[FeatureModel.IS_NEW_ELEMENT] = true;
-			
+
+				op[FeatureModel.IS_NEW_ELEMENT] = true;
+
 				// TODO: add creation time
 				binaries.addItem(<binary id={op["relationshipId"]}
-					creator={op[Cst.FIELD_RSP_SOURCE_USER_ID]}
-					type={op["type"]}
-					left={op["leftFeatureId"]}
-					right={op["rightFeatureId"]}>
-					<yes><user>{op[Cst.FIELD_RSP_SOURCE_USER_ID]}</user></yes>
-					<no/>
-				</binary>
-				);
-				
+						creator={op[Cst.FIELD_RSP_SOURCE_USER_ID]}
+						type={op["type"]}
+						left={op["leftFeatureId"]}
+						right={op["rightFeatureId"]}>
+						<yes><user>{op[Cst.FIELD_RSP_SOURCE_USER_ID]}</user></yes>
+						<no/>
+					</binary>
+					);
+
 			}
 		}
 
 		private function onModelUpdate(evt: ModelUpdateEvent): void {
-			
+
 			var fs: XML = <features/>;
 			var bs: XML = <binaries/>;
+			var atts: XML = <attrs/>;
 			for each (var feature: Object in(evt.model.features as Array)) {
 				fs.appendChild(createXmlFromFeature(feature));
 			}
 			for each (var binary: Object in(evt.model.binaries as Array)) {
 				bs.appendChild(createXmlFromBinary(binary));
 			}
+			for each (var a: Object in(evt.model.attrs as Array)) {
+				trace ("Update attribute - " + a.name);
+				appendAttr(atts, a, false);
+			}
 			features.source = fs.feature;
 			binaries.source = bs.binary;
+			attrs.source = atts.attr;
+
 
 			ClientEvtDispatcher.instance().dispatchEvent(
 				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_COMPLETE, null));
-			
+
 		}
 
 
@@ -451,20 +448,18 @@ package collab.fm.client.data {
 
 			// Attributes of the feature (also write to attribute-set (this.attrs))
 			var attrs: XML = <attrs/>;
-			var attrSet: XML = _defaultAttrs;
 			for each (var a: Object in f.attrs) {
-				appendAttr(attrs, attrSet, a);
+				appendAttr(attrs, a);
 			}
 			result.appendChild(attrs);
-			this.attrs.source = attrSet.attr;
-			
+
 			// Comments of the feature
 			var cs: XML = <comments/>;
 			for each (var c: Object in f.comments) {
 				cs.appendChild(<comment creator={c.cid} time={c.ctime}>{c.content}</comment>);
 			}
 			result.appendChild(cs);
-			
+
 			return result;
 		}
 
@@ -487,17 +482,15 @@ package collab.fm.client.data {
 			root.appendChild(yes);
 			root.appendChild(no);
 		}
-		
-		private function appendAttr(root: XML, attrSet: XML, obj: Object): void {
+
+		private function appendAttr(root: XML, obj: Object, needValues: Boolean = true): void {
 			var attr: XML = <attr name={obj.name} type={obj.type} multi={obj.multi} dup={obj.dup} />;
-			
+
 			// Append other parts of "Enum-Attributes" and "Numeric-Attributes"
 			switch (String(obj["type"])) {
 				case Cst.ATTR_TYPE_ENUM:
 					var xmlEnum: XML = <enums/>;
-					trace ("featureModel - append enum attribute, obj.enums = " + obj.enums);
 					for each (var en: Object in obj.enums) {
-						trace ("FeatureModel - append enum attribute, enum = " + String(en));
 						xmlEnum.appendChild(<enum>{String(en)}</enum>);
 					}
 					attr.appendChild(xmlEnum);
@@ -508,23 +501,21 @@ package collab.fm.client.data {
 					attr.appendChild(<unit>{obj.unit}</unit>);
 					break;
 			}
-			// Check and add the attribute to attrSet
-			if (XMLList(attrSet.attr.(@name==obj.name)).length() <= 0) {
-				attrSet.appendChild(attr.copy());
+
+			if (needValues) {
+				// Append values of the attributes (The attribute-set doesn't contain the values)
+				var vs: XML = <values/>
+				for each (var val: Object in obj.vals) {
+					var xmlVal: XML = <value creator={val.cid} time={val.ctime}><str>{val.val}</str></value>;
+					appendVotes(xmlVal, val);
+					vs.appendChild(xmlVal);
+				}
+				attr.appendChild(vs);
 			}
-			
-			// Append values of the attributes (The attribute-set doesn't contain the values)
-			var vs: XML = <values/>
-			for each (var val: Object in obj.vals) {
-				var xmlVal: XML = <value creator={val.cid} time={val.ctime}><str>{val.val}</str></value>;
-				appendVotes(xmlVal, val);
-				vs.appendChild(xmlVal);
-			}
-			attr.appendChild(vs);
-			
+
 			root.appendChild(attr);
 		}
-		
+
 		public function stats(): String {
 			// Number of features
 			var numFeature: int = this.features.source.length();
@@ -532,7 +523,7 @@ package collab.fm.client.data {
 			var numCommon: int = 0;
 			// Number of optional features (NO vote == 1, 2, 3, ...)
 			var numOpt: Array = [];
-			
+
 			for each (var f: Object in this.features.source) {
 				var n: int = XMLList(f.no.user).length();
 				if (n == 0) {
@@ -545,7 +536,7 @@ package collab.fm.client.data {
 					}
 				}
 			}
-			
+
 			var s: String = "FeatureModel - Total: " + numFeature + " features; Common: " +
 				numCommon + "; ";
 			for (var a: Object in numOpt) {
@@ -553,7 +544,7 @@ package collab.fm.client.data {
 			}
 			return s;
 		}
-		
+
 		[Bindable]
 		public function get features(): XMLListCollection {
 			return _features;
@@ -571,13 +562,13 @@ package collab.fm.client.data {
 		public function set binaries(xml: XMLListCollection): void {
 			_binaries = xml;
 		}
-		
+
 		[Bindable]
 		public function get attrs(): XMLListCollection {
 			return _attrs;
 		}
-		
-		public function set attrs(xml: XMLListCollection) : void {
+
+		public function set attrs(xml: XMLListCollection): void {
 			_attrs = xml;
 		}
 	}

@@ -1,20 +1,18 @@
-package collab.fm.client.command
-{
+package collab.fm.client.command {
 	import collab.fm.client.cmn.*;
 	import collab.fm.client.data.*;
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
-	
-	public class AddEnumAttributeCommand extends AddAttributeCommand
-	{
+
+	public class AddEnumAttributeCommand extends AddAttributeCommand {
 		private var _enums: Array;
-		public function AddEnumAttributeCommand(name: String, enums: Array, multi: Boolean=true, dup: Boolean=true)
-		{
+
+		public function AddEnumAttributeCommand(name: String, enums: Array, multi: Boolean=true, dup: Boolean=true) {
 			super(name, Cst.ATTR_TYPE_ENUM, multi, dup);
 			_enums = enums;
 		}
-		
-		override public function execute():void {
+
+		override public function execute(): void {
 			_id = CommandBuffer.instance.addCommand(this);
 			var request: Object = {
 					id: _id,
@@ -23,15 +21,14 @@ package collab.fm.client.command
 					modelId: ModelCollection.instance.currentModelId,
 					attr: _name,
 					type: _type,
-					toFeature: _toFeature,
 					multiYes: _multi,
 					allowDup: _dup,
 					vlist: _enums
 				};
 			Connector.instance.send(JsonUtil.objectToJson(request));
 		}
-		
-		override public function handleResponse(data:Object):void {
+
+		override public function handleResponse(data:Object): void {
 			if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME] &&
 				Cst.REQ_VA_ATTR_ENUM == data[Cst.FIELD_RSP_SOURCE_NAME]) {
 
@@ -41,6 +38,6 @@ package collab.fm.client.command
 					new OperationCommitEvent(OperationCommitEvent.COMMIT_SUCCESS, data));
 			}
 		}
-		
+
 	}
 }

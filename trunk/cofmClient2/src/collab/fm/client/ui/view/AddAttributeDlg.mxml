@@ -60,7 +60,7 @@
 			</mx:FormItem>
 			<mx:FormItem direction="horizontal">
 				<mx:Button label="{RS.BTN_OK}" click="doAddAttr();" />
-				<mx:Button label="{RS.BTN_CANCEL}" click="onClose();" />
+				<mx:Button label="{RS.BTN_CLOSE}" click="onClose();" />
 			</mx:FormItem>
 			
 		</mx:Form>
@@ -105,16 +105,41 @@
 				switch (aType) {
 					case Cst.ATTR_TYPE_ENUM:
 						var ens: Array = getEnums();
+						if (ens.length < 0) {
+							return;
+						}
 						new AddEnumAttributeCommand(n, ens).execute();
 						break;
 					case Cst.ATTR_TYPE_NUMBER:
 					// TODO: validate numbers
+						var _min: Number = Number(aMin.text);
+						var _max: Number = Number(aMax.text);
+						if (isNaN(_min) || isNaN(_max)) {
+							return;
+						}
 						new AddNumericAttributeCommand(n,
-							Number(aMin.text),
-							Number(aMax.text),
-							StringUtil.trim(aUnit.text),
-							
+							_min, _max,
+							StringUtil.trim(aUnit.text)).execute();
+						break;
+					default:
+						new AddAttributeCommand(n, aType).execute();
+						break;
 				}
+			}
+			
+			private function getEnums(): Array {
+				var result: Array = [];
+				for each (var hbox: Object in aEnum.getChildren()) {
+					if (hbox is HBox) {
+						for each (var input: Object in HBox(hbox).getChildren()) {
+							var s: String = StringUtil.trim(TextInput(input).text);
+							if (s.length > 0) {
+								result.push(s);
+							}
+						}
+					}
+				}
+				return result;
 			}
 			
 			private function onTypeChange(evt: Event): void {
