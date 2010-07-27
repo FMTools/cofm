@@ -8,6 +8,7 @@ import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
+import collab.fm.server.util.EntityUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
@@ -80,7 +81,7 @@ public class VoteAddValueRequest extends Request {
 				throw new InvalidOperationException("Invalid model ID: " + r.getModelId());
 			}
 
-			Feature target = DaoUtil.getFeatureDao().getById(r.getFeatureId(), false);
+			Feature target = DaoUtil.getFeatureDao().getById(r.getFeatureId(), true);
 			if (target == null) {
 				throw new InvalidOperationException("Invalid feature ID: "
 						+ r.getFeatureId());
@@ -106,7 +107,9 @@ public class VoteAddValueRequest extends Request {
 			
 			// If the target is a feature, we should make sure the attribute exists
 			if (target.getAttribute(r.getAttr()) == null) {
-				target.addAttribute((Attribute)a.clone());
+				Attribute a2 = EntityUtil.cloneAttribute(a);
+				a2.setCreator(r.getRequesterId());
+				target.addAttribute(a2);
 			}
 			boolean isValidValue = target.voteOrAddValue(r.getAttr(), r.getVal(), r.getYes(), r.getRequesterId());
 			

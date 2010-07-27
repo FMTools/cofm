@@ -82,7 +82,7 @@ public class AddAttributeRequest extends Request {
 			
 			Attribute a = createAttribute(r);
 			
-			Model m = DaoUtil.getModelDao().getById(r.getModelId(), false);
+			Model m = DaoUtil.getModelDao().getById(r.getModelId(), true);
 			if (m == null) {
 				throw new InvalidOperationException("Invalid model ID: " + r.getModelId());
 			}
