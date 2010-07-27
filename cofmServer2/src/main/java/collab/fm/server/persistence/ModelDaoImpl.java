@@ -2,6 +2,8 @@ package collab.fm.server.persistence;
 
 import java.util.List;
 
+import org.hibernate.StaleObjectStateException;
+
 import collab.fm.server.bean.entity.Model;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.EntityPersistenceException;
@@ -23,21 +25,37 @@ public class ModelDaoImpl extends GenericDaoImpl<Model, Long> implements
 	
 	public List getBySimilarName(String name) throws EntityPersistenceException,
 			StaleDataException {
-		return super.getByAttrValue(null, Resources.ATTR_MODEL_NAME, name, "Model", true);
+		try {
+			List result = HibernateUtil.getCurrentSession().createQuery(
+					"select m from Model as m " +
+					"where m.name like :val")
+					.setString("val", "%" + name + "%")
+					.list();
+			return result.isEmpty() ? null : result;
+		} catch (StaleObjectStateException sose) {
+			logger.warn("Stale data detected. Force client to retry.", sose);
+			throw new StaleDataException(sose);
+		} catch (Exception e) {
+			logger.warn("Query failed.", e);
+			throw new EntityPersistenceException("Query failed.", e);
+		}
 	}
 	
 	public Model getByName(String name) throws EntityPersistenceException, StaleDataException {
-		return getByAttrValue(Resources.ATTR_MODEL_NAME, name);
+		try {
+			return (Model) HibernateUtil.getCurrentSession().createQuery(
+					"select m from Model as m " +
+					"where m.name = :val")
+					.setString("val", name)
+					.uniqueResult();
+		} catch (StaleObjectStateException sose) {
+			logger.warn("Stale data detected. Force client to retry.", sose);
+			throw new StaleDataException(sose);
+		} catch (Exception e) {
+			logger.warn("Query failed.", e);
+			throw new EntityPersistenceException("Query failed.", e);
+		}
 	}
 
-	public Model getByAttrValue(String attrName, String val)
-			throws EntityPersistenceException, StaleDataException {
-		// The "modelId" is ignored.
-		List list = super.getByAttrValue(null, attrName, val, "Model", false);
-		if (list != null) {
-			return (Model) list.get(0);
-		}
-		return null;
-	}
 
 }
