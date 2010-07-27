@@ -37,13 +37,8 @@ package collab.fm.client.command {
 				&& Cst.REQ_UPDATE == data[Cst.FIELD_RSP_SOURCE_NAME]) {
 
 				CommandBuffer.instance.removeCommand(_cmdId);
-
-				var theModel: Object = {
-						"features": data["features"],
-						"binaries": data["binaries"]
-					};
 				ClientEvtDispatcher.instance().dispatchEvent(
-					new ModelUpdateEvent(ModelUpdateEvent.SUCCESS, theModel));
+					new ModelUpdateEvent(ModelUpdateEvent.SUCCESS, data));
 			}
 		}
 	}

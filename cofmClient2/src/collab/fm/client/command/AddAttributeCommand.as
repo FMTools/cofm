@@ -1,30 +1,24 @@
-package collab.fm.client.command
-{
+package collab.fm.client.command {
 	import collab.fm.client.cmn.*;
 	import collab.fm.client.data.*;
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
-	
-	public class AddAttributeCommand implements IDurableCommand
-	{
-		private var _id: int;
-		private var _name: String;
-		private var _type: String;
-		private var _multi: Boolean;
-		private var _dup: Boolean;
-		private var _toFeature: Boolean;
-		
-		public function AddAttributeCommand(name: String, type: String, toFeature: Boolean=true, multi: Boolean=true, dup: Boolean=true)
-		{
+
+	public class AddAttributeCommand implements IDurableCommand {
+		protected var _id: int;
+		protected var _name: String;
+		protected var _type: String;
+		protected var _multi: Boolean;
+		protected var _dup: Boolean;
+
+		public function AddAttributeCommand(name: String, type: String, multi: Boolean=true, dup: Boolean=true) {
 			_name = name;
 			_type = type;
 			_multi = multi;
 			_dup = dup;
-			_toFeature = toFeature;
 		}
 
-		public function execute():void
-		{
+		public function execute(): void {
 			_id = CommandBuffer.instance.addCommand(this);
 			var request: Object = {
 					id: _id,
@@ -33,27 +27,22 @@ package collab.fm.client.command
 					modelId: ModelCollection.instance.currentModelId,
 					attr: _name,
 					type: _type,
-					toFeature: _toFeature,
 					multiYes: _multi,
 					allowDup: _dup
 				};
 			Connector.instance.send(JsonUtil.objectToJson(request));
 		}
-		
-		public function redo():void
-		{
+
+		public function redo(): void {
 		}
-		
-		public function undo():void
-		{
+
+		public function undo(): void {
 		}
-		
-		public function setDurable(val:Boolean):void
-		{
+
+		public function setDurable(val:Boolean): void {
 		}
-		
-		public function handleResponse(data:Object):void
-		{
+
+		public function handleResponse(data:Object): void {
 			if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME] &&
 				Cst.REQ_VA_ATTR == data[Cst.FIELD_RSP_SOURCE_NAME]) {
 
@@ -63,6 +52,6 @@ package collab.fm.client.command
 					new OperationCommitEvent(OperationCommitEvent.COMMIT_SUCCESS, data));
 			}
 		}
-		
+
 	}
 }
