@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-	 xmlns:v="collab.fm.client.ui.view.*"
-	 implements="collab.fm.client.ui.view.IAttributeDisplayer">
+<v:AttributeValueTab xmlns:mx="http://www.adobe.com/2006/mxml"
+	 xmlns:v="collab.fm.client.ui.view.*">
 	
+		 <mx:Button label="{RS.BTN_ADD_VAL}" click="openAddValDlg();" />
+		 
 	<!-- Display Text-type values in a grid -->
 	<v:AutoRowAdjustmentGrid dataProvider="{values}" maxDisplayedRows="4">
 		<v:columns>
@@ -54,16 +55,9 @@
 	</v:AutoRowAdjustmentGrid>
 	<mx:Script>
 		<![CDATA[
-			import mx.collections.ArrayCollection;
-			import collab.fm.client.data.*;
 			import collab.fm.client.util.*;
 			
-			[Bindable]
-			public var values: ArrayCollection = new ArrayCollection();
-			
-			public var attrName: String;
-			
-			public function updateValues(vals: XMLList): void {
+			override public function updateValues(vals: XMLList): void {
 				values.source = [];
 				for each (var obj: Object in vals) {
 					values.addItem({
@@ -75,6 +69,7 @@
 					});
 				}
 			} 
+
 		]]>
 	</mx:Script>
-</mx:VBox>
+</v:AttributeValueTab>
