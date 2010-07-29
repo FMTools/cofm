@@ -2,7 +2,7 @@ package collab.fm.client.data {
 	import collab.fm.client.command.StartEditFeatureCommand;
 	import collab.fm.client.event.*;
 	import collab.fm.client.util.*;
-	
+
 	import mx.collections.ArrayCollection;
 	import mx.collections.IViewCursor;
 	import mx.collections.Sort;
@@ -45,7 +45,7 @@ package collab.fm.client.data {
 				ModelUpdateEvent.SUCCESS, onModelUpdate);
 			ClientEvtDispatcher.instance().addEventListener(
 				FeatureSelectEvent.DB_CLICK_ON_TREE, onCurrentFeatureSelected);
-				
+
 			id = -1;
 		}
 
@@ -56,7 +56,7 @@ package collab.fm.client.data {
 			}
 			return rslt;
 		}
-		
+
 		private function clear(): void {
 			id = -1;
 			votes.source = [];
@@ -64,9 +64,9 @@ package collab.fm.client.data {
 			children.source = [];
 			binaryConstraints.source = [];
 			basicInfo.source = null;
-			
+
 		}
-		
+
 		private function onModelUpdate(evt: ModelUpdateEvent): void {
 			// clear current feature
 			this.clear();
@@ -79,17 +79,17 @@ package collab.fm.client.data {
 			}
 			// Broadcast my location
 			new StartEditFeatureCommand(evt.id).execute();
-			
+
 			this.clear();
-			
+
 			// Set the feature id
 			id = evt.id;
 			_feature = XML(FeatureModel.instance.features.source.(@id==String(evt.id))[0]);
-			
+
 			// update creator info
 			var creator: String = UserList.instance.getNameById(int(_feature.@creator));
-			basicInfo.addItem(<attr name="creator" type={Cst.ATTR_TYPE_STRING} label="Creator:" value={creator}/>);
-			
+			basicInfo.addItem(<attr name="creator" type={Cst.ATTR_TYPE_STRING} label="Creator" value={creator}/>);
+
 			updateVotes(); // votes to this feature
 			updateRefinements();
 			updateBinaryConstraints();
@@ -97,7 +97,7 @@ package collab.fm.client.data {
 
 			// update basic info
 			ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
-			
+
 			trace ("*** CurrentFeature updated.");
 		}
 
@@ -123,22 +123,22 @@ package collab.fm.client.data {
 					"y": toUserArray(XMLList(_feature.yes.user))
 				});
 		}
-		
+
 		private function updateAllAttrbutes(): void {
 			for each (var attr: Object in _feature.attrs.attr) {
 				updateAttr(XML(attr));
 			}
 		}
-		
+
 		private function updateAttr(a: XML): void {
-			
+
 			var result: XML = <attr name={a.@name} type={a.@type} />;
-			
+
 			// result.@label = "{Name}:" (Capitalize the first letter of a.@name)
 			var label: String = a.@name;
-			label = label.charAt(0).toUpperCase() + label.substr(1) + ": ";
+			label = label.charAt(0).toUpperCase() + label.substr(1);
 			result.@label = label;
-			
+
 			if (String(a.@type) != Cst.ATTR_TYPE_ENUM) {
 				// result.@value = the primary value of a.values
 				var val: Object = ModelUtil.getPrimaryValueAndRate(a.values.value);
@@ -147,6 +147,9 @@ package collab.fm.client.data {
 				}
 				result.@value = val.value;
 				result.@rate = val.rate;
+				if (String(a.@type) == Cst.ATTR_TYPE_NUMBER) {
+					result.@unit = a.unit.text().toString();
+				}
 			} else {
 				for each (var e: Object in a.enums.enum) {
 					var en: XML = <enum value={XML(e).text().toString()} />;
@@ -154,7 +157,7 @@ package collab.fm.client.data {
 					result.appendChild(en);
 				}
 			}
-			
+
 			// replace the attribute with the same name in basicInfo
 			for (var cursor: IViewCursor = basicInfo.createCursor(); !cursor.afterLast; cursor.moveNext()) {
 				if (cursor.current.@name == result.@name) {
@@ -164,9 +167,9 @@ package collab.fm.client.data {
 				}
 			}
 			// ... or create a new attribute
-			basicInfo.addItem(result);	
+			basicInfo.addItem(result);
 		}
-		
+
 
 		private function updateRefinements(): void {
 			parents.source = [];
@@ -290,41 +293,43 @@ package collab.fm.client.data {
 						this.updateBinaryConstraints();
 						break;
 				}
-				
+
 			}
 		}
-		
+
 		// Do nothing with add attribute methods
 		public function handleAddAttribute(op: Object): void {
-			
+
 		}
+
 		public function handleAddEnumAttribute(op: Object): void {
-			
+
 		}
+
 		public function handleAddNumericAttribute(op: Object): void {
-			
+
 		}
-		
+
 		public function handleVoteAddValue(op: Object): void {
 			if (op["featureId"] == String(id)) {
-			
+
 				var a: XMLList = FeatureModel.instance
 					.features.source.(@id==op["featureId"])    // Find the feature with specific ID...
-					..attr.(@name==op["attr"]);         // then find the specific attribute in this feature
+					..attr.(@name==op["attr"]); // then find the specific attribute in this feature
 				if (a.length() <= 0) {
-					return;    // No such attribute, return.
+					return; // No such attribute, return.
 				}
 				this.updateAttr(XML(a[0]));
-				
+
 				// update basic info
 				ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
 			}
 		}
-		
+
 		public function handleInferVoteOnFeature(op:Object): void {
 			if (op["featureId"] == String(id)) {
 				this.updateVotes();
-				
+
 				// update basic info
 				ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
 			}
@@ -333,7 +338,7 @@ package collab.fm.client.data {
 		public function handleInferVoteOnRelation(op:Object): void {
 			updateRefinements();
 			updateBinaryConstraints();
-			
+
 			// update basic info
 			//ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
 		}

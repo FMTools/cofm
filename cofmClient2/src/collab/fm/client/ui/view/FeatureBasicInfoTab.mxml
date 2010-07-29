@@ -35,7 +35,7 @@
 					// wrapped by a HBox
 					var box: HBox = new HBox();
 					var label: Label = new Label();
-					label.text = obj.@label;
+					label.text = obj.@label + (obj.@unit != undefined ? "(" + obj.@unit + "): " : ": ");
 					box.addChild(label);
 					
 					switch (String(obj.@type)) {
