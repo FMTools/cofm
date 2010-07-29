@@ -5,8 +5,7 @@
 	<mx:Button id="featureBtn" label="{RS.BTN_CREATE_FEATURE}" click="beginCreateFeature();"/>
 	<mx:Button id="relBtn" label="{RS.BTN_CREATE_RELATIONSHIP}" click="beginCreateRel();"/>
 	<mx:Button id="attrBtn" label="{RS.BTN_ADD_ATTR}" click="beginAddAttr();" />
-	<mx:Button label="Show FM" click="traceFM();" />
-		
+	<mx:Button click="traceFM();"/>
 	<mx:Script>
 		<![CDATA[
 			import mx.managers.PopUpManager;

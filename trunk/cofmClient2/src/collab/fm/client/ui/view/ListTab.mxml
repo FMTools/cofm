@@ -5,7 +5,7 @@
 	<!-- Display List-type values in a repeater -->
 	<mx:Repeater id="rep" dataProvider="{values}">
 		<mx:HBox>
-			<mx:Label text="{rep.currentIndex + 1}: {rep.currentItem.value}"/>
+			<mx:Label text="{rep.currentIndex + 1}. {rep.currentItem.value}"/>
 			<mx:Label text="(YES: {rep.currentItem.num1}, NO: {rep.currentItem.num0})"/>
 			<mx:Button label="{RS.BTN_VOTE_YES}" click="onVoteYes(event.currentTarget.getRepeaterItem());"/>
 			<mx:Button label="{RS.BTN_VOTE_NO}" click="onVoteNo(event.currentTarget.getRepeaterItem());"/>

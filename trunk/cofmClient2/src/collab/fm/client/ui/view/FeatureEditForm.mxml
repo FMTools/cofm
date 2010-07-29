@@ -21,6 +21,7 @@
 			//private var desWindow: AddDesDlg;
 			
 			private var featureId: int;
+			private var featureXml: XML;
 			private var displayedAttrs: Dictionary;
 			
 //			private function addName(): void {
@@ -62,19 +63,17 @@
 				if (fs.length() <= 0) {
 					return;
 				}
-				
+				this.featureXml = fs[0];
 				// Add basic info tab first
 				var basic: FeatureBasicInfoTab = new FeatureBasicInfoTab();
 				basic.label = RS.EDIT_TAB_BASIC;
 				setTabSize(basic);
 				infoTab.addChild(basic);
 				
-				trace ("*****Basic info added.");
-				
 				// Add name, description and optionality
-				addTab(fs[0].attrs.attr.(@name==Cst.ATTR_FEATURE_NAME)[0]);
-				addTab(fs[0].attrs.attr.(@name==Cst.ATTR_FEATURE_DES)[0]);	
-				addTab(fs[0].attrs.attr.(@name==Cst.ATTR_FEATURE_OPT)[0]);
+				addTab(FeatureModel.instance.attrs.source.(@name==Cst.ATTR_FEATURE_NAME)[0]);
+				addTab(FeatureModel.instance.attrs.source.(@name==Cst.ATTR_FEATURE_DES)[0]);	
+				addTab(FeatureModel.instance.attrs.source.(@name==Cst.ATTR_FEATURE_OPT)[0]);
 				
 				// Add refinement and binary constraints
 				var refine: RefinementTab = new RefinementTab();
@@ -88,17 +87,28 @@
 				infoTab.addChild(cons);
 				
 				// Add other tabs
-				for each (var attr: Object in fs[0].attrs.attr) {
+				for each (var attr: Object in FeatureModel.instance.attrs.source) {
 					if (attr.@name == Cst.ATTR_FEATURE_DES ||
 						attr.@name == Cst.ATTR_FEATURE_NAME ||
 						attr.@name == Cst.ATTR_FEATURE_OPT) {
 							continue;
 					}
+					
 					addTab(attr);
 				}
 			}
 			
-			private function addTab(attr: Object): void {
+			// 
+			private function addTab(attrSetItem: Object): void {
+				// Get the attribute item in current feature, if there's no such 
+				// item in current feature, then add tab according to the attrSetItem
+				var attr: XML;
+				var a: XMLList = featureXml.attrs.attr.(@name==String(attrSetItem.@name));
+				if (a.length() > 0) {
+					attr = a[0];
+				} else {
+					attr = XML(attrSetItem);
+				}
 				switch (String(attr.@type)) {
 					case Cst.ATTR_TYPE_ENUM:
 						infoTab.addChild(createEnumTab(attr));
@@ -124,7 +134,6 @@
 			}
 			
 			private function createEnumTab(attr: Object): EnumTab {
-				trace ("FeatureEditForm - createEnumTab. attr = " + XML(attr).toXMLString());
 				var tab: EnumTab = new EnumTab();
 				tab.label = attr.@name;
 				tab.attrName = attr.@name;

@@ -139,6 +139,9 @@
 							break;
 						case Cst.ATTR_TYPE_NUMBER:
 							val = numInput.text;
+							if (isNaN(Number(val))) {
+								return;
+							}
 							break;
 						default:
 							val = otherInput.text;

@@ -60,7 +60,6 @@
 			public var enums: XMLList;
 			
 			public function updateValues(vals: XMLList): void {
-				trace("EnumTab - update values begin. Enums = " + enums.toXMLString());
 				values.source = [];
 				
 				var enumDict: Dictionary = new Dictionary();
