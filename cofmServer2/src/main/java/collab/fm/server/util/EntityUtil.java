@@ -1,8 +1,10 @@
 package collab.fm.server.util;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -47,7 +49,11 @@ public class EntityUtil {
 		Attribute a2 = null;
 		if (Attribute.TYPE_ENUM.equals(a.getType())) {
 			a2 = new EnumAttribute();
-			((EnumAttribute)a2).setValidValues(((EnumAttribute)a).getValidValues());
+			List<String> validValues = new ArrayList<String>();
+			for (String s: ((EnumAttribute)a).getValidValues()) {
+				validValues.add(s);
+			}
+			((EnumAttribute)a2).setValidValues(validValues);
 		} else if (Attribute.TYPE_NUMBER.equals(a.getType())) {
 			a2 = new NumericAttribute();
 			((NumericAttribute)a2).setMax(((NumericAttribute)a).getMax());
