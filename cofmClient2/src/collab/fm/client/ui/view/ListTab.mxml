@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-	 implements="collab.fm.client.ui.view.IAttributeDisplayer">
-	
+<v:AttributeValueTab xmlns:mx="http://www.adobe.com/2006/mxml"
+	 xmlns:v="collab.fm.client.ui.view.*">
+		 <mx:Button label="{RS.BTN_ADD_VAL}" click="openAddValDlg();" />
 	<!-- Display List-type values in a repeater -->
 	<mx:Repeater id="rep" dataProvider="{values}">
 		<mx:HBox>
@@ -20,11 +20,6 @@
 			import collab.fm.client.data.CurrentFeature;
 			import collab.fm.client.command.VoteAddValueCommand;
 			
-			[Bindable]
-			public var values: ArrayCollection = new ArrayCollection();
-			
-			public var attrName: String;
-			
 			private function onVoteYes(item: Object): void {
 				new VoteAddValueCommand(item.a, item.value,
 						CurrentFeature.instance.id, true).execute();
@@ -35,7 +30,7 @@
 						CurrentFeature.instance.id, false).execute();
 			}
 			
-			public function updateValues(vals: XMLList): void {
+			override public function updateValues(vals: XMLList): void {
 				values.source = [];
 				for each (var obj: Object in vals) {
 					values.addItem({
@@ -49,4 +44,4 @@
 			} 
 		]]>
 	</mx:Script>
-</mx:VBox>
+</v:AttributeValueTab>

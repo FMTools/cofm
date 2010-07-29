@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
-	 xmlns:v="collab.fm.client.ui.view.*"
-	 implements="collab.fm.client.ui.view.IAttributeDisplayer">
+<v:AttributeValueTab xmlns:mx="http://www.adobe.com/2006/mxml"
+	 xmlns:v="collab.fm.client.ui.view.*">
+	 	 <mx:Button label="{RS.BTN_ADD_VAL}" click="openAddValDlg();" />
 	<mx:HBox>
 		<mx:Label text="{RS.EDIT_NUMBER_UNIT}: {unit}" />
 		<mx:Label text="{RS.EDIT_NUMBER_MIN}: {min.toPrecision(2)}" />
@@ -54,9 +54,6 @@
 			import mx.collections.ArrayCollection;
 			import collab.fm.client.data.*;
 			import collab.fm.client.util.*;
-			
-			[Bindable]
-			public var values: ArrayCollection = new ArrayCollection();
 	
 			[Bindable]
 			public var min: Number;
@@ -67,9 +64,8 @@
 			[Bindable]
 			public var unit: String;
 						
-			public var attrName: String;
 			
-			public function updateValues(vals: XMLList): void {
+			override public function updateValues(vals: XMLList): void {
 				values.source = [];
 				for each (var obj: Object in vals) {
 					values.addItem({
@@ -83,5 +79,4 @@
 			} 
 		]]>
 	</mx:Script>
-</mx:VBox>
-
+</v:AttributeValueTab>

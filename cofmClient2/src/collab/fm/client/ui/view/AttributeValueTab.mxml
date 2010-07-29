@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	 xmlns:v="collab.fm.client.ui.view.*"
+	 implements="collab.fm.client.ui.view.IAttributeDisplayer">
+	 
+	 <mx:Script>
+	 	<![CDATA[
+	 		import mx.collections.ArrayCollection;
+			import mx.managers.PopUpManager;
+			import collab.fm.client.data.*;
+			import collab.fm.client.util.*;
+			
+			protected var avd: AddValueDlg;
+			
+			[Bindable]
+			public var values: ArrayCollection = new ArrayCollection();
+			
+			public var attrName: String;
+			
+			public function updateValues(vals: XMLList): void {
+				// For overriding.
+			} 
+			
+			protected function openAddValDlg(): void {
+				avd = AddValueDlg(PopUpManager.createPopUp(this, AddValueDlg, true));
+				avd.attrName = this.attrName;
+				PopUpManager.centerPopUp(avd);
+			}
+	 	]]>
+	 </mx:Script>
+	
+</mx:VBox>
