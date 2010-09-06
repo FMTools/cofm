@@ -8,7 +8,7 @@
 			 height="100%">
 		<mx:FormItem label="{RS.CON_PANEL_HOST}">
 			<mx:TextInput id="con_host"
-						  text="localhost"/>
+						  text="192.168.4.133"/>
 		</mx:FormItem>
 		<mx:FormItem label="{RS.CON_PANEL_PORT}">
 			<mx:TextInput id="con_port"
