@@ -3,7 +3,8 @@
 	<!-- We combine model searching and creation together. User must search a model before creating it.
 	-->
 	 <mx:HBox height="26">
-	 	<mx:TextInput id="searchInput" text="{RS.MODEL_SEARCH_DEFAULT}" maxChars="50" />	
+	 	<mx:TextInput id="searchInput" text="{RS.MODEL_SEARCH_DEFAULT}" maxChars="50" 
+	 		focusIn="TextInput(event.currentTarget).setSelection(0, TextInput(event.currentTarget).text.length);"/>	
 		<mx:Button label="GO" click="doSearch()" />
 	 </mx:HBox>
 	
