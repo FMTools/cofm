@@ -1,0 +1,45 @@
+package cofm.command 
+{
+	import cofm.model.*;
+	import cofm.event.*;
+	import cofm.util.*;
+
+	public class UpdateCommand implements IDurableCommand {
+		private var _cmdId: int;
+		private var _modelId: int;
+
+		public function UpdateCommand(modelId: int) {
+			_modelId = modelId;
+		}
+
+		public function execute(): void {
+			_cmdId = CommandBuffer.instance.addCommand(this);
+			var request: Object = {
+					"id": _cmdId,
+					"name": Cst.REQ_UPDATE,
+					"requesterId": UserList.instance.myId,
+					"modelId": _modelId
+				};
+			Connector.instance.send(JsonUtil.objectToJson(request));
+		}
+
+		public function redo(): void {
+		}
+
+		public function undo(): void {
+		}
+
+		public function setDurable(val:Boolean): void {
+		}
+
+		public function handleResponse(data:Object): void {
+			if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME]
+				&& Cst.REQ_UPDATE == data[Cst.FIELD_RSP_SOURCE_NAME]) {
+
+				CommandBuffer.instance.removeCommand(_cmdId);
+				ClientEvtDispatcher.instance().dispatchEvent(
+					new ModelUpdateEvent(ModelUpdateEvent.SUCCESS, data));
+			}
+		}
+	}
+}
