@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600" 
+			   xmlns:home="cofm.component.home.*"
+			   creationComplete="initView();">
+	<s:states>
+		<s:State name="Init"/>
+		<s:State name="GuestHome"/>
+		<s:State name="UserHome"/>
+		<s:State name="Modeling"/>
+	</s:states>
+	
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.event.*;
+			import cofm.model.*;
+			import cofm.util.*;
+			
+			private function initView(): void {
+				ClientEvtDispatcher.instance().addEventListener(ClientEvent.CONNECT_SUCCESS, onConnected);
+				
+				// Force the model.* classes to call their constructors, so that
+				// they can register event listeners.
+				forceModelsToInit();
+			}
+			
+			private function forceModelsToInit(): void {
+				ModelCollection.instance();
+				UserList.instance();
+			}
+			
+			private function onConnected(evt: ClientEvent): void {
+				currentState = "GuestHome";
+			}
+			
+			private function goFeedback(): void {
+				
+			}
+			
+			private function goHomepage(): void {
+				
+			}
+			
+			private function goLogin(): void {
+				
+			}
+			
+			private function goRegister(): void {
+				
+			}
+			
+			private function goLogout(): void {
+				
+			}
+		]]>
+	</fx:Script>
+	
+	
+	
+	<!-- The application control bar. -->
+	<s:controlBarContent>
+		<mx:LinkButton label="{RS.go_feedback}" click="goFeedback();"/>
+		<mx:LinkButton label="{RS.go_home}" click="goHomepage();" includeIn="Modeling"/>
+		<!-- TODO: Insert a message bar here -->
+		<s:HGroup right="4">
+			<!-- The name of the logged-on user -->
+			<s:Label paddingTop="2" paddingRight="10" includeIn="UserHome, Modeling"/>
+			<!-- Login/register/logout buttons -->
+			<mx:LinkButton label="{RS.go_login}" click="goLogin();" includeIn="GuestHome"/>
+			<mx:LinkButton label="{RS.go_register}" click="goRegister();" includeIn="GuestHome"/>
+			<mx:LinkButton label="{RS.go_logout}" click="goLogout();" includeIn="UserHome, Modeling"/>
+		</s:HGroup>
+	</s:controlBarContent>
+	
+	<s:controlBarLayout>
+		<s:HorizontalLayout />
+	</s:controlBarLayout>
+	
+	<!-- The Home Page view -->
+	<s:Button label="login" click="UserList.instance().isLogin=true;" />
+	<s:Button label="logout" click="UserList.instance().isLogin=false;" />
+	<home:Homepage excludeFrom="Modeling"/>
+	
+	<!-- The Modeling view -->
+	
+</s:Application>
