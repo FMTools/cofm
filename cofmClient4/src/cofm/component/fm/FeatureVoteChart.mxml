@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnableContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					  xmlns:s="library://ns.adobe.com/flex/spark" 
+					  xmlns:mx="library://ns.adobe.com/flex/mx">
+	<s:layout>
+		<s:HorizontalLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:SolidColor id="blueFill" color="blue" alpha=".3"/>
+		<s:SolidColorStroke id="blueStroke" color="blue" weight="1"/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.model.*;
+			import cofm.util.*;
+			
+			import mx.charts.HitData;
+			
+			private function dataToTip(d: HitData): String {
+				var v: String = d.item.num > 1 ? "votes" : "vote";
+				return d.item.num + " " + v + " (" + d.item.ratio + ")";
+			}
+			
+			private function doVoteYesOnFeature(): void {
+				new VoteAddFeatureCommand("", CurrentFeature.instance().id, true).execute();
+			}
+			
+			private function doVoteNoOnFeature(): void {
+				new VoteAddFeatureCommand("", CurrentFeature.instance().id, false).execute();
+			}
+		]]>
+	</fx:Script>
+	
+	<mx:BarChart dataProvider="{CurrentFeature.instance().votes}"
+				 showDataTips="true" dataTipFunction="dataToTip"
+				 height="80" width="250">
+		
+		<mx:series>
+			<mx:BarSeries yField="label" xField="num" fill="{blueFill}" stroke="{blueStroke}" maxHeight="5"/>
+		</mx:series>
+		
+		<mx:verticalAxis>
+			<mx:CategoryAxis dataProvider="{CurrentFeature.instance().votes}"
+							 categoryField="label"/>
+		</mx:verticalAxis>
+		
+		<mx:horizontalAxis>
+			<mx:LinearAxis interval="1" maximumLabelPrecision="0" id="xAxis"/>
+		</mx:horizontalAxis>
+		
+		<mx:horizontalAxisRenderers>
+			<mx:AxisRenderer axis="{xAxis}" labelGap="0" fontSize="30"/>
+		</mx:horizontalAxisRenderers>
+		
+	</mx:BarChart>
+	
+	<s:VGroup>
+		<s:Button label="{RS.m_yes_f}" click="doVoteYesOnFeature();"/>
+		<s:Button label="{RS.m_no_f}" click="doVoteNoOnFeature();"/>
+	</s:VGroup>
+</s:SkinnableContainer>

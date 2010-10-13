@@ -75,13 +75,9 @@
 							}
 							
 							private function doSelectModel(): void {
-								trace("Selected " + modelInfo.id + ": " + modelInfo.name);
-								/*
-								var modelId: int = int(data.@id);
 								ClientEvtDispatcher.instance().dispatchEvent(
-								new ModelSelectEvent(ModelSelectEvent.SELECTED, modelId, 
-								ModelCollection.instance.getModelNameById(modelId)));
-								*/
+									new ModelSelectEvent(ModelSelectEvent.SELECTED, 
+										modelInfo.id, modelInfo.name)); 								
 							}
 						]]>
 					</fx:Script>

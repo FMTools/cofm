@@ -24,12 +24,12 @@ package cofm.command
 
 		public function execute():void
 		{
-			_id = CommandBuffer.instance.addCommand(this);
+			_id = CommandBuffer.instance().addCommand(this);
 			var request: Object = {
 					id: _id,
 					name: Cst.REQ_VA_BIN_REL,
-					requesterId: UserList.instance.myId,
-					modelId: ModelCollection.instance.currentModelId,
+					requesterId: UserList.instance().myId,
+					modelId: ModelCollection.instance().currentModelId,
 					yes: _vote,
 					type: _type,
 					leftFeatureId: _left,
@@ -38,7 +38,7 @@ package cofm.command
 			if (_relationId > 0) {
 				request.relationshipId = _relationId;
 			}
-			Connector.instance.send(JsonUtil.objectToJson(request));
+			Connector.instance().send(JsonUtil.objectToJson(request));
 		}
 		
 		public function redo():void
@@ -58,7 +58,7 @@ package cofm.command
 			if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME] &&
 				Cst.REQ_VA_BIN_REL == data[Cst.FIELD_RSP_SOURCE_NAME]) {
 
-				CommandBuffer.instance.removeCommand(_id);
+				CommandBuffer.instance().removeCommand(_id);
 
 				ClientEvtDispatcher.instance().dispatchEvent(
 					new OperationCommitEvent(OperationCommitEvent.COMMIT_SUCCESS, data));

@@ -8,8 +8,8 @@
 	</s:layout>
 	
 	<s:states>
-		<s:State name="Found"/>
-		<s:State name="NotFound"/>
+		<s:State name="NoCreate"/>
+		<s:State name="Create"/>
 	</s:states>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
@@ -28,17 +28,24 @@
 			
 			private function initView(): void {
 				ClientEvtDispatcher.instance().addEventListener(ModelSearchEvent.SUCCESS, onModelSearched);
+				ClientEvtDispatcher.instance().addEventListener(LogoutEvent.LOGGED_OUT, onLogout);
 			}
 			
 			private function onModelSearched(evt: ModelSearchEvent): void {
 				if (evt.exactlyMatches) {
-					currentState = "Found";
+					currentState = "NoCreate";
 				} else if (UserList.instance().isLogin) {
-					currentState = "NotFound";
+					currentState = "Create";
 					intro.text = mx.utils.StringUtil.substitute(RS.fmlist_new_intro, evt.searchWord);
 					modelName.text = evt.searchWord;
+				} else {
+					currentState = "NoCreate";
 				}
 			} 
+			
+			private function onLogout(evt: LogoutEvent): void {
+				currentState = "NoCreate";
+			}
 			
 			private function doSearch(): void {
 				// TODO: do local search first
@@ -46,11 +53,12 @@
 			}
 			
 			private function doCreate(): void {
-				
+				new CreateModelCommand(modelName.text, modelDes.text).execute();
+				currentState = "NoCreate";
 			}
 			
 			private function onCancel(): void {
-				
+				currentState = "NoCreate";
 			}
 		]]>
 	</fx:Script>
@@ -58,7 +66,7 @@
 				 text="{RS.fmlist_search_prompt}"
 				 focusIn="TextInput(event.currentTarget).selectAll();"/>
 	<s:Button label="{RS.fmlist_search}" click="doSearch();"/>
-	<mx:Form includeIn="NotFound">
+	<mx:Form includeIn="Create">
 		<s:Label id="intro" height="20"/>
 		<mx:FormItem label="{RS.fmlist_new_name}">
 			<s:TextInput id="modelName" enabled="false"/>
@@ -67,7 +75,7 @@
 			<s:TextArea id="modelDes" width="300" height="200"/>
 		</mx:FormItem>
 		<mx:FormItem direction="horizontal">
-			<s:Button label="{RS.ok}" click="doCreate();"/>
+			<s:Button label="{RS.fmlist_new_do}" click="doCreate();"/>
 			<s:Button label="{RS.cancel}" click="onCancel();"/>
 		</mx:FormItem>
 	</mx:Form>

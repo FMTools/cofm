@@ -19,14 +19,14 @@ package cofm.command
 		/** Register format see Server.RegisterRequest
 		 */
 		public function execute(): void {
-			_cmdId = CommandBuffer.instance.addCommand(this);
+			_cmdId = CommandBuffer.instance().addCommand(this);
 			var request: Object = {
 					"id": _cmdId,
 					"name": Cst.REQ_REGISTER,
 					"user": _name,
 					"pwd": _pwd
 				};
-			Connector.instance.send(JsonUtil.objectToJson(request));
+			Connector.instance().send(JsonUtil.objectToJson(request));
 		}
 
 		public function redo(): void {
@@ -47,7 +47,7 @@ package cofm.command
 			if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME]
 				&& Cst.REQ_REGISTER == data[Cst.FIELD_RSP_SOURCE_NAME]) {
 
-				CommandBuffer.instance.removeCommand(_cmdId);
+				CommandBuffer.instance().removeCommand(_cmdId);
 				ClientEvtDispatcher.instance().dispatchEvent(
 					new ClientEvent(ClientEvent.REGISTER_SUCCESS));
 				

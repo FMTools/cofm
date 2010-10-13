@@ -4,7 +4,7 @@ package cofm.event
 	
 	public class FeatureSelectEvent extends Event {
 		public static const CLICK_ON_TREE: String = "ClickOnTree";
-		public static const DB_CLICK_ON_TREE: String = "DoubleClickOnTree";
+		public static const FEATURE_SELECTED: String = "FeatureSelected";
 		public static const OTHER_PEOPLE_SELECT_ON_TREE: String = "OtherPeopleSelectOnTree";
 		
 		public var id: int;

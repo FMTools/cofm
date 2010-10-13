@@ -22,18 +22,18 @@ package cofm.command
 
 		public function execute():void
 		{
-			_id = CommandBuffer.instance.addCommand(this);
+			_id = CommandBuffer.instance().addCommand(this);
 			var request: Object = {
 					id: _id,
 					name: Cst.REQ_VA_VALUE,
-					requesterId: UserList.instance.myId,
-					modelId: ModelCollection.instance.currentModelId,
+					requesterId: UserList.instance().myId,
+					modelId: ModelCollection.instance().currentModelId,
 					featureId: _fid,
 					yes: _vote,
 					attr: _attr,
 					val: _val
 				};
-			Connector.instance.send(JsonUtil.objectToJson(request));
+			Connector.instance().send(JsonUtil.objectToJson(request));
 		}
 		
 		public function redo():void
@@ -53,7 +53,7 @@ package cofm.command
 			if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME] &&
 				Cst.REQ_VA_VALUE == data[Cst.FIELD_RSP_SOURCE_NAME]) {
 
-				CommandBuffer.instance.removeCommand(_id);
+				CommandBuffer.instance().removeCommand(_id);
 
 				ClientEvtDispatcher.instance().dispatchEvent(
 					new OperationCommitEvent(OperationCommitEvent.COMMIT_SUCCESS, data));

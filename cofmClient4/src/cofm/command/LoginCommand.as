@@ -17,7 +17,7 @@ package cofm.command
 		/** Request format (see server.LoginRequest)
 		 */
 		public function execute(): void {
-			var cmdId: int = CommandBuffer.instance.addCommand(this);
+			var cmdId: int = CommandBuffer.instance().addCommand(this);
 			_cmdId = cmdId;
 			// Build a login request object and convert it to json
 			var req: Object = {
@@ -26,7 +26,7 @@ package cofm.command
 					"user": _name,
 					"pwd": _pwd
 				};
-			Connector.instance.send(JsonUtil.objectToJson(req));
+			Connector.instance().send(JsonUtil.objectToJson(req));
 		}
 
 		public function redo(): void {
@@ -48,7 +48,7 @@ package cofm.command
 				&& Cst.REQ_LOGIN == data[Cst.FIELD_RSP_SOURCE_NAME]) {
 
 				var _id: int = int(data[Cst.FIELD_RSP_SOURCE_USER_ID]);
-				CommandBuffer.instance.removeCommand(_cmdId);
+				CommandBuffer.instance().removeCommand(_cmdId);
 				ClientEvtDispatcher.instance().dispatchEvent(
 					new LoginEvent(LoginEvent.SUCCESS, _id, _name));
 			}

@@ -25,10 +25,15 @@
 			
 			private function initView(): void {
 				ClientEvtDispatcher.instance().addEventListener(ClientEvent.CONNECT_SUCCESS, onConnected);
+				ClientEvtDispatcher.instance().addEventListener(LogoutEvent.LOGGED_OUT, onLogout);
 			}
 			
 			private function onConnected(evt: ClientEvent): void {
 				currentState = "AfterConnection";
+				ModelCollectionUpdater.instance().update();
+			}
+			
+			private function onLogout(evt: LogoutEvent): void {
 				ModelCollectionUpdater.instance().update();
 			}
 			

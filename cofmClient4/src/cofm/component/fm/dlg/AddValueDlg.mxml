@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="400" height="300"
+			   preinitialize="initData();"
+			   title="{RS.m_cv_title}">
+	<s:states>
+		<s:State name="AddName"/>
+		<s:State name="AddString"/>
+		<s:State name="AddText"/>
+		<s:State name="AddNumber"/>
+	</s:states>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.event.*;
+			import cofm.model.*;
+			import cofm.util.*;
+			
+			import mx.collections.XMLListCollection;
+			
+			import mx.managers.PopUpManager;
+			
+			import mx.utils.StringUtil;
+			
+			import spark.events.IndexChangeEvent;
+			
+			[Bindable] public var attrs: XMLListCollection = new XMLListCollection();
+			
+			private function initData(): void {
+				var a: XML = <a/>;
+				for each (var obj: Object in FeatureModel.instance().attrs.source) {
+					// Disallow adding value for enumeration-typed attributes.
+					if (obj.@type != Cst.ATTR_TYPE_ENUM) {
+						a.appendChild(XML(obj).copy());
+					}
+				}
+				attrs.source = a.attr;
+			}
+			
+			private function onAttrChange(evt: IndexChangeEvent): void {
+				changeForm(evt.currentTarget.selectedItem);
+			}
+			
+			private function changeForm(a: Object): void {
+				if (String(a.@name) == Cst.ATTR_FEATURE_NAME) {
+					currentState = "AddName";
+				} else {
+					switch (String(a.@type)) {
+						case Cst.ATTR_TYPE_TEXT:
+							currentState = "AddText";
+							break;
+						case Cst.ATTR_TYPE_NUMBER:
+							currentState = "AddNumber";
+							numInfo.text = a.min.text().toString() +
+									" - " + a.max.text().toString() + 
+									" (" + a.unit.text().toString() + ")";
+							break;
+						default:
+							currentState = "AddString";
+							break;
+					} 
+				}
+			}
+			
+			private function doAddValue(): void {
+				//TODO: validate
+				var val: String;
+				switch (currentState) {
+					case "AddName":
+						val = String(nameVal.selectedItem);
+						break;
+					case "AddString":
+					case "AddNumber":
+						val = strVal.text;
+						break;
+					case "AddText":
+						val = textVal.text;
+						break;
+				}
+				val = StringUtil.trim(val);
+				
+				new VoteAddValueCommand(
+					String(attrSelect.selectedItem.@name),
+					val, CurrentFeature.instance().id).execute();
+				doClose();
+			}
+			
+			private function doClose(): void {
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</fx:Script>
+	
+	<mx:Form>
+		<mx:FormItem label="{RS.m_cv_attr}">
+			<s:ComboBox id="attrSelect"
+						labelField="@name" dataProvider="{attrs}"
+					    change="onAttrChange(event);"/>
+		</mx:FormItem>
+		<mx:FormItem label="{RS.m_cv_value}">
+			
+			<!-- The input for feature name -->
+			<s:ComboBox id="nameVal"
+						includeIn="AddName" dataProvider="{FeatureNameList.instance().names}"/>
+			
+			<!-- The input for String-typed & Numeric attributes -->
+			<s:TextInput id="strVal" includeIn="AddString, AddNumber"/>
+			
+			<!-- The input for Text-typed attributes -->
+			<s:TextArea id="textVal" includeIn="AddText"/>
+			
+			<!-- The prompt for number unit, min and max values -->
+			<s:Label id="numInfo" includeIn="AddNumber"/>
+		</mx:FormItem>
+		<mx:FormItem direction="horizontal">
+			<s:Button label="{RS.ok}" click="doAddValue();"/>
+			<s:Button label="{RS.close}" click="doClose();"/>
+		</mx:FormItem>
+	</mx:Form>
+</s:TitleWindow>
