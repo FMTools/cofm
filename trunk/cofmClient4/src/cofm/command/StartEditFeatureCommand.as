@@ -16,11 +16,11 @@ package cofm.command
 		{
 			var request: Object = {
 				name: Cst.REQ_FOCUS,
-				requesterId: UserList.instance.myId,
-				modelId: ModelCollection.instance.currentModelId,
+				requesterId: UserList.instance().myId,
+				modelId: ModelCollection.instance().currentModelId,
 				featureId: this.featureId
 			};
-			Connector.instance.send(JsonUtil.objectToJson(request));
+			Connector.instance().send(JsonUtil.objectToJson(request));
 		}
 		
 	}

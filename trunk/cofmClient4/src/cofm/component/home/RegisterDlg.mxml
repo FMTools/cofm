@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="320" height="210"
+			   title="{RS.reg_heading}"
+			   creationComplete="initView();" 
+			   xmlns:validator="cofm.component.validator.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:StringValidator id="nameVdt" source="{userName}" property="text" minLength="3" maxLength="20"/>
+		<mx:StringValidator id="pwdVdt" source="{userPwd}" property="text" minLength="1" maxLength="15"/>
+		<validator:EqualStringValidator id="pwdTwiceVdt" source="{userPwd2}" property="text"
+										checkEquals="true" compareWith="{userPwd.text}"
+										message="{RS.reg_error_pwd_confirm}"/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.event.*;
+			import cofm.util.*;
+			
+			import mx.managers.PopUpManager;
+			import mx.events.ValidationResultEvent;
+			
+			private function initView(): void {
+				userName.setFocus();
+			}
+			
+			private function doClose(): void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function checkEnter(evt: KeyboardEvent): void {
+				if (evt.keyCode == Keyboard.ENTER) {
+					doRegister();
+				}
+			}
+			
+			private function validateRegisterForm(): Boolean {
+				var vre: Array = new Array();
+				vre.push(nameVdt.validate());
+				vre.push(pwdVdt.validate());
+				vre.push(pwdTwiceVdt.validate());
+				for each (var evt: Object in vre) {
+					if (ValidationResultEvent(evt).type == ValidationResultEvent.INVALID) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			private function doRegister(): void {
+				if (validateRegisterForm()) {
+					new RegisterCommand(userName.text, userPwd.text).execute();
+					doClose();
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<mx:Form>
+		<mx:FormItem label="{RS.reg_name}">
+			<s:TextInput id="userName"/>
+		</mx:FormItem>
+		<mx:FormItem label="{RS.reg_pwd}">
+			<s:TextInput id="userPwd" displayAsPassword="true"/>
+		</mx:FormItem>
+		<mx:FormItem label="{RS.reg_pwd2}">
+			<s:TextInput id="userPwd2" displayAsPassword="true" keyDown="checkEnter(event);"/>
+		</mx:FormItem>
+		<mx:FormItem direction="horizontal">
+			<s:Button label="{RS.ok}" click="doRegister();"/>
+			<s:Button label="{RS.cancel}" click="doClose();"/>
+		</mx:FormItem>
+	</mx:Form>
+	
+	
+	
+</s:TitleWindow>

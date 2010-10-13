@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   width="510" height="420"
+			   creationComplete="initView();" 
+			   xmlns:validator="cofm.component.validator.*">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:RadioButtonGroup id="parentSwitch" change="onSwitch();"/>
+		
+		<validator:FeatureNameValidator id="nameVdt" triggerEvent="change"
+									    nameMustExist="false"
+									    source="{nameInput}"
+										property="selectedItem"/>
+		<!--
+		<validator:FeatureNameValidator id="parentVdt" triggerEvent="change"
+									    allowEmpty="{isRoot}"
+									    nameMustExist="true"
+									    source="{parentInput}"
+									    property="selectedItem"/>
+		-->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.event.*;
+			import cofm.util.*;
+			import cofm.model.*;
+			
+			import mx.utils.StringUtil;
+			import mx.events.ValidationResultEvent;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			public var isRoot: Boolean;
+			
+			private var parentId: int;
+			
+			private function initView(): void {
+				ClientEvtDispatcher.instance().addEventListener(
+					ModelMinorChangeEvent.FEATURE_CREATED_LOCALLY, onFeatureCreatedLocally);
+				resetForm();
+				nameInput.setFocus();
+			}
+			
+			public function resetForm(): void {
+				nameInput.textInput.text = "";
+				
+				// If user is editing a feature(the feature is highlighted in feature tree), 
+				// then set parent to this feature by default.
+				if (CurrentFeature.instance().id > 0) {
+					var n: String = ModelUtil.getFeatureNameById(String(CurrentFeature.instance().id));
+					if (n != null) {
+						parentInput.selectedItem = n;
+						parentId = CurrentFeature.instance().id;
+						isRoot = false;
+						parentSwitch.selectedValue = "Exist";
+					} 
+				} else {
+					parentInput.textInput.text = "";
+					isRoot = true;
+					parentSwitch.selectedValue = "None";
+				}
+			}
+			
+			private function onFocusParent(): void {
+				if (parentSwitch.selectedValue != "Exist") {
+					parentSwitch.selectedValue = "Exist";
+					isRoot = false;
+				}
+			}
+			
+			private function onSwitch(): void {
+				isRoot = parentSwitch.selectedValue == "None";
+			}
+			
+			private function doClose(): void {
+				// For dialogs, the event listener that has been added
+				// in initView() must be removed here.
+				ClientEvtDispatcher.instance().removeEventListener(
+					ModelMinorChangeEvent.FEATURE_CREATED_LOCALLY, onFeatureCreatedLocally);
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function doCreateFeature(): void {
+				if (!validateNames()) {
+					return;
+				}
+				if (parentSwitch.selectedValue == "Exist") {
+					parentId = FeatureNameList.instance().getIdByName(String(parentInput.selectedItem));
+				} else {
+					parentId = -1;
+				}
+				// Commit feature creation first, then if the feature is successfully
+				// created, a FeatureCreatedLocally event will be dispatched and captured
+				// by onFeatureCreatedLocally() method.
+				new VoteAddFeatureCommand(String(nameInput.selectedItem)).execute();
+			}
+			
+			private function validateNames(): Boolean {
+				var rslt:Array = [];
+				rslt.push(nameVdt.validate());
+				//rslt.push(parentVdt.validate());
+				for each (var o: Object in rslt) {
+					if (ValidationResultEvent(o).type == ValidationResultEvent.INVALID) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			private function onFeatureCreatedLocally(evt: ModelMinorChangeEvent): void {
+				// The feature has created, we need to create the refinement relationship, if any,
+				// and feature description.
+				if (parentId > 0) {
+					new VoteAddBinRelationCommand(
+						Cst.BIN_REL_REFINES, parentId, int(evt.data)).execute();
+				}
+				if (mx.utils.StringUtil.trim(desInput.text) != "") {
+					new VoteAddValueCommand(Cst.ATTR_FEATURE_DES,
+						desInput.text,
+						int(evt.data)).execute();
+				}
+				doClose();
+			}
+		]]>
+	</fx:Script>
+	<mx:Form width="100%" height="100%">
+		
+		<mx:FormItem label="{RS.m_cf_name}">
+			<s:ComboBox id="nameInput" dataProvider="{FeatureNameList.instance().names}"/>
+		</mx:FormItem>
+		
+		<mx:FormItem label="{RS.m_cf_parent}" >
+			<s:RadioButton groupName="parentSwitch" value="None" label="{RS.m_cf_root}"/>
+			<s:HGroup>
+				<s:RadioButton groupName="parentSwitch" value="Exist" label="{RS.m_cf_select}"/>
+				<s:ComboBox id="parentInput" dataProvider="{FeatureNameList.instance().names}"
+						    focusIn="onFocusParent();"/>
+			</s:HGroup>
+		</mx:FormItem>
+		
+		<mx:FormItem label="{RS.m_cf_des}" >
+			<s:TextArea id="desInput" width="300" height="200" />
+		</mx:FormItem>
+		
+		<mx:FormItem direction="horizontal">
+			<s:Button label="{RS.ok}" click="doCreateFeature();"/>
+			<s:Button label="{RS.close}" click="doClose();"/>
+		</mx:FormItem>			
+	</mx:Form>
+	
+</s:TitleWindow>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnableContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					  xmlns:s="library://ns.adobe.com/flex/spark" 
+					  xmlns:mx="library://ns.adobe.com/flex/mx">
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.component.fm.dlg.AddValueDlg;
+			import cofm.event.*;
+			import cofm.util.*;
+			
+			import mx.collections.ArrayCollection;
+			import mx.managers.PopUpManager;
+			
+			[Bindable] public var allowNewValues: Boolean;
+			
+			[Bindable] public var showValueIndex: Boolean;
+			
+			[Bindable] public var info: String;
+			
+			public var maxGridRows: int = 10;
+			public var minGridRows: int = 3;
+			
+			public var attributeName: String;
+			public var attributeType: String;
+			
+			[Bindable] public var values: ArrayCollection = new ArrayCollection();
+			
+			private var addValueDlg: AddValueDlg;
+			
+			public function setValues(src: XML): void {
+				values.source = [];
+				var index: int = 1;
+				for each (var obj: Object in src.values.value) {
+					var item: AttributeValueInfo = new AttributeValueInfo();
+					item.attributeName = this.attributeName;
+					item.attributeType = this.attributeType;
+					item.valueIndex = index++;
+					item.value = XML(obj.str).text().toString();
+					item.numSupporters = XMLList(obj.yes.user).length();
+					item.numOpponents = XMLList(obj.no.user).length();
+					
+					values.addItem(item);
+				}
+			}
+			
+			private function adjustGridHeight(): void {
+				var itemCount: int = values.length;
+				if (itemCount < minGridRows) {
+					itemCount = minGridRows;
+				}
+				if (itemCount > maxGridRows) {
+					itemCount = maxGridRows;
+				}
+				grid.height = grid.measureHeightOfItems(-1, itemCount);
+			}
+			
+			private function doAddValue(): void {
+				addValueDlg = AddValueDlg(PopUpManager.createPopUp(this, AddValueDlg, true));
+				PopUpManager.centerPopUp(addValueDlg);
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Button label="{RS.m_new_v}" visible="{allowNewValues}" includeInLayout="{allowNewValues}"
+			  click="doAddValue();"/>
+	<s:Label text="{info}"/>
+	<mx:AdvancedDataGrid id="grid" dataProvider="{values}"
+						 creationComplete="adjustGridHeight();"
+						 updateComplete="adjustGridHeight();">
+		<mx:columns>
+			<mx:AdvancedDataGridColumn visible="{showValueIndex}" dataField="valueIndex"
+									   headerText="{RS.m_fe_grid_index}"/>
+			<mx:AdvancedDataGridColumn dataField="value" headerText="{RS.m_fe_grid_value}"/>
+			<mx:AdvancedDataGridColumn dataField="numSupporters" headerText="{RS.m_fe_grid_yes}"/>
+			<mx:AdvancedDataGridColumn dataField="numOpponents" headerText="{RS.m_fe_grid_no}"/>
+			<mx:AdvancedDataGridColumn headerText="{RS.m_fe_grid_action}"
+									   resizable="false" sortable="false" width="100">
+				<mx:itemRenderer>
+					<fx:Component>
+						<s:MXAdvancedDataGridItemRenderer>
+							<fx:Script>
+								<![CDATA[
+									import cofm.util.*;
+									import cofm.command.*;
+									import cofm.model.CurrentFeature;
+									
+									private function doVoteYes(): void {
+										new VoteAddValueCommand(
+											data.attributeName,
+											data.value,
+											CurrentFeature.instance().id, 
+											true).execute();
+									}
+									
+									private function doVoteNo(): void {
+										new VoteAddValueCommand(
+											data.attributeName,
+											data.value,
+											CurrentFeature.instance().id, 
+											false).execute();
+									}
+								]]>
+							</fx:Script>
+							
+							<s:VGroup>
+								<s:Button label="{RS.m_yes}" click="doVoteYes();"/>
+								<s:Button label="{RS.m_no}" click="doVoteNo();"/>
+							</s:VGroup>
+						</s:MXAdvancedDataGridItemRenderer>
+					</fx:Component>
+				</mx:itemRenderer>
+			</mx:AdvancedDataGridColumn>
+		</mx:columns>
+	</mx:AdvancedDataGrid>
+	
+</s:SkinnableContainer>

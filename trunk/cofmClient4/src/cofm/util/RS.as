@@ -42,6 +42,7 @@ package cofm.util
 		public static const fmlist_new_needlogin: String = s("fmlist_new_needlogin");
 		public static const fmlist_new_name: String = s("fmlist_new_name");
 		public static const fmlist_new_description: String = s("fmlist_new_description");
+		public static const fmlist_new_do: String = s("fmlist_new_do");
 		
 		public static const login_heading: String = s("login_heading");
 		public static const login_name: String = s("login_name");
@@ -107,6 +108,7 @@ package cofm.util
 		public static const m_fe_basic_votes_yes: String = s("m_fe_basic_votes_yes");
 		public static const m_fe_basic_votes_no: String = s("m_fe_basic_votes_no");
 		
+		public static const m_fe_grid_index: String = s("m_fe_grid_index");
 		public static const m_fe_grid_value: String = s("m_fe_grid_value");
 		public static const m_fe_grid_yes: String = s("m_fe_grid_yes");
 		public static const m_fe_grid_no: String = s("m_fe_grid_no");

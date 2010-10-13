@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="320" height="190"
+			   close="doClose();"
+			   creationComplete="initView();"
+			   title="{RS.login_heading}">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<mx:StringValidator id="nameVdt" source="{userName}" property="text" required="true"/>
+		<mx:StringValidator id="pwdVdt" source="{userPwd}" property="text" required="true"/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.event.*;
+			import cofm.util.*;
+			
+			import mx.managers.PopUpManager;
+			import mx.events.ValidationResultEvent;
+			
+			private function initView(): void {
+				userName.setFocus();	
+			}
+			
+			private function doClose(): void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function validateLoginForm(): Boolean {
+				var vdt: Array = new Array();
+				vdt.push(nameVdt.validate());
+				vdt.push(pwdVdt.validate());
+				for each (var evt: Object in vdt) {
+					if (ValidationResultEvent(evt).type == ValidationResultEvent.INVALID) {
+						return false;
+					}
+				}
+				return true;
+			}
+			
+			private function checkEnter(evt: KeyboardEvent): void {
+				if (evt.keyCode == Keyboard.ENTER) {
+					doLogin();
+				}
+			}
+			
+			private function doLogin(): void {
+				if (validateLoginForm()) {
+					new LoginCommand(userName.text, userPwd.text).execute();
+					doClose();
+				}
+			}
+		]]>
+	</fx:Script>
+	
+	<mx:Form>
+		<mx:FormItem label="{RS.login_name}">
+			<s:TextInput id="userName"/>
+		</mx:FormItem>
+		<mx:FormItem label="{RS.login_pwd}">
+			<s:TextInput id="userPwd" displayAsPassword="true" keyDown="checkEnter(event);"/>
+		</mx:FormItem>
+		<mx:FormItem direction="horizontal">
+			<s:Button label="{RS.ok}" click="doLogin();"/>
+			<s:Button label="{RS.cancel}" click="doClose();"/>
+		</mx:FormItem>
+	</mx:Form>
+</s:TitleWindow>

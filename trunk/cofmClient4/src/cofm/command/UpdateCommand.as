@@ -13,14 +13,14 @@ package cofm.command
 		}
 
 		public function execute(): void {
-			_cmdId = CommandBuffer.instance.addCommand(this);
+			_cmdId = CommandBuffer.instance().addCommand(this);
 			var request: Object = {
 					"id": _cmdId,
 					"name": Cst.REQ_UPDATE,
-					"requesterId": UserList.instance.myId,
+					"requesterId": UserList.instance().myId,
 					"modelId": _modelId
 				};
-			Connector.instance.send(JsonUtil.objectToJson(request));
+			Connector.instance().send(JsonUtil.objectToJson(request));
 		}
 
 		public function redo(): void {
@@ -36,7 +36,7 @@ package cofm.command
 			if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME]
 				&& Cst.REQ_UPDATE == data[Cst.FIELD_RSP_SOURCE_NAME]) {
 
-				CommandBuffer.instance.removeCommand(_cmdId);
+				CommandBuffer.instance().removeCommand(_cmdId);
 				ClientEvtDispatcher.instance().dispatchEvent(
 					new ModelUpdateEvent(ModelUpdateEvent.SUCCESS, data));
 			}
