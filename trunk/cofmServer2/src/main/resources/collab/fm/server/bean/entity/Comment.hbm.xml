@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="collab.fm.server.bean.entity">
+  <class name="Comment" table="COMMENT">
+    <!-- Properties of Entity class -->
+    <id name="id" type="long" column="COMMENT_ID">
+  		<generator class="native"></generator>
+  	</id>
+  	
+  	<timestamp name="lastModifyTime" column="LAST_MODIFIED" />
+  	
+  	<property name="createTime" type="timestamp" column="CREATED" />
+  	<property name="creator" type="long" column="CREATOR_ID" />
+  	
+  	<property name="content" type="string" column="CONTENT" />
+  	
+  </class>
+</hibernate-mapping>

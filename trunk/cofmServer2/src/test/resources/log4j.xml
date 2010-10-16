@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>   
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">   
+
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/' >
+    <appender name="F" class="org.apache.log4j.FileAppender">
+    		<param name="Encoding" value="UTF-8" />
+    		<param name="Append" value="false"/>
+    		<param name="Threshold" value="DEBUG"/>
+    		<param name="File" value="log/UnitTest/testing.log"/>
+    		<layout class="org.apache.log4j.PatternLayout">
+    			<param name="ConversionPattern" value="%-25d %c %-5p %m %n"/>
+    		</layout>
+    </appender>   
+	
+	<logger name="collab.fm.server">
+		<level value="DEBUG"/>
+	</logger>
+	
+	<logger name="org.apache.commons">
+		<level value="WARN"/>
+	</logger>
+	
+	<logger name="com.mchange.v2"> <!-- c3p0 connection pool -->
+		<level value="INFO"/>    
+	</logger>
+	
+	<logger name="net.sf.json"> <!-- JSON lib -->
+		<level value="WARN"/>
+	</logger>
+	
+	<logger name="org.hibernate">
+		<level value="INFO"/>
+	</logger>
+	           
+    <root>   
+        <appender-ref ref="F"/>
+    </root>   
+</log4j:configuration>

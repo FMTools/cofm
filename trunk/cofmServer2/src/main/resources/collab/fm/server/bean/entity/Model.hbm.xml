@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="collab.fm.server.bean.entity">
+  <class name="Model" table="MODEL">
+    <id name="id" column="MODEL_ID" type="long">
+  		<generator class="native"></generator>
+  	</id>
+  	
+  	<timestamp name="lastModifyTime" column="LAST_MODIFIED" />
+  	
+  	<property name="createTime" type="timestamp" column="CREATED" />
+  	<property name="creator" type="long" column="CREATOR_ID" />
+  	
+  	<property name="name" type="string" column="MODEL_NAME" />
+  	<property name="description" type="string" column="MODEL_DESCRIPTION" />
+  	
+  	<!-- One-to-many association with Feature Attribute Set -->
+  	<map name="featureAttrs" table="MODEL_ATTR_SET" cascade="all, delete-orphan">
+  		<key column="MODEL_ID"></key>
+  		<map-key type="string" column="ATTR_NAME"></map-key>
+  		<one-to-many class="collab.fm.server.bean.entity.attr.Attribute"></one-to-many>
+  	</map>
+  	
+  	<!-- One-to-many bidirectional association to Feature -->
+  	<set name="features" inverse="true">
+  	    <key column="MODEL_ID"></key>
+  	    <one-to-many class="Feature" />
+  	</set>
+  	
+  	<!-- One-to-many bidirectional association to Relationship -->
+  	<set name="relationships" inverse="true">
+  	    <key column="MODEL_ID"></key>
+  	    <one-to-many class="Relationship"/>
+  	</set>
+
+    <!-- Many-to-many bidirectional association to User 
+        (See Feature.hbm.xml for the explanation of "inverse=true")
+    -->
+    <set inverse="true" name="users" table="MODEL_CONTRIBUTOR">
+  		<key column="MODEL_ID"></key>
+  		<many-to-many column="USER_ID" class="User"></many-to-many>
+  	</set>
+  	
+  </class>
+</hibernate-mapping>
