@@ -1,0 +1,15 @@
+---------------------------------
+Deploy the server via source code
+---------------------------------
+1. Create a database named "cofm" in MySQL 5.
+2. Run "mvn-compile.bat".
+3. Run "mvn-init-db.bat" (for the first time only).
+4. Run "mvn-run-server.bat" to start the server.
+
+----------
+To Be Done
+----------
+0. Add Date and Time in entities and database.
+1. A panel shows everyone's creating and voting operations.
+2. Personal trees.
+3. Log out.
