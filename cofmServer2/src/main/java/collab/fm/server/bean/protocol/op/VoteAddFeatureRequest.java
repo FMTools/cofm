@@ -6,8 +6,8 @@ import java.util.List;
 import collab.fm.server.bean.persist.Feature;
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.Relationship;
-import collab.fm.server.bean.persist.entity.Attribute;
-import collab.fm.server.bean.persist.entity.EnumAttribute;
+import collab.fm.server.bean.persist.entity.AttributeType;
+import collab.fm.server.bean.persist.entity.EnumAttributeType;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
@@ -95,14 +95,14 @@ public class VoteAddFeatureRequest extends Request {
 					// Create the "name", "description" and "optionality" attributes for the feature.
 					f = new Feature(vafr.getRequesterId());
 					
-					Attribute fname = new Attribute(vafr.getRequesterId(), 
-							Resources.ATTR_FEATURE_NAME, Attribute.TYPE_STR);
+					AttributeType fname = new AttributeType(vafr.getRequesterId(), 
+							Resources.ATTR_FEATURE_NAME, AttributeType.TYPE_STR);
 					fname.setEnableGlobalDupValues(false);
 					
-					Attribute fdes = new Attribute(vafr.getRequesterId(), 
-							Resources.ATTR_FEATURE_DES, Attribute.TYPE_TEXT);
+					AttributeType fdes = new AttributeType(vafr.getRequesterId(), 
+							Resources.ATTR_FEATURE_DES, AttributeType.TYPE_TEXT);
 					
-					EnumAttribute fopt = new EnumAttribute(vafr.getRequesterId(),
+					EnumAttributeType fopt = new EnumAttributeType(vafr.getRequesterId(),
 							Resources.ATTR_FEATURE_OPT);
 					fopt.addValidValue(Resources.VAL_OPT_MANDATORY);
 					fopt.addValidValue(Resources.VAL_OPT_OPTIONAL);

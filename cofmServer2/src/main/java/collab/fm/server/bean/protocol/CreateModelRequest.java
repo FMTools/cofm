@@ -2,8 +2,8 @@ package collab.fm.server.bean.protocol;
 
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.User;
-import collab.fm.server.bean.persist.entity.Attribute;
-import collab.fm.server.bean.persist.entity.EnumAttribute;
+import collab.fm.server.bean.persist.entity.AttributeType;
+import collab.fm.server.bean.persist.entity.EnumAttributeType;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
@@ -63,14 +63,14 @@ public class CreateModelRequest extends Request {
 				m.setDescription(cmr.getDescription());
 				
 				// Add the default feature attribute set to the model.
-				Attribute fname = new Attribute(cmr.getRequesterId(), 
-						Resources.ATTR_FEATURE_NAME, Attribute.TYPE_STR);
+				AttributeType fname = new AttributeType(cmr.getRequesterId(), 
+						Resources.ATTR_FEATURE_NAME, AttributeType.TYPE_STR);
 				fname.setEnableGlobalDupValues(false);
 				
-				Attribute fdes = new Attribute(cmr.getRequesterId(), 
-						Resources.ATTR_FEATURE_DES, Attribute.TYPE_TEXT);
+				AttributeType fdes = new AttributeType(cmr.getRequesterId(), 
+						Resources.ATTR_FEATURE_DES, AttributeType.TYPE_TEXT);
 				
-				EnumAttribute fopt = new EnumAttribute(cmr.getRequesterId(),
+				EnumAttributeType fopt = new EnumAttributeType(cmr.getRequesterId(),
 						Resources.ATTR_FEATURE_OPT);
 				fopt.addValidValue(Resources.VAL_OPT_MANDATORY);
 				fopt.addValidValue(Resources.VAL_OPT_OPTIONAL);

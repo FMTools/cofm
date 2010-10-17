@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.persist.Model;
-import collab.fm.server.bean.persist.entity.Attribute;
+import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.persist.entity.Value;
 import collab.fm.server.bean.transfer.Model2;
 import collab.fm.server.processor.Processor;

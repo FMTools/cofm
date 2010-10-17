@@ -1,0 +1,63 @@
+package collab.fm.server.bean.persist.entity;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import collab.fm.server.bean.persist.DataItem;
+import collab.fm.server.bean.persist.ElementType;
+import collab.fm.server.bean.transfer.Attribute2;
+import collab.fm.server.bean.transfer.Entity2;
+import collab.fm.server.bean.transfer.Value2;
+
+/**
+ * @author mark
+ * Definition of an Attribute_Type
+ */
+public class AttributeType extends ElementType {
+	// Types
+	public static final String TYPE_STR = "string";
+	public static final String TYPE_TEXT = "text";
+	public static final String TYPE_ENUM = "enum";
+	public static final String TYPE_NUMBER = "number";
+
+	// If multipleSupport == true, one user can vote yes to multiple values of this attribute;
+	// otherwise, one user can vote yes to up to one value of this attribute.
+	protected boolean multipleSupport;
+	
+	// If enableGlobalDupValues == true, then duplicate values for this attr is enabled (e.g. Optionality),
+	// otherwise, no duplicate values are allowed globally in one feature model (e.g. Feature Name)
+	protected boolean enableGlobalDupValues;
+	
+	@Override
+	public void transfer(Entity2 a) {
+//		Attribute2 a2 = (Attribute2) a;
+//		super.transfer(a2);
+//		a2.setDup(this.isEnableGlobalDupValues());
+//		a2.setMulti(this.isMultipleSupport());
+//		a2.setName(this.getName());
+//		a2.setType(this.getType());
+//		for (Value v: this.getValues()) {
+//			Value2 v2 = new Value2();
+//			v.transfer(v2);
+//			a2.addVal(v2);
+//		}
+	}
+	
+	public boolean isMultipleSupport() {
+		return multipleSupport;
+	}
+
+	public void setMultipleSupport(boolean multipleSupport) {
+		this.multipleSupport = multipleSupport;
+	}
+
+	public boolean isEnableGlobalDupValues() {
+		return enableGlobalDupValues;
+	}
+
+	public void setEnableGlobalDupValues(boolean enableGlobalDupValues) {
+		this.enableGlobalDupValues = enableGlobalDupValues;
+	}
+	
+}

@@ -9,7 +9,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import collab.fm.server.bean.persist.entity.Attribute;
+import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.persist.entity.Value;
 import collab.fm.server.bean.transfer.Comment2;
 import collab.fm.server.bean.transfer.Entity2;
@@ -19,12 +19,12 @@ import collab.fm.server.util.EntityUtil;
 import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
-public class Feature extends VotableEntity {
+public class Feature extends Element {
 	
 	private static Logger logger = Logger.getLogger(Feature.class);
 	
 	// Attributes: key = Attr_Name
-	private Map<String, Attribute> attrs = new HashMap<String, Attribute>();
+	private Map<String, AttributeType> attrs = new HashMap<String, AttributeType>();
 	
 	// Involved relationships.
 	private Set<Relationship> rels = new HashSet<Relationship>();
@@ -50,14 +50,14 @@ public class Feature extends VotableEntity {
 		this.getRels().add(r);
 	}
 	
-	public void addAttribute(Attribute a) {
+	public void addAttribute(AttributeType a) {
 		if (attrs.get(a.getName()) == null) {
 			attrs.put(a.getName(), a);
 		}
 	}
 	
 	public boolean voteOrAddValue(String attrName, String val, boolean yes, Long userId) {
-		Attribute attr = attrs.get(attrName);
+		AttributeType attr = attrs.get(attrName);
 		if (attr == null) {
 			return false;
 		}
@@ -89,11 +89,11 @@ public class Feature extends VotableEntity {
 		return super.vote(yes, userId);
 	}
 	
-	public Map<String, Attribute> getAttrs() {
+	public Map<String, AttributeType> getAttrs() {
 		return attrs;
 	}
 
-	public void setAttrs(Map<String, Attribute> attrs) {
+	public void setAttrs(Map<String, AttributeType> attrs) {
 		this.attrs = attrs;
 	}
 
@@ -127,16 +127,16 @@ public class Feature extends VotableEntity {
 		if (this == null || o == null) return false;
 		if (!(o instanceof Feature)) return false;
 		Feature that = (Feature) o;
-		return this.value().equals(that.value());
+		return this.toValueString().equals(that.toValueString());
 	}
 
 	@Override
 	public int hashCode() {
-		return this.value().hashCode();
+		return this.toValueString().hashCode();
 	}
 
 	@Override
-	public String value() {
+	public String toValueString() {
 		if (this.getId() != null) {
 			return this.getId().toString();
 		}
@@ -154,7 +154,7 @@ public class Feature extends VotableEntity {
 		}
 	}
 
-	public Attribute getAttribute(String attrName) {
+	public AttributeType getAttribute(String attrName) {
 		return attrs.get(attrName);
 	}
 	
@@ -174,7 +174,7 @@ public class Feature extends VotableEntity {
 			f2.addComment(c2);
 		}
 		
-		for (Map.Entry<String, Attribute> e: this.getAttrs().entrySet()) {
+		for (Map.Entry<String, AttributeType> e: this.getAttrs().entrySet()) {
 			f2.addAttr(EntityUtil.transferFromAttr(e.getValue()));
 		}
 	}

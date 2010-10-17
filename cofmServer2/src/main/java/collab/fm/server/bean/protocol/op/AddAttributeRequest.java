@@ -2,7 +2,7 @@ package collab.fm.server.bean.protocol.op;
 
 import collab.fm.server.bean.persist.Feature;
 import collab.fm.server.bean.persist.Model;
-import collab.fm.server.bean.persist.entity.Attribute;
+import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
@@ -80,7 +80,7 @@ public class AddAttributeRequest extends Request {
 			AddAttributeRequest r = (AddAttributeRequest) req;
 			DefaultResponse rsp = createResponse(r);
 			
-			Attribute a = createAttribute(r);
+			AttributeType a = createAttribute(r);
 			
 			Model m = DaoUtil.getModelDao().getById(r.getModelId(), true);
 			if (m == null) {
@@ -104,8 +104,8 @@ public class AddAttributeRequest extends Request {
 			return new DefaultResponse(r);
 		}
 
-		protected Attribute createAttribute(AddAttributeRequest r) {
-			Attribute a = new Attribute(r.getRequesterId(), r.getAttr(), r.getType());
+		protected AttributeType createAttribute(AddAttributeRequest r) {
+			AttributeType a = new AttributeType(r.getRequesterId(), r.getAttr(), r.getType());
 			a.setMultipleSupport(r.getMultiYes());
 			a.setEnableGlobalDupValues(r.getAllowDup());
 			return a;

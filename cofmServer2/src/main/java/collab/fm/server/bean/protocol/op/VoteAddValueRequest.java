@@ -2,7 +2,7 @@ package collab.fm.server.bean.protocol.op;
 
 import collab.fm.server.bean.persist.Feature;
 import collab.fm.server.bean.persist.Model;
-import collab.fm.server.bean.persist.entity.Attribute;
+import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
@@ -87,7 +87,7 @@ public class VoteAddValueRequest extends Request {
 						+ r.getFeatureId());
 			}
 			
-			Attribute a = target.getAttribute(r.getAttr());
+			AttributeType a = target.getAttribute(r.getAttr());
 			if (a == null) {
 				// We can get the attribute instance from Model.featureAttrs
 				a = m.getFeatureAttrs().get(r.getAttr());
@@ -107,7 +107,7 @@ public class VoteAddValueRequest extends Request {
 			
 			// If the target is a feature, we should make sure the attribute exists
 			if (target.getAttribute(r.getAttr()) == null) {
-				Attribute a2 = EntityUtil.cloneAttribute(a);
+				AttributeType a2 = EntityUtil.cloneAttribute(a);
 				a2.setCreator(r.getRequesterId());
 				target.addAttribute(a2);
 			}
