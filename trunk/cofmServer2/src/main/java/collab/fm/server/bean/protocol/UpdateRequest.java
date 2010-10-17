@@ -8,7 +8,7 @@ import collab.fm.server.bean.persist.BinaryRelationship;
 import collab.fm.server.bean.persist.Feature;
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.Relationship;
-import collab.fm.server.bean.persist.entity.Attribute;
+import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.transfer.Attribute2;
 import collab.fm.server.bean.transfer.BinaryRelation2;
 import collab.fm.server.bean.transfer.Feature2;
@@ -82,7 +82,7 @@ public class UpdateRequest extends Request {
 			// Return all attributes
 			Model m = DaoUtil.getModelDao().getById(r.getModelId(), false);
 			List<Attribute2> list3 = new ArrayList<Attribute2>();
-			for (Map.Entry<String, Attribute> e: m.getFeatureAttrs().entrySet()) {
+			for (Map.Entry<String, AttributeType> e: m.getFeatureAttrs().entrySet()) {
 				list3.add(EntityUtil.transferFromAttr(e.getValue()));
 			}
 			

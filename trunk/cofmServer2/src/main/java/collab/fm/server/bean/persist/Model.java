@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import collab.fm.server.bean.persist.entity.Attribute;
+import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.persist.entity.Value;
 import collab.fm.server.bean.transfer.Entity2;
 import collab.fm.server.bean.transfer.Model2;
@@ -20,7 +20,7 @@ public class Model extends DataItem {
 	private String description;
 	
 	// Attributes of features in this model
-	private Map<String, Attribute> featureAttrs = new HashMap<String, Attribute>();
+	private Map<String, AttributeType> featureAttrs = new HashMap<String, AttributeType>();
 	
 	private Set<Feature> features = new HashSet<Feature>();
 	private Set<Relationship> relationships = new HashSet<Relationship>();
@@ -66,7 +66,7 @@ public class Model extends DataItem {
 		this.getUsers().add(u);
 	}
 	
-	public void addAttributeToFeatures(Attribute a) {
+	public void addAttributeToFeatures(AttributeType a) {
 		if (featureAttrs.get(a.getName()) == null) {
 			featureAttrs.put(a.getName(), a);
 		}
@@ -88,11 +88,11 @@ public class Model extends DataItem {
 		this.description = description;
 	}
 
-	public Map<String, Attribute> getFeatureAttrs() {
+	public Map<String, AttributeType> getFeatureAttrs() {
 		return featureAttrs;
 	}
 
-	public void setFeatureAttrs(Map<String, Attribute> featureAttrs) {
+	public void setFeatureAttrs(Map<String, AttributeType> featureAttrs) {
 		this.featureAttrs = featureAttrs;
 	}
 

@@ -1,7 +1,7 @@
 package collab.fm.server.bean.protocol.op;
 
-import collab.fm.server.bean.persist.entity.Attribute;
-import collab.fm.server.bean.persist.entity.NumericAttribute;
+import collab.fm.server.bean.persist.entity.AttributeType;
+import collab.fm.server.bean.persist.entity.NumericAttributeType;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.processor.Processor;
 
@@ -55,8 +55,8 @@ public class AddNumericAttributeRequest extends AddAttributeRequest {
 		}
 		
 		@Override
-		protected Attribute createAttribute(AddAttributeRequest r) {
-			NumericAttribute a = new NumericAttribute(r.getRequesterId(), r.getAttr());
+		protected AttributeType createAttribute(AddAttributeRequest r) {
+			NumericAttributeType a = new NumericAttributeType(r.getRequesterId(), r.getAttr());
 			a.setMultipleSupport(r.getMultiYes());
 			a.setEnableGlobalDupValues(r.getAllowDup());
 			AddNumericAttributeRequest anar = (AddNumericAttributeRequest) r;

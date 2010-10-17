@@ -9,7 +9,7 @@ import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
-public abstract class Relationship extends VotableEntity {
+public abstract class Relationship extends Element {
 	
 	private static Logger logger = Logger.getLogger(Relationship.class);
 	
@@ -39,15 +39,15 @@ public abstract class Relationship extends VotableEntity {
 		if (this == null || o == null) return false;
 		if (!(o instanceof Relationship)) return false;
 		Relationship that = (Relationship) o;
-		return this.value().equals(that.value());
+		return this.toValueString().equals(that.toValueString());
 	}
 
 	@Override
 	public int hashCode() {
-		return this.value().hashCode();
+		return this.toValueString().hashCode();
 	}
 
-	public String value() {
+	public String toValueString() {
 		if (this.getId() != null) {
 			return this.getId().toString();
 		}

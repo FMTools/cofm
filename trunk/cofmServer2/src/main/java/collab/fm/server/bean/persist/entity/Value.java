@@ -1,37 +1,33 @@
 package collab.fm.server.bean.persist.entity;
 
-import collab.fm.server.bean.persist.VotableEntity;
+import collab.fm.server.bean.persist.Element;
 import collab.fm.server.bean.transfer.Entity2;
 import collab.fm.server.bean.transfer.Value2;
 
 /**
  * All types of value (string, number, enumeration, etc.) can be converted into string, so
- * we use a single Value class for all values.
+ * we use a single Value class for all types of values.
  * @author mark
  *
  */
-public class Value extends VotableEntity {
+public class Value extends Element {
 
-	private String strVal;
+	private String val;
 	
 	public Value() {
 		super();
 	}
 	
-	public Value(Long creator) {
-		super(creator);
-	}
-	
-	public String getStrVal() {
-		return strVal;
+	public String getVal() {
+		return val;
 	}
 
-	public void setStrVal(String strVal) {
-		this.strVal = strVal;
+	public void setVal(String strVal) {
+		this.val = strVal;
 	}
 
-	public String value() {
-		return strVal;
+	public String toValueString() {
+		return getVal();
 	}
 
 	@Override
@@ -40,25 +36,19 @@ public class Value extends VotableEntity {
 		if (this == null || o == null) return false;
 		if (!(o instanceof Value)) return false;
 		Value that = (Value) o;
-		return this.value().equals(that.value());
+		return this.toValueString().equals(that.toValueString());
 	}
 
 	@Override
 	public int hashCode() {
-		return this.value().hashCode();
-	}
-
-	@Override
-	protected void removeThis() {
-		// TODO Auto-generated method stub
-		
+		return this.toValueString().hashCode();
 	}
 	
 	@Override
 	public void transfer(Entity2 v) {
 		Value2 v2 = (Value2) v;
 		super.transfer(v2);
-		v2.setVal(this.getStrVal());
+		v2.setVal(this.getVal());
 	}
 
 }

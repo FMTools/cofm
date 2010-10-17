@@ -7,7 +7,7 @@ import org.junit.*;
 
 import collab.fm.server.bean.persist.Feature;
 import collab.fm.server.bean.persist.Model;
-import collab.fm.server.bean.persist.entity.Attribute;
+import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.controller.JsonConverter;
 import collab.fm.server.persistence.HibernateUtil;
@@ -41,8 +41,8 @@ public class VoteAddFeatureRequestTest {
 		Model m = DaoUtil.getModelDao().getById(modelId, false);
 		
 		Feature f = new Feature(2L);
-		Attribute fname = new Attribute(2L, 
-				Resources.ATTR_FEATURE_NAME, Attribute.TYPE_STR);
+		AttributeType fname = new AttributeType(2L, 
+				Resources.ATTR_FEATURE_NAME, AttributeType.TYPE_STR);
 		fname.setEnableGlobalDupValues(false);
 		fname.setMultipleSupport(true);
 		f.addAttribute(fname);

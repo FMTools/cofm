@@ -16,29 +16,14 @@ public class Vote {
 	public Vote() {
 	}
 	
-	public Set<Long> getSupporters() {
-		return supporters;
-	}
-
-	public void setSupporters(Set<Long> theSupporters) {
-		this.supporters = theSupporters;
-	}
-
-	public Set<Long> getOpponents() {
-		return opponents;
-	}
-
-	public void setOpponents(Set<Long> theOpponents) {
-		this.opponents = theOpponents;
-	}
-	
 	public void voteYes(Long userid) {
-		// A specific user either support or against the value
+		// A specific user either support or against the value, but not both
 		supporters.add(userid);
 		opponents.remove(userid);
 	}
 	
 	public void voteNo(Long userid) {
+		// Similar to voteYes().
 		supporters.remove(userid);
 		opponents.add(userid);
 	}
@@ -68,5 +53,21 @@ public class Vote {
 	@Override
 	public String toString() {
 		return "(" + supporters.size() + "/" + opponents.size() + ")"; 
+	}
+	
+	public Set<Long> getSupporters() {
+		return supporters;
+	}
+
+	public void setSupporters(Set<Long> theSupporters) {
+		this.supporters = theSupporters;
+	}
+
+	public Set<Long> getOpponents() {
+		return opponents;
+	}
+
+	public void setOpponents(Set<Long> theOpponents) {
+		this.opponents = theOpponents;
 	}
 }

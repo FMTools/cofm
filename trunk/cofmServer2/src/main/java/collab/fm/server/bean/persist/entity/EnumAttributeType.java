@@ -14,23 +14,24 @@ import collab.fm.server.bean.transfer.EnumAttribute2;
  * @author mark
  *
  */
-public class EnumAttribute extends Attribute {
+public class EnumAttributeType extends AttributeType {
 	
-	private static Logger logger = Logger.getLogger(EnumAttribute.class);
+	private static Logger logger = Logger.getLogger(EnumAttributeType.class);
 	
 	private List<String> validValues = new ArrayList<String>();
 
-	public EnumAttribute() {
+	public EnumAttributeType() {
 		super();
-	}
-	
-	public EnumAttribute(Long creator, String name) {
-		super(creator, name, Attribute.TYPE_ENUM);
+		this.typeName = AttributeType.TYPE_ENUM;
 	}
 	
 	@Override
-	protected boolean valueIsValid(Value v) {
-		return validValues.contains(v.value());
+	public void transfer(Entity2 a) {
+//		EnumAttribute2 a2 = (EnumAttribute2) a;
+//		super.transfer(a2);
+//		for (String s: this.getValidValues()) {
+//			a2.addEnum(s);
+//		}
 	}
 	
 	public void addValidValue(String value) {
@@ -45,12 +46,4 @@ public class EnumAttribute extends Attribute {
 		this.validValues = validValues;
 	}
 	
-	@Override
-	public void transfer(Entity2 a) {
-		EnumAttribute2 a2 = (EnumAttribute2) a;
-		super.transfer(a2);
-		for (String s: this.getValidValues()) {
-			a2.addEnum(s);
-		}
-	}
 }

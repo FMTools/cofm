@@ -2,8 +2,8 @@ package collab.fm.server.bean.protocol.op;
 
 import java.util.List;
 
-import collab.fm.server.bean.persist.entity.Attribute;
-import collab.fm.server.bean.persist.entity.EnumAttribute;
+import collab.fm.server.bean.persist.entity.AttributeType;
+import collab.fm.server.bean.persist.entity.EnumAttributeType;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.processor.Processor;
 
@@ -39,8 +39,8 @@ public class AddEnumAttributeRequest extends AddAttributeRequest {
 		}
 		
 		@Override
-		protected Attribute createAttribute(AddAttributeRequest r) {
-			EnumAttribute a = new EnumAttribute(r.getRequesterId(), r.getAttr());
+		protected AttributeType createAttribute(AddAttributeRequest r) {
+			EnumAttributeType a = new EnumAttributeType(r.getRequesterId(), r.getAttr());
 			a.setMultipleSupport(r.getMultiYes());
 			a.setEnableGlobalDupValues(r.getAllowDup());
 			a.setValidValues(((AddEnumAttributeRequest)r).getVlist());
