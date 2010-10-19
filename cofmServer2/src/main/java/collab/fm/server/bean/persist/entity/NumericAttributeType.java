@@ -24,6 +24,18 @@ public class NumericAttributeType extends AttributeType {
 //		a2.setUnit(this.getUnit());
 	}
 	
+	@Override
+	public boolean valueConformsToType(Value v) {
+		try {
+			Float val = Float.valueOf(v.toValueString());
+			return !val.isNaN() &&
+				val.compareTo(min) >= 0 &&
+				val.compareTo(max) <= 0;
+		} catch (NumberFormatException nfe) {
+			return false;
+		}
+	}
+	
 	public float getMin() {
 		return min;
 	}

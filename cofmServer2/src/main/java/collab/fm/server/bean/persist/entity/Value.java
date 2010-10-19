@@ -23,7 +23,7 @@ public class Value extends Element {
 	}
 
 	public void setVal(String strVal) {
-		this.val = strVal;
+		this.val = strVal.trim();
 	}
 
 	public String toValueString() {

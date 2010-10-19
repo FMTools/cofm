@@ -9,7 +9,15 @@ import collab.fm.server.bean.transfer.Entity2;
  */
 public class ElementType extends DataItem {
 	protected String typeName;
+	
+	protected ElementType superType;
 
+	@Override
+	public void transfer(Entity2 target) {
+		//TODO: define class ElementType2 and set the typeName of e2
+		super.transfer(target);
+	}
+	
 	public String getTypeName() {
 		return typeName;
 	}
@@ -17,10 +25,12 @@ public class ElementType extends DataItem {
 	public void setTypeName(String typeName) {
 		this.typeName = typeName;
 	}
-	
-	@Override
-	public void transfer(Entity2 target) {
-		//TODO: define class ElementType2 and set the typeName of e2
-		super.transfer(target);
+
+	public ElementType getSuperType() {
+		return superType;
+	}
+
+	public void setSuperType(ElementType superType) {
+		this.superType = superType;
 	}
 }
