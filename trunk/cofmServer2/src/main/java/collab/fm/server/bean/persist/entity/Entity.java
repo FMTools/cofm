@@ -8,7 +8,7 @@ import collab.fm.server.bean.persist.Element;
 public class Entity extends Element {
 	
 	// Attribute-Value map of this entity. Key = AttrName.
-	protected Map<String, Value> attrs = new HashMap<String, Value>();
+	protected Map<String, ValueList> attrs = new HashMap<String, ValueList>();
 	
 	@Override
 	public boolean equals(Object o) {

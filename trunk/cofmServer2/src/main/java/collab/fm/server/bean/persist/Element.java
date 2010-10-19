@@ -11,11 +11,6 @@ import collab.fm.server.bean.transfer.VotableEntity2;
  */
 public abstract class Element extends DataItem implements Votable {
 
-	// Return code for operations performed on the elements.
-	public static final int CREATION_EXECUTED = 0;  // (Valid) creating operation.
-	public static final int VOTE_EXECUTED = 1;     // (Valid) voting operation.
-	public static final int INVALID_OPERATION = -1;
-	
 	protected Vote vote = new Vote();
 	protected ElementType type;
 	
@@ -31,8 +26,12 @@ public abstract class Element extends DataItem implements Votable {
 		return vote.getSupporters().size();
 	}
 
-	public void vote(boolean yes, Long userid) {
+	public int vote(boolean yes, Long userid) {
 		this.vote.vote(yes, userid);
+		if (this.getSupporterNum() <= 0) {
+			return Votable.REMOVAL_EXECUTED;
+		} 
+		return Votable.VOTE_EXECUTED;
 	}
 	
 	@Override

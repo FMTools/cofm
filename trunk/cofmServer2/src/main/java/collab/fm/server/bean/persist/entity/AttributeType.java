@@ -12,15 +12,17 @@ import collab.fm.server.bean.transfer.Value2;
 
 /**
  * @author mark
- * Definition of an Attribute_Type
+ * Definition of an String-Like (String or Text) attribute type
  */
-public class AttributeType extends ElementType {
+public class AttributeType extends DataItem {
 	// Types
 	public static final String TYPE_STR = "string";
 	public static final String TYPE_TEXT = "text";
 	public static final String TYPE_ENUM = "enum";
 	public static final String TYPE_NUMBER = "number";
 
+	protected String typeName;
+	
 	// If multipleSupport == true, one user can vote yes to multiple values of this attribute;
 	// otherwise, one user can vote yes to up to one value of this attribute.
 	protected boolean multipleSupport;
@@ -44,6 +46,11 @@ public class AttributeType extends ElementType {
 //		}
 	}
 	
+	public boolean valueConformsToType(Value v) {
+		// A value is always a String, so we return true directly here.
+		return true;
+	}
+	
 	public boolean isMultipleSupport() {
 		return multipleSupport;
 	}
@@ -59,5 +66,14 @@ public class AttributeType extends ElementType {
 	public void setEnableGlobalDupValues(boolean enableGlobalDupValues) {
 		this.enableGlobalDupValues = enableGlobalDupValues;
 	}
+
+	public String getTypeName() {
+		return typeName;
+	}
+
+	public void setTypeName(String typeName) {
+		this.typeName = typeName;
+	}
+	
 	
 }
