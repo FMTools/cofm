@@ -6,23 +6,23 @@ import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.processor.Processor;
 
 public class AddNumericAttributeRequest extends AddAttributeRequest {
-	private Double min;
-	private Double max;
+	private float min;
+	private float max;
 	private String unit;
 	
-	public Double getMin() {
+	public float getMin() {
 		return min;
 	}
 
-	public void setMin(Double min) {
+	public void setMin(float min) {
 		this.min = min;
 	}
 
-	public Double getMax() {
+	public float getMax() {
 		return max;
 	}
 
-	public void setMax(Double max) {
+	public void setMax(float max) {
 		this.max = max;
 	}
 
@@ -56,7 +56,8 @@ public class AddNumericAttributeRequest extends AddAttributeRequest {
 		
 		@Override
 		protected AttributeType createAttribute(AddAttributeRequest r) {
-			NumericAttributeType a = new NumericAttributeType(r.getRequesterId(), r.getAttr());
+			NumericAttributeType a = new NumericAttributeType();
+			a.setCreator(r.getRequesterId());
 			a.setMultipleSupport(r.getMultiYes());
 			a.setEnableGlobalDupValues(r.getAllowDup());
 			AddNumericAttributeRequest anar = (AddNumericAttributeRequest) r;
@@ -68,23 +69,23 @@ public class AddNumericAttributeRequest extends AddAttributeRequest {
 	}
 	
 	public static class DefResponse extends AddAttributeRequest.DefaultResponse {
-		private Double min;
-		private Double max;
+		private float min;
+		private float max;
 		private String unit;
 		
-		public Double getMin() {
+		public float getMin() {
 			return min;
 		}
 
-		public void setMin(Double min) {
+		public void setMin(float min) {
 			this.min = min;
 		}
 
-		public Double getMax() {
+		public float getMax() {
 			return max;
 		}
 
-		public void setMax(Double max) {
+		public void setMax(float max) {
 			this.max = max;
 		}
 

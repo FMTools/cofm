@@ -3,7 +3,6 @@ package collab.fm.server.bean.protocol.op;
 import java.util.ArrayList;
 import java.util.List;
 
-import collab.fm.server.bean.persist.Feature;
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.persist.entity.EnumAttributeType;

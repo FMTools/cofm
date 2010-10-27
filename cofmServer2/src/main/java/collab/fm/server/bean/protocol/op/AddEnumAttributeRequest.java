@@ -40,7 +40,8 @@ public class AddEnumAttributeRequest extends AddAttributeRequest {
 		
 		@Override
 		protected AttributeType createAttribute(AddAttributeRequest r) {
-			EnumAttributeType a = new EnumAttributeType(r.getRequesterId(), r.getAttr());
+			EnumAttributeType a = new EnumAttributeType();
+			a.setCreator(r.getRequesterId());
 			a.setMultipleSupport(r.getMultiYes());
 			a.setEnableGlobalDupValues(r.getAllowDup());
 			a.setValidValues(((AddEnumAttributeRequest)r).getVlist());
