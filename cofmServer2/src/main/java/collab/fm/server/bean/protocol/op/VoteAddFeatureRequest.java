@@ -5,9 +5,9 @@ import java.util.List;
 
 import collab.fm.server.bean.persist.Feature;
 import collab.fm.server.bean.persist.Model;
-import collab.fm.server.bean.persist.Relationship;
 import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.persist.entity.EnumAttributeType;
+import collab.fm.server.bean.persist.relation.Relation;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
@@ -138,7 +138,7 @@ public class VoteAddFeatureRequest extends Request {
 				if (vafr.getYes().booleanValue() == false) {
 					// Set the inferred vote in response
 					List<Long> targets = new ArrayList<Long>();
-					for (Relationship r: f.getRels()) {
+					for (Relation r: f.getRels()) {
 						targets.add(r.getId());
 					}
 					if (targets.size() > 0) {

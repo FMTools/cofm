@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import collab.fm.server.bean.persist.BinaryRelationship;
 import collab.fm.server.bean.persist.Feature;
 import collab.fm.server.bean.persist.Model;
-import collab.fm.server.bean.persist.Relationship;
 import collab.fm.server.bean.persist.entity.AttributeType;
+import collab.fm.server.bean.persist.relation.BinRelation;
+import collab.fm.server.bean.persist.relation.Relation;
 import collab.fm.server.bean.transfer.Attribute2;
 import collab.fm.server.bean.transfer.BinaryRelation2;
 import collab.fm.server.bean.transfer.Feature2;
@@ -66,14 +66,14 @@ public class UpdateRequest extends Request {
 			}
 			
 			// Return all binary relationships
-			List<Relationship> allRelation = DaoUtil.getRelationshipDao().getAll(r.getModelId());
+			List<Relation> allRelation = DaoUtil.getRelationshipDao().getAll(r.getModelId());
 			
 			List<BinaryRelation2> list2 = new ArrayList<BinaryRelation2>();
 			if (allRelation != null) {
-				for (Relationship rel: allRelation) {
+				for (Relation rel: allRelation) {
 					if (isBinary(rel.getType())) {
 						BinaryRelation2 r2 = new BinaryRelation2();
-						((BinaryRelationship)rel).transfer(r2);
+						((BinRelation)rel).transfer(r2);
 						list2.add(r2);
 					}	
 				}

@@ -1,8 +1,6 @@
 package collab.fm.server.bean.persist.entity;
 
-import collab.fm.server.bean.transfer.Attribute2;
-import collab.fm.server.bean.transfer.Entity2;
-import collab.fm.server.bean.transfer.NumericAttribute2;
+import collab.fm.server.bean.transfer.DataItem2;
 
 public class NumericAttributeType extends AttributeType {
 	
@@ -16,7 +14,7 @@ public class NumericAttributeType extends AttributeType {
 	}
 	
 	@Override
-	public void transfer(Entity2 a) {
+	public void transfer(DataItem2 a) {
 //		NumericAttribute2 a2 = (NumericAttribute2) a;
 //		super.transfer(a2);
 //		a2.setMin(this.getMin());

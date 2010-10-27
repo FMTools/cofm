@@ -1,6 +1,6 @@
 package collab.fm.server.bean.persist;
 
-import collab.fm.server.bean.transfer.Entity2;
+import collab.fm.server.bean.transfer.DataItem2;
 
 /**
  * Define an element type. An element can be either an entity or a relation.
@@ -11,11 +11,18 @@ public class ElementType extends DataItem {
 	protected String typeName;
 	
 	protected ElementType superType;
+	
+	protected Model model;
 
 	@Override
-	public void transfer(Entity2 target) {
+	public void transfer(DataItem2 target) {
 		//TODO: define class ElementType2 and set the typeName of e2
 		super.transfer(target);
+	}
+	
+	@Override
+	public String toValueString() {
+		return this.getTypeName();
 	}
 	
 	public String getTypeName() {
@@ -33,4 +40,13 @@ public class ElementType extends DataItem {
 	public void setSuperType(ElementType superType) {
 		this.superType = superType;
 	}
+
+	public Model getModel() {
+		return model;
+	}
+
+	public void setModel(Model model) {
+		this.model = model;
+	}
+
 }

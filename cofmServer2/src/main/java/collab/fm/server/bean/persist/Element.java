@@ -1,6 +1,6 @@
 package collab.fm.server.bean.persist;
 
-import collab.fm.server.bean.transfer.Entity2;
+import collab.fm.server.bean.transfer.DataItem2;
 import collab.fm.server.bean.transfer.VotableEntity2;
 
 /**
@@ -29,13 +29,13 @@ public abstract class Element extends DataItem implements Votable {
 	public int vote(boolean yes, Long userid) {
 		this.vote.vote(yes, userid);
 		if (this.getSupporterNum() <= 0) {
-			return Votable.REMOVAL_EXECUTED;
+			return DataItem.REMOVAL_EXECUTED;
 		} 
-		return Votable.VOTE_EXECUTED;
+		return DataItem.VOTE_EXECUTED;
 	}
 	
 	@Override
-	public void transfer(Entity2 ve) {
+	public void transfer(DataItem2 ve) {
 		VotableEntity2 ve2 = (VotableEntity2) ve;
 		super.transfer(ve2);
 		for (Long n: vote.getSupporters()) {
@@ -45,10 +45,6 @@ public abstract class Element extends DataItem implements Votable {
 			ve2.addV0(n);
 		}
 	}
-	
-	abstract public String toValueString();
-	abstract public boolean equals(Object o);
-	abstract public int hashCode();
 	
 	public Vote getVote() {
 		return vote;

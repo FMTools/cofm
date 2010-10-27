@@ -3,10 +3,10 @@ package collab.fm.server.bean.protocol.op;
 import java.util.ArrayList;
 import java.util.List;
 
-import collab.fm.server.bean.persist.BinaryRelationship;
 import collab.fm.server.bean.persist.Feature;
 import collab.fm.server.bean.persist.Model;
-import collab.fm.server.bean.persist.Relationship;
+import collab.fm.server.bean.persist.relation.BinRelation;
+import collab.fm.server.bean.persist.relation.Relation;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
@@ -110,14 +110,14 @@ public class VoteAddBinRelationRequest extends Request {
 				
 				// See if the relationship has already existed.
 				rsp.setExist(false);
-				BinaryRelationship relation = new BinaryRelationship(r.getRequesterId());
+				BinRelation relation = new BinRelation(r.getRequesterId());
 				relation.setType(r.getType());
 				relation.setLeftFeatureId(r.getLeftFeatureId());
 				relation.setRightFeatureId(r.getRightFeatureId());
 				List sameRelations = DaoUtil.getRelationshipDao().getByExample(r.getModelId(), relation); 
 				if (sameRelations != null) {
 					rsp.setExist(true);
-					relation = (BinaryRelationship)sameRelations.get(0);
+					relation = (BinRelation)sameRelations.get(0);
 				} else {
 					// CREATE THE (ACTUAL) RELATIONSHIP HERE (USING Feature OBJECTS.)
 					relation.setFeatures(DaoUtil.getFeatureDao().getById(r.getLeftFeatureId(), false),
@@ -128,7 +128,7 @@ public class VoteAddBinRelationRequest extends Request {
 				relation.vote(true, r.getRequesterId());
 				
 				// Save and set relationshipId in the response
-				relation = (BinaryRelationship)DaoUtil.getRelationshipDao().save(relation);
+				relation = (BinRelation)DaoUtil.getRelationshipDao().save(relation);
 				rsp.setRelationshipId(relation.getId());
 
 				// Save the model
@@ -141,7 +141,7 @@ public class VoteAddBinRelationRequest extends Request {
 				
 			} else { // A voting operation
 				
-				Relationship relation = DaoUtil.getRelationshipDao().getById(
+				Relation relation = DaoUtil.getRelationshipDao().getById(
 						r.getRelationshipId(), false);
 				if (relation == null) {
 					throw new InvalidOperationException("Invalid relationship ID: "
@@ -174,7 +174,7 @@ public class VoteAddBinRelationRequest extends Request {
 			return true;
 		}
 
-		private List<Long> generateInferVotes(Relationship relation) {
+		private List<Long> generateInferVotes(Relation relation) {
 			List<Long> rslt = new ArrayList<Long>();
 			for (Feature f: relation.getFeatures()) {
 				rslt.add(f.getId());

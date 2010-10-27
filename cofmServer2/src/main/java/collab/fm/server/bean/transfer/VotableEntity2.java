@@ -3,7 +3,7 @@ package collab.fm.server.bean.transfer;
 import java.util.HashSet;
 import java.util.Set;
 
-public class VotableEntity2 extends Entity2 {
+public class VotableEntity2 extends DataItem2 {
 	// Voters of the YES vote (1-vote)
 	protected Set<Long> v1 = new HashSet<Long>();
 	// Voters of the NO vote (0-vote)

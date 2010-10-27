@@ -1,6 +1,6 @@
 package collab.fm.server.bean.transfer;
 
-public class Entity2 {
+public class DataItem2 {
 	protected Long id;
 	protected Long cid;   // ID of its creator
 	protected String ctime; // Date/Time of its creation
