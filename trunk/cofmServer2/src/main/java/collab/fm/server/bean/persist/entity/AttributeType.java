@@ -1,14 +1,7 @@
 package collab.fm.server.bean.persist.entity;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import collab.fm.server.bean.persist.DataItem;
-import collab.fm.server.bean.persist.ElementType;
-import collab.fm.server.bean.transfer.Attribute2;
-import collab.fm.server.bean.transfer.Entity2;
-import collab.fm.server.bean.transfer.Value2;
+import collab.fm.server.bean.transfer.DataItem2;
 
 /**
  * @author mark
@@ -32,7 +25,7 @@ public class AttributeType extends DataItem {
 	protected boolean enableGlobalDupValues;
 	
 	@Override
-	public void transfer(Entity2 a) {
+	public void transfer(DataItem2 a) {
 //		Attribute2 a2 = (Attribute2) a;
 //		super.transfer(a2);
 //		a2.setDup(this.isEnableGlobalDupValues());
@@ -44,6 +37,15 @@ public class AttributeType extends DataItem {
 //			v.transfer(v2);
 //			a2.addVal(v2);
 //		}
+	}
+	
+	@Override
+	public String toValueString() {
+		if (this.getId() != null) {
+			return this.getId().toString();
+		}
+		return this.typeName + (this.multipleSupport ? "1" : "0") +
+			(this.enableGlobalDupValues ? "1" : "0");
 	}
 	
 	public boolean valueConformsToType(Value v) {
@@ -74,6 +76,5 @@ public class AttributeType extends DataItem {
 	public void setTypeName(String typeName) {
 		this.typeName = typeName;
 	}
-	
-	
+
 }

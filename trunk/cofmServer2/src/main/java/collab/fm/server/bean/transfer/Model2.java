@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Model2 extends Entity2 {
+public class Model2 extends DataItem2 {
 	private String name;
 	private String des;
 	private Set<Long> users = new HashSet<Long>();

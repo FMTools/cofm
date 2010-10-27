@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import collab.fm.server.bean.persist.ElementType;
-import collab.fm.server.bean.transfer.Entity2;
+import collab.fm.server.bean.transfer.DataItem2;
 
 public class EntityType extends ElementType {
 
 	protected Map<String, AttributeType> attrDefs = new HashMap<String, AttributeType>();
 
 	@Override
-	public void transfer(Entity2 target) {
+	public void transfer(DataItem2 target) {
 		//TODO:
 		super.transfer(target);
 	}

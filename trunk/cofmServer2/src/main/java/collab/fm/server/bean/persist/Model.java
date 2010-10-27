@@ -8,8 +8,12 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.persist.entity.AttributeType;
+import collab.fm.server.bean.persist.entity.Entity;
+import collab.fm.server.bean.persist.entity.EntityType;
 import collab.fm.server.bean.persist.entity.Value;
-import collab.fm.server.bean.transfer.Entity2;
+import collab.fm.server.bean.persist.relation.Relation;
+import collab.fm.server.bean.persist.relation.RelationType;
+import collab.fm.server.bean.transfer.DataItem2;
 import collab.fm.server.bean.transfer.Model2;
 import collab.fm.server.util.EntityUtil;
 
@@ -19,57 +23,48 @@ public class Model extends DataItem {
 	private String name;
 	private String description;
 	
-	// Attributes of features in this model
-	private Map<String, AttributeType> featureAttrs = new HashMap<String, AttributeType>();
+	// model-to-type: one to many association
+	private Set<EntityType> entityTypes = new HashSet<EntityType>();
+	private Set<RelationType> relationTypes = new HashSet<RelationType>();
 	
-	private Set<Feature> features = new HashSet<Feature>();
-	private Set<Relationship> relationships = new HashSet<Relationship>();
+	// model-to-element: one to many association
+	private Set<Entity> entities = new HashSet<Entity>();
+	private Set<Relation> relations = new HashSet<Relation>();
 	
-	// Contributors of this model
+	// Contributors of this model (many to many)
 	private Set<User> users = new HashSet<User>();
-	
-	public Model() {
-		super();
+
+	@Override
+	public void transfer(DataItem2 m) {
+//		Model2 m2 = (Model2) m;
+//		super.transfer(m2);
+//		m2.setName(this.getName());
+//		m2.setDes(this.getDescription());
+//		for (User u: this.getUsers()) {
+//			m2.addUser(u.getId());
+//		}
 	}
 	
-	public Model(Long creator) {
-		super(creator);
+	@Override
+	public String toValueString() {
+		if (this.getId() != null) {
+			return this.getId().toString();
+		}
+		return this.getName();
 	}
 	
-	public String toString() {
-		return value().toString();
+	public void addEntity(Entity e) {
+		this.getEntities().add(e);
+		e.setModel(this);
 	}
 	
-	public boolean equals(Object v) {
-		if (this == v) return true;
-		if (this == null || v == null) return false;
-		if (!(v instanceof Model)) return false;
-		final Model that = (Model) v;
-		return that.value().equals(this.value());
-	}
-	
-	public int hashCode() {
-		return value().hashCode();
-	}
-	
-	public void addFeature(Feature feature) {
-		this.getFeatures().add(feature);
-		feature.setModel(this);
-	}
-	
-	public void addRelationship(Relationship r) {
-		this.getRelationships().add(r);
+	public void addRelation(Relation r) {
+		this.getRelations().add(r);
 		r.setModel(this);
 	}
 	
 	public void addUser(User u) {
 		this.getUsers().add(u);
-	}
-	
-	public void addAttributeToFeatures(AttributeType a) {
-		if (featureAttrs.get(a.getName()) == null) {
-			featureAttrs.put(a.getName(), a);
-		}
 	}
 	
 	public String getName() {
@@ -88,53 +83,44 @@ public class Model extends DataItem {
 		this.description = description;
 	}
 
-	public Map<String, AttributeType> getFeatureAttrs() {
-		return featureAttrs;
+	public Set<EntityType> getEntityTypes() {
+		return entityTypes;
 	}
 
-	public void setFeatureAttrs(Map<String, AttributeType> featureAttrs) {
-		this.featureAttrs = featureAttrs;
+	public void setEntityTypes(Set<EntityType> entityTypes) {
+		this.entityTypes = entityTypes;
 	}
 
-	public Set<Feature> getFeatures() {
-		return features;
+	public Set<RelationType> getRelationTypes() {
+		return relationTypes;
 	}
 
-	private void setFeatures(Set<Feature> features) {
-		this.features = features;
-	}
-	
-	public Set<Relationship> getRelationships() {
-		return relationships;
+	public void setRelationTypes(Set<RelationType> relationTypes) {
+		this.relationTypes = relationTypes;
 	}
 
-	private void setRelationships(Set<Relationship> relationships) {
-		this.relationships = relationships;
+	public Set<Entity> getEntities() {
+		return entities;
 	}
-	
+
+	public void setEntities(Set<Entity> entities) {
+		this.entities = entities;
+	}
+
+	public Set<Relation> getRelations() {
+		return relations;
+	}
+
+	public void setRelations(Set<Relation> relations) {
+		this.relations = relations;
+	}
+
 	public Set<User> getUsers() {
 		return users;
 	}
-	
-	private void setUsers(Set<User> users) {
+
+	public void setUsers(Set<User> users) {
 		this.users = users;
 	}
-
-	public String value() {
-		if (this.getId() != null) {
-			return this.getId().toString();
-		}
-		return String.valueOf(this.getName().hashCode());
-	}
-
-	@Override
-	public void transfer(Entity2 m) {
-		Model2 m2 = (Model2) m;
-		super.transfer(m2);
-		m2.setName(this.getName());
-		m2.setDes(this.getDescription());
-		for (User u: this.getUsers()) {
-			m2.addUser(u.getId());
-		}
-	}
+	
 }

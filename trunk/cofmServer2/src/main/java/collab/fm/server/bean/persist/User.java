@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import collab.fm.server.bean.transfer.User2;
-import collab.fm.server.bean.transfer.Entity2;
+import collab.fm.server.bean.transfer.DataItem2;
 
 public class User extends DataItem {
 	
@@ -13,34 +13,20 @@ public class User extends DataItem {
 	private String email;
 	
 	private Set<Model> models = new HashSet<Model>();
-	
-	public User() {
-		super();
-	}
-	
+
 	@Override
-	public void transfer(Entity2 u) {
+	public void transfer(DataItem2 u) {
 		User2 u2 = (User2) u;
 		u2.setId(this.getId());
 		u2.setName(this.getName());
 	}
 	
-	public boolean equals(Object v) {
-		if (this == v) return true;
-		if (this == null || v == null) return false;
-		if (!(v instanceof User)) return false;
-		final User that = (User) v;
+	@Override
+	public String toValueString() {
 		if (getId() != null) {
-			return getId().equals(that.getId());
+			return getId().toString();
 		}
-		return getName().equals(that.getName());
-	}
-	
-	public int hashCode() {
-		if (getId() != null) {
-			return getId().hashCode();
-		}
-		return getName().hashCode();
+		return getName();
 	}
 	
 	public void addModel(Model model) {
@@ -52,7 +38,7 @@ public class User extends DataItem {
 		return models;
 	}
 	
-	private void setModels(Set<Model> models) {
+	public void setModels(Set<Model> models) {
 		this.models = models;
 	}
 
@@ -78,5 +64,5 @@ public class User extends DataItem {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
+
 }

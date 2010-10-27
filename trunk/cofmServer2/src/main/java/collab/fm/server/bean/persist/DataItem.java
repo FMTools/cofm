@@ -2,7 +2,7 @@ package collab.fm.server.bean.persist;
 
 import java.util.Date;
 
-import collab.fm.server.bean.transfer.Entity2;
+import collab.fm.server.bean.transfer.DataItem2;
 import collab.fm.server.util.EntityUtil;
 
 /**
@@ -11,6 +11,14 @@ import collab.fm.server.util.EntityUtil;
  *
  */
 public abstract class DataItem {
+	
+	//Return code for operations performed on the item.
+	public static final int CREATION_EXECUTED = 0;  // (Valid) creating operation.
+	public static final int VOTE_EXECUTED = 1;     // (Valid) voting operation.
+	public static final int REMOVAL_EXECUTED = 2;  // Remove via voting.
+	public static final int INVALID_OPERATION = -1;
+	public static final int EMPTY_OPERATION = -2;
+	
 	protected Long id;
 	
 	protected Long creator;
@@ -23,10 +31,28 @@ public abstract class DataItem {
 		this.setCreateTime(new Date());
 	}
 	
-	public void transfer(Entity2 target) {
+	public void transfer(DataItem2 target) {
 		target.setId(this.getId());
 		target.setCid(this.getCreator());
 		target.setCtime(EntityUtil.formatDate(this.getCreateTime()));
+	}
+	
+	abstract public String toValueString();
+	
+	public String toString() {
+		return toValueString();
+	}
+	
+	public boolean equals(Object v) {
+		if (this == v) return true;
+		if (this == null || v == null) return false;
+		if (!(v instanceof DataItem)) return false;
+		final DataItem that = (DataItem) v;
+		return that.toValueString().equals(this.toValueString());
+	}
+	
+	public int hashCode() {
+		return this.toValueString().hashCode();
 	}
 	
 	public Long getId() {

@@ -1,18 +1,10 @@
 package collab.fm.server.bean.persist;
 
 import collab.fm.server.bean.transfer.Comment2;
-import collab.fm.server.bean.transfer.Entity2;
+import collab.fm.server.bean.transfer.DataItem2;
 
 public class Comment extends DataItem {
 	private String content;
-	
-	public Comment() {
-		
-	}
-	
-	public Comment(Long creator) {
-		super(creator);
-	}
 	
 	public String getContent() {
 		return content;
@@ -22,9 +14,17 @@ public class Comment extends DataItem {
 	}
 	
 	@Override
-	public void transfer(Entity2 c) {
-		Comment2 c2 = (Comment2) c;
-		super.transfer(c2);
-		c2.setContent(this.getContent());
+	public void transfer(DataItem2 c) {
+//		Comment2 c2 = (Comment2) c;
+//		super.transfer(c2);
+//		c2.setContent(this.getContent());
+	}
+	
+	@Override
+	public String toValueString() {
+		if (this.getId() != null) {
+			return this.getId().toString();
+		}
+		return this.content;
 	}
 }
