@@ -1,8 +1,8 @@
 package collab.fm.server.bean.protocol.op;
 
-import collab.fm.server.bean.persist.Feature;
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.entity.AttributeType;
+import collab.fm.server.bean.persist.entity.EntityType;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
@@ -15,6 +15,7 @@ import collab.fm.server.util.exception.StaleDataException;
 
 public class AddAttributeRequest extends Request {
 	protected Long modelId;
+	protected String entityType;
 	protected String attr;
 	protected String type;
 	protected Boolean multiYes;
@@ -28,8 +29,17 @@ public class AddAttributeRequest extends Request {
 	public Long getModelId() {
 		return modelId;
 	}
+	
 	public void setModelId(Long modelId) {
 		this.modelId = modelId;
+	}
+
+	public String getEntityType() {
+		return entityType;
+	}
+
+	public void setEntityType(String entityType) {
+		this.entityType = entityType;
 	}
 
 	public String getAttr() {
@@ -77,19 +87,35 @@ public class AddAttributeRequest extends Request {
 			if (!checkRequest(req)) {
 				throw new InvalidOperationException("Invalid add_attribute operatin");
 			}
-			AddAttributeRequest r = (AddAttributeRequest) req;
-			DefaultResponse rsp = createResponse(r);
 			
-			AttributeType a = createAttribute(r);
+			AddAttributeRequest r = (AddAttributeRequest) req;
 			
 			Model m = DaoUtil.getModelDao().getById(r.getModelId(), true);
 			if (m == null) {
 				throw new InvalidOperationException("Invalid model ID: " + r.getModelId());
 			}
-
-			m.addAttributeToFeatures(a);
+			
+			EntityType entp = null;
+			for (EntityType et: m.getEntityTypes()) {
+				if (et.getTypeName().equals(r.getEntityType())) {
+					entp = et;
+					break;
+				}
+			}
+			if (entp == null) {
+				throw new InvalidOperationException("Invalid entity type: " + r.getEntityType());
+			}
+			
+			if (entp.getAttrDefs().get(r.getAttr()) != null) {
+				throw new InvalidOperationException("Attribute has already existed: " + r.getAttr());
+			}
+			
+			AttributeType a = createAttribute(r);
+			entp.getAttrDefs().put(r.getAttr(), a);
+			
 			DaoUtil.getModelDao().save(m);
 			
+			DefaultResponse rsp = createResponse(r);
 			rsp.setName(Resources.RSP_SUCCESS);
 			rg.setBack(rsp);
 			
@@ -105,7 +131,9 @@ public class AddAttributeRequest extends Request {
 		}
 
 		protected AttributeType createAttribute(AddAttributeRequest r) {
-			AttributeType a = new AttributeType(r.getRequesterId(), r.getAttr(), r.getType());
+			AttributeType a = new AttributeType();
+			a.setCreator(r.getRequesterId());
+			a.setTypeName(r.getType());
 			a.setMultipleSupport(r.getMultiYes());
 			a.setEnableGlobalDupValues(r.getAllowDup());
 			return a;
@@ -115,6 +143,7 @@ public class AddAttributeRequest extends Request {
 	
 	public static class DefaultResponse extends Response {
 		protected Long modelId;
+		protected String entityType;
 		protected String attr;
 		protected String type;
 		protected Boolean multiYes;
@@ -123,6 +152,7 @@ public class AddAttributeRequest extends Request {
 		public DefaultResponse(AddAttributeRequest r) {
 			super(r);
 			this.setModelId(r.getModelId());
+			this.setEntityType(r.getEntityType());
 			this.setAttr(r.getAttr());
 			this.setType(r.getType());
 			this.setMultiYes(r.getMultiYes());
@@ -136,6 +166,14 @@ public class AddAttributeRequest extends Request {
 			this.modelId = modelId;
 		}
 		
+		public String getEntityType() {
+			return entityType;
+		}
+
+		public void setEntityType(String entityType) {
+			this.entityType = entityType;
+		}
+
 		public String getAttr() {
 			return attr;
 		}

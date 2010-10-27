@@ -63,6 +63,16 @@ public class Model extends DataItem {
 		r.setModel(this);
 	}
 	
+	public void addEntityType(EntityType t) {
+		this.getEntityTypes().add(t);
+		t.setModel(this);
+	}
+	
+	public void addRelationType(RelationType t) {
+		this.getRelationTypes().add(t);
+		t.setModel(this);
+	}
+	
 	public void addUser(User u) {
 		this.getUsers().add(u);
 	}
