@@ -9,7 +9,7 @@ Deploy the server via source code
 ----------
 To Be Done
 ----------
-0. Add Date and Time in entities and database.
-1. A panel shows everyone's creating and voting operations.
-2. Personal trees.
-3. Log out.
+1. 如果Response的一个属性值仅仅是request的copy（例如AddAttributeRequest.java），那么应该把这些属性去掉，这样可以减少Response的
+大小，降低网络开销。检查所有的Response类并修正此缺陷。 另外，检查客户端的所有Command.handleResponse，以前从Response获取的上述属性值，现在
+改为从客户端保存的原Request中获取。
+
