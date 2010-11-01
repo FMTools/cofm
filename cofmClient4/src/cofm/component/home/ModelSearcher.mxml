@@ -18,13 +18,19 @@
 	<fx:Script>
 		<![CDATA[
 			import cofm.command.*;
+			import cofm.component.home.dlg.CreateModelDlg;
 			import cofm.event.*;
 			import cofm.model.*;
 			import cofm.util.*;
 			
 			import com.adobe.utils.StringUtil;
 			
+			import mx.managers.PopUpManager;
 			import mx.utils.StringUtil;
+			
+			private var createModelDlg: CreateModelDlg;
+			
+			private var searchWord: String;
 			
 			private function initView(): void {
 				ClientEvtDispatcher.instance().addEventListener(ModelSearchEvent.SUCCESS, onModelSearched);
@@ -37,7 +43,7 @@
 				} else if (UserList.instance().isLogin) {
 					currentState = "Create";
 					intro.text = mx.utils.StringUtil.substitute(RS.fmlist_new_intro, evt.searchWord);
-					modelName.text = evt.searchWord;
+					searchWord = evt.searchWord;
 				} else {
 					currentState = "NoCreate";
 				}
@@ -53,7 +59,9 @@
 			}
 			
 			private function doCreate(): void {
-				new CreateModelCommand(modelName.text, modelDes.text).execute();
+				createModelDlg = CreateModelDlg(PopUpManager.createPopUp(this, CreateModelDlg, true));
+				createModelDlg.modelName = searchWord;
+				PopUpManager.centerPopUp(createModelDlg);
 				currentState = "NoCreate";
 			}
 			
@@ -66,17 +74,6 @@
 				 text="{RS.fmlist_search_prompt}"
 				 focusIn="TextInput(event.currentTarget).selectAll();"/>
 	<s:Button label="{RS.fmlist_search}" click="doSearch();"/>
-	<mx:Form includeIn="Create">
-		<s:Label id="intro" height="20"/>
-		<mx:FormItem label="{RS.fmlist_new_name}">
-			<s:TextInput id="modelName" enabled="false"/>
-		</mx:FormItem>
-		<mx:FormItem label="{RS.fmlist_new_description}" required="true">
-			<s:TextArea id="modelDes" width="300" height="200"/>
-		</mx:FormItem>
-		<mx:FormItem direction="horizontal">
-			<s:Button label="{RS.fmlist_new_do}" click="doCreate();"/>
-			<s:Button label="{RS.cancel}" click="onCancel();"/>
-		</mx:FormItem>
-	</mx:Form>
+	<s:Label id="intro" includeIn="Create"/>
+	<s:Button label="Create a new model" click="doCreate();" includeIn="Create"/>
 </s:SkinnableContainer>
