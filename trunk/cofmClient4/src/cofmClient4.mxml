@@ -23,6 +23,7 @@
 	<fx:Script>
 		<![CDATA[
 			import cofm.command.*;
+			import cofm.component.home.dlg.*;
 			import cofm.component.home.*;
 			import cofm.event.*;
 			import cofm.model.*;
