@@ -12,51 +12,46 @@ import org.hibernate.Session;
 import org.hibernate.StaleObjectStateException;
 import org.hibernate.criterion.Restrictions;
 
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 /**
  * Generic DAO Hibernate implementation.
  * @author Yi Li
  *
- * @param <EntityType>
+ * @param <ItemType>
  * @param <IdType>
  */
-public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> implements GenericDao<EntityType, IdType> {
+public abstract class GenericDaoImpl<ItemType, IdType extends Serializable> implements GenericDao<ItemType, IdType> {
 
 	static Logger logger = Logger.getLogger(GenericDaoImpl.class);
 	
-	private Class<EntityType> entityClass;
+	private Class<ItemType> itemClass;
 	
 	public GenericDaoImpl() {
-		entityClass = (Class<EntityType>) 
+		itemClass = (Class<ItemType>) 
 			((ParameterizedType) getClass().getGenericSuperclass()).getActualTypeArguments()[0];
 	}
 	
-	public Class<EntityType> getEntityClass() {
-		return entityClass;
+	public Class<ItemType> getItemClass() {
+		return itemClass;
 	}
 	
+	// For Entities only
 	@SuppressWarnings("unchecked")
-	protected List getByAttrValue(Long modelId, String attrName, String val, String entityClassName, boolean like) 
-	throws EntityPersistenceException, StaleDataException {
-		String queryString = "select entity " +
-			"from " + entityClassName + " as entity " +
-			(modelId != null ? "join entity.model as m " : "") +
-			"join entity.attrs as a " +
-			"join a.values as v " +
-			"where index(a) = '" + attrName + "' " +
-			(modelId != null ? "and m.id = :mId " : "") +
-			(like ? "and v.strVal like :val" : "and v.strVal = :val");
+	protected List getByAttrValue(Long modelId, String attrName, String val, boolean similar) 
+	throws ItemPersistenceException, StaleDataException {
+		String queryString = "select entity from Entity as entity " +
+			"join entity.model as m " +     // m.class == Model
+			"join entity.attrs as a " +     // a.class == ValueList
+			"join a.values as v " +         // v.class == Value
+			"where index(a) = '" + attrName + "' " +   
+			"and m.id = :mId " +
+			"and v.val " +
+			(similar ? "like :val" : "= :val");
 		Query qry = HibernateUtil.getCurrentSession().createQuery(queryString);
-		if (modelId != null) {
-			qry = qry.setLong("mId", modelId);
-		}
-		if (like) {
-			qry = qry.setString("val", "%" + val + "%");
-		} else {
-			qry = qry.setString("val", val);
-		}
+		qry = qry.setLong("mId", modelId)
+				 .setString("val", (similar ? "%" + val + "%": val));
 		
 		try {
 			List result = qry.list();
@@ -66,14 +61,14 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 			throw new StaleDataException(sose);
 		} catch (Exception e) {
 			logger.warn("Query failed.", e);
-			throw new EntityPersistenceException("Query failed.", e);
+			throw new ItemPersistenceException("Query failed.", e);
 		}
 	}
 	
-	protected List getAll() throws EntityPersistenceException ,StaleDataException {
+	public List getAll() throws ItemPersistenceException ,StaleDataException {
 		try {
 			Criteria crit = HibernateUtil.getCurrentSession()
-				.createCriteria(getEntityClass());
+				.createCriteria(getItemClass());
 			List result = crit.list();
 			return result.isEmpty() ? null : result;
 		} catch (StaleObjectStateException sose) {
@@ -81,15 +76,23 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 			throw new StaleDataException(sose);
 		} catch (RuntimeException e) {
 			logger.warn("Couldn't get all.", e);
-			throw new EntityPersistenceException(e);
+			throw new ItemPersistenceException(e);
 		}
 	}
 	
-	protected List getAll(IdType modelId, String modelPropertyName) throws EntityPersistenceException, StaleDataException {
+	/**
+	 * Helper method for sub-DAOs' getAllOfModel method.
+	 * @param modelId
+	 * @param modelFieldName The name of field pointed at the Model in the Element 
+	 * @return
+	 * @throws ItemPersistenceException
+	 * @throws StaleDataException
+	 */
+	protected List getAllOfModelByFieldName(IdType modelId, String modelFieldName) throws ItemPersistenceException, StaleDataException {
 		try {
 			Criteria crit = HibernateUtil.getCurrentSession()
-				.createCriteria(getEntityClass())
-					.createCriteria(modelPropertyName)
+				.createCriteria(getItemClass())
+					.createCriteria(modelFieldName)
 					.add(Restrictions.eq("id", modelId));
 			List result = crit.list();
 			return result.isEmpty() ? null : result;
@@ -98,56 +101,50 @@ public abstract class GenericDaoImpl<EntityType, IdType extends Serializable> im
 			throw new StaleDataException(sose);
 		} catch (RuntimeException e) {
 			logger.warn("Couldn't get all.", e);
-			throw new EntityPersistenceException(e);
+			throw new ItemPersistenceException(e);
 		}
 	}
 	
-	public EntityType getById(IdType id, boolean lock) throws EntityPersistenceException, StaleDataException {
+	public ItemType getById(IdType id, boolean lock) throws ItemPersistenceException, StaleDataException {
 		try {
 			if (lock) {
-				return (EntityType) HibernateUtil.getCurrentSession().get(getEntityClass(), id, LockMode.UPGRADE);
+				return (ItemType) HibernateUtil.getCurrentSession().get(getItemClass(), id, LockMode.UPGRADE);
 			} else {
-				return (EntityType) HibernateUtil.getCurrentSession().get(getEntityClass(), id);
+				return (ItemType) HibernateUtil.getCurrentSession().get(getItemClass(), id);
 			}
 		} catch (StaleObjectStateException sose) {
 			logger.warn("Stale data detected. Force client to retry.", sose);
 			throw new StaleDataException(sose);
 		} catch (RuntimeException e) {
 			logger.warn("Get by ID failed. (ID=" + id + ")", e);
-			throw new EntityPersistenceException(e);
+			throw new ItemPersistenceException(e);
 		}
 	}
 
-	public EntityType save(EntityType entity) throws EntityPersistenceException, StaleDataException {
+	public ItemType save(ItemType item) throws ItemPersistenceException, StaleDataException {
 		try {
 			Session session = HibernateUtil.getCurrentSession();
 						
-			session.saveOrUpdate(entity);
+			session.saveOrUpdate(item);
 			
-			return entity;
+			return item;
 		} catch (StaleObjectStateException sose) {
 			logger.warn("Stale data detected. Force client to retry.", sose);
 			throw new StaleDataException(sose);
 		} catch (RuntimeException e) {
 			logger.warn("Couldn't save entity", e);
-			throw new EntityPersistenceException(e);
+			throw new ItemPersistenceException(e);
 		}
-	}
-
-	public List<EntityType> saveAll(List<EntityType> entities)
-			throws EntityPersistenceException, StaleDataException {
-		// TODO Auto-generated method stub
-		return null;
 	}
 	
 	public void deleteById(IdType id)
-		throws EntityPersistenceException, StaleDataException {
+		throws ItemPersistenceException, StaleDataException {
 		HibernateUtil.getCurrentSession().delete(this.getById(id, false));
 	}
 	
-	public void delete(EntityType entity) 
-		throws EntityPersistenceException, StaleDataException{
-		HibernateUtil.getCurrentSession().delete(entity);
+	public void delete(ItemType item) 
+		throws ItemPersistenceException, StaleDataException{
+		HibernateUtil.getCurrentSession().delete(item);
 	}
 
 }

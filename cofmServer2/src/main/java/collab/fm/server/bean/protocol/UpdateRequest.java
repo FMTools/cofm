@@ -16,7 +16,7 @@ import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.EntityUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 
@@ -45,7 +45,7 @@ public class UpdateRequest extends Request {
 		}
 
 		public boolean process(Request req, ResponseGroup rg)
-				throws EntityPersistenceException, StaleDataException,
+				throws ItemPersistenceException, StaleDataException,
 				InvalidOperationException {
 			if (!checkRequest(req)) {
 				throw new InvalidOperationException("Invalid update operation.");
@@ -54,7 +54,7 @@ public class UpdateRequest extends Request {
 			UpdateRequest r = (UpdateRequest) req;
 			
 			// Return all features
-			List<Feature> allFeatures = DaoUtil.getFeatureDao().getAll(r.getModelId());
+			List<Feature> allFeatures = DaoUtil.getEntityDao().getAllOfModel(r.getModelId());
 			
 			List<Feature2> list1 = new ArrayList<Feature2>();
 			if (allFeatures != null) {
@@ -66,7 +66,7 @@ public class UpdateRequest extends Request {
 			}
 			
 			// Return all binary relationships
-			List<Relation> allRelation = DaoUtil.getRelationshipDao().getAll(r.getModelId());
+			List<Relation> allRelation = DaoUtil.getRelationDao().getAllOfModel(r.getModelId());
 			
 			List<BinaryRelation2> list2 = new ArrayList<BinaryRelation2>();
 			if (allRelation != null) {

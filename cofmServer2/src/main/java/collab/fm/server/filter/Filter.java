@@ -2,13 +2,13 @@ package collab.fm.server.filter;
 
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.ResponseGroup;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 
 public abstract class Filter {
 	
 	public void doFilter(Request req, ResponseGroup rg, FilterChain chain)
-		throws EntityPersistenceException, InvalidOperationException {
+		throws ItemPersistenceException, InvalidOperationException {
 			if (!doForwardFilter(req, rg)) {
 				if (req.getLastError() == null) {
 					// Ensure the last error is set.
@@ -42,7 +42,7 @@ public abstract class Filter {
 	 * @throws FilterException
 	 */
 	protected abstract boolean doForwardFilter(Request req, ResponseGroup rg)
-		throws EntityPersistenceException, InvalidOperationException;
+		throws ItemPersistenceException, InvalidOperationException;
 	
 	/**
 	 * 
@@ -52,7 +52,7 @@ public abstract class Filter {
 	 * @throws FilterException
 	 */
 	protected abstract boolean doBackwardFilter(Request req, ResponseGroup rg)
-		throws EntityPersistenceException, InvalidOperationException;
+		throws ItemPersistenceException, InvalidOperationException;
 	
 	protected abstract void doDisconnection(String addr, ResponseGroup rg);
 }

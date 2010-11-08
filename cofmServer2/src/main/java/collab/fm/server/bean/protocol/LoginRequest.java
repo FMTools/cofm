@@ -6,7 +6,7 @@ import collab.fm.server.bean.persist.User;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 
@@ -52,7 +52,7 @@ public class LoginRequest extends Request {
 		}
 
 		public boolean process(Request req, ResponseGroup rg)
-				throws EntityPersistenceException, StaleDataException,
+				throws ItemPersistenceException, StaleDataException,
 				InvalidOperationException {
 			if (!req.valid()) {
 				throw new InvalidOperationException("Invalid login operation.");

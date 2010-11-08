@@ -6,7 +6,7 @@ import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 
@@ -26,7 +26,7 @@ public class RequestHandler extends Filter {
 
 	@Override
 	protected boolean doForwardFilter(Request req, ResponseGroup rg)
-		throws EntityPersistenceException, InvalidOperationException {
+		throws ItemPersistenceException, InvalidOperationException {
 		try {
 			return req.process(rg);
 		} catch (StaleDataException e) {

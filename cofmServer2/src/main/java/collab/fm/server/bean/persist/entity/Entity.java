@@ -17,7 +17,7 @@ import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.relation.Relation;
 import collab.fm.server.bean.transfer.DataItem2;
 import collab.fm.server.util.DaoUtil;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public class Entity extends Element {
@@ -50,11 +50,11 @@ public class Entity extends Element {
 			for (Relation r: rels) {
 				try {
 					if (r.vote(false, userId) == DataItem.REMOVAL_EXECUTED) {
-						DaoUtil.getRelationshipDao().delete(r);
+						DaoUtil.getRelationDao().delete(r);
 					} else {
-						DaoUtil.getRelationshipDao().save(r);
+						DaoUtil.getRelationDao().save(r);
 					}
-				} catch (EntityPersistenceException e) {
+				} catch (ItemPersistenceException e) {
 					logger.warn("Vote on relationship failed.", e);
 				} catch (StaleDataException e) {
 					logger.warn("Vote on relationship failed.", e);

@@ -6,24 +6,18 @@ import org.hibernate.StaleObjectStateException;
 
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public class ModelDaoImpl extends GenericDaoImpl<Model, Long> implements
 		ModelDao {
 
-	public List getAll() throws EntityPersistenceException,
+	public List getAllOfModel(Long modelId) throws ItemPersistenceException,
 			StaleDataException {
-		return super.getAll();
-	}
-
-	public List getAll(Long modelId) throws EntityPersistenceException,
-			StaleDataException {
-		// TODO Auto-generated method stub
-		return getAll();
+		throw new UnsupportedOperationException("Use getAll() instead.");
 	}
 	
-	public List getBySimilarName(String name) throws EntityPersistenceException,
+	public List getBySimilarName(String name) throws ItemPersistenceException,
 			StaleDataException {
 		try {
 			List result = HibernateUtil.getCurrentSession().createQuery(
@@ -37,11 +31,11 @@ public class ModelDaoImpl extends GenericDaoImpl<Model, Long> implements
 			throw new StaleDataException(sose);
 		} catch (Exception e) {
 			logger.warn("Query failed.", e);
-			throw new EntityPersistenceException("Query failed.", e);
+			throw new ItemPersistenceException("Query failed.", e);
 		}
 	}
 	
-	public Model getByName(String name) throws EntityPersistenceException, StaleDataException {
+	public Model getByName(String name) throws ItemPersistenceException, StaleDataException {
 		try {
 			return (Model) HibernateUtil.getCurrentSession().createQuery(
 					"select m from Model as m " +
@@ -53,7 +47,7 @@ public class ModelDaoImpl extends GenericDaoImpl<Model, Long> implements
 			throw new StaleDataException(sose);
 		} catch (Exception e) {
 			logger.warn("Query failed.", e);
-			throw new EntityPersistenceException("Query failed.", e);
+			throw new ItemPersistenceException("Query failed.", e);
 		}
 	}
 

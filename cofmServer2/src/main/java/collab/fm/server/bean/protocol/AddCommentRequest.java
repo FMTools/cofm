@@ -6,7 +6,7 @@ import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.EntityUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 
@@ -43,7 +43,7 @@ public class AddCommentRequest extends Request {
 		}
 
 		public boolean process(Request req, ResponseGroup rg)
-				throws EntityPersistenceException, StaleDataException,
+				throws ItemPersistenceException, StaleDataException,
 				InvalidOperationException {
 			if (!checkRequest(req)) {
 				throw new InvalidOperationException("Invalid add_comment operation.");
@@ -51,7 +51,7 @@ public class AddCommentRequest extends Request {
 			AddCommentRequest acr = (AddCommentRequest) req;
 			AddCommentResponse rsp = new AddCommentResponse(acr);
 			
-			Feature f = DaoUtil.getFeatureDao().getById(acr.getFeatureId(), false);
+			Feature f = DaoUtil.getEntityDao().getById(acr.getFeatureId(), false);
 			if (f == null) {
 				throw new InvalidOperationException("Invalid feature ID: " + acr.getFeatureId());
 			}
@@ -59,7 +59,7 @@ public class AddCommentRequest extends Request {
 			Comment c = new Comment(acr.getRequesterId());
 			c.setContent(acr.getContent());
 			f.addComment(c);
-			DaoUtil.getFeatureDao().save(f);
+			DaoUtil.getEntityDao().save(f);
 			
 			// Set the date/time in response
 			rsp.setDateTime(EntityUtil.formatDate(c.getCreateTime()));

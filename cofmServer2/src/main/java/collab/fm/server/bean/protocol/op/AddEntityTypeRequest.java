@@ -8,8 +8,8 @@ import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.EntityPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public class AddEntityTypeRequest extends Request {
@@ -56,7 +56,7 @@ public class AddEntityTypeRequest extends Request {
 		}
 
 		public boolean process(Request req, ResponseGroup rg)
-				throws EntityPersistenceException, StaleDataException,
+				throws ItemPersistenceException, StaleDataException,
 				InvalidOperationException {
 			if (!checkRequest(req)) {
 				throw new InvalidOperationException("Invalid add_entity_type operation.");
@@ -72,7 +72,7 @@ public class AddEntityTypeRequest extends Request {
 			EntityType sup = null;
 			for (EntityType et: m.getEntityTypes()) {
 				if (et.getTypeName().equals(r.getTypeName())) {
-					throw new InvalidOperationException("Entity type has already existed: " + r.getTypeName())
+					throw new InvalidOperationException("Entity type has already existed: " + r.getTypeName());
 				}
 				if (et.getTypeName().equals(r.getSuperType())) {
 					sup = et;
@@ -86,6 +86,8 @@ public class AddEntityTypeRequest extends Request {
 			entp.setSuperType(sup);
 			
 			m.addEntityType(entp);
+			
+			DaoUtil.getModelDao().save(m);
 			
 			DefaultResponse rsp = new DefaultResponse(r);
 			rsp.setName(Resources.RSP_SUCCESS);

@@ -10,7 +10,7 @@ import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.EntityUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 
@@ -68,7 +68,7 @@ public class VoteAddValueRequest extends Request {
 		}
 
 		public boolean process(Request req, ResponseGroup rg)
-				throws EntityPersistenceException, StaleDataException,
+				throws ItemPersistenceException, StaleDataException,
 				InvalidOperationException {
 			if (!checkRequest(req)) {
 				throw new InvalidOperationException("Invalid vote_or_add_value operation");
@@ -81,7 +81,7 @@ public class VoteAddValueRequest extends Request {
 				throw new InvalidOperationException("Invalid model ID: " + r.getModelId());
 			}
 
-			Feature target = DaoUtil.getFeatureDao().getById(r.getFeatureId(), true);
+			Feature target = DaoUtil.getEntityDao().getById(r.getFeatureId(), true);
 			if (target == null) {
 				throw new InvalidOperationException("Invalid feature ID: "
 						+ r.getFeatureId());
@@ -98,7 +98,7 @@ public class VoteAddValueRequest extends Request {
 			
 			// If the attribute is NOT allow to global replicated, we should check if the same value existed
 			if (!a.isEnableGlobalDupValues()) {
-				Feature f = DaoUtil.getFeatureDao().getByAttrValue(r.getModelId(), r.getAttr(), r.getVal());
+				Feature f = DaoUtil.getEntityDao().getByAttrValue(r.getModelId(), r.getAttr(), r.getVal());
 				if (f != null) { // if the same value exists, then the target must be this object.
 					target = f;
 					rsp.setFeatureId(f.getId());
@@ -118,7 +118,7 @@ public class VoteAddValueRequest extends Request {
 				return false;
 			}
 			
-			DaoUtil.getFeatureDao().save(target);
+			DaoUtil.getEntityDao().save(target);
 			
 			rsp.setName(Resources.RSP_SUCCESS);
 			rg.setBack(rsp);

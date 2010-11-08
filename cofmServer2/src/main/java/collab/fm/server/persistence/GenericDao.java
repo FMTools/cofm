@@ -2,10 +2,10 @@ package collab.fm.server.persistence;
 
 import java.util.List;
 
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
-public interface GenericDao<EntityType, IdType> {
+public interface GenericDao<ItemType, IdType> {
 	
 	/**
 	 * Get entity by id.
@@ -13,46 +13,51 @@ public interface GenericDao<EntityType, IdType> {
 	 * @param lock
 	 * 		True if the get should block any concurrent write.
 	 * @return null if no such ID existed.
-	 * @throws EntityPersistenceException
+	 * @throws ItemPersistenceException
 	 */
-	public EntityType getById(IdType id, boolean lock) 
-		throws EntityPersistenceException, StaleDataException;
+	public ItemType getById(IdType id, boolean lock) 
+		throws ItemPersistenceException, StaleDataException;
 	
-	public List getAll(IdType modelId) throws EntityPersistenceException, StaleDataException;
+	/**
+	 * Get all items of ItemType from the model with modelId
+	 * @param modelId
+	 * @return Item list, null if no item.
+	 * @throws ItemPersistenceException
+	 * @throws StaleDataException
+	 */
+	public List getAllOfModel(IdType modelId) throws ItemPersistenceException, StaleDataException;
+	
+	/**
+	 * Get all items of ItemType from the whole database!
+	 * @return Item list, null if no tiem.
+	 * @throws ItemPersistenceException
+	 * @throws StaleDataException
+	 */
+	public List getAll() throws ItemPersistenceException, StaleDataException;
 	
 	/**
 	 * Save entity into database.
-	 * @param entity
+	 * @param item
 	 * @return
-	 * @throws EntityPersistenceException
+	 * @throws ItemPersistenceException
 	 */
-	public EntityType save(EntityType entity) throws EntityPersistenceException, StaleDataException;
-	
-	/**
-	 * Save an ordered list of entities into database.<br/>
-	 * NOTE: The operation is atomic, i.e. if one entity can't be saved, no entity will
-	 * be saved.
-	 * @param entities
-	 * @return The generated ID of entities, with the same order in the entity list.
-	 * @throws EntityPersistenceException
-	 */
-	public List<EntityType> saveAll(List<EntityType> entities) throws EntityPersistenceException, StaleDataException;
+	public ItemType save(ItemType item) throws ItemPersistenceException, StaleDataException;
 	
 	/**
 	 * Delete an entity by ID.
-	 * @param entityId the entity's ID
+	 * @param itemId the entity's ID
 	 * @param modelId the ID of the model which contains the entity
 	 * @return TODO
-	 * @throws EntityPersistenceException
+	 * @throws ItemPersistenceException
 	 * @throws StaleDataException
 	 */
-	public void deleteById(IdType entityId) throws EntityPersistenceException, StaleDataException;
+	public void deleteById(IdType itemId) throws ItemPersistenceException, StaleDataException;
 	
 	/**
 	 * Delete an entity.
-	 * @param entity
-	 * @throws EntityPersistenceException
+	 * @param item
+	 * @throws ItemPersistenceException
 	 * @throws StaleDataException
 	 */
-	public void delete(EntityType entity) throws EntityPersistenceException, StaleDataException;
+	public void delete(ItemType item) throws ItemPersistenceException, StaleDataException;
 }

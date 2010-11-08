@@ -5,7 +5,7 @@ import java.util.List;
 
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 
@@ -33,7 +33,7 @@ public class Request {
 	}
 	
 	public boolean process(ResponseGroup rg) 
-	throws EntityPersistenceException, StaleDataException, InvalidOperationException {
+	throws ItemPersistenceException, StaleDataException, InvalidOperationException {
 		for (Processor p: processors) {
 			if (p.process(this, rg) == false) {
 				return false;
