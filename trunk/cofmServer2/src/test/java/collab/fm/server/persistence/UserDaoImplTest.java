@@ -13,7 +13,7 @@ import org.junit.Test;
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.User;
 import collab.fm.server.util.DaoUtil;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 @Ignore
 public class UserDaoImplTest {
@@ -44,7 +44,7 @@ public class UserDaoImplTest {
 			saveUser(m, "hoho", "ddd");
 			saveUser(m, "hehe", "00000");
 			DaoUtil.getModelDao().save(m);
-		} catch (EntityPersistenceException e) {
+		} catch (ItemPersistenceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (StaleDataException e) {
@@ -72,8 +72,8 @@ public class UserDaoImplTest {
 	public void testGetAll() {
 		try {
 			assertTrue(dao.getAll().size()>=3);
-			assertTrue(dao.getAll(mId).size()==3);
-			List<User> u = dao.getAll(mId);
+			assertTrue(dao.getAllOfModel(mId).size()==3);
+			List<User> u = dao.getAllOfModel(mId);
 			for (User user: u) {
 				logger.info(user.getId());
 			}

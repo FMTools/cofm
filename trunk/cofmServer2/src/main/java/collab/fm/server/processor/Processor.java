@@ -2,7 +2,7 @@ package collab.fm.server.processor;
 
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.ResponseGroup;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 
@@ -15,7 +15,7 @@ public interface Processor {
 	 * @return true if processing has succeed.
 	 */
 	public boolean process(Request req, ResponseGroup rg) 
-		throws EntityPersistenceException, StaleDataException, InvalidOperationException;
+		throws ItemPersistenceException, StaleDataException, InvalidOperationException;
 	
 	public boolean checkRequest(Request req);
 }

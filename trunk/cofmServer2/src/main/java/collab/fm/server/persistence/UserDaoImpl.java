@@ -5,12 +5,12 @@ import java.util.List;
 import org.hibernate.StaleObjectStateException;
 
 import collab.fm.server.bean.persist.User;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public class UserDaoImpl extends GenericDaoImpl<User, Long> implements UserDao {
 
-	public User getByName(String name) throws EntityPersistenceException, StaleDataException {
+	public User getByName(String name) throws ItemPersistenceException, StaleDataException {
 		try {
 			return (User) HibernateUtil.getCurrentSession()
 				.createQuery("from User as user " +
@@ -22,11 +22,11 @@ public class UserDaoImpl extends GenericDaoImpl<User, Long> implements UserDao {
 			throw new StaleDataException(sose);
 		} catch(RuntimeException e) {
 			logger.warn("Couldn't get by name.", e);
-			throw new EntityPersistenceException(e);
+			throw new ItemPersistenceException(e);
 		}
 	}
 
-	public User checkPasswordThenGet(User user) throws EntityPersistenceException, StaleDataException {
+	public User checkPasswordThenGet(User user) throws ItemPersistenceException, StaleDataException {
 		try {
 			return (User) HibernateUtil.getCurrentSession()
 				.createQuery("from User as user " +
@@ -40,16 +40,16 @@ public class UserDaoImpl extends GenericDaoImpl<User, Long> implements UserDao {
 			throw new StaleDataException(sose);
 		} catch(RuntimeException e) {
 			logger.warn("Couldn't get by name.", e);
-			throw new EntityPersistenceException(e);
+			throw new ItemPersistenceException(e);
 		}
 	}
 
-	public List getAll(Long modelId) throws EntityPersistenceException,
+	public List getAllOfModel(Long modelId) throws ItemPersistenceException,
 			StaleDataException {
 		try {
 			List result = HibernateUtil.getCurrentSession()
 				.createQuery("select user from User as user " +
-						"left join user.modelsInternal as model " +
+						"left join user.models as model " +
 						"where model.id = :mId")
 				.setLong("mId", modelId)
 				.list();
@@ -59,11 +59,7 @@ public class UserDaoImpl extends GenericDaoImpl<User, Long> implements UserDao {
 			throw new StaleDataException(sose);
 		} catch (Exception e) {
 			logger.warn("Query failed.", e);
-			throw new EntityPersistenceException("Query failed.", e);
+			throw new ItemPersistenceException("Query failed.", e);
 		}
-	}
-	
-	public List getAll() throws EntityPersistenceException, StaleDataException {
-		return super.getAll();
 	}
 }

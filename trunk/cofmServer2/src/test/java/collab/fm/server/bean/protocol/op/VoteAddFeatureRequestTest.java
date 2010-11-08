@@ -13,7 +13,7 @@ import collab.fm.server.controller.JsonConverter;
 import collab.fm.server.persistence.HibernateUtil;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.JsonConvertException;
 import collab.fm.server.util.exception.StaleDataException;
@@ -24,7 +24,7 @@ public class VoteAddFeatureRequestTest {
 	
 	private static Long modelId;
 	@BeforeClass
-	public static void beginSession() throws EntityPersistenceException, StaleDataException {
+	public static void beginSession() throws ItemPersistenceException, StaleDataException {
 		HibernateUtil.getCurrentSession().beginTransaction();
 		Model m = new Model(1L);
 		m = DaoUtil.getModelDao().save(m);
@@ -37,34 +37,34 @@ public class VoteAddFeatureRequestTest {
 	}
 	
 	@Test
-	public void testGetFeatureByName() throws EntityPersistenceException, StaleDataException {
+	public void testGetFeatureByName() throws ItemPersistenceException, StaleDataException {
 		Model m = DaoUtil.getModelDao().getById(modelId, false);
 		
 		Feature f = new Feature(2L);
 		AttributeType fname = new AttributeType(2L, 
-				Resources.ATTR_FEATURE_NAME, AttributeType.TYPE_STR);
+				Resources.ATTR_ENTITY_NAME, AttributeType.TYPE_STR);
 		fname.setEnableGlobalDupValues(false);
 		fname.setMultipleSupport(true);
 		f.addAttribute(fname);
 		
-		f.voteOrAddValue(Resources.ATTR_FEATURE_NAME,
+		f.voteOrAddValue(Resources.ATTR_ENTITY_NAME,
 				"Feature X", true, 2L);
-		f.voteOrAddValue(Resources.ATTR_FEATURE_NAME,
+		f.voteOrAddValue(Resources.ATTR_ENTITY_NAME,
 				"特征X", true, 2L);
 		f.vote(true, 2L);
 		
 		m.addFeature(f);
 		
-		DaoUtil.getFeatureDao().save(f);
+		DaoUtil.getEntityDao().save(f);
 		DaoUtil.getModelDao().save(m);
 		
-		assertNotNull(DaoUtil.getFeatureDao().getByName(modelId, "Feature X"));
-		assertNotNull(DaoUtil.getFeatureDao().getByName(modelId, "特征X"));
+		assertNotNull(DaoUtil.getEntityDao().getByName(modelId, "Feature X"));
+		assertNotNull(DaoUtil.getEntityDao().getByName(modelId, "特征X"));
 	}
 	
 
 	@Test
-	public void testCreateNewFeature() throws EntityPersistenceException, StaleDataException, InvalidOperationException, JsonConvertException {
+	public void testCreateNewFeature() throws ItemPersistenceException, StaleDataException, InvalidOperationException, JsonConvertException {
 		VoteAddFeatureRequest vafr = new VoteAddFeatureRequest();
 		vafr.setName(Resources.REQ_VA_FEATURE);
 		vafr.setId(100L);

@@ -13,9 +13,12 @@ import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
+
+// NOTE: each entity has 2 default attributes: Name and Description. These attributes 
+// CANNOT be re-defined (e.g. change the attributes' name.)
 
 public class VoteAddFeatureRequest extends Request {
 	// Which feature model is the feature in?
@@ -70,7 +73,7 @@ public class VoteAddFeatureRequest extends Request {
 	private static class VoteAddFeatureProcessor implements Processor {
 
 		public boolean process(Request req, ResponseGroup rg) 
-		throws InvalidOperationException, EntityPersistenceException, StaleDataException {
+		throws InvalidOperationException, ItemPersistenceException, StaleDataException {
 			if (!checkRequest(req)) {
 				throw new InvalidOperationException("Invalid vote_or_add_feature operation.");
 			}
@@ -85,7 +88,7 @@ public class VoteAddFeatureRequest extends Request {
 				}
 				// Check if a feature with the same name has already existed.
 				Feature f = null;
-				Feature sameNamed = DaoUtil.getFeatureDao().getByName(vafr.getModelId(), vafr.getFeatureName());
+				Feature sameNamed = DaoUtil.getEntityDao().getByName(vafr.getModelId(), vafr.getFeatureName());
 				if (sameNamed != null) {
 					rsp.setExist(new Boolean(true));
 					f = sameNamed;
@@ -95,11 +98,11 @@ public class VoteAddFeatureRequest extends Request {
 					f = new Feature(vafr.getRequesterId());
 					
 					AttributeType fname = new AttributeType(vafr.getRequesterId(), 
-							Resources.ATTR_FEATURE_NAME, AttributeType.TYPE_STR);
+							Resources.ATTR_ENTITY_NAME, AttributeType.TYPE_STR);
 					fname.setEnableGlobalDupValues(false);
 					
 					AttributeType fdes = new AttributeType(vafr.getRequesterId(), 
-							Resources.ATTR_FEATURE_DES, AttributeType.TYPE_TEXT);
+							Resources.ATTR_ENTITY_DES, AttributeType.TYPE_TEXT);
 					
 					EnumAttributeType fopt = new EnumAttributeType(vafr.getRequesterId(),
 							Resources.ATTR_FEATURE_OPT);
@@ -114,12 +117,12 @@ public class VoteAddFeatureRequest extends Request {
 				}
 				
 				// Add the initial value for "name" attribute
-				f.voteOrAddValue(Resources.ATTR_FEATURE_NAME,
+				f.voteOrAddValue(Resources.ATTR_ENTITY_NAME,
 						vafr.getFeatureName(), true, vafr.getRequesterId());
 				f.vote(true, vafr.getRequesterId());
 				
 				// Save the feature and set featureId in the response.
-				f = DaoUtil.getFeatureDao().save(f);
+				f = DaoUtil.getEntityDao().save(f);
 				rsp.setFeatureId(f.getId());
 				// Save the model
 				if (rsp.getExist().booleanValue() == false) {
@@ -129,7 +132,7 @@ public class VoteAddFeatureRequest extends Request {
 			} else {
 				// Otherwise this is a vote on an existed feature.
 				rsp.setExist(new Boolean(true));
-				Feature f = DaoUtil.getFeatureDao().getById(vafr.getFeatureId(), false);
+				Feature f = DaoUtil.getEntityDao().getById(vafr.getFeatureId(), false);
 				if (f == null) {
 					throw new InvalidOperationException("Invalid feature ID: " + vafr.getFeatureId());
 				}
@@ -146,9 +149,9 @@ public class VoteAddFeatureRequest extends Request {
 				}
 				
 				if (f.vote(vafr.getYes().booleanValue(), vafr.getRequesterId())) {
-					DaoUtil.getFeatureDao().save(f);
+					DaoUtil.getEntityDao().save(f);
 				} else {
-					DaoUtil.getFeatureDao().delete(f);
+					DaoUtil.getEntityDao().delete(f);
 				}
 				
 				// For voting operations, we don't need the featureName fields in the response, so we

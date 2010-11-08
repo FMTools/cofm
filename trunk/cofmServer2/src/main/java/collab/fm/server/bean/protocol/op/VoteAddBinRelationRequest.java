@@ -13,7 +13,7 @@ import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 
@@ -92,7 +92,7 @@ public class VoteAddBinRelationRequest extends Request {
 		}
 
 		public boolean process(Request req, ResponseGroup rg)
-				throws EntityPersistenceException, StaleDataException,
+				throws ItemPersistenceException, StaleDataException,
 				InvalidOperationException {
 			if (!checkRequest(req)) {
 				throw new InvalidOperationException("Invalid vote_or_add_bin_relation operation.");
@@ -114,21 +114,21 @@ public class VoteAddBinRelationRequest extends Request {
 				relation.setType(r.getType());
 				relation.setLeftFeatureId(r.getLeftFeatureId());
 				relation.setRightFeatureId(r.getRightFeatureId());
-				List sameRelations = DaoUtil.getRelationshipDao().getByExample(r.getModelId(), relation); 
+				List sameRelations = DaoUtil.getRelationDao().getByExample(r.getModelId(), relation); 
 				if (sameRelations != null) {
 					rsp.setExist(true);
 					relation = (BinRelation)sameRelations.get(0);
 				} else {
 					// CREATE THE (ACTUAL) RELATIONSHIP HERE (USING Feature OBJECTS.)
-					relation.setFeatures(DaoUtil.getFeatureDao().getById(r.getLeftFeatureId(), false),
-							DaoUtil.getFeatureDao().getById(r.getRightFeatureId(), false));
+					relation.setFeatures(DaoUtil.getEntityDao().getById(r.getLeftFeatureId(), false),
+							DaoUtil.getEntityDao().getById(r.getRightFeatureId(), false));
 					// After creation, add it to the model.
 					model.addRelationship(relation);
 				}
 				relation.vote(true, r.getRequesterId());
 				
 				// Save and set relationshipId in the response
-				relation = (BinRelation)DaoUtil.getRelationshipDao().save(relation);
+				relation = (BinRelation)DaoUtil.getRelationDao().save(relation);
 				rsp.setRelationshipId(relation.getId());
 
 				// Save the model
@@ -141,7 +141,7 @@ public class VoteAddBinRelationRequest extends Request {
 				
 			} else { // A voting operation
 				
-				Relation relation = DaoUtil.getRelationshipDao().getById(
+				Relation relation = DaoUtil.getRelationDao().getById(
 						r.getRelationshipId(), false);
 				if (relation == null) {
 					throw new InvalidOperationException("Invalid relationship ID: "
@@ -153,9 +153,9 @@ public class VoteAddBinRelationRequest extends Request {
 				}
 				// Handle the vote and possible removals.
 				if (relation.vote(r.getYes(), r.getRequesterId())) {
-					DaoUtil.getRelationshipDao().save(relation);
+					DaoUtil.getRelationDao().save(relation);
 				} else { //removal
-					DaoUtil.getRelationshipDao().delete(relation);
+					DaoUtil.getRelationDao().delete(relation);
 				}
 				// Set the fields to proper values in the response
 				rsp.setExist(true);

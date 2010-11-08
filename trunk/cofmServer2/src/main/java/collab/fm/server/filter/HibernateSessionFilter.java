@@ -7,7 +7,7 @@ import org.hibernate.Session;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.persistence.HibernateUtil;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 
 public class HibernateSessionFilter extends Filter {
 
@@ -20,21 +20,21 @@ public class HibernateSessionFilter extends Filter {
 	
 	@Override
 	protected boolean doBackwardFilter(Request req, ResponseGroup rg)
-		throws EntityPersistenceException {
+		throws ItemPersistenceException {
 		try {
 			session.getTransaction().commit();
 			logger.info("Transaction closed.");
 			return true;
 		} catch (HibernateException he) {
 			logger.error("Couldn't commit transaction.", he);
-			EntityPersistenceException e = finalizeAndReport(he);
+			ItemPersistenceException e = finalizeAndReport(he);
 			throw e;
 		}
 	}
 
 	@Override
 	protected boolean doForwardFilter(Request req, ResponseGroup rg)
-			throws EntityPersistenceException {
+			throws ItemPersistenceException {
 		try {
 			session = HibernateUtil.getSessionFactory().getCurrentSession();
 			session.beginTransaction();
@@ -42,18 +42,18 @@ public class HibernateSessionFilter extends Filter {
 			return true;
 		} catch (HibernateException he) {
 			logger.error("Couldn't begin transaction.", he);
-			EntityPersistenceException e = finalizeAndReport(he);
+			ItemPersistenceException e = finalizeAndReport(he);
 			throw e;
 		}
 	}
 	
-	private EntityPersistenceException finalizeAndReport(HibernateException he) {
+	private ItemPersistenceException finalizeAndReport(HibernateException he) {
 		try {
 			session.getTransaction().rollback();
-			return new EntityPersistenceException(he);
+			return new ItemPersistenceException(he);
 		} catch (Exception rbe) {
 			logger.warn("Couldn't rollback transaction.", rbe);
-			return new EntityPersistenceException(he);
+			return new ItemPersistenceException(he);
 		} finally {
 			session.close();		
 		}

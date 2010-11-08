@@ -8,9 +8,11 @@ public class Resources {
 	private static ResourceBundle protocolRes = ResourceBundle.getBundle("protocol");
 	private static ResourceBundle msgRes = ResourceBundle.getBundle("locale.message");
 	
+	// Default entity type
+	public static final String ENTITY_FEATURE = get("entity.feature");
 	// Attribute Keys
-	public static final String ATTR_FEATURE_NAME = get("attr.feature.name");
-	public static final String ATTR_FEATURE_DES = get("attr.feature.des");
+	public static final String ATTR_ENTITY_NAME = get("attr.entity.name");
+	public static final String ATTR_ENTITY_DES = get("attr.entity.des");
 	public static final String ATTR_FEATURE_OPT = get("attr.feature.opt");
 	public static final String ATTR_MODEL_NAME = get("attr.model.name");
 	public static final String ATTR_MODEL_DES = get("attr.model.des");

@@ -1,6 +1,6 @@
 package collab.fm.server.util.exception;
 
-public class EntityPersistenceException extends Exception {
+public class ItemPersistenceException extends Exception {
 
 	/**
 	 * 
@@ -12,7 +12,7 @@ public class EntityPersistenceException extends Exception {
      * The cause is not initialized, and may subsequently be initialized by a
      * call to {@link #initCause}.
      */
-    public EntityPersistenceException() {
+    public ItemPersistenceException() {
     	super();
     }
 
@@ -24,7 +24,7 @@ public class EntityPersistenceException extends Exception {
      * @param   message   the detail message. The detail message is saved for 
      *          later retrieval by the {@link #getMessage()} method.
      */
-    public EntityPersistenceException(String message) {
+    public ItemPersistenceException(String message) {
     	super(message);
     }
 
@@ -42,7 +42,7 @@ public class EntityPersistenceException extends Exception {
      *         unknown.)
      * @since  1.4
      */
-    public EntityPersistenceException(String message, Throwable cause) {
+    public ItemPersistenceException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -60,7 +60,7 @@ public class EntityPersistenceException extends Exception {
      *         unknown.)
      * @since  1.4
      */
-    public EntityPersistenceException(Throwable cause) {
+    public ItemPersistenceException(Throwable cause) {
         super(cause);
     }
 }

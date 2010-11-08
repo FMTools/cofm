@@ -7,7 +7,7 @@ import collab.fm.server.bean.persist.entity.EnumAttributeType;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 
@@ -43,7 +43,7 @@ public class CreateModelRequest extends Request {
 		}
 
 		public boolean process(Request req, ResponseGroup rg)
-				throws EntityPersistenceException, StaleDataException,
+				throws ItemPersistenceException, StaleDataException,
 				InvalidOperationException {
 			if (!checkRequest(req)) {
 				throw new InvalidOperationException("Invalid create_model operation.");
@@ -64,11 +64,11 @@ public class CreateModelRequest extends Request {
 				
 				// Add the default feature attribute set to the model.
 				AttributeType fname = new AttributeType(cmr.getRequesterId(), 
-						Resources.ATTR_FEATURE_NAME, AttributeType.TYPE_STR);
+						Resources.ATTR_ENTITY_NAME, AttributeType.TYPE_STR);
 				fname.setEnableGlobalDupValues(false);
 				
 				AttributeType fdes = new AttributeType(cmr.getRequesterId(), 
-						Resources.ATTR_FEATURE_DES, AttributeType.TYPE_TEXT);
+						Resources.ATTR_ENTITY_DES, AttributeType.TYPE_TEXT);
 				
 				EnumAttributeType fopt = new EnumAttributeType(cmr.getRequesterId(),
 						Resources.ATTR_FEATURE_OPT);

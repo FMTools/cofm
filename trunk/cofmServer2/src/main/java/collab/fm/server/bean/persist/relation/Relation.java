@@ -9,7 +9,7 @@ import collab.fm.server.bean.persist.Element;
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.entity.Entity;
 import collab.fm.server.util.DaoUtil;
-import collab.fm.server.util.exception.EntityPersistenceException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public abstract class Relation extends Element {
@@ -37,8 +37,8 @@ public abstract class Relation extends Element {
 			for (Entity f: this.getEntities()) {
 				f.vote(true, userId);
 				try {
-					DaoUtil.getFeatureDao().save(f);
-				} catch (EntityPersistenceException e) {
+					DaoUtil.getEntityDao().save(f);
+				} catch (ItemPersistenceException e) {
 					logger.warn("Vote on entity failed.", e);
 				} catch (StaleDataException e) {
 					logger.warn("Vote on entity failed.", e);
