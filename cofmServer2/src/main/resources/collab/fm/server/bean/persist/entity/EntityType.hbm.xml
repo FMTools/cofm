@@ -8,11 +8,11 @@
   	<key column="ENTITY_TYPE_ID"></key>
   	
   	<!-- One-to-many association with AttributeDef -->
-  	<map name="attrDefs" table="ENTITY_ATTRDEF_ASSOC" cascade="all, delete-orphan">
-  	  <key column="ENTITY_TYPE_ID" />
-  	  <map-key type="string" column="ATTR_NAME" />
-  	  <one-to-many class="AttributeType" />
-  	</map>
+  	<list name="attrDefs" table="ENTITY_ATTRDEF_ASSOC" cascade="all, delete-orphan">
+      <key column="ENTITY_TYPE_ID" />
+      <list-index column="ATTRDEF_INDEX" />
+      <many-to-many class="AttributeType" column="ATTR_TYPE_ID" unique="true" />
+    </list>
   	
   </joined-subclass>
 </hibernate-mapping>

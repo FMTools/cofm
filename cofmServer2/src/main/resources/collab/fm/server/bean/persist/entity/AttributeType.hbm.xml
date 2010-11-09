@@ -17,10 +17,15 @@
 	<property name="lastModifier" type="long" column="LAST_MODIFIER_ID" />
   	
   	<!-- Properties of Attribute class  -->
+  	<property name="attrName" type="string" column="ATTR_NAME"></property>
   	<property name="typeName" type="string" column="TYPE_NAME"></property>
   	<property name="multipleSupport" type="boolean" column="MULTIPLE_SUPPORT"></property>
   	<property name="enableGlobalDupValues" type="boolean" column="ENABLE_GLOBAL_DUPLICATES"></property>
   	
+  	<!-- One-to-one association with EntityType -->
+  	<many-to-one name="hostType" class="EntityType" 
+               column="ENTITY_TYPE_ID" unique="true" />
+               
   	<!-- Subclasses -->
   	<joined-subclass name="EnumAttributeType" table="ENUM_ATTRIBUTE_TYPE">
   		<key column="ENUM_ATTR_TYPE_ID"></key>

@@ -5,7 +5,7 @@ import collab.fm.server.bean.persist.entity.NumericAttributeType;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.processor.Processor;
 
-public class AddNumericAttributeRequest extends AddAttributeRequest {
+public class EditAddNumericAttributeRequest extends EditAddAttributeDefRequest {
 	private float min;
 	private float max;
 	private String unit;
@@ -43,24 +43,24 @@ public class AddNumericAttributeRequest extends AddAttributeRequest {
 		
 		@Override
 		public boolean checkRequest(Request req) {
-			if (!(req instanceof AddNumericAttributeRequest)) return false;
-			AddNumericAttributeRequest r = (AddNumericAttributeRequest) req;
+			if (!(req instanceof EditAddNumericAttributeRequest)) return false;
+			EditAddNumericAttributeRequest r = (EditAddNumericAttributeRequest) req;
 			if (r.getUnit() == null) return false;
 			return super.checkRequest(req);
 		}
 		
 		@Override
-		protected AddAttributeRequest.DefaultResponse createResponse(AddAttributeRequest r) {
-			return new DefResponse((AddNumericAttributeRequest)r);
+		protected EditAddAttributeDefRequest.DefaultResponse createResponse(EditAddAttributeDefRequest r) {
+			return new DefResponse((EditAddNumericAttributeRequest)r);
 		}
 		
 		@Override
-		protected AttributeType createAttribute(AddAttributeRequest r) {
+		protected AttributeType createAttribute(EditAddAttributeDefRequest r) {
 			NumericAttributeType a = new NumericAttributeType();
 			a.setCreator(r.getRequesterId());
 			a.setMultipleSupport(r.getMultiYes());
 			a.setEnableGlobalDupValues(r.getAllowDup());
-			AddNumericAttributeRequest anar = (AddNumericAttributeRequest) r;
+			EditAddNumericAttributeRequest anar = (EditAddNumericAttributeRequest) r;
 			a.setMin(anar.getMin());
 			a.setMax(anar.getMax());
 			a.setUnit(anar.getUnit());
@@ -68,7 +68,7 @@ public class AddNumericAttributeRequest extends AddAttributeRequest {
 		}
 	}
 	
-	public static class DefResponse extends AddAttributeRequest.DefaultResponse {
+	public static class DefResponse extends EditAddAttributeDefRequest.DefaultResponse {
 		private float min;
 		private float max;
 		private String unit;
@@ -97,7 +97,7 @@ public class AddNumericAttributeRequest extends AddAttributeRequest {
 			this.unit = unit;
 		}
 		
-		public DefResponse(AddNumericAttributeRequest r) {
+		public DefResponse(EditAddNumericAttributeRequest r) {
 			super(r);
 			this.setMax(r.getMax());
 			this.setMin(r.getMin());

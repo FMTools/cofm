@@ -41,9 +41,4 @@ public class RelationDaoImpl extends GenericDaoImpl<Relation, Long>
 		}
 	}
 
-	public List getAllOfModel(Long modelId) throws ItemPersistenceException,
-			StaleDataException {
-		return super.getAllOfModelByFieldName(modelId, "model");
-	}
-
 }

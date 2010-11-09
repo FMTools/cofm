@@ -30,31 +30,32 @@ public class EntityUtil {
 	}
 	
 	public static Attribute2 transferFromAttr(AttributeType origin) {
-		String atype = origin.getType();
-		Attribute2 a2 = null;
-		if (AttributeType.TYPE_ENUM.equals(atype)) {
-			a2 = new EnumAttribute2();
-			((EnumAttributeType)origin).transfer(a2);
-		} else if (AttributeType.TYPE_NUMBER.equals(atype)) {
-			a2 = new NumericAttribute2();
-			((NumericAttributeType)origin).transfer(a2);
-		} else {
-			a2 = new Attribute2();
-			origin.transfer(a2);
-		}
-		return a2;
+//		String atype = origin.getType();
+//		Attribute2 a2 = null;
+//		if (AttributeType.TYPE_ENUM.equals(atype)) {
+//			a2 = new EnumAttribute2();
+//			((EnumAttributeType)origin).transfer(a2);
+//		} else if (AttributeType.TYPE_NUMBER.equals(atype)) {
+//			a2 = new NumericAttribute2();
+//			((NumericAttributeType)origin).transfer(a2);
+//		} else {
+//			a2 = new Attribute2();
+//			origin.transfer(a2);
+//		}
+//		return a2;
+		return null;
 	}
 	
 	public static AttributeType cloneAttribute(AttributeType a) {
 		AttributeType a2 = null;
-		if (AttributeType.TYPE_ENUM.equals(a.getType())) {
+		if (AttributeType.TYPE_ENUM.equals(a.getTypeName())) {
 			a2 = new EnumAttributeType();
 			List<String> validValues = new ArrayList<String>();
 			for (String s: ((EnumAttributeType)a).getValidValues()) {
 				validValues.add(s);
 			}
 			((EnumAttributeType)a2).setValidValues(validValues);
-		} else if (AttributeType.TYPE_NUMBER.equals(a.getType())) {
+		} else if (AttributeType.TYPE_NUMBER.equals(a.getTypeName())) {
 			a2 = new NumericAttributeType();
 			((NumericAttributeType)a2).setMax(((NumericAttributeType)a).getMax());
 			((NumericAttributeType)a2).setUnit(((NumericAttributeType)a).getUnit());
@@ -64,8 +65,7 @@ public class EntityUtil {
 		}
 		a2.setEnableGlobalDupValues(a.isEnableGlobalDupValues());
 		a2.setMultipleSupport(a.isMultipleSupport());
-		a2.setName(a.getName());
-		a2.setType(a.getType());
+		a2.setTypeName(a.getTypeName());
 		return a2;
 	}
 	

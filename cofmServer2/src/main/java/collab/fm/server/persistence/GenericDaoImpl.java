@@ -39,18 +39,18 @@ public abstract class GenericDaoImpl<ItemType, IdType extends Serializable> impl
 	
 	// For Entities only
 	@SuppressWarnings("unchecked")
-	protected List getByAttrValue(Long modelId, String attrName, String val, boolean similar) 
+	protected List getByAttrValue(Long modelId, Long attrId, String val, boolean similar) 
 	throws ItemPersistenceException, StaleDataException {
 		String queryString = "select entity from Entity as entity " +
 			"join entity.model as m " +     // m.class == Model
 			"join entity.attrs as a " +     // a.class == ValueList
 			"join a.values as v " +         // v.class == Value
-			"where index(a) = '" + attrName + "' " +   
+			"where index(a) = :aId " +   
 			"and m.id = :mId " +
 			"and v.val " +
 			(similar ? "like :val" : "= :val");
 		Query qry = HibernateUtil.getCurrentSession().createQuery(queryString);
-		qry = qry.setLong("mId", modelId)
+		qry = qry.setLong("mId", modelId).setLong("aId", attrId)
 				 .setString("val", (similar ? "%" + val + "%": val));
 		
 		try {
@@ -80,6 +80,11 @@ public abstract class GenericDaoImpl<ItemType, IdType extends Serializable> impl
 		}
 	}
 	
+	public List getAllOfModel(IdType modelId) throws ItemPersistenceException,
+			StaleDataException {
+		return getAllOfModelByFieldName(modelId, "model");
+	}
+
 	/**
 	 * Helper method for sub-DAOs' getAllOfModel method.
 	 * @param modelId

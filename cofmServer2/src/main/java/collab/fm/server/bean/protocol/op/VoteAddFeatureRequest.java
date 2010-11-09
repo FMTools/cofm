@@ -77,95 +77,95 @@ public class VoteAddFeatureRequest extends Request {
 			if (!checkRequest(req)) {
 				throw new InvalidOperationException("Invalid vote_or_add_feature operation.");
 			}
-			VoteAddFeatureRequest vafr = (VoteAddFeatureRequest) req;
-			DefaultResponse rsp = new DefaultResponse((VoteAddFeatureRequest)req);
-			
-			// If this is a creation
-			if (vafr.getFeatureId() == null) {
-				Model model = DaoUtil.getModelDao().getById(vafr.getModelId(), false);
-				if (model == null) {
-					throw new InvalidOperationException("Invalid feature model ID: " + vafr.getModelId());
-				}
-				// Check if a feature with the same name has already existed.
-				Feature f = null;
-				Feature sameNamed = DaoUtil.getEntityDao().getByName(vafr.getModelId(), vafr.getFeatureName());
-				if (sameNamed != null) {
-					rsp.setExist(new Boolean(true));
-					f = sameNamed;
-				} else {
-					rsp.setExist(new Boolean(false));
-					// Create the "name", "description" and "optionality" attributes for the feature.
-					f = new Feature(vafr.getRequesterId());
-					
-					AttributeType fname = new AttributeType(vafr.getRequesterId(), 
-							Resources.ATTR_ENTITY_NAME, AttributeType.TYPE_STR);
-					fname.setEnableGlobalDupValues(false);
-					
-					AttributeType fdes = new AttributeType(vafr.getRequesterId(), 
-							Resources.ATTR_ENTITY_DES, AttributeType.TYPE_TEXT);
-					
-					EnumAttributeType fopt = new EnumAttributeType(vafr.getRequesterId(),
-							Resources.ATTR_FEATURE_OPT);
-					fopt.addValidValue(Resources.VAL_OPT_MANDATORY);
-					fopt.addValidValue(Resources.VAL_OPT_OPTIONAL);
-					
-					f.addAttribute(fname);
-					f.addAttribute(fdes);
-					f.addAttribute(fopt);
-					
-					model.addFeature(f);
-				}
-				
-				// Add the initial value for "name" attribute
-				f.voteOrAddValue(Resources.ATTR_ENTITY_NAME,
-						vafr.getFeatureName(), true, vafr.getRequesterId());
-				f.vote(true, vafr.getRequesterId());
-				
-				// Save the feature and set featureId in the response.
-				f = DaoUtil.getEntityDao().save(f);
-				rsp.setFeatureId(f.getId());
-				// Save the model
-				if (rsp.getExist().booleanValue() == false) {
-					DaoUtil.getModelDao().save(model);
-				}
-				
-			} else {
-				// Otherwise this is a vote on an existed feature.
-				rsp.setExist(new Boolean(true));
-				Feature f = DaoUtil.getEntityDao().getById(vafr.getFeatureId(), false);
-				if (f == null) {
-					throw new InvalidOperationException("Invalid feature ID: " + vafr.getFeatureId());
-				}
-				
-				if (vafr.getYes().booleanValue() == false) {
-					// Set the inferred vote in response
-					List<Long> targets = new ArrayList<Long>();
-					for (Relation r: f.getRels()) {
-						targets.add(r.getId());
-					}
-					if (targets.size() > 0) {
-						rsp.setInferVotes(targets);
-					}
-				}
-				
-				if (f.vote(vafr.getYes().booleanValue(), vafr.getRequesterId())) {
-					DaoUtil.getEntityDao().save(f);
-				} else {
-					DaoUtil.getEntityDao().delete(f);
-				}
-				
-				// For voting operations, we don't need the featureName fields in the response, so we
-				// set it to null (this could shorten the length of JSON string)
-				rsp.setFeatureName(null);
-			}
-			
-			// Write the responses (back and broadcast)
-			rsp.setName(Resources.RSP_SUCCESS);
-			rg.setBack(rsp);
-			
-			DefaultResponse rsp2 = (DefaultResponse) rsp.clone();
-			rsp2.setName(Resources.RSP_FORWARD);
-			rg.setBroadcast(rsp2);
+//			VoteAddFeatureRequest vafr = (VoteAddFeatureRequest) req;
+//			DefaultResponse rsp = new DefaultResponse((VoteAddFeatureRequest)req);
+//			
+//			// If this is a creation
+//			if (vafr.getFeatureId() == null) {
+//				Model model = DaoUtil.getModelDao().getById(vafr.getModelId(), false);
+//				if (model == null) {
+//					throw new InvalidOperationException("Invalid feature model ID: " + vafr.getModelId());
+//				}
+//				// Check if a feature with the same name has already existed.
+//				Feature f = null;
+//				Feature sameNamed = DaoUtil.getEntityDao().getByName(vafr.getModelId(), vafr.getFeatureName());
+//				if (sameNamed != null) {
+//					rsp.setExist(new Boolean(true));
+//					f = sameNamed;
+//				} else {
+//					rsp.setExist(new Boolean(false));
+//					// Create the "name", "description" and "optionality" attributes for the feature.
+//					f = new Feature(vafr.getRequesterId());
+//					
+//					AttributeType fname = new AttributeType(vafr.getRequesterId(), 
+//							Resources.ATTR_ENTITY_NAME, AttributeType.TYPE_STR);
+//					fname.setEnableGlobalDupValues(false);
+//					
+//					AttributeType fdes = new AttributeType(vafr.getRequesterId(), 
+//							Resources.ATTR_ENTITY_DES, AttributeType.TYPE_TEXT);
+//					
+//					EnumAttributeType fopt = new EnumAttributeType(vafr.getRequesterId(),
+//							Resources.ATTR_FEATURE_OPT);
+//					fopt.addValidValue(Resources.VAL_OPT_MANDATORY);
+//					fopt.addValidValue(Resources.VAL_OPT_OPTIONAL);
+//					
+//					f.addAttribute(fname);
+//					f.addAttribute(fdes);
+//					f.addAttribute(fopt);
+//					
+//					model.addFeature(f);
+//				}
+//				
+//				// Add the initial value for "name" attribute
+//				f.voteOrAddValue(Resources.ATTR_ENTITY_NAME,
+//						vafr.getFeatureName(), true, vafr.getRequesterId());
+//				f.vote(true, vafr.getRequesterId());
+//				
+//				// Save the feature and set featureId in the response.
+//				f = DaoUtil.getEntityDao().save(f);
+//				rsp.setFeatureId(f.getId());
+//				// Save the model
+//				if (rsp.getExist().booleanValue() == false) {
+//					DaoUtil.getModelDao().save(model);
+//				}
+//				
+//			} else {
+//				// Otherwise this is a vote on an existed feature.
+//				rsp.setExist(new Boolean(true));
+//				Feature f = DaoUtil.getEntityDao().getById(vafr.getFeatureId(), false);
+//				if (f == null) {
+//					throw new InvalidOperationException("Invalid feature ID: " + vafr.getFeatureId());
+//				}
+//				
+//				if (vafr.getYes().booleanValue() == false) {
+//					// Set the inferred vote in response
+//					List<Long> targets = new ArrayList<Long>();
+//					for (Relation r: f.getRels()) {
+//						targets.add(r.getId());
+//					}
+//					if (targets.size() > 0) {
+//						rsp.setInferVotes(targets);
+//					}
+//				}
+//				
+//				if (f.vote(vafr.getYes().booleanValue(), vafr.getRequesterId())) {
+//					DaoUtil.getEntityDao().save(f);
+//				} else {
+//					DaoUtil.getEntityDao().delete(f);
+//				}
+//				
+//				// For voting operations, we don't need the featureName fields in the response, so we
+//				// set it to null (this could shorten the length of JSON string)
+//				rsp.setFeatureName(null);
+//			}
+//			
+//			// Write the responses (back and broadcast)
+//			rsp.setName(Resources.RSP_SUCCESS);
+//			rg.setBack(rsp);
+//			
+//			DefaultResponse rsp2 = (DefaultResponse) rsp.clone();
+//			rsp2.setName(Resources.RSP_FORWARD);
+//			rg.setBroadcast(rsp2);
 			
 			return true;
 		}

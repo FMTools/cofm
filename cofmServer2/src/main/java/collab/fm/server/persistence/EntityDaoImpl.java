@@ -13,26 +13,13 @@ public class EntityDaoImpl extends GenericDaoImpl<Entity, Long> implements Entit
 
 	static Logger logger = Logger.getLogger(EntityDaoImpl.class);
 	
-	public Entity getByAttrValue(Long modelId, String attrName, String val)
+	public List<Entity> getByAttrValue(Long modelId, Long attrId, String val, boolean similar)
 	throws ItemPersistenceException, StaleDataException {
-		List list = super.getByAttrValue(modelId, attrName, val, false);
+		List list = super.getByAttrValue(modelId, attrId, val, similar);
 		if (list != null) {
-			return (Entity) list.get(0);
+			return (List<Entity>) list;
 		}
 		return null;
 	}
 	
-	public Entity getByName(Long modelId, String name) throws ItemPersistenceException, StaleDataException {
-		return getByAttrValue(modelId, Resources.ATTR_ENTITY_NAME, name);
-	}
-	
-	public List getBySimilarName(Long modelId, String name) throws ItemPersistenceException, StaleDataException {
-		return super.getByAttrValue(modelId, Resources.ATTR_ENTITY_NAME, name, true);
-	}
-	
-	public List getAllOfModel(Long modelId) throws ItemPersistenceException,
-			StaleDataException {
-		return super.getAllOfModelByFieldName(modelId, "model");
-	}
-
 }

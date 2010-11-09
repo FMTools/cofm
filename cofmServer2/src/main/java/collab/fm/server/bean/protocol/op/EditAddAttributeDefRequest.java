@@ -13,9 +13,18 @@ import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.StaleDataException;
 
-public class AddAttributeRequest extends Request {
+/** Add or edit attribute-definitions for an entity type in a model.
+ *  Now only the attribute name ("attr" field) can be edited.
+ */
+public class EditAddAttributeDefRequest extends Request {
+	
+	// If attrId is valid (not null and exists), this is an editing;
+	// otherwise it is an adding.
+	protected Long attrId;
+	
 	protected Long modelId;
-	protected String entityType;
+	protected Long entityTypeId;
+	
 	protected String attr;
 	protected String type;
 	protected Boolean multiYes;
@@ -33,13 +42,21 @@ public class AddAttributeRequest extends Request {
 	public void setModelId(Long modelId) {
 		this.modelId = modelId;
 	}
-
-	public String getEntityType() {
-		return entityType;
+	
+	public Long getAttrId() {
+		return attrId;
 	}
 
-	public void setEntityType(String entityType) {
-		this.entityType = entityType;
+	public void setAttrId(Long attrId) {
+		this.attrId = attrId;
+	}
+
+	public Long getEntityTypeId() {
+		return entityTypeId;
+	}
+
+	public void setEntityTypeId(Long entityTypeId) {
+		this.entityTypeId = entityTypeId;
 	}
 
 	public String getAttr() {
@@ -70,15 +87,15 @@ public class AddAttributeRequest extends Request {
 	protected static class AddAttributeProcessor implements Processor {
 
 		public boolean checkRequest(Request req) {
-			if (!(req instanceof AddAttributeRequest)) return false;
-			AddAttributeRequest r = (AddAttributeRequest) req;
+			if (!(req instanceof EditAddAttributeDefRequest)) return false;
+			EditAddAttributeDefRequest r = (EditAddAttributeDefRequest) req;
 			if (r.getMultiYes() == null) {
 				r.setMultiYes(true);
 			}
 			if (r.getAllowDup() == null) {
 				r.setAllowDup(true);
 			}
-			return r.getName() != null;
+			return r.getModelId() != null && r.getName() != null && r.getEntityTypeId() != null;
 		}
 
 		public boolean process(Request req, ResponseGroup rg)
@@ -88,51 +105,59 @@ public class AddAttributeRequest extends Request {
 				throw new InvalidOperationException("Invalid add_attribute operatin");
 			}
 			
-			AddAttributeRequest r = (AddAttributeRequest) req;
+			EditAddAttributeDefRequest r = (EditAddAttributeDefRequest) req;
 			
-			Model m = DaoUtil.getModelDao().getById(r.getModelId(), true);
-			if (m == null) {
+			if (DaoUtil.getModelDao().getById(r.getModelId(), true) == null) {
 				throw new InvalidOperationException("Invalid model ID: " + r.getModelId());
 			}
 			
-			EntityType entp = null;
-			for (EntityType et: m.getEntityTypes()) {
-				if (et.getTypeName().equals(r.getEntityType())) {
-					entp = et;
-					break;
-				}
-			}
+			EntityType entp = DaoUtil.getEntityTypeDao().getById(r.getEntityTypeId(), true);
 			if (entp == null) {
-				throw new InvalidOperationException("Invalid entity type: " + r.getEntityType());
+				throw new InvalidOperationException("Invalid entity type id: " + r.getEntityTypeId());
 			}
 			
-			if (entp.getAttrDefs().get(r.getAttr()) != null) {
-				throw new InvalidOperationException("Attribute has already existed: " + r.getAttr());
+			AttributeType a = null;
+			if (r.getAttrId() != null && 
+					(a = DaoUtil.getAttributeDefDao().getById(r.getAttrId(), false)) != null) {
+				// An editing operation
+				a.setAttrName(r.getAttr());
+				DaoUtil.getAttributeDefDao().save(a);
+			} else {
+				// An adding operation
+				if (entp.findAttributeTypeDef(r.getAttr()) != null) {
+					throw new InvalidOperationException("Attribute has already existed: " + r.getAttr());
+				}
+				
+				a = createAttribute(r);
+				a.setHostType(entp);
+				
+				a = DaoUtil.getAttributeDefDao().save(a);
+				
+				entp.getAttrDefs().add(a);
+				DaoUtil.getEntityTypeDao().save(entp);
 			}
-			
-			AttributeType a = createAttribute(r);
-			entp.getAttrDefs().put(r.getAttr(), a);
-			
-			DaoUtil.getModelDao().save(m);
 			
 			DefaultResponse rsp = createResponse(r);
 			rsp.setName(Resources.RSP_SUCCESS);
+			rsp.setAttrId(a.getId());
 			rg.setBack(rsp);
 			
 			DefaultResponse rsp2 = createResponse(r);
 			rsp2.setName(Resources.RSP_FORWARD);
+			rsp.setAttrId(a.getId());
 			rg.setBroadcast(rsp2);
 			
 			return true;
 		}
 		
-		protected DefaultResponse createResponse(AddAttributeRequest r) {
+		protected DefaultResponse createResponse(EditAddAttributeDefRequest r) {
 			return new DefaultResponse(r);
 		}
 
-		protected AttributeType createAttribute(AddAttributeRequest r) {
+		protected AttributeType createAttribute(EditAddAttributeDefRequest r) {
 			AttributeType a = new AttributeType();
 			a.setCreator(r.getRequesterId());
+			a.setAttrName(r.getAttr());
 			a.setTypeName(r.getType());
 			a.setMultipleSupport(r.getMultiYes());
 			a.setEnableGlobalDupValues(r.getAllowDup());
@@ -143,16 +168,17 @@ public class AddAttributeRequest extends Request {
 	
 	public static class DefaultResponse extends Response {
 		protected Long modelId;
-		protected String entityType;
+		protected Long attrId;
+		protected Long entityTypeId;
 		protected String attr;
 		protected String type;
 		protected Boolean multiYes;
 		protected Boolean allowDup;
 		
-		public DefaultResponse(AddAttributeRequest r) {
+		public DefaultResponse(EditAddAttributeDefRequest r) {
 			super(r);
 			this.setModelId(r.getModelId());
-			this.setEntityType(r.getEntityType());
+			this.setEntityTypeId(r.getEntityTypeId());
 			this.setAttr(r.getAttr());
 			this.setType(r.getType());
 			this.setMultiYes(r.getMultiYes());
@@ -166,12 +192,20 @@ public class AddAttributeRequest extends Request {
 			this.modelId = modelId;
 		}
 		
-		public String getEntityType() {
-			return entityType;
+		public Long getAttrId() {
+			return attrId;
 		}
 
-		public void setEntityType(String entityType) {
-			this.entityType = entityType;
+		public void setAttrId(Long attrId) {
+			this.attrId = attrId;
+		}
+
+		public Long getEntityTypeId() {
+			return entityTypeId;
+		}
+
+		public void setEntityTypeId(Long entityTypeId) {
+			this.entityTypeId = entityTypeId;
 		}
 
 		public String getAttr() {
