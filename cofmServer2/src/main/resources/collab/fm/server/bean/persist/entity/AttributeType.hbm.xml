@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="collab.fm.server.bean.persist.entity">
+  <class name="AttributeType" table="ATTRIBUTE_TYPE">
+  
+	<!--+++++++++++++++++
+	  DataItem properties 
+	  +++++++++++++++++-->
+    <id name="id" type="long" column="ATTR_TYPE_ID">
+	  <generator class="native"></generator>
+	</id>
+	<timestamp name="lastModifyTime" column="LAST_MODIFIED" />
+	<property name="createTime" type="timestamp" column="CREATED" />
+	<property name="creator" type="long" column="CREATOR_ID" />
+	<property name="lastModifier" type="long" column="LAST_MODIFIER_ID" />
+  	
+  	<!-- Properties of Attribute class  -->
+  	<property name="typeName" type="string" column="TYPE_NAME"></property>
+  	<property name="multipleSupport" type="boolean" column="MULTIPLE_SUPPORT"></property>
+  	<property name="enableGlobalDupValues" type="boolean" column="ENABLE_GLOBAL_DUPLICATES"></property>
+  	
+  	<!-- Subclasses -->
+  	<joined-subclass name="EnumAttributeType" table="ENUM_ATTRIBUTE_TYPE">
+  		<key column="ENUM_ATTR_TYPE_ID"></key>
+  		<list name="validValues" table="VALID_VALUES" cascade="all, delete-orphan">
+  			<key column="ENUM_ATTR_TYPE_ID"></key>
+  			<list-index column="VALID_VALUE_INDEX"></list-index>
+  			<element type="string" column="VALID_VALUE_STRING" not-null="true"></element>
+  		</list>
+  	</joined-subclass>
+  	
+  	<joined-subclass name="NumericAttributeType" table="NUMERIC_ATTRIBUTE_TYPE">
+  		<key column="NUMERIC_ATTR_TYPE_ID"></key>
+  		<property name="min" type="float" column="MIN_VALUE"></property>
+  		<property name="max" type="float" column="MAX_VALUE"></property>
+  		<property name="unit" type="string" column="UNIT"></property>
+  	</joined-subclass>
+  	
+  </class>
+</hibernate-mapping>

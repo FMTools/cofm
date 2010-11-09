@@ -5,7 +5,6 @@
 <hibernate-configuration>
     <session-factory>
         
-        
         <property name="hibernate.c3p0.min_size">5</property>
         <property name="hibernate.c3p0.max_size">20</property>
         <property name="hibernate.c3p0.timeout">300</property>
@@ -17,12 +16,20 @@
         
         <property name="hibernate.show_sql">false</property>
         
-        <mapping resource="collab/fm/server/bean/entity/Comment.hbm.xml"/>
-        <mapping resource="collab/fm/server/bean/entity/Feature.hbm.xml"/>
-        <mapping resource="collab/fm/server/bean/entity/Model.hbm.xml"/>
-        <mapping resource="collab/fm/server/bean/entity/Relationship.hbm.xml"/>
-        <mapping resource="collab/fm/server/bean/entity/User.hbm.xml"/>
-        <mapping resource="collab/fm/server/bean/entity/attr/Attribute.hbm.xml"/>
-        <mapping resource="collab/fm/server/bean/entity/attr/Value.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/persist/Comment.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/persist/Element.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/persist/ElementType.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/persist/Model.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/persist/User.hbm.xml"/>
+        
+        <mapping resource="collab/fm/server/bean/persist/entity/Entity.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/persist/entity/EntityType.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/persist/entity/AttributeType.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/persist/entity/ValueList.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/persist/entity/Value.hbm.xml"/>
+        
+        <mapping resource="collab/fm/server/bean/persist/relation/Relation.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/persist/relation/RelationType.hbm.xml"/>
+        
     </session-factory>
 </hibernate-configuration>

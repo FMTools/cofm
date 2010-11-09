@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="collab.fm.server.bean.persist.entity">
+  <class name="ValueList" table="VALUE_LIST">
+    <id name="id" type="long" column="VALUE_LIST_ID">
+      <generator class="native" />
+    </id>
+    
+    <list name="values" table="VALUE_LIST_CONTENTS" cascade="all, delete-orphan">
+      <key column="VALUE_LIST_ID" />
+      <list-index column="VALUE_INDEX" />
+      <many-to-many class="Value" column="VALUE_ID" unique="true" />
+    </list>
+  </class>
+</hibernate-mapping>

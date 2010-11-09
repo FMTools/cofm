@@ -2,43 +2,36 @@
 <!DOCTYPE hibernate-mapping PUBLIC
 	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<hibernate-mapping package="collab.fm.server.bean.entity">
+<hibernate-mapping package="collab.fm.server.bean.persist">
   <class name="Model" table="MODEL">
-    <id name="id" column="MODEL_ID" type="long">
-  		<generator class="native"></generator>
-  	</id>
-  	
-  	<timestamp name="lastModifyTime" column="LAST_MODIFIED" />
-  	
-  	<property name="createTime" type="timestamp" column="CREATED" />
-  	<property name="creator" type="long" column="CREATOR_ID" />
+    <!--+++++++++++++++++
+	  DataItem properties 
+	 ++++++++++++++++++++-->
+    <id name="id" type="long" column="MODEL_ID">
+	  <generator class="native"></generator>
+	</id>
+	<timestamp name="lastModifyTime" column="LAST_MODIFIED" />
+	<property name="createTime" type="timestamp" column="CREATED" />
+	<property name="creator" type="long" column="CREATOR_ID" />
+	<property name="lastModifier" type="long" column="LAST_MODIFIER_ID" />
   	
   	<property name="name" type="string" column="MODEL_NAME" />
   	<property name="description" type="string" column="MODEL_DESCRIPTION" />
   	
-  	<!-- One-to-many association with Feature Attribute Set -->
-  	<map name="featureAttrs" table="MODEL_ATTR_SET" cascade="all, delete-orphan">
-  		<key column="MODEL_ID"></key>
-  		<map-key type="string" column="ATTR_NAME"></map-key>
-  		<one-to-many class="collab.fm.server.bean.entity.attr.Attribute"></one-to-many>
-  	</map>
-  	
-  	<!-- One-to-many bidirectional association to Feature -->
-  	<set name="features" inverse="true">
+  	<!-- One-to-many association to Entity -->
+  	<set name="entities" inverse="true">
   	    <key column="MODEL_ID"></key>
-  	    <one-to-many class="Feature" />
+  	    <one-to-many class="collab.fm.server.bean.persist.entity.Entity" />
   	</set>
   	
-  	<!-- One-to-many bidirectional association to Relationship -->
-  	<set name="relationships" inverse="true">
+  	<!-- One-to-many association to Relation -->
+  	<set name="relations" inverse="true">
   	    <key column="MODEL_ID"></key>
-  	    <one-to-many class="Relationship"/>
+  	    <one-to-many class="collab.fm.server.bean.persist.relation.Relation"/>
   	</set>
 
-    <!-- Many-to-many bidirectional association to User 
-        (See Feature.hbm.xml for the explanation of "inverse=true")
-    -->
-    <set inverse="true" name="users" table="MODEL_CONTRIBUTOR">
+    <!-- Many-to-many bidirectional association to User -->
+    <set inverse="true" name="users" table="MODEL_USER_ASSOC">
   		<key column="MODEL_ID"></key>
   		<many-to-many column="USER_ID" class="User"></many-to-many>
   	</set>

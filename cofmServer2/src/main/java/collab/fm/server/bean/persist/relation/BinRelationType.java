@@ -9,7 +9,7 @@ public class BinRelationType extends RelationType {
 	protected ElementType sourceType;
 	protected ElementType targetType;
 	
-	protected boolean directed;
+	
 	
 	@Override 
 	public void transfer(DataItem2 item) {
@@ -32,12 +32,4 @@ public class BinRelationType extends RelationType {
 		this.targetType = targetType;
 	}
 
-	public boolean isDirected() {
-		return directed;
-	}
-
-	public void setDirected(boolean directed) {
-		this.directed = directed;
-	}
-	
 }
