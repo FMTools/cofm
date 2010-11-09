@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import collab.fm.server.bean.persist.Feature;
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.persist.relation.BinRelation;
@@ -47,53 +46,53 @@ public class UpdateRequest extends Request {
 		public boolean process(Request req, ResponseGroup rg)
 				throws ItemPersistenceException, StaleDataException,
 				InvalidOperationException {
-			if (!checkRequest(req)) {
-				throw new InvalidOperationException("Invalid update operation.");
-			}
-			
-			UpdateRequest r = (UpdateRequest) req;
-			
-			// Return all features
-			List<Feature> allFeatures = DaoUtil.getEntityDao().getAllOfModel(r.getModelId());
-			
-			List<Feature2> list1 = new ArrayList<Feature2>();
-			if (allFeatures != null) {
-				for (Feature f: allFeatures) {
-					Feature2 f2 = new Feature2();
-					f.transfer(f2);
-					list1.add(f2);
-				}
-			}
-			
-			// Return all binary relationships
-			List<Relation> allRelation = DaoUtil.getRelationDao().getAllOfModel(r.getModelId());
-			
-			List<BinaryRelation2> list2 = new ArrayList<BinaryRelation2>();
-			if (allRelation != null) {
-				for (Relation rel: allRelation) {
-					if (isBinary(rel.getType())) {
-						BinaryRelation2 r2 = new BinaryRelation2();
-						((BinRelation)rel).transfer(r2);
-						list2.add(r2);
-					}	
-				}
-			}
-			
-			// Return all attributes
-			Model m = DaoUtil.getModelDao().getById(r.getModelId(), false);
-			List<Attribute2> list3 = new ArrayList<Attribute2>();
-			for (Map.Entry<String, AttributeType> e: m.getFeatureAttrs().entrySet()) {
-				list3.add(EntityUtil.transferFromAttr(e.getValue()));
-			}
-			
-			UpdateResponse response = new UpdateResponse(r);
-			response.setFeatures(list1);
-			response.setBinaries(list2);
-			response.setAttrs(list3);
-			response.setName(Resources.RSP_SUCCESS);
-			
-			rg.setBack(response);
-			
+//			if (!checkRequest(req)) {
+//				throw new InvalidOperationException("Invalid update operation.");
+//			}
+//			
+//			UpdateRequest r = (UpdateRequest) req;
+//			
+//			// Return all features
+//			List<Feature> allFeatures = DaoUtil.getEntityDao().getAllOfModel(r.getModelId());
+//			
+//			List<Feature2> list1 = new ArrayList<Feature2>();
+//			if (allFeatures != null) {
+//				for (Feature f: allFeatures) {
+//					Feature2 f2 = new Feature2();
+//					f.transfer(f2);
+//					list1.add(f2);
+//				}
+//			}
+//			
+//			// Return all binary relationships
+//			List<Relation> allRelation = DaoUtil.getRelationDao().getAllOfModel(r.getModelId());
+//			
+//			List<BinaryRelation2> list2 = new ArrayList<BinaryRelation2>();
+//			if (allRelation != null) {
+//				for (Relation rel: allRelation) {
+//					if (isBinary(rel.getType())) {
+//						BinaryRelation2 r2 = new BinaryRelation2();
+//						((BinRelation)rel).transfer(r2);
+//						list2.add(r2);
+//					}	
+//				}
+//			}
+//			
+//			// Return all attributes
+//			Model m = DaoUtil.getModelDao().getById(r.getModelId(), false);
+//			List<Attribute2> list3 = new ArrayList<Attribute2>();
+//			for (Map.Entry<String, AttributeType> e: m.getFeatureAttrs().entrySet()) {
+//				list3.add(EntityUtil.transferFromAttr(e.getValue()));
+//			}
+//			
+//			UpdateResponse response = new UpdateResponse(r);
+//			response.setFeatures(list1);
+//			response.setBinaries(list2);
+//			response.setAttrs(list3);
+//			response.setName(Resources.RSP_SUCCESS);
+//			
+//			rg.setBack(response);
+//			
 			return true;
 		}
 		

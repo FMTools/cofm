@@ -1,6 +1,7 @@
 package collab.fm.server.bean.persist.entity;
 
 import collab.fm.server.bean.persist.DataItem;
+import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.transfer.DataItem2;
 
 /**
@@ -14,6 +15,10 @@ public class AttributeType extends DataItem {
 	public static final String TYPE_ENUM = "enum";
 	public static final String TYPE_NUMBER = "number";
 
+	protected EntityType hostType;
+	
+	protected String attrName;
+	
 	protected String typeName;
 	
 	// If multipleSupport == true, one user can vote yes to multiple values of this attribute;
@@ -77,4 +82,21 @@ public class AttributeType extends DataItem {
 		this.typeName = typeName;
 	}
 
+	public String getAttrName() {
+		return attrName;
+	}
+
+	public void setAttrName(String attrName) {
+		this.attrName = attrName;
+	}
+
+	public EntityType getHostType() {
+		return hostType;
+	}
+
+	public void setHostType(EntityType hostType) {
+		this.hostType = hostType;
+	}
+
+	
 }

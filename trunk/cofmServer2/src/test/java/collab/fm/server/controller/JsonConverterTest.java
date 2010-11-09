@@ -12,7 +12,7 @@ import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.JsonConvertException;
 
 import static org.junit.Assert.*;
-
+@Ignore
 public class JsonConverterTest {
 	
 	private static Logger logger = Logger.getLogger(JsonConverterTest.class);

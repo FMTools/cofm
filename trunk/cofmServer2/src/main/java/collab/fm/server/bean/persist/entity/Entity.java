@@ -25,7 +25,7 @@ public class Entity extends Element {
 	private static Logger logger = Logger.getLogger(Entity.class);
 	
 	// Attribute-Value map of this entity. Key = AttrName.
-	protected Map<String, ValueList> attrs = new HashMap<String, ValueList>();
+	protected Map<Long, ValueList> attrs = new HashMap<Long, ValueList>();
 	
 	protected Set<Relation> rels = new HashSet<Relation>();
 	
@@ -65,9 +65,9 @@ public class Entity extends Element {
 	}
 	
 	// Return Votable.CREATION_EXECUTED (if added new value) or VOTE_EXECUTED (if voted on existing value).
-	public int voteOrAddValue(String attrName, Value value, boolean yes, Long userId) {
+	public int voteOrAddValue(Long attrId, Value value, boolean yes, Long userId) {
 		// Check the validity of the value.
-		AttributeType atype = ((EntityType)this.getType()).getAttrDefs().get(attrName);
+		AttributeType atype = ((EntityType)this.getType()).findAttributeTypeDef(attrId);
 		if (atype == null || !atype.valueConformsToType(value)) {
 			return DataItem.INVALID_OPERATION;
 		}
@@ -75,10 +75,10 @@ public class Entity extends Element {
 		// Get the value list of the attribute, if such attribute doesn't exist in this.getAttrs(),
 		// it means that the entity has no value assigned for the attribute, then we create
 		// the attribute entry first.
-		ValueList list = this.getAttrs().get(attrName);
+		ValueList list = this.getAttrs().get(attrId);
 		if (list == null) {
 			list = new ValueList();
-			this.getAttrs().put(attrName, list);
+			this.getAttrs().put(attrId, list);
 		}
 		
 		// Try voting operation.
@@ -138,11 +138,11 @@ public class Entity extends Element {
 		this.getRels().add(r);
 	}
 	
-	public Map<String, ValueList> getAttrs() {
+	public Map<Long, ValueList> getAttrs() {
 		return attrs;
 	}
 
-	public void setAttrs(Map<String, ValueList> attrs) {
+	public void setAttrs(Map<Long, ValueList> attrs) {
 		this.attrs = attrs;
 	}
 

@@ -12,7 +12,7 @@ import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
-public class AddEntityTypeRequest extends Request {
+public class EditAddEntityTypeRequest extends Request {
 	private Long modelId;
 	private String typeName;
 	private String superType;
@@ -50,8 +50,8 @@ public class AddEntityTypeRequest extends Request {
 	private static class AddEntityTypeProcessor implements Processor {
 
 		public boolean checkRequest(Request req) {
-			if (!(req instanceof AddEntityTypeRequest)) return false;
-			AddEntityTypeRequest r = (AddEntityTypeRequest) req;
+			if (!(req instanceof EditAddEntityTypeRequest)) return false;
+			EditAddEntityTypeRequest r = (EditAddEntityTypeRequest) req;
 			return r.getRequesterId() != null && r.getModelId() != null && r.getTypeName() != null;
 		}
 
@@ -62,7 +62,7 @@ public class AddEntityTypeRequest extends Request {
 				throw new InvalidOperationException("Invalid add_entity_type operation.");
 			}
 			
-			AddEntityTypeRequest r = (AddEntityTypeRequest) req;
+			EditAddEntityTypeRequest r = (EditAddEntityTypeRequest) req;
 			
 			Model m = DaoUtil.getModelDao().getById(r.getModelId(), true);
 			if (m == null) {
@@ -105,10 +105,11 @@ public class AddEntityTypeRequest extends Request {
 	public static class DefaultResponse extends Response {
 		
 		private Long modelId;
+		private Long typeId;
 		private String typeName;
 		private String superType;
 		
-		public DefaultResponse(AddEntityTypeRequest r) {
+		public DefaultResponse(EditAddEntityTypeRequest r) {
 			super(r);
 			this.setModelId(r.getModelId());
 			this.setTypeName(r.getTypeName());

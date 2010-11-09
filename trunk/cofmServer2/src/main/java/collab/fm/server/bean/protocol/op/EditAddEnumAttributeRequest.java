@@ -7,7 +7,7 @@ import collab.fm.server.bean.persist.entity.EnumAttributeType;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.processor.Processor;
 
-public class AddEnumAttributeRequest extends AddAttributeRequest {
+public class EditAddEnumAttributeRequest extends EditAddAttributeDefRequest {
 	private List<String> vlist;
 
 	public List<String> getVlist() {
@@ -27,29 +27,29 @@ public class AddEnumAttributeRequest extends AddAttributeRequest {
 		
 		@Override
 		public boolean checkRequest(Request req) {
-			if (!(req instanceof AddEnumAttributeRequest)) return false;
-			AddEnumAttributeRequest r = (AddEnumAttributeRequest) req;
+			if (!(req instanceof EditAddEnumAttributeRequest)) return false;
+			EditAddEnumAttributeRequest r = (EditAddEnumAttributeRequest) req;
 			if (r.getVlist() == null || r.getVlist().size() <= 0) return false;
 			return super.checkRequest(req);
 		}
 		
 		@Override
-		protected AddAttributeRequest.DefaultResponse createResponse(AddAttributeRequest r) {
-			return new DefResponse((AddEnumAttributeRequest)r);
+		protected EditAddAttributeDefRequest.DefaultResponse createResponse(EditAddAttributeDefRequest r) {
+			return new DefResponse((EditAddEnumAttributeRequest)r);
 		}
 		
 		@Override
-		protected AttributeType createAttribute(AddAttributeRequest r) {
+		protected AttributeType createAttribute(EditAddAttributeDefRequest r) {
 			EnumAttributeType a = new EnumAttributeType();
 			a.setCreator(r.getRequesterId());
 			a.setMultipleSupport(r.getMultiYes());
 			a.setEnableGlobalDupValues(r.getAllowDup());
-			a.setValidValues(((AddEnumAttributeRequest)r).getVlist());
+			a.setValidValues(((EditAddEnumAttributeRequest)r).getVlist());
 			return a;
 		}
 	}
 	
-	public static class DefResponse extends AddAttributeRequest.DefaultResponse {
+	public static class DefResponse extends EditAddAttributeDefRequest.DefaultResponse {
 		private List<String> vlist;
 
 		public List<String> getVlist() {
@@ -60,7 +60,7 @@ public class AddEnumAttributeRequest extends AddAttributeRequest {
 			this.vlist = vlist;
 		}
 		
-		public DefResponse(AddEnumAttributeRequest r) {
+		public DefResponse(EditAddEnumAttributeRequest r) {
 			super(r);
 			this.setVlist(r.getVlist());
 		}

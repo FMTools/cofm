@@ -3,7 +3,7 @@ package collab.fm.server.bean.transfer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Attribute2 extends Entity2 {
+public class Attribute2 extends DataItem2 {
 	protected String name;
 	protected String type;
 	protected boolean multi;

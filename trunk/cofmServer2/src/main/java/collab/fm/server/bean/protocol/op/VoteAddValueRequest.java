@@ -1,6 +1,5 @@
 package collab.fm.server.bean.protocol.op;
 
-import collab.fm.server.bean.persist.Feature;
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.protocol.Request;
@@ -73,59 +72,59 @@ public class VoteAddValueRequest extends Request {
 			if (!checkRequest(req)) {
 				throw new InvalidOperationException("Invalid vote_or_add_value operation");
 			}
-			VoteAddValueRequest r = (VoteAddValueRequest) req;
-			DefaultResponse rsp = new DefaultResponse(r);
-			
-			Model m = DaoUtil.getModelDao().getById(r.getModelId(), false);
-			if (m == null) {
-				throw new InvalidOperationException("Invalid model ID: " + r.getModelId());
-			}
-
-			Feature target = DaoUtil.getEntityDao().getById(r.getFeatureId(), true);
-			if (target == null) {
-				throw new InvalidOperationException("Invalid feature ID: "
-						+ r.getFeatureId());
-			}
-			
-			AttributeType a = target.getAttribute(r.getAttr());
-			if (a == null) {
-				// We can get the attribute instance from Model.featureAttrs
-				a = m.getFeatureAttrs().get(r.getAttr());
-				if (a == null) {
-					throw new InvalidOperationException("Unknown attribute of features: " + r.getAttr());
-				}
-			}
-			
-			// If the attribute is NOT allow to global replicated, we should check if the same value existed
-			if (!a.isEnableGlobalDupValues()) {
-				Feature f = DaoUtil.getEntityDao().getByAttrValue(r.getModelId(), r.getAttr(), r.getVal());
-				if (f != null) { // if the same value exists, then the target must be this object.
-					target = f;
-					rsp.setFeatureId(f.getId());
-				}
-			}
-			
-			// If the target is a feature, we should make sure the attribute exists
-			if (target.getAttribute(r.getAttr()) == null) {
-				AttributeType a2 = EntityUtil.cloneAttribute(a);
-				a2.setCreator(r.getRequesterId());
-				target.addAttribute(a2);
-			}
-			boolean isValidValue = target.voteOrAddValue(r.getAttr(), r.getVal(), r.getYes(), r.getRequesterId());
-			
-			if (!isValidValue) {
-				req.setLastError("Invalid value: " + r.getVal());
-				return false;
-			}
-			
-			DaoUtil.getEntityDao().save(target);
-			
-			rsp.setName(Resources.RSP_SUCCESS);
-			rg.setBack(rsp);
-			
-			DefaultResponse rsp2 = (DefaultResponse) rsp.clone();
-			rsp2.setName(Resources.RSP_FORWARD);
-			rg.setBroadcast(rsp2);
+//			VoteAddValueRequest r = (VoteAddValueRequest) req;
+//			DefaultResponse rsp = new DefaultResponse(r);
+//			
+//			Model m = DaoUtil.getModelDao().getById(r.getModelId(), false);
+//			if (m == null) {
+//				throw new InvalidOperationException("Invalid model ID: " + r.getModelId());
+//			}
+//
+//			Feature target = DaoUtil.getEntityDao().getById(r.getFeatureId(), true);
+//			if (target == null) {
+//				throw new InvalidOperationException("Invalid feature ID: "
+//						+ r.getFeatureId());
+//			}
+//			
+//			AttributeType a = target.getAttribute(r.getAttr());
+//			if (a == null) {
+//				// We can get the attribute instance from Model.featureAttrs
+//				a = m.getFeatureAttrs().get(r.getAttr());
+//				if (a == null) {
+//					throw new InvalidOperationException("Unknown attribute of features: " + r.getAttr());
+//				}
+//			}
+//			
+//			// If the attribute is NOT allow to global replicated, we should check if the same value existed
+//			if (!a.isEnableGlobalDupValues()) {
+//				Feature f = DaoUtil.getEntityDao().getByAttrValue(r.getModelId(), r.getAttr(), r.getVal());
+//				if (f != null) { // if the same value exists, then the target must be this object.
+//					target = f;
+//					rsp.setFeatureId(f.getId());
+//				}
+//			}
+//			
+//			// If the target is a feature, we should make sure the attribute exists
+//			if (target.getAttribute(r.getAttr()) == null) {
+//				AttributeType a2 = EntityUtil.cloneAttribute(a);
+//				a2.setCreator(r.getRequesterId());
+//				target.addAttribute(a2);
+//			}
+//			boolean isValidValue = target.voteOrAddValue(r.getAttr(), r.getVal(), r.getYes(), r.getRequesterId());
+//			
+//			if (!isValidValue) {
+//				req.setLastError("Invalid value: " + r.getVal());
+//				return false;
+//			}
+//			
+//			DaoUtil.getEntityDao().save(target);
+//			
+//			rsp.setName(Resources.RSP_SUCCESS);
+//			rg.setBack(rsp);
+//			
+//			DefaultResponse rsp2 = (DefaultResponse) rsp.clone();
+//			rsp2.setName(Resources.RSP_FORWARD);
+//			rg.setBroadcast(rsp2);
 			
 			return true;
 		}

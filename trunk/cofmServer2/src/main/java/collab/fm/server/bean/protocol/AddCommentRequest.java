@@ -1,7 +1,6 @@
 package collab.fm.server.bean.protocol;
 
 import collab.fm.server.bean.persist.Comment;
-import collab.fm.server.bean.persist.Feature;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.EntityUtil;
@@ -45,32 +44,32 @@ public class AddCommentRequest extends Request {
 		public boolean process(Request req, ResponseGroup rg)
 				throws ItemPersistenceException, StaleDataException,
 				InvalidOperationException {
-			if (!checkRequest(req)) {
-				throw new InvalidOperationException("Invalid add_comment operation.");
-			}
-			AddCommentRequest acr = (AddCommentRequest) req;
-			AddCommentResponse rsp = new AddCommentResponse(acr);
-			
-			Feature f = DaoUtil.getEntityDao().getById(acr.getFeatureId(), false);
-			if (f == null) {
-				throw new InvalidOperationException("Invalid feature ID: " + acr.getFeatureId());
-			}
-			
-			Comment c = new Comment(acr.getRequesterId());
-			c.setContent(acr.getContent());
-			f.addComment(c);
-			DaoUtil.getEntityDao().save(f);
-			
-			// Set the date/time in response
-			rsp.setDateTime(EntityUtil.formatDate(c.getCreateTime()));
-			
-			// Write responses
-			rsp.setName(Resources.RSP_SUCCESS);
-			rg.setBack(rsp);
-			
-			AddCommentResponse rsp2 = (AddCommentResponse) rsp.clone();
-			rsp2.setName(Resources.RSP_FORWARD);		
-			rg.setBroadcast(rsp2);
+//			if (!checkRequest(req)) {
+//				throw new InvalidOperationException("Invalid add_comment operation.");
+//			}
+//			AddCommentRequest acr = (AddCommentRequest) req;
+//			AddCommentResponse rsp = new AddCommentResponse(acr);
+//			
+//			Feature f = DaoUtil.getEntityDao().getById(acr.getFeatureId(), false);
+//			if (f == null) {
+//				throw new InvalidOperationException("Invalid feature ID: " + acr.getFeatureId());
+//			}
+//			
+//			Comment c = new Comment(acr.getRequesterId());
+//			c.setContent(acr.getContent());
+//			f.addComment(c);
+//			DaoUtil.getEntityDao().save(f);
+//			
+//			// Set the date/time in response
+//			rsp.setDateTime(EntityUtil.formatDate(c.getCreateTime()));
+//			
+//			// Write responses
+//			rsp.setName(Resources.RSP_SUCCESS);
+//			rg.setBack(rsp);
+//			
+//			AddCommentResponse rsp2 = (AddCommentResponse) rsp.clone();
+//			rsp2.setName(Resources.RSP_FORWARD);		
+//			rg.setBroadcast(rsp2);
 			return true;
 		}
 		

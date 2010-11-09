@@ -8,10 +8,6 @@ import collab.fm.server.util.exception.StaleDataException;
 
 public interface EntityDao extends GenericDao<Entity, Long> {
 
-	public Entity getByName(Long modelId, String name) throws ItemPersistenceException, StaleDataException;
-	
-	public Entity getByAttrValue(Long modelId, String attrName, String val) throws ItemPersistenceException, StaleDataException;
-	
-	public List getBySimilarName(Long modelId, String name) throws ItemPersistenceException, StaleDataException;
+	public List<Entity> getByAttrValue(Long modelId, Long attrId, String val, boolean similar) throws ItemPersistenceException, StaleDataException;
 	
 }

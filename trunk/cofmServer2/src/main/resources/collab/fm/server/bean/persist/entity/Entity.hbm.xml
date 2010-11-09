@@ -9,7 +9,7 @@
   	<!-- One-to-many association with ValueList -->
   	<map name="attrs" table="ENTITY_ATTRVALUES_ASSOC" cascade="all, delete-orphan">
   	  <key column="ENTITY_ID" />
-  	  <map-key type="string" column="ATTR_NAME" />
+  	  <map-key type="long" column="ATTR_TYPE_ID" />
   	  <one-to-many class="ValueList" />
   	</map>
   	
