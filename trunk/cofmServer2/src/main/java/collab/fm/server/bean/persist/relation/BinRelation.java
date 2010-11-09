@@ -8,15 +8,15 @@ public class BinRelation extends Relation {
 	private Long sourceId;
 	private Long targetId;
 	
-	public void setEntities(Entity source, Entity target) {
-		this.getEntities().clear();
-		this.getEntities().add(source);
-		this.getEntities().add(target);
-		
+	public void resetEntities(Entity source, Entity target) {
 		this.setSourceId(source.getId());
 		this.setTargetId(target.getId());
 		
 		// Maintain the many-to-many association between Entity and Relation
+		// (i.e. inverse="true" in the association with Relation in Entity.hbm.xml.)
+		this.getEntities().clear();
+		this.getEntities().add(source);
+		this.getEntities().add(target);
 		source.addRelationship(this);
 		target.addRelationship(this);
 	}

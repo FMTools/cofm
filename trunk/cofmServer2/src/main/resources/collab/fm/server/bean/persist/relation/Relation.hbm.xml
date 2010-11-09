@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="collab.fm.server.bean.persist.relation">
+  <joined-subclass name="Relation" extends="collab.fm.server.bean.persist.Element" table="RELATION">
+    <key column="RELATION_ID" />
+    
+    <!--+++++++++++++++++
+      Relation properties
+      +++++++++++++++++-->
+    
+	<!-- Many-tomany association to Entity -->
+	<set name="entities" table="ENTITY_RELATION_ASSOC">
+	  <key column="RELATION_ID" />
+	  <many-to-many column="ENTITY_ID" class="collab.fm.server.bean.persist.entity.Entity" />
+	</set>
+	
+	<!-- Many-to-one association to Model -->
+	<many-to-one name="model" column="MODEL_ID" class="collab.fm.server.bean.persist.Model" not-null="true" />
+	
+	<!-- Subclasses -->
+	<joined-subclass name="BinRelation" table="BINARY_RELATION">
+	  <key column="BIN_RELATION_ID" />
+	  <property name="sourceId" type="long" column="SOURCE_ID"></property>
+	  <property name="targetId" type="long" column="TARGET_ID"></property>
+	</joined-subclass>
+	
+  </joined-subclass>
+</hibernate-mapping>

@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="collab.fm.server.bean.persist.relation">
+  <joined-subclass name="RelationType" extends="collab.fm.server.bean.persist.ElementType" 
+  				   table="RELATION_TYPE">
+  	<key column="RELATION_TYPE_ID"></key>
+  	
+  	<property name="hierarchical" type="boolean" column="HIERARCHICAL" />
+  	<property name="directed" type="boolean" column="DIRECTED" />
+  	
+  	<!-- Subclasses -->
+  	<joined-subclass name="BinRelationType" table="BIN_RELATION_TYPE">
+  	  <key column="BIN_RELATION_TYPE_ID" />
+  	  <many-to-one name="sourceType" class="collab.fm.server.bean.persist.ElementType" 
+  	  			   column="SOURCE_ELEMENT_TYPE_ID" unique="true" />
+  	  <many-to-one name="superType" class="collab.fm.server.bean.persist.ElementType" 
+  	  			   column="TARGET_ELEMENT_TYPE_ID" unique="true" />
+  	</joined-subclass>
+  </joined-subclass>
+</hibernate-mapping>

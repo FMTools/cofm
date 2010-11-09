@@ -1,5 +1,6 @@
 package collab.fm.server.bean.persist;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -7,6 +8,8 @@ import collab.fm.server.bean.transfer.User2;
 import collab.fm.server.bean.transfer.DataItem2;
 
 public class User extends DataItem {
+	
+	private Date lastLoginTime;
 	
 	private String name;
 	private String password;
@@ -34,6 +37,14 @@ public class User extends DataItem {
 		model.addUser(this);
 	}
 	
+	public Date getLastLoginTime() {
+		return lastLoginTime;
+	}
+
+	public void setLastLoginTime(Date lastLoginTime) {
+		this.lastLoginTime = lastLoginTime;
+	}
+
 	public Set<Model> getModels() {
 		return models;
 	}

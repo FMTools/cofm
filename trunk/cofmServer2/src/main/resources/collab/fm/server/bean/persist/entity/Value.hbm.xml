@@ -2,30 +2,11 @@
 <!DOCTYPE hibernate-mapping PUBLIC
 	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<hibernate-mapping package="collab.fm.server.bean.entity.attr">
-  <class name="Value" table="VALUE">
-  	<!-- Properties of VotableEntity class -->
-    <id name="id" type="long" column="VALUE_ID">
-  		<generator class="native"></generator>
-  	</id>
-  	
-  	<timestamp name="lastModifyTime" column="LAST_MODIFIED" />
-  	
-  	<property name="createTime" type="timestamp" column="CREATED" />
-  	<property name="creator" type="long" column="CREATOR_ID" />
-	
-	<component name="vote" class="collab.fm.server.bean.entity.Vote">
-  		<set name="supporters" table="VALUE_SUPPORTER">
-  			<key column="VALUE_ID"></key>
-  			<element type="long" column="SUPPORTER" not-null="true"></element>
-  		</set>
-  		<set name="opponents" table="VALUE_OPPONENT">
-  			<key column="VALUE_ID"></key>
-  			<element type="long" column="OPPONENT" not-null="true"></element>
-  		</set>
-  	</component>
-  	
-  	<!-- Properties of this class -->
-  	<property name="strVal" type="string" column="VALUE_STR" />
-  </class>
+<hibernate-mapping package="collab.fm.server.bean.persist.entity">
+  <joined-subclass name="Value" extends="collab.fm.server.bean.persist.Element" table="VALUE">
+    <key column="VALUE_ID" />
+    
+    <property name="val" type="string" column="VALUE_STRING" />
+    
+  </joined-subclass>
 </hibernate-mapping>

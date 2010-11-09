@@ -2,23 +2,30 @@
 <!DOCTYPE hibernate-mapping PUBLIC
 	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
-<hibernate-mapping package="collab.fm.server.bean.entity">
+<hibernate-mapping package="collab.fm.server.bean.persist">
 <class name="User" table="TOOL_USER"> <!-- We should avoid table name "User" because it's a reserved word in some databases -->
-	<id name="id" column="USER_ID" type="long">
-		<generator class="native"></generator>
-	</id>
-	<timestamp name="lastModifyTime" column="LAST_MODIFIED" />
-  	
-  	<property name="createTime" type="timestamp" column="CREATED" />
-  	
-	<property name="name" column="USER_NAME" type="string"></property>
-	<property name="password" column="USER_PASSWORD" type="string"></property>
-	
-	<!-- Many-to-many bidirectional association to Model -->
-  	<set name="models" table="MODEL_CONTRIBUTOR">
-  		<key column="USER_ID"></key>
-  		<many-to-many column="MODEL_ID" class="Model"></many-to-many>
-  	</set>
+  <!--+++++++++++++++++
+  	DataItem properties 
+    +++++++++++++++++-->
+  <id name="id" type="long" column="USER_ID">
+  	<generator class="native"></generator>
+  </id>
+  <timestamp name="lastModifyTime" column="LAST_MODIFIED" />
+  <property name="createTime" type="timestamp" column="CREATED" />
+  <property name="creator" type="long" column="CREATOR_ID" />
+  <property name="lastModifier" type="long" column="LAST_MODIFIER_ID" />
+  
+  <property name="lastLoginTime" type="timestamp" column="LAST_LOGIN_TIME" />
+  <property name="name" column="USER_NAME" type="string"></property>
+  <property name="password" column="USER_PASSWORD" type="string"></property>
+  <property name="email" column="EMAIL" type="string"></property>
+  
+  <!-- Many-to-many bidirectional association to Model -->
+  <set name="models" table="MODEL_USER_ASSOC">
+  	<key column="USER_ID"></key>
+  	<many-to-many column="MODEL_ID" class="Model"></many-to-many>
+  </set>
   	
 </class>
+
 </hibernate-mapping>

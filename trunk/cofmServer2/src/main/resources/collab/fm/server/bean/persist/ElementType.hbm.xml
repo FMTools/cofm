@@ -3,20 +3,26 @@
 	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="collab.fm.server.bean.persist">
-  <class name="Comment" table="COMMENT">
+  <class name="ElementType" table="ELEMENT_TYPE">
+  
 	<!--+++++++++++++++++
-      DataItem properties 
-	  -+++++++++++++++++-->
-	<id name="id" type="long" column="COMMENT_ID">
+	  DataItem properties 
+	  +++++++++++++++++-->
+    <id name="id" type="long" column="TYPE_ID">
 	  <generator class="native"></generator>
 	</id>
 	<timestamp name="lastModifyTime" column="LAST_MODIFIED" />
 	<property name="createTime" type="timestamp" column="CREATED" />
 	<property name="creator" type="long" column="CREATOR_ID" />
 	<property name="lastModifier" type="long" column="LAST_MODIFIER_ID" />
-	  	
-	  	
-  	<property name="content" type="string" column="CONTENT" />
-  	
+  
+    <!-- ElementType properties -->
+    <property name="typeName" type="string" column="TYPE_NAME"></property>
+    
+    <many-to-one name="model" class="Model" column="MODEL_ID" not-null="true"></many-to-one>
+    
+    <!-- The super type of this type -->
+    <many-to-one name="superType" class="ElementType" column="SUPER_TYPE_ID" unique="true" />
+    
   </class>
 </hibernate-mapping>
