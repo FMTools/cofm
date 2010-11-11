@@ -8,6 +8,7 @@ import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
+import collab.fm.server.util.DataItemUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
@@ -121,6 +122,7 @@ public class EditAddAttributeDefRequest extends Request {
 					(a = DaoUtil.getAttributeDefDao().getById(r.getAttrId(), false)) != null) {
 				// An editing operation
 				a.setAttrName(r.getAttr());
+				a.setLastModifier(r.getRequesterId());
 				DaoUtil.getAttributeDefDao().save(a);
 			} else {
 				// An adding operation
@@ -135,16 +137,16 @@ public class EditAddAttributeDefRequest extends Request {
 				
 				entp.getAttrDefs().add(a);
 				DaoUtil.getEntityTypeDao().save(entp);
+				
+				r.setAttrId(a.getId());
 			}
 			
 			DefaultResponse rsp = createResponse(r);
 			rsp.setName(Resources.RSP_SUCCESS);
-			rsp.setAttrId(a.getId());
 			rg.setBack(rsp);
 			
 			DefaultResponse rsp2 = createResponse(r);
 			rsp2.setName(Resources.RSP_FORWARD);
-			rsp.setAttrId(a.getId());
 			rg.setBroadcast(rsp2);
 			
 			return true;
@@ -156,7 +158,8 @@ public class EditAddAttributeDefRequest extends Request {
 
 		protected AttributeType createAttribute(EditAddAttributeDefRequest r) {
 			AttributeType a = new AttributeType();
-			a.setCreator(r.getRequesterId());
+			DataItemUtil.setNewDataItemByUserId(a, r.getRequesterId());
+			
 			a.setAttrName(r.getAttr());
 			a.setTypeName(r.getType());
 			a.setMultipleSupport(r.getMultiYes());
@@ -178,6 +181,7 @@ public class EditAddAttributeDefRequest extends Request {
 		public DefaultResponse(EditAddAttributeDefRequest r) {
 			super(r);
 			this.setModelId(r.getModelId());
+			this.setAttrId(r.getAttrId());
 			this.setEntityTypeId(r.getEntityTypeId());
 			this.setAttr(r.getAttr());
 			this.setType(r.getType());

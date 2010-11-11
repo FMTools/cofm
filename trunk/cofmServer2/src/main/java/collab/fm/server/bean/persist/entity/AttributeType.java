@@ -53,7 +53,7 @@ public class AttributeType extends DataItem {
 			(this.enableGlobalDupValues ? "1" : "0");
 	}
 	
-	public boolean valueConformsToType(Value v) {
+	public boolean valueConformsToType(String v) {
 		// A value is always a String, so we return true directly here.
 		return true;
 	}

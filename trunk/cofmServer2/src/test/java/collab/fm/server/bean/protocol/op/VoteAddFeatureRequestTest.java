@@ -65,11 +65,10 @@ public class VoteAddFeatureRequestTest {
 
 	@Test
 	public void testCreateNewFeature() throws ItemPersistenceException, StaleDataException, InvalidOperationException, JsonConvertException {
-		VoteAddFeatureRequest vafr = new VoteAddFeatureRequest();
+		VoteAddEntityRequest vafr = new VoteAddEntityRequest();
 		vafr.setName(Resources.REQ_VA_FEATURE);
 		vafr.setId(100L);
 		vafr.setRequesterId(2L);
-		vafr.setFeatureName("New feature X");
 		vafr.setModelId(modelId);
 		
 		ResponseGroup rg = new ResponseGroup();

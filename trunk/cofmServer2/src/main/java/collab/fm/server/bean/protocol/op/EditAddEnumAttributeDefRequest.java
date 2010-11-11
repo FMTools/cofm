@@ -6,8 +6,9 @@ import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.persist.entity.EnumAttributeType;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.processor.Processor;
+import collab.fm.server.util.DataItemUtil;
 
-public class EditAddEnumAttributeRequest extends EditAddAttributeDefRequest {
+public class EditAddEnumAttributeDefRequest extends EditAddAttributeDefRequest {
 	private List<String> vlist;
 
 	public List<String> getVlist() {
@@ -27,24 +28,30 @@ public class EditAddEnumAttributeRequest extends EditAddAttributeDefRequest {
 		
 		@Override
 		public boolean checkRequest(Request req) {
-			if (!(req instanceof EditAddEnumAttributeRequest)) return false;
-			EditAddEnumAttributeRequest r = (EditAddEnumAttributeRequest) req;
-			if (r.getVlist() == null || r.getVlist().size() <= 0) return false;
+			if (!(req instanceof EditAddEnumAttributeDefRequest)) return false;
+			EditAddEnumAttributeDefRequest r = (EditAddEnumAttributeDefRequest) req;
+			if (r.getAttrId() == null &&
+					(r.getVlist() == null || r.getVlist().size() <= 0)) {
+				return false;
+			}
 			return super.checkRequest(req);
 		}
 		
 		@Override
 		protected EditAddAttributeDefRequest.DefaultResponse createResponse(EditAddAttributeDefRequest r) {
-			return new DefResponse((EditAddEnumAttributeRequest)r);
+			return new DefResponse((EditAddEnumAttributeDefRequest)r);
 		}
 		
 		@Override
 		protected AttributeType createAttribute(EditAddAttributeDefRequest r) {
 			EnumAttributeType a = new EnumAttributeType();
-			a.setCreator(r.getRequesterId());
+			DataItemUtil.setNewDataItemByUserId(a, r.getRequesterId());
+			
+			a.setAttrName(r.getAttr());
+			a.setTypeName(r.getType());
 			a.setMultipleSupport(r.getMultiYes());
 			a.setEnableGlobalDupValues(r.getAllowDup());
-			a.setValidValues(((EditAddEnumAttributeRequest)r).getVlist());
+			a.setValidValues(((EditAddEnumAttributeDefRequest)r).getVlist());
 			return a;
 		}
 	}
@@ -60,7 +67,7 @@ public class EditAddEnumAttributeRequest extends EditAddAttributeDefRequest {
 			this.vlist = vlist;
 		}
 		
-		public DefResponse(EditAddEnumAttributeRequest r) {
+		public DefResponse(EditAddEnumAttributeDefRequest r) {
 			super(r);
 			this.setVlist(r.getVlist());
 		}

@@ -1,5 +1,7 @@
 package collab.fm.server.persistence;
 
+import collab.fm.server.bean.persist.Element;
+import collab.fm.server.bean.persist.ElementType;
 import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.persist.entity.EntityType;
 import collab.fm.server.bean.persist.relation.BinRelationType;
@@ -22,6 +24,8 @@ public abstract class DaoFactory {
 	abstract public EntityTypeDao getEntityTypeDao();
 	abstract public RelationTypeDao getRelationTypeDao();
 	abstract public AttributeDefDao getAttributeDefDao();
+	abstract public ElementTypeDao getElementTypeDao();
+	abstract public ElementDao getElementDao();
 	
 	// TODO: move the inner class to a separated file.
 	public static class HibernateDaoFactory extends DaoFactory {
@@ -34,6 +38,8 @@ public abstract class DaoFactory {
 		private static final RelationTypeDao brt = new RelationTypeDaoImpl();
 		private static final EntityTypeDao et = new EntityTypeDaoImpl();
 		private static final AttributeDefDao ad = new AttributeDefDaoImpl();
+		private static final ElementTypeDao elemt = new ElementTypeDaoImpl();
+		private static final ElementDao elem = new ElementDaoImpl();
 		
 		public static class RelationTypeDaoImpl extends GenericDaoImpl<RelationType, Long>
 			implements RelationTypeDao {
@@ -42,6 +48,16 @@ public abstract class DaoFactory {
 		
 		public static class EntityTypeDaoImpl extends GenericDaoImpl<EntityType, Long>
 			implements EntityTypeDao {
+			
+		}
+		
+		public static class ElementTypeDaoImpl extends GenericDaoImpl<ElementType, Long>
+			implements ElementTypeDao {
+		
+		}
+		
+		public static class ElementDaoImpl extends GenericDaoImpl<Element, Long>
+			implements ElementDao {
 			
 		}
 		
@@ -78,6 +94,16 @@ public abstract class DaoFactory {
 		@Override
 		public AttributeDefDao getAttributeDefDao() {
 			return ad;
+		}
+
+		@Override
+		public ElementTypeDao getElementTypeDao() {
+			return elemt;
+		}
+
+		@Override
+		public ElementDao getElementDao() {
+			return elem;
 		}	
 	}
 }

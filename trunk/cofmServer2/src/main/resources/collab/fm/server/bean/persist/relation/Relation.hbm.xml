@@ -10,10 +10,10 @@
       Relation properties
       +++++++++++++++++-->
     
-	<!-- Many-tomany association to Entity -->
-	<set name="entities" table="ENTITY_RELATION_ASSOC">
+	<!-- Many-to-many association to Element (in fact, only Entity)-->
+	<set name="elements" table="ENTITY_RELATION_ASSOC">
 	  <key column="RELATION_ID" />
-	  <many-to-many column="ENTITY_ID" class="collab.fm.server.bean.persist.entity.Entity" />
+	  <many-to-many column="ENTITY_ID" class="collab.fm.server.bean.persist.Element" />
 	</set>
 	
 	<!-- Many-to-one association to Model -->

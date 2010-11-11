@@ -6,8 +6,8 @@ import org.apache.log4j.Logger;
 import org.junit.*;
 
 import collab.fm.server.bean.protocol.ResponseGroup;
-import collab.fm.server.bean.protocol.op.VoteAddFeatureRequest;
-import collab.fm.server.bean.protocol.op.VoteAddFeatureRequest.DefaultResponse;
+import collab.fm.server.bean.protocol.op.VoteAddEntityRequest;
+import collab.fm.server.bean.protocol.op.VoteAddEntityRequest.DefaultResponse;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.JsonConvertException;
 
@@ -21,7 +21,7 @@ public class JsonConverterTest {
 	public void testVoteAddFeatureJson() throws JsonConvertException {
 		String inputAdd = "{id:1,name:\"" + Resources.REQ_VA_FEATURE + 
 			"\",requesterId:2,featureName:\"New Feature\"}";
-		VoteAddFeatureRequest r1 = (VoteAddFeatureRequest) JsonConverter.jsonToRequest(inputAdd);
+		VoteAddEntityRequest r1 = (VoteAddEntityRequest) JsonConverter.jsonToRequest(inputAdd);
 		DefaultResponse dr1 = new DefaultResponse(r1);
 		dr1.setExist(new Boolean(false));
 		
@@ -30,7 +30,7 @@ public class JsonConverterTest {
 		
 		String inputVote = "{id:1,name:\"" + Resources.REQ_VA_FEATURE + 
 			"\",requesterId:2,featureId:3,yes:true}";
-		VoteAddFeatureRequest r2 = (VoteAddFeatureRequest) JsonConverter.jsonToRequest(inputVote);
+		VoteAddEntityRequest r2 = (VoteAddEntityRequest) JsonConverter.jsonToRequest(inputVote);
 		DefaultResponse dr2 = new DefaultResponse(r2);
 		dr2.setName("ORIGIN");
 		dr2.setExist(new Boolean(true));

@@ -7,15 +7,19 @@ import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
+import collab.fm.server.util.DataItemUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public class EditAddEntityTypeRequest extends Request {
+	
+	private Long typeId;
+	
 	private Long modelId;
 	private String typeName;
-	private String superType;
+	private Long superTypeId;
 	
 	@Override
 	protected Processor makeDefaultProcessor() {
@@ -38,14 +42,21 @@ public class EditAddEntityTypeRequest extends Request {
 		this.typeName = typeName;
 	}
 
-	public String getSuperType() {
-		return superType;
+	public Long getTypeId() {
+		return typeId;
 	}
 
-	public void setSuperType(String superType) {
-		this.superType = superType;
+	public void setTypeId(Long typeId) {
+		this.typeId = typeId;
 	}
 
+	public Long getSuperTypeId() {
+		return superTypeId;
+	}
+
+	public void setSuperTypeId(Long superTypeId) {
+		this.superTypeId = superTypeId;
+	}
 
 	private static class AddEntityTypeProcessor implements Processor {
 
@@ -69,25 +80,35 @@ public class EditAddEntityTypeRequest extends Request {
 				throw new InvalidOperationException("Invalid model ID: " + r.getModelId());
 			}
 			
-			EntityType sup = null;
-			for (EntityType et: m.getEntityTypes()) {
-				if (et.getTypeName().equals(r.getTypeName())) {
-					throw new InvalidOperationException("Entity type has already existed: " + r.getTypeName());
+			EntityType entp = null;
+			if (r.getTypeId() != null && 
+					(entp = DaoUtil.getEntityTypeDao().getById(r.getTypeId(), false)) != null) {
+				entp.setTypeName(r.getTypeName());
+				entp.setLastModifier(r.getRequesterId());
+				DaoUtil.getEntityTypeDao().save(entp);
+			} else {
+				EntityType sup = null;
+				for (EntityType et: m.getEntityTypes()) {
+					if (et.getTypeName().equals(r.getTypeName())) {
+						throw new InvalidOperationException("Entity type has already existed: " + r.getTypeName());
+					}
+					if (et.getId().equals(r.getSuperTypeId())) {
+						sup = et;
+					}
 				}
-				if (et.getTypeName().equals(r.getSuperType())) {
-					sup = et;
-				}
+				
+				entp = new EntityType();
+				DataItemUtil.setNewDataItemByUserId(entp, r.getRequesterId());
+				
+				entp.setTypeName(r.getTypeName());
+				entp.setSuperType(sup);
+				entp.setModel(m);
+				m.addEntityType(entp);
+				
+				DaoUtil.getModelDao().save(m);
+				entp = DaoUtil.getEntityTypeDao().save(entp);
+				r.setTypeId(entp.getId());
 			}
-			
-			EntityType entp = new EntityType();
-			entp.setCreator(r.getRequesterId());
-			entp.setLastModifier(r.getRequesterId());
-			entp.setTypeName(r.getTypeName());
-			entp.setSuperType(sup);
-			
-			m.addEntityType(entp);
-			
-			DaoUtil.getModelDao().save(m);
 			
 			DefaultResponse rsp = new DefaultResponse(r);
 			rsp.setName(Resources.RSP_SUCCESS);
@@ -104,16 +125,18 @@ public class EditAddEntityTypeRequest extends Request {
 	
 	public static class DefaultResponse extends Response {
 		
-		private Long modelId;
 		private Long typeId;
+		
+		private Long modelId;
 		private String typeName;
-		private String superType;
+		private Long superTypeId;
 		
 		public DefaultResponse(EditAddEntityTypeRequest r) {
 			super(r);
 			this.setModelId(r.getModelId());
 			this.setTypeName(r.getTypeName());
-			this.setSuperType(r.getSuperType());
+			this.setTypeId(r.getTypeId());
+			this.setSuperTypeId(r.getSuperTypeId());
 		}
 
 		public Long getModelId() {
@@ -132,12 +155,20 @@ public class EditAddEntityTypeRequest extends Request {
 			this.typeName = typeName;
 		}
 
-		public String getSuperType() {
-			return superType;
+		public Long getTypeId() {
+			return typeId;
 		}
 
-		public void setSuperType(String superType) {
-			this.superType = superType;
+		public void setTypeId(Long typeId) {
+			this.typeId = typeId;
+		}
+
+		public Long getSuperTypeId() {
+			return superTypeId;
+		}
+
+		public void setSuperTypeId(Long superTypeId) {
+			this.superTypeId = superTypeId;
 		}
 		
 	}
