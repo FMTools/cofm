@@ -28,7 +28,6 @@ public abstract class DataItem {
 	protected Date lastModifyTime; 
 	
 	public DataItem() {
-		this.setCreateTime(new Date());
 	}
 	
 	public void transfer(DataItem2 target) {

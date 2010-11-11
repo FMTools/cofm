@@ -33,10 +33,10 @@ public class EnumAttributeType extends AttributeType {
 	}
 	
 	@Override
-	public boolean valueConformsToType(Value v) {
+	public boolean valueConformsToType(String v) {
 		// For an enumeration type, a valid value must be one of the type's predefined values.
 		for (String predefinedValue: validValues) {
-			if (predefinedValue.equals(v.toValueString())) {
+			if (predefinedValue.equals(v)) {
 				return true;
 			}
 		}

@@ -1,12 +1,11 @@
 package collab.fm.server.util;
 
-import collab.fm.server.bean.persist.entity.EntityType;
-import collab.fm.server.bean.persist.relation.BinRelationType;
 import collab.fm.server.persistence.AttributeDefDao;
 import collab.fm.server.persistence.DaoFactory;
+import collab.fm.server.persistence.ElementDao;
+import collab.fm.server.persistence.ElementTypeDao;
 import collab.fm.server.persistence.EntityDao;
 import collab.fm.server.persistence.EntityTypeDao;
-import collab.fm.server.persistence.GenericDao;
 import collab.fm.server.persistence.ModelDao;
 import collab.fm.server.persistence.RelationDao;
 import collab.fm.server.persistence.RelationTypeDao;
@@ -40,5 +39,13 @@ public class DaoUtil {
 	
 	public static AttributeDefDao getAttributeDefDao() {
 		return DaoFactory.getFactory().getAttributeDefDao();
+	}
+	
+	public static ElementTypeDao getElementTypeDao() {
+		return DaoFactory.getFactory().getElementTypeDao();
+	}
+	
+	public static ElementDao getElementDao() {
+		return DaoFactory.getFactory().getElementDao();
 	}
 }

@@ -1,5 +1,9 @@
 package collab.fm.server.bean.persist;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import collab.fm.server.bean.persist.relation.Relation;
 import collab.fm.server.bean.transfer.DataItem2;
 import collab.fm.server.bean.transfer.VotableEntity2;
 
@@ -13,6 +17,7 @@ public abstract class Element extends DataItem implements Votable {
 
 	protected Vote vote = new Vote();
 	protected ElementType type;
+	protected Set<Relation> rels = new HashSet<Relation>();
 	
 	public Element() {
 		super();
@@ -28,6 +33,7 @@ public abstract class Element extends DataItem implements Votable {
 
 	public int vote(boolean yes, Long userid) {
 		this.vote.vote(yes, userid);
+		this.setLastModifier(userid);
 		if (this.getSupporterNum() <= 0) {
 			return DataItem.REMOVAL_EXECUTED;
 		} 
@@ -62,4 +68,11 @@ public abstract class Element extends DataItem implements Votable {
 		this.type = type;
 	}
 	
+	public Set<Relation> getRels() {
+		return rels;
+	}
+
+	public void setRels(Set<Relation> rels) {
+		this.rels = rels;
+	}
 }

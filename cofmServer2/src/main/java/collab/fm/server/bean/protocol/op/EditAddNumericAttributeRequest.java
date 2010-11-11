@@ -4,6 +4,7 @@ import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.persist.entity.NumericAttributeType;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.processor.Processor;
+import collab.fm.server.util.DataItemUtil;
 
 public class EditAddNumericAttributeRequest extends EditAddAttributeDefRequest {
 	private float min;
@@ -44,8 +45,6 @@ public class EditAddNumericAttributeRequest extends EditAddAttributeDefRequest {
 		@Override
 		public boolean checkRequest(Request req) {
 			if (!(req instanceof EditAddNumericAttributeRequest)) return false;
-			EditAddNumericAttributeRequest r = (EditAddNumericAttributeRequest) req;
-			if (r.getUnit() == null) return false;
 			return super.checkRequest(req);
 		}
 		
@@ -57,7 +56,10 @@ public class EditAddNumericAttributeRequest extends EditAddAttributeDefRequest {
 		@Override
 		protected AttributeType createAttribute(EditAddAttributeDefRequest r) {
 			NumericAttributeType a = new NumericAttributeType();
-			a.setCreator(r.getRequesterId());
+			DataItemUtil.setNewDataItemByUserId(a, r.getRequesterId());
+			
+			a.setAttrName(r.getAttr());
+			a.setTypeName(r.getType());
 			a.setMultipleSupport(r.getMultiYes());
 			a.setEnableGlobalDupValues(r.getAllowDup());
 			EditAddNumericAttributeRequest anar = (EditAddNumericAttributeRequest) r;

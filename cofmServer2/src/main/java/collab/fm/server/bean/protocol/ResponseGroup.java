@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ResponseGroup {
 	
-	private static final int DEBUG_LENGTH = 100;
+	private static final int DEBUG_LENGTH = 500;
 	
 	private Response back;
 	private Response peer;
@@ -25,12 +25,11 @@ public class ResponseGroup {
 	private String truncateForDebug(String s) {
 		if (s == null) {
 			return "null";
-		}
-		else {
+		} else {
 			if (s.length() > DEBUG_LENGTH) {
 				return s.substring(0, DEBUG_LENGTH);
 			}
-				return s;
+			return s;
 		}
 	}
 	

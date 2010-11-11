@@ -19,13 +19,13 @@ public abstract class Relation extends Element {
 	protected Model model;
 	
 	// Involved entities
-	protected Set<Entity> entities = new HashSet<Entity>();
+	protected Set<Element> elements = new HashSet<Element>();
 
 	public String toValueString() {
 		if (this.getId() != null) {
 			return this.getId().toString();
 		}
-		return this.entities.toString();
+		return this.elements.toString();
 	}
 	
 	// Voting YES to relation needs YES-vote inference, 
@@ -34,10 +34,10 @@ public abstract class Relation extends Element {
 	public int vote(boolean yes, Long userId) {
 		if (yes) {
 			// vote inference
-			for (Entity f: this.getEntities()) {
+			for (Element f: this.getElements()) {
 				f.vote(true, userId);
 				try {
-					DaoUtil.getEntityDao().save(f);
+					DaoUtil.getElementDao().save(f);
 				} catch (ItemPersistenceException e) {
 					logger.warn("Vote on entity failed.", e);
 				} catch (StaleDataException e) {
@@ -56,12 +56,12 @@ public abstract class Relation extends Element {
 		this.model = model;
 	}
 
-	public Set<Entity> getEntities() {
-		return entities;
+	public Set<Element> getElements() {
+		return elements;
 	}
 
-	public void setEntities(Set<Entity> entities) {
-		this.entities = entities;
+	public void setElements(Set<Element> elements) {
+		this.elements = elements;
 	}
 
 }

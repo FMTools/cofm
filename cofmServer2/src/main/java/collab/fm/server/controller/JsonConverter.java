@@ -17,10 +17,10 @@ import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.UpdateRequest;
 import collab.fm.server.bean.protocol.op.EditAddAttributeDefRequest;
-import collab.fm.server.bean.protocol.op.EditAddEnumAttributeRequest;
+import collab.fm.server.bean.protocol.op.EditAddEnumAttributeDefRequest;
 import collab.fm.server.bean.protocol.op.EditAddNumericAttributeRequest;
 import collab.fm.server.bean.protocol.op.VoteAddBinRelationRequest;
-import collab.fm.server.bean.protocol.op.VoteAddFeatureRequest;
+import collab.fm.server.bean.protocol.op.VoteAddEntityRequest;
 import collab.fm.server.bean.protocol.op.VoteAddValueRequest;
 import collab.fm.server.util.JsonUtil;
 import collab.fm.server.util.Resources;
@@ -43,10 +43,10 @@ public class JsonConverter {
 		requestClassMap.put(Resources.REQ_EXIT_MODEL, ExitModelRequest.class);
 		requestClassMap.put(Resources.REQ_UPDATE, UpdateRequest.class);
 		
-		requestClassMap.put(Resources.REQ_VA_ATTR_ENUM, EditAddEnumAttributeRequest.class);
+		requestClassMap.put(Resources.REQ_VA_ATTR_ENUM, EditAddEnumAttributeDefRequest.class);
 		requestClassMap.put(Resources.REQ_VA_ATTR_NUMBER, EditAddNumericAttributeRequest.class);
 		requestClassMap.put(Resources.REQ_VA_ATTR_STR, EditAddAttributeDefRequest.class);
-		requestClassMap.put(Resources.REQ_VA_FEATURE, VoteAddFeatureRequest.class);
+		requestClassMap.put(Resources.REQ_VA_FEATURE, VoteAddEntityRequest.class);
 		requestClassMap.put(Resources.REQ_VA_RELATION_BIN, VoteAddBinRelationRequest.class);
 		requestClassMap.put(Resources.REQ_VA_VALUE, VoteAddValueRequest.class);
 		

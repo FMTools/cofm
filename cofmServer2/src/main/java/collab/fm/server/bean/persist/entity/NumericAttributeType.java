@@ -23,9 +23,9 @@ public class NumericAttributeType extends AttributeType {
 	}
 	
 	@Override
-	public boolean valueConformsToType(Value v) {
+	public boolean valueConformsToType(String v) {
 		try {
-			Float val = Float.valueOf(v.toValueString());
+			Float val = Float.valueOf(v);
 			return !val.isNaN() &&
 				val.compareTo(min) >= 0 &&
 				val.compareTo(max) <= 0;

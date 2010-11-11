@@ -3,14 +3,18 @@ package collab.fm.server.bean.protocol.op;
 import java.util.ArrayList;
 import java.util.List;
 
+import collab.fm.server.bean.persist.DataItem;
+import collab.fm.server.bean.persist.Element;
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.relation.BinRelation;
+import collab.fm.server.bean.persist.relation.BinRelationType;
 import collab.fm.server.bean.persist.relation.Relation;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
+import collab.fm.server.util.DataItemUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
@@ -20,15 +24,15 @@ public class VoteAddBinRelationRequest extends Request {
 	
 	private Long modelId;
 	
-	private Long relationshipId;
+	private Long relationId;
 	
 	private Boolean yes;
 	
 	// relationship type
-	private String type;
+	private Long typeId;
 	
-	private Long leftFeatureId;
-	private Long rightFeatureId;
+	private Long sourceId;
+	private Long targetId;
 	
 	@Override
 	protected Processor makeDefaultProcessor() {
@@ -41,13 +45,6 @@ public class VoteAddBinRelationRequest extends Request {
 	public void setModelId(Long modelId) {
 		this.modelId = modelId;
 	}
-	public Long getRelationshipId() {
-		return relationshipId;
-	}
-	public void setRelationshipId(Long relationshipId) {
-		this.relationshipId = relationshipId;
-	}
-	
 	public Boolean getYes() {
 		return yes;
 	}
@@ -56,34 +53,47 @@ public class VoteAddBinRelationRequest extends Request {
 		this.yes = yes;
 	}
 
-	public String getType() {
-		return type;
+	public Long getTypeId() {
+		return typeId;
 	}
-	public void setType(String type) {
-		this.type = type;
-	}
-	public Long getLeftFeatureId() {
-		return leftFeatureId;
-	}
-	public void setLeftFeatureId(Long leftFeatureId) {
-		this.leftFeatureId = leftFeatureId;
-	}
-	public Long getRightFeatureId() {
-		return rightFeatureId;
-	}
-	public void setRightFeatureId(Long rightFeatureId) {
-		this.rightFeatureId = rightFeatureId;
+
+	public void setTypeId(Long typeId) {
+		this.typeId = typeId;
 	}
 	
+	public Long getRelationId() {
+		return relationId;
+	}
+
+	public void setRelationId(Long relationId) {
+		this.relationId = relationId;
+	}
+
+	public Long getSourceId() {
+		return sourceId;
+	}
+
+	public void setSourceId(Long sourceId) {
+		this.sourceId = sourceId;
+	}
+
+	public Long getTargetId() {
+		return targetId;
+	}
+
+	public void setTargetId(Long targetId) {
+		this.targetId = targetId;
+	}
+
 	private static class VoteAddBinRelationProcessor implements Processor {
 
 		public boolean checkRequest(Request req) {
 			if (!(req instanceof VoteAddBinRelationRequest)) return false;
 			VoteAddBinRelationRequest r = (VoteAddBinRelationRequest) req;
 			if (r.getModelId() == null || r.getRequesterId() == null) return false;
-			if (r.getRelationshipId() == null) {
+			if (r.getRelationId() == null) {
 				// A creating operation
-				return r.getType() != null && r.getLeftFeatureId() != null && r.getRightFeatureId() != null;
+				return r.getTypeId() != null && r.getSourceId() != null && r.getTargetId() != null;
 			} else {
 				// A voting operation
 				return r.getYes() != null;
@@ -96,92 +106,97 @@ public class VoteAddBinRelationRequest extends Request {
 			if (!checkRequest(req)) {
 				throw new InvalidOperationException("Invalid vote_or_add_bin_relation operation.");
 			}
-//			VoteAddBinRelationRequest r = (VoteAddBinRelationRequest) req;
-//			DefaultResponse rsp = new DefaultResponse(r);
-//			
-//			// If it is a creating operation
-//			if (r.getRelationshipId() == null) {
-//				// Get the model
-//				Model model = DaoUtil.getModelDao().getById(r.getModelId(), false);
-//				if (model == null) {
-//					throw new InvalidOperationException("Invalid feature model ID: " + r.getModelId());
-//				}
-//				
-//				// See if the relationship has already existed.
-//				rsp.setExist(false);
-//				BinRelation relation = new BinRelation(r.getRequesterId());
-//				relation.setType(r.getType());
-//				relation.setLeftFeatureId(r.getLeftFeatureId());
-//				relation.setRightFeatureId(r.getRightFeatureId());
-//				List sameRelations = DaoUtil.getRelationDao().getByExample(r.getModelId(), relation); 
-//				if (sameRelations != null) {
-//					rsp.setExist(true);
-//					relation = (BinRelation)sameRelations.get(0);
-//				} else {
-//					// CREATE THE (ACTUAL) RELATIONSHIP HERE (USING Feature OBJECTS.)
-//					relation.setFeatures(DaoUtil.getEntityDao().getById(r.getLeftFeatureId(), false),
-//							DaoUtil.getEntityDao().getById(r.getRightFeatureId(), false));
-//					// After creation, add it to the model.
-//					model.addRelationship(relation);
-//				}
-//				relation.vote(true, r.getRequesterId());
-//				
-//				// Save and set relationshipId in the response
-//				relation = (BinRelation)DaoUtil.getRelationDao().save(relation);
-//				rsp.setRelationshipId(relation.getId());
-//
-//				// Save the model
-//				if (rsp.getExist().booleanValue() == false) {
-//					DaoUtil.getModelDao().save(model);
-//				}
-//				
-//				// Set the inferred votes (because the "vote" always is "YES" here.)
-//				rsp.setInferVotes(generateInferVotes(relation));
-//				
-//			} else { // A voting operation
-//				
-//				Relation relation = DaoUtil.getRelationDao().getById(
-//						r.getRelationshipId(), false);
-//				if (relation == null) {
-//					throw new InvalidOperationException("Invalid relationship ID: "
-//							+ r.getRelationshipId());
-//				}
-//				// Set the inferred votes
-//				if (r.getYes().booleanValue() == true) {
-//					rsp.setInferVotes(generateInferVotes(relation));
-//				}
-//				// Handle the vote and possible removals.
-//				if (relation.vote(r.getYes(), r.getRequesterId())) {
-//					DaoUtil.getRelationDao().save(relation);
-//				} else { //removal
-//					DaoUtil.getRelationDao().delete(relation);
-//				}
-//				// Set the fields to proper values in the response
-//				rsp.setExist(true);
-//				rsp.setLeftFeatureId(null);
-//				rsp.setRightFeatureId(null); // left & right feature ID is unnecessary for voting operations
-//			}
-//			
-//			// Add "back" and "broadcast" responses to the response group
-//			rsp.setName(Resources.RSP_SUCCESS);
-//			rg.setBack(rsp);
-//			
-//			DefaultResponse rsp2 = (DefaultResponse) rsp.clone();
-//			rsp2.setName(Resources.RSP_FORWARD);
-//			rg.setBroadcast(rsp2);
-//			
+			VoteAddBinRelationRequest r = (VoteAddBinRelationRequest) req;
+			
+			Model m = DaoUtil.getModelDao().getById(r.getModelId(), false);
+			if (m == null) {
+				throw new InvalidOperationException("Invalid model ID: " + r.getModelId());
+			}
+			
+			DefaultResponse rsp = new DefaultResponse(r);
+			BinRelation br = null;
+			if (r.getRelationId() != null && 
+					(br = (BinRelation) DaoUtil.getRelationDao().getById(r.getRelationId(), false)) != null) {
+				// voting 
+				rsp.setExist(true);
+				br.setLastModifier(r.getRequesterId());
+				
+				// Set the inferred votes
+				if (r.getYes().booleanValue() == true) {
+					rsp.setInferVotes(computeInferVotes(br));
+				}
+				
+				// Handle the vote and possible removals.
+				if (br.vote(r.getYes(), r.getRequesterId()) == DataItem.REMOVAL_EXECUTED) {
+					DaoUtil.getRelationDao().delete(br);
+				} else {
+					DaoUtil.getRelationDao().save(br);
+				}
+				
+			} else {
+				// creating
+				BinRelationType myType = 
+					(BinRelationType) DaoUtil.getRelationTypeDao().getById(r.getTypeId(), false);
+				if (myType == null) {
+					throw new InvalidOperationException("Invalid relation type.");
+				}
+				
+				rsp.setExist(false);
+				
+				br = new BinRelation();
+				DataItemUtil.setNewDataItemByUserId(br, r.getRequesterId());
+				br.setType(myType);
+				br.setSourceId(r.getSourceId());
+				br.setTargetId(r.getTargetId());
+				
+				// See if the same relation has already existed.
+				List sameRelations = DaoUtil.getRelationDao().getByExample(
+						r.getModelId(), br);
+				if (sameRelations != null) {
+					br = (BinRelation) sameRelations.get(0);
+					rsp.setExist(true);
+				} else {
+					Element src = DaoUtil.getElementDao().getById(r.getSourceId(), false);
+					if (src == null) {
+						throw new InvalidOperationException("Invalid source ID: " + r.getSourceId());
+					}
+					
+					Element target = DaoUtil.getElementDao().getById(r.getTargetId(), false);
+					if (target == null) {
+						throw new InvalidOperationException("Invalid target ID: " + r.getTargetId());
+					}
+					
+					br.resetElements(src, target);
+					m.addRelation(br);
+					DaoUtil.getModelDao().save(m);
+				}
+				
+				// Creation always leads to a YES vote.
+				br.vote(true, r.getRequesterId());
+				
+				br = (BinRelation) DaoUtil.getRelationDao().save(br);
+				rsp.setRelationId(br.getId());
+				
+				// Set the inferred votes (because the "vote" always is "YES" here.)
+				rsp.setInferVotes(computeInferVotes(br));
+				
+			}
+			
+			// Add "back" and "broadcast" responses to the response group
+			rsp.setName(Resources.RSP_SUCCESS);
+			rg.setBack(rsp);
+			
+			DefaultResponse rsp2 = (DefaultResponse) rsp.clone();
+			rsp2.setName(Resources.RSP_FORWARD);
+			rg.setBroadcast(rsp2);
+			
 			return true;
 		}
 
-		private List<Long> generateInferVotes(Relation relation) {
-//			List<Long> rslt = new ArrayList<Long>();
-//			for (Feature f: relation.getFeatures()) {
-//				rslt.add(f.getId());
-//			}
-//			if (rslt.size() > 0) {
-//				return rslt;
-//			}
-			return null;
+		private List<Long> computeInferVotes(Relation r) {
+			List<Long> rslt = new ArrayList<Long>();
+			DataItemUtil.generateInferVotes(r, rslt);
+			return rslt.size() <= 0 ? null : rslt;
 		}
 		
 	}
@@ -190,22 +205,27 @@ public class VoteAddBinRelationRequest extends Request {
 		private Boolean exist;
 		
 		private Long modelId;
-		private Long relationshipId;
-		private String type;
+		
+		private Long relationId;
+		
 		private Boolean yes;
-		private Long leftFeatureId;
-		private Long rightFeatureId;
+		
+		// relationship type
+		private Long typeId;
+		
+		private Long sourceId;
+		private Long targetId;
 		
 		private List<Long> inferVotes;
 		
 		public DefaultResponse(VoteAddBinRelationRequest r) {
 			super(r);
 			this.setModelId(r.getModelId());
-			this.setRelationshipId(r.getRelationshipId());
-			this.setType(r.getType());
 			this.setYes(r.getYes());
-			this.setLeftFeatureId(r.getLeftFeatureId());
-			this.setRightFeatureId(r.getRightFeatureId());
+			this.setRelationId(r.getRelationId());
+			this.setTargetId(r.getTargetId());
+			this.setTypeId(r.getTypeId());
+			this.setSourceId(r.getSourceId());
 		}
 		
 		public Boolean getExist() {
@@ -224,22 +244,6 @@ public class VoteAddBinRelationRequest extends Request {
 			this.modelId = modelId;
 		}
 
-		public Long getRelationshipId() {
-			return relationshipId;
-		}
-
-		public void setRelationshipId(Long relationshipId) {
-			this.relationshipId = relationshipId;
-		}
-
-		public String getType() {
-			return type;
-		}
-
-		public void setType(String type) {
-			this.type = type;
-		}
-
 		public Boolean getYes() {
 			return yes;
 		}
@@ -248,28 +252,44 @@ public class VoteAddBinRelationRequest extends Request {
 			this.yes = yes;
 		}
 
-		public Long getLeftFeatureId() {
-			return leftFeatureId;
-		}
-
-		public void setLeftFeatureId(Long leftFeatureId) {
-			this.leftFeatureId = leftFeatureId;
-		}
-
-		public Long getRightFeatureId() {
-			return rightFeatureId;
-		}
-
-		public void setRightFeatureId(Long rightFeatureId) {
-			this.rightFeatureId = rightFeatureId;
-		}
-
 		public List<Long> getInferVotes() {
 			return inferVotes;
 		}
 
 		public void setInferVotes(List<Long> inferVotes) {
 			this.inferVotes = inferVotes;
+		}
+
+		public Long getRelationId() {
+			return relationId;
+		}
+
+		public void setRelationId(Long relationId) {
+			this.relationId = relationId;
+		}
+
+		public Long getTypeId() {
+			return typeId;
+		}
+
+		public void setTypeId(Long typeId) {
+			this.typeId = typeId;
+		}
+
+		public Long getSourceId() {
+			return sourceId;
+		}
+
+		public void setSourceId(Long sourceId) {
+			this.sourceId = sourceId;
+		}
+
+		public Long getTargetId() {
+			return targetId;
+		}
+
+		public void setTargetId(Long targetId) {
+			this.targetId = targetId;
 		}
 		
 	}

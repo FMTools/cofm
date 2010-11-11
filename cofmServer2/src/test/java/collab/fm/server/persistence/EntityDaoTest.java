@@ -101,25 +101,17 @@ public class EntityDaoTest {
 		e.vote(true, 1L);
 		e.setType(type1);
 		
-		Value v1 = new Value();
-		v1.setCreator(1L);
-		v1.setVal("中文名字");
-		e.voteOrAddValue(a1.getId(), v1, true, 1L);
+		e.voteOrAddValue(a1.getId(), "中文名字", true, 1L);
 		
-		Value v2 = new Value();
-		v2.setCreator(2L);
-		v2.setVal(Float.valueOf(33.33f).toString());
-		e.voteOrAddValue(a2.getId(), v2, true, 2L);
+		e.voteOrAddValue(a2.getId(), Float.valueOf(33.33f).toString(), true, 2L);
 		
-		Value v3 = new Value();
-		v3.setCreator(3L);
-		v3.setVal("High");
-		e.voteOrAddValue(a3.getId(), v3, true, 3L);
+		e.voteOrAddValue(a3.getId(), "High", true, 3L);
 		
 		m.addEntity(e);
 		
 			// ---------- Save ---------
 			e = ed.save(e);
+			
 			md.save(m);
 			assertNotNull(e.getId());
 			

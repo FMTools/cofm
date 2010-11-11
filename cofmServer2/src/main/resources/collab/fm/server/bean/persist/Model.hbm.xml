@@ -29,6 +29,18 @@
   	    <key column="MODEL_ID"></key>
   	    <one-to-many class="collab.fm.server.bean.persist.relation.Relation"/>
   	</set>
+  	
+  	<!-- One-to-many association to EntityType -->
+  	<set name="entityTypes" inverse="true">
+  	    <key column="MODEL_ID"></key>
+  	    <one-to-many class="collab.fm.server.bean.persist.entity.EntityType" />
+  	</set>
+  	
+  	<!-- One-to-many association to RelationType -->
+  	<set name="relationTypes" inverse="true">
+  	    <key column="MODEL_ID"></key>
+  	    <one-to-many class="collab.fm.server.bean.persist.relation.RelationType"/>
+  	</set>
 
     <!-- Many-to-many bidirectional association to User -->
     <set inverse="true" name="users" table="MODEL_USER_ASSOC">

@@ -17,6 +17,7 @@ import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.relation.Relation;
 import collab.fm.server.bean.transfer.DataItem2;
 import collab.fm.server.util.DaoUtil;
+import collab.fm.server.util.DataItemUtil;
 import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
@@ -24,10 +25,8 @@ public class Entity extends Element {
 	
 	private static Logger logger = Logger.getLogger(Entity.class);
 	
-	// Attribute-Value map of this entity. Key = AttrName.
+	// Attribute-Value map of this entity. Key = AttrDefId.
 	protected Map<Long, ValueList> attrs = new HashMap<Long, ValueList>();
-	
-	protected Set<Relation> rels = new HashSet<Relation>();
 	
 	protected Model model;
 	
@@ -65,7 +64,7 @@ public class Entity extends Element {
 	}
 	
 	// Return Votable.CREATION_EXECUTED (if added new value) or VOTE_EXECUTED (if voted on existing value).
-	public int voteOrAddValue(Long attrId, Value value, boolean yes, Long userId) {
+	public int voteOrAddValue(Long attrId, String value, boolean yes, Long userId) {
 		// Check the validity of the value.
 		AttributeType atype = ((EntityType)this.getType()).findAttributeTypeDef(attrId);
 		if (atype == null || !atype.valueConformsToType(value)) {
@@ -86,7 +85,7 @@ public class Entity extends Element {
 		for (Iterator<Value> it = list.getValues().iterator(); it.hasNext();) {
 			Value v = it.next();
 			int execOp = DataItem.EMPTY_OPERATION;
-			if (v.equals(value)) {
+			if (v.toValueString().equals(value)) {
 				isVoting = true;
 				execOp = v.vote(yes, userId);
 			} else if (!atype.isMultipleSupport() && yes) {
@@ -102,8 +101,11 @@ public class Entity extends Element {
 		
 		if (!isVoting) {
 			// The value does not exist, we create it here.
-			value.vote(true, userId);
-			list.getValues().add(value);
+			Value theVal = new Value();
+			DataItemUtil.setNewDataItemByUserId(theVal, userId);
+			theVal.setVal(value);
+			theVal.vote(true, userId);
+			list.getValues().add(theVal);
 			return DataItem.CREATION_EXECUTED;
 		}
 		return DataItem.VOTE_EXECUTED;
@@ -144,14 +146,6 @@ public class Entity extends Element {
 
 	public void setAttrs(Map<Long, ValueList> attrs) {
 		this.attrs = attrs;
-	}
-
-	public Set<Relation> getRels() {
-		return rels;
-	}
-
-	public void setRels(Set<Relation> rels) {
-		this.rels = rels;
 	}
 
 	public Model getModel() {
