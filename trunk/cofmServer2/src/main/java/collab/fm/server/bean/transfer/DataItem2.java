@@ -4,6 +4,8 @@ public class DataItem2 {
 	protected Long id;
 	protected Long cid;   // ID of its creator
 	protected String ctime; // Date/Time of its creation
+	protected Long mid;  // Last modifier
+	protected String mtime;  // Last modify time
 	
 	public Long getId() {
 		return id;
@@ -23,4 +25,17 @@ public class DataItem2 {
 	public void setCtime(String ctime) {
 		this.ctime = ctime;
 	}
+	public Long getMid() {
+		return mid;
+	}
+	public void setMid(Long mid) {
+		this.mid = mid;
+	}
+	public String getMtime() {
+		return mtime;
+	}
+	public void setMtime(String mtime) {
+		this.mtime = mtime;
+	}
+	
 }

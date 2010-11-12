@@ -5,7 +5,7 @@ import java.util.Set;
 
 import collab.fm.server.bean.persist.relation.Relation;
 import collab.fm.server.bean.transfer.DataItem2;
-import collab.fm.server.bean.transfer.VotableEntity2;
+import collab.fm.server.bean.transfer.VotableElement2;
 
 /**
  * The root class for all elements in the model. Every element is vote-able in CoFM.
@@ -42,7 +42,7 @@ public abstract class Element extends DataItem implements Votable {
 	
 	@Override
 	public void transfer(DataItem2 ve) {
-		VotableEntity2 ve2 = (VotableEntity2) ve;
+		VotableElement2 ve2 = (VotableElement2) ve;
 		super.transfer(ve2);
 		for (Long n: vote.getSupporters()) {
 			ve2.addV1(n);
@@ -50,6 +50,7 @@ public abstract class Element extends DataItem implements Votable {
 		for (Long n: vote.getOpponents()) {
 			ve2.addV0(n);
 		}
+		ve2.setTypeId(this.getType().getId());
 	}
 	
 	public Vote getVote() {

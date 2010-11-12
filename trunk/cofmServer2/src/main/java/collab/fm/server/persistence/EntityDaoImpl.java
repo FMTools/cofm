@@ -5,7 +5,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.persist.entity.Entity;
-import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 

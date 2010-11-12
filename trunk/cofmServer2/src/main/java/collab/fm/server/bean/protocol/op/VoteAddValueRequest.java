@@ -7,16 +7,14 @@ import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.persist.entity.Entity;
 import collab.fm.server.bean.persist.entity.EntityType;
-import collab.fm.server.bean.persist.entity.Value;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
-import collab.fm.server.util.EntityUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public class VoteAddValueRequest extends Request {
@@ -113,10 +111,8 @@ public class VoteAddValueRequest extends Request {
 				
 			}
 
-			int	opCode = en.voteOrAddValue(r.getAttrId(), 
-						r.getVal(), r.getYes(), r.getRequesterId());
-			
-			if (opCode == DataItem.INVALID_OPERATION) {
+			if (en.voteOrAddValue(r.getAttrId(), 
+					r.getVal(), r.getYes(), r.getRequesterId()) == DataItem.INVALID_OPERATION) {
 				req.setLastError("Invalid value: " + r.getVal());
 				return false;
 			}

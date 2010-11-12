@@ -1,6 +1,7 @@
 package collab.fm.server.bean.persist.entity;
 
 import collab.fm.server.bean.transfer.DataItem2;
+import collab.fm.server.bean.transfer.NumericAttributeType2;
 
 public class NumericAttributeType extends AttributeType {
 	
@@ -15,11 +16,11 @@ public class NumericAttributeType extends AttributeType {
 	
 	@Override
 	public void transfer(DataItem2 a) {
-//		NumericAttribute2 a2 = (NumericAttribute2) a;
-//		super.transfer(a2);
-//		a2.setMin(this.getMin());
-//		a2.setMax(this.getMax());
-//		a2.setUnit(this.getUnit());
+		NumericAttributeType2 that = (NumericAttributeType2) a;
+		super.transfer(that);
+		that.setMin(this.getMin());
+		that.setMax(this.getMax());
+		that.setUnit(this.getUnit());
 	}
 	
 	@Override

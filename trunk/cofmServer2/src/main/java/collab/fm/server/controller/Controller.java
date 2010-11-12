@@ -25,10 +25,10 @@ public class Controller {
 		Resources.REQ_CREATE_MODEL,
 		Resources.REQ_LIST_MODEL,
 		Resources.REQ_LIST_USER,
-		Resources.REQ_VA_ATTR_ENUM,
-		Resources.REQ_VA_ATTR_NUMBER,
-		Resources.REQ_VA_ATTR_STR,
-		Resources.REQ_VA_FEATURE,
+		Resources.REQ_EA_ATTR_ENUM,
+		Resources.REQ_EA_ATTR_NUMBER,
+		Resources.REQ_EA_ATTR_STR,
+		Resources.REQ_VA_ENTITY,
 		Resources.REQ_VA_RELATION_BIN,
 		Resources.REQ_VA_VALUE
 	};

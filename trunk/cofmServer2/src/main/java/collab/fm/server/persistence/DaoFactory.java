@@ -2,9 +2,7 @@ package collab.fm.server.persistence;
 
 import collab.fm.server.bean.persist.Element;
 import collab.fm.server.bean.persist.ElementType;
-import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.persist.entity.EntityType;
-import collab.fm.server.bean.persist.relation.BinRelationType;
 import collab.fm.server.bean.persist.relation.RelationType;
 
 

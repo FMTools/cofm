@@ -1,18 +1,15 @@
 package collab.fm.server.util;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import collab.fm.server.bean.persist.entity.*;
-import collab.fm.server.bean.transfer.Attribute2;
-import collab.fm.server.bean.transfer.EnumAttribute2;
-import collab.fm.server.bean.transfer.NumericAttribute2;
+import collab.fm.server.bean.persist.entity.AttributeType;
+import collab.fm.server.bean.persist.entity.EnumAttributeType;
+import collab.fm.server.bean.persist.entity.NumericAttributeType;
 
 public class EntityUtil {
 	
@@ -22,28 +19,6 @@ public class EntityUtil {
 		Set<T> result = new HashSet<T>();
 		result.addAll(source);
 		return result;
-	}
-	
-	public static String formatDate(Date d) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		return sdf.format(d);
-	}
-	
-	public static Attribute2 transferFromAttr(AttributeType origin) {
-//		String atype = origin.getType();
-//		Attribute2 a2 = null;
-//		if (AttributeType.TYPE_ENUM.equals(atype)) {
-//			a2 = new EnumAttribute2();
-//			((EnumAttributeType)origin).transfer(a2);
-//		} else if (AttributeType.TYPE_NUMBER.equals(atype)) {
-//			a2 = new NumericAttribute2();
-//			((NumericAttributeType)origin).transfer(a2);
-//		} else {
-//			a2 = new Attribute2();
-//			origin.transfer(a2);
-//		}
-//		return a2;
-		return null;
 	}
 	
 	public static AttributeType cloneAttribute(AttributeType a) {

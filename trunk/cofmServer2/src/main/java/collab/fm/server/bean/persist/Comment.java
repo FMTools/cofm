@@ -1,6 +1,5 @@
 package collab.fm.server.bean.persist;
 
-import collab.fm.server.bean.transfer.Comment2;
 import collab.fm.server.bean.transfer.DataItem2;
 
 public class Comment extends DataItem {

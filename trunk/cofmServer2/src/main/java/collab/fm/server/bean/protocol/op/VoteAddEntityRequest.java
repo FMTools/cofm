@@ -5,10 +5,8 @@ import java.util.List;
 
 import collab.fm.server.bean.persist.DataItem;
 import collab.fm.server.bean.persist.Model;
-import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.persist.entity.Entity;
 import collab.fm.server.bean.persist.entity.EntityType;
-import collab.fm.server.bean.persist.entity.EnumAttributeType;
 import collab.fm.server.bean.persist.relation.Relation;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
@@ -17,8 +15,8 @@ import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.DataItemUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public class VoteAddEntityRequest extends Request {

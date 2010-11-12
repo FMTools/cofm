@@ -36,13 +36,16 @@ public class Resources {
 	public static final String REQ_REGISTER = get("req.register");
 	public static final String REQ_CREATE_MODEL = get("req.createModel");
 	
-	public static final String REQ_VA_FEATURE = get("req.va.feature");
+	public static final String REQ_VA_ENTITY = get("req.va.entity");
 	public static final String REQ_VA_RELATION_BIN = get("req.va.relation.bin");
-	public static final String REQ_VA_ATTR_STR = get("req.va.attr.str");
-	public static final String REQ_VA_ATTR_ENUM = get("req.va.attr.enum");
-	public static final String REQ_VA_ATTR_NUMBER = get("req.va.attr.number");
 	public static final String REQ_VA_VALUE = get("req.va.value");
-
+	
+	public static final String REQ_EA_ATTR_STR = get("req.ea.attr.str");
+	public static final String REQ_EA_ATTR_ENUM = get("req.ea.attr.enum");
+	public static final String REQ_EA_ATTR_NUMBER = get("req.ea.attr.number");
+	public static final String REQ_EA_ENTITY_TYPE = get("req.ea.entitytype");
+	public static final String REQ_EA_BIN_RELAION_TYPE = get("req.ea.reltype.bin");
+	
 	public static final String RSP_ERROR_FORMAT = get("rsp.error.format");
 	
 	public static final String RSP_SUCCESS = get("rsp.success");

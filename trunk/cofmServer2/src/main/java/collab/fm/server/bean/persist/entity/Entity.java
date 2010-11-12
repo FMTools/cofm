@@ -2,11 +2,9 @@ package collab.fm.server.bean.persist.entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -15,7 +13,11 @@ import collab.fm.server.bean.persist.DataItem;
 import collab.fm.server.bean.persist.Element;
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.relation.Relation;
+import collab.fm.server.bean.transfer.Comment2;
 import collab.fm.server.bean.transfer.DataItem2;
+import collab.fm.server.bean.transfer.Entity2;
+import collab.fm.server.bean.transfer.Value2;
+import collab.fm.server.bean.transfer.ValueList2;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.DataItemUtil;
 import collab.fm.server.util.exception.ItemPersistenceException;
@@ -113,23 +115,25 @@ public class Entity extends Element {
 	
 	@Override
 	public void transfer(DataItem2 f) {
-//		Feature2 f2 = (Feature2) f;
-//		super.transfer(f2);
-//		f2.setModel(this.getModel().getId());
-//		
-//		for (Relationship r: this.getRels()) {
-//			f2.addRel(r.getId());
-//		}
-//		
-//		for (Comment c: this.getComments()) {
-//			Comment2 c2 = new Comment2();
-//			c.transfer(c2);
-//			f2.addComment(c2);
-//		}
-//		
-//		for (Map.Entry<String, AttributeType> e: this.getAttrs().entrySet()) {
-//			f2.addAttr(EntityUtil.transferFromAttr(e.getValue()));
-//		}
+		Entity2 that = (Entity2)f;
+		super.transfer(that);
+		that.setModel(this.getModel().getId());
+
+		for (Comment c: this.getComments()) {
+			Comment2 c2 = new Comment2();
+			c.transfer(c2);
+			that.getComments().add(c2);
+		}
+		
+		for (Map.Entry<Long, ValueList> v: this.getAttrs().entrySet()) {
+			ValueList2 v2 = new ValueList2();
+			v2.setAttrId(v.getKey());
+			for (Value value: v.getValue().getValues()) {
+				Value2 value2 = new Value2();
+				value.transfer(value2);
+				v2.getVals().add(value2);
+			}
+		}
 	}
 	
 	public void addComment(Comment c) {

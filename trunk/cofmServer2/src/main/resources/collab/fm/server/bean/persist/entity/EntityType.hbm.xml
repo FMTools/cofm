@@ -14,5 +14,8 @@
       <many-to-many class="AttributeType" column="ATTR_TYPE_ID" unique="true" />
     </list>
   	
+  	<many-to-one name="model" class="collab.fm.server.bean.persist.Model" 
+				 column="MODEL_ID" not-null="true" />
+  	
   </joined-subclass>
 </hibernate-mapping>
