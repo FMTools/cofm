@@ -7,7 +7,6 @@ import collab.fm.server.bean.persist.relation.RelationType;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
-import collab.fm.server.bean.protocol.op.EditAddEntityTypeRequest.DefaultResponse;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.DataItemUtil;

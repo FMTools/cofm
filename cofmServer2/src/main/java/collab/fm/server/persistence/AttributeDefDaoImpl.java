@@ -1,8 +1,5 @@
 package collab.fm.server.persistence;
 
-import java.util.List;
-
-import org.hibernate.Query;
 import org.hibernate.StaleObjectStateException;
 
 import collab.fm.server.bean.persist.entity.AttributeType;

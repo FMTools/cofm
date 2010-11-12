@@ -9,7 +9,10 @@
   	
   	<property name="hierarchical" type="boolean" column="HIERARCHICAL" />
   	<property name="directed" type="boolean" column="DIRECTED" />
-  	
+  
+  	<many-to-one name="model" class="collab.fm.server.bean.persist.Model" 
+				 column="MODEL_ID" not-null="true" />
+				 
   	<!-- Subclasses -->
   	<joined-subclass name="BinRelationType" table="BIN_RELATION_TYPE">
   	  <key column="BIN_RELATION_TYPE_ID" />

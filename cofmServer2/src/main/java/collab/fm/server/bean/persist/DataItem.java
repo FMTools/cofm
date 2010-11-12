@@ -3,7 +3,7 @@ package collab.fm.server.bean.persist;
 import java.util.Date;
 
 import collab.fm.server.bean.transfer.DataItem2;
-import collab.fm.server.util.EntityUtil;
+import collab.fm.server.util.DataItemUtil;
 
 /**
  * The root class for all things that needs to be persisted in database.
@@ -33,7 +33,9 @@ public abstract class DataItem {
 	public void transfer(DataItem2 target) {
 		target.setId(this.getId());
 		target.setCid(this.getCreator());
-		target.setCtime(EntityUtil.formatDate(this.getCreateTime()));
+		target.setCtime(DataItemUtil.formatDate(this.getCreateTime()));
+		target.setMid(this.getLastModifier());
+		target.setMtime(DataItemUtil.formatDate(this.getLastModifyTime()));
 	}
 	
 	abstract public String toValueString();

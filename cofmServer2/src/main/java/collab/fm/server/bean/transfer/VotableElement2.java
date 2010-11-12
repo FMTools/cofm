@@ -3,11 +3,13 @@ package collab.fm.server.bean.transfer;
 import java.util.HashSet;
 import java.util.Set;
 
-public class VotableEntity2 extends DataItem2 {
+public class VotableElement2 extends DataItem2 {
 	// Voters of the YES vote (1-vote)
 	protected Set<Long> v1 = new HashSet<Long>();
 	// Voters of the NO vote (0-vote)
 	protected Set<Long> v0 = new HashSet<Long>();
+	
+	protected Long typeId;
 	
 	public Set<Long> getV1() {
 		return v1;
@@ -26,6 +28,12 @@ public class VotableEntity2 extends DataItem2 {
 	}
 	public void addV0(Long id) {
 		v0.add(id);
+	}
+	public Long getTypeId() {
+		return typeId;
+	}
+	public void setTypeId(Long typeId) {
+		this.typeId = typeId;
 	}
 	
 }

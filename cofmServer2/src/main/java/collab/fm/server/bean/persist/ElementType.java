@@ -12,11 +12,8 @@ public class ElementType extends DataItem {
 	
 	protected ElementType superType;
 	
-	protected Model model;
-
 	@Override
 	public void transfer(DataItem2 target) {
-		//TODO: define class ElementType2 and set the typeName of e2
 		super.transfer(target);
 	}
 	
@@ -41,12 +38,6 @@ public class ElementType extends DataItem {
 		this.superType = superType;
 	}
 
-	public Model getModel() {
-		return model;
-	}
-
-	public void setModel(Model model) {
-		this.model = model;
-	}
+	
 
 }

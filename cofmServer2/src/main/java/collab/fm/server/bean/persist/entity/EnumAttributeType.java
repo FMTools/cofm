@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.transfer.DataItem2;
+import collab.fm.server.bean.transfer.EnumAttributeType2;
 
 /**
  * Attribute of Enumeration type.
@@ -25,11 +26,11 @@ public class EnumAttributeType extends AttributeType {
 	
 	@Override
 	public void transfer(DataItem2 a) {
-//		EnumAttribute2 a2 = (EnumAttribute2) a;
-//		super.transfer(a2);
-//		for (String s: this.getValidValues()) {
-//			a2.addEnum(s);
-//		}
+		EnumAttributeType2 that = (EnumAttributeType2) a;
+		super.transfer(that);
+		for (String s: this.getValidValues()) {
+			that.getEnums().add(s);
+		}
 	}
 	
 	@Override

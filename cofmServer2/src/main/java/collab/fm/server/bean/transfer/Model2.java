@@ -1,8 +1,6 @@
 package collab.fm.server.bean.transfer;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 public class Model2 extends DataItem2 {

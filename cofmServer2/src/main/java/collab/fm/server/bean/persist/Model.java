@@ -1,21 +1,16 @@
 package collab.fm.server.bean.persist;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.persist.entity.Entity;
 import collab.fm.server.bean.persist.entity.EntityType;
-import collab.fm.server.bean.persist.entity.Value;
 import collab.fm.server.bean.persist.relation.Relation;
 import collab.fm.server.bean.persist.relation.RelationType;
 import collab.fm.server.bean.transfer.DataItem2;
 import collab.fm.server.bean.transfer.Model2;
-import collab.fm.server.util.EntityUtil;
 
 public class Model extends DataItem {
 	private static Logger logger = Logger.getLogger(Model.class);
@@ -36,13 +31,13 @@ public class Model extends DataItem {
 
 	@Override
 	public void transfer(DataItem2 m) {
-//		Model2 m2 = (Model2) m;
-//		super.transfer(m2);
-//		m2.setName(this.getName());
-//		m2.setDes(this.getDescription());
-//		for (User u: this.getUsers()) {
-//			m2.addUser(u.getId());
-//		}
+		Model2 m2 = (Model2) m;
+		super.transfer(m2);
+		m2.setName(this.getName());
+		m2.setDes(this.getDescription());
+		for (User u: this.getUsers()) {
+			m2.addUser(u.getId());
+		}
 	}
 	
 	@Override

@@ -1,6 +1,6 @@
 package collab.fm.server.bean.transfer;
 
-public class Value2 extends VotableEntity2 {
+public class Value2 extends VotableElement2 {
 	private String val;
 
 	public String getVal() {

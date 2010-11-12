@@ -19,8 +19,6 @@
     <!-- ElementType properties -->
     <property name="typeName" type="string" column="TYPE_NAME"></property>
     
-    <many-to-one name="model" class="Model" column="MODEL_ID" not-null="true"></many-to-one>
-    
     <!-- The super type of this type -->
     <many-to-one name="superType" class="ElementType" column="SUPER_TYPE_ID" unique="true" />
     

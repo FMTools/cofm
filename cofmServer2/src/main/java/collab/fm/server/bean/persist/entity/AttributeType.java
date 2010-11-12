@@ -1,7 +1,7 @@
 package collab.fm.server.bean.persist.entity;
 
 import collab.fm.server.bean.persist.DataItem;
-import collab.fm.server.bean.persist.Model;
+import collab.fm.server.bean.transfer.AttributeType2;
 import collab.fm.server.bean.transfer.DataItem2;
 
 /**
@@ -31,17 +31,13 @@ public class AttributeType extends DataItem {
 	
 	@Override
 	public void transfer(DataItem2 a) {
-//		Attribute2 a2 = (Attribute2) a;
-//		super.transfer(a2);
-//		a2.setDup(this.isEnableGlobalDupValues());
-//		a2.setMulti(this.isMultipleSupport());
-//		a2.setName(this.getName());
-//		a2.setType(this.getType());
-//		for (Value v: this.getValues()) {
-//			Value2 v2 = new Value2();
-//			v.transfer(v2);
-//			a2.addVal(v2);
-//		}
+		AttributeType2 that = (AttributeType2) a;
+		super.transfer(that);
+		that.setHostId(this.getHostType().getId());
+		that.setName(this.getAttrName());
+		that.setType(this.getTypeName());
+		that.setMulti(this.isMultipleSupport());
+		that.setDup(this.isEnableGlobalDupValues());
 	}
 	
 	@Override

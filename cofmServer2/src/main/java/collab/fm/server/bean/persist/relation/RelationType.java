@@ -1,6 +1,7 @@
 package collab.fm.server.bean.persist.relation;
 
 import collab.fm.server.bean.persist.ElementType;
+import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.transfer.DataItem2;
 
 public class RelationType extends ElementType {
@@ -11,9 +12,11 @@ public class RelationType extends ElementType {
 	// Whether the relation is directed.
 	protected boolean directed;
 	
+	protected Model model;
+	
 	@Override
 	public void transfer(DataItem2 item) {
-		
+		super.transfer(item);
 	}
 
 	public boolean isHierarchical() {
@@ -32,4 +35,11 @@ public class RelationType extends ElementType {
 		this.directed = directed;
 	}
 	
+	public Model getModel() {
+		return model;
+	}
+
+	public void setModel(Model model) {
+		this.model = model;
+	}
 }

@@ -1,6 +1,5 @@
 package collab.fm.server.bean.protocol.op;
 
-import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.persist.entity.EntityType;
 import collab.fm.server.bean.protocol.Request;
@@ -10,8 +9,8 @@ import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.DataItemUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 /** Add or edit attribute-definitions for an entity type in a model.

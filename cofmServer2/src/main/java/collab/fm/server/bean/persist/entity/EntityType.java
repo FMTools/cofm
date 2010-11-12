@@ -1,17 +1,19 @@
 package collab.fm.server.bean.persist.entity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import collab.fm.server.bean.persist.ElementType;
+import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.transfer.DataItem2;
+import collab.fm.server.bean.transfer.EntityType2;
+import collab.fm.server.util.DataItemUtil;
 
 public class EntityType extends ElementType {
 
 	protected List<AttributeType> attrDefs = new ArrayList<AttributeType>();
-
+	protected Model model;
+	
 	public AttributeType findAttributeTypeDef(Long attrId) {
 		for (EntityType et = this; 
 			et != null; et = (EntityType) et.getSuperType()) {
@@ -38,8 +40,14 @@ public class EntityType extends ElementType {
 	
 	@Override
 	public void transfer(DataItem2 target) {
-		//TODO:
-		super.transfer(target);
+		EntityType2 that = (EntityType2)target;
+		super.transfer(that);
+		that.setTypeName(this.getTypeName());
+		that.setSuperId(this.getSuperType().getId());
+		that.setModel(this.getModel().getId());
+		for (AttributeType t: this.getAttrDefs()) {
+			that.getAttrDefs().add(DataItemUtil.transferAttributeType(t));
+		}
 	}
 
 	public List<AttributeType> getAttrDefs() {
@@ -50,4 +58,11 @@ public class EntityType extends ElementType {
 		this.attrDefs = attrDefs;
 	}
 	
+	public Model getModel() {
+		return model;
+	}
+
+	public void setModel(Model model) {
+		this.model = model;
+	}
 }

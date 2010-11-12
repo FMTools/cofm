@@ -4,8 +4,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import collab.fm.server.bean.transfer.User2;
 import collab.fm.server.bean.transfer.DataItem2;
+import collab.fm.server.bean.transfer.User2;
+import collab.fm.server.util.DataItemUtil;
 
 public class User extends DataItem {
 	
@@ -22,6 +23,7 @@ public class User extends DataItem {
 		User2 u2 = (User2) u;
 		u2.setId(this.getId());
 		u2.setName(this.getName());
+		u2.setLastLoginTime(DataItemUtil.formatDate(this.getLastLoginTime()));
 	}
 	
 	@Override

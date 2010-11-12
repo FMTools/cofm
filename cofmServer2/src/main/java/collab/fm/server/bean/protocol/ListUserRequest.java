@@ -8,8 +8,8 @@ import collab.fm.server.bean.transfer.User2;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
-import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
 public class ListUserRequest extends Request {

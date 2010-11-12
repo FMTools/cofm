@@ -1,7 +1,7 @@
 package collab.fm.server.bean.persist.relation;
 
 import collab.fm.server.bean.persist.Element;
-import collab.fm.server.bean.persist.entity.Entity;
+import collab.fm.server.bean.transfer.BinRelation2;
 import collab.fm.server.bean.transfer.DataItem2;
 import collab.fm.server.util.DataItemUtil;
 
@@ -26,11 +26,11 @@ public class BinRelation extends Relation {
 	
 	@Override
 	public void transfer(DataItem2 r) {
-//		BinaryRelation2 r2 = (BinaryRelation2) r;
-//		super.transfer(r2);
-//		r2.setLeft(this.getLeftFeatureId());
-//		r2.setRight(this.getRightFeatureId());
-//		r2.setType(this.getType());
+		BinRelation2 that = (BinRelation2) r;
+		super.transfer(that);
+		that.setModel(this.getModel().getId());
+		that.setSource(this.getSourceId());
+		that.setTarget(this.getTargetId());
 	}
 
 	@Override

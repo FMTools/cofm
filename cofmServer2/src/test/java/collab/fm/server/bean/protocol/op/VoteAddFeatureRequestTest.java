@@ -66,7 +66,7 @@ public class VoteAddFeatureRequestTest {
 	@Test
 	public void testCreateNewFeature() throws ItemPersistenceException, StaleDataException, InvalidOperationException, JsonConvertException {
 		VoteAddEntityRequest vafr = new VoteAddEntityRequest();
-		vafr.setName(Resources.REQ_VA_FEATURE);
+		vafr.setName(Resources.REQ_VA_ENTITY);
 		vafr.setId(100L);
 		vafr.setRequesterId(2L);
 		vafr.setModelId(modelId);

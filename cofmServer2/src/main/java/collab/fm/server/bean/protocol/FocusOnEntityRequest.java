@@ -2,9 +2,9 @@ package collab.fm.server.bean.protocol;
 
 import collab.fm.server.processor.Processor;
 
-public class FocusOnFeatureRequest extends Request {
+public class FocusOnEntityRequest extends Request {
 	private Long modelId;
-	private Long featureId;
+	private Long entityId;
 	
 	@Override
 	protected Processor makeDefaultProcessor() {
@@ -19,35 +19,36 @@ public class FocusOnFeatureRequest extends Request {
 		this.modelId = modelId;
 	}
 
-	public Long getFeatureId() {
-		return featureId;
+	public Long getEntityId() {
+		return entityId;
 	}
 
-	public void setFeatureId(Long featureId) {
-		this.featureId = featureId;
+	public void setEntityId(Long entityId) {
+		this.entityId = entityId;
 	}
-	
+
+
 	private static class FocusOnFeatureProcessor extends Request.SimpleBroadcastingProcessor {
 		
 		@Override
 		public boolean checkRequest(Request req) {
-			if (!(req instanceof FocusOnFeatureRequest)) return false;
+			if (!(req instanceof FocusOnEntityRequest)) return false;
 			return true;
 		}
 		
 		@Override
 		protected Response fillResponse(Request req) {
-			return new FocusOnFeatureResponse((FocusOnFeatureRequest)req);
+			return new FocusOnFeatureResponse((FocusOnEntityRequest)req);
 		}
 	}
 	
 	public static class FocusOnFeatureResponse extends Response {
-		private Long featureId;
+		private Long entityId;
 		private Long modelId;
 		
-		public FocusOnFeatureResponse(FocusOnFeatureRequest r) {
+		public FocusOnFeatureResponse(FocusOnEntityRequest r) {
 			super(r);
-			this.setFeatureId(r.getFeatureId());
+			this.setEntityId(r.getEntityId());
 			this.setModelId(r.getModelId());
 		}
 		
@@ -59,13 +60,14 @@ public class FocusOnFeatureRequest extends Request {
 			this.modelId = modelId;
 		}
 
-		public Long getFeatureId() {
-			return featureId;
+		public Long getEntityId() {
+			return entityId;
 		}
 
-		public void setFeatureId(Long featureId) {
-			this.featureId = featureId;
+		public void setEntityId(Long entityId) {
+			this.entityId = entityId;
 		}
+
 	}
 	
 }

@@ -5,7 +5,6 @@ import java.util.List;
 import org.hibernate.StaleObjectStateException;
 
 import collab.fm.server.bean.persist.Model;
-import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 

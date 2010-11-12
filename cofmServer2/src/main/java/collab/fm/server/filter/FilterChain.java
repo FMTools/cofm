@@ -6,8 +6,8 @@ import java.util.List;
 
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.ResponseGroup;
-import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.InvalidOperationException;
+import collab.fm.server.util.exception.ItemPersistenceException;
 
 public class FilterChain {
 

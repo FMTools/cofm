@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.persist.Element;
 import collab.fm.server.bean.persist.Model;
-import collab.fm.server.bean.persist.entity.Entity;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;

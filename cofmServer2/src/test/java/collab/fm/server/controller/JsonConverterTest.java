@@ -19,7 +19,7 @@ public class JsonConverterTest {
 	
 	@Test
 	public void testVoteAddFeatureJson() throws JsonConvertException {
-		String inputAdd = "{id:1,name:\"" + Resources.REQ_VA_FEATURE + 
+		String inputAdd = "{id:1,name:\"" + Resources.REQ_VA_ENTITY + 
 			"\",requesterId:2,featureName:\"New Feature\"}";
 		VoteAddEntityRequest r1 = (VoteAddEntityRequest) JsonConverter.jsonToRequest(inputAdd);
 		DefaultResponse dr1 = new DefaultResponse(r1);
@@ -28,7 +28,7 @@ public class JsonConverterTest {
 		String outputAdd = JsonConverter.responseToJson(dr1);
 		System.out.println("----- " + outputAdd);
 		
-		String inputVote = "{id:1,name:\"" + Resources.REQ_VA_FEATURE + 
+		String inputVote = "{id:1,name:\"" + Resources.REQ_VA_ENTITY + 
 			"\",requesterId:2,featureId:3,yes:true}";
 		VoteAddEntityRequest r2 = (VoteAddEntityRequest) JsonConverter.jsonToRequest(inputVote);
 		DefaultResponse dr2 = new DefaultResponse(r2);

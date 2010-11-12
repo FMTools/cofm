@@ -1,6 +1,7 @@
 package collab.fm.server.bean.persist.relation;
 
 import collab.fm.server.bean.persist.ElementType;
+import collab.fm.server.bean.transfer.BinRelationType2;
 import collab.fm.server.bean.transfer.DataItem2;
 
 // A simple one-to-one binary relation type
@@ -13,7 +14,15 @@ public class BinRelationType extends RelationType {
 	
 	@Override 
 	public void transfer(DataItem2 item) {
-		
+		BinRelationType2 that = (BinRelationType2) item;
+		super.transfer(that);
+		that.setTypeName(this.getTypeName());
+		that.setSuperId(this.getSuperType().getId());
+		that.setModel(this.getModel().getId());
+		that.setHier(this.isHierarchical());
+		that.setDir(this.isDirected());
+		that.setSourceId(this.getSourceType().getId());
+		that.setTargetId(this.getTargetType().getId());
 	}
 
 	public ElementType getSourceType() {
