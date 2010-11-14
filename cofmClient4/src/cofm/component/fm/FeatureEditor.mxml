@@ -25,7 +25,7 @@
 			private var featureId: int;
 			
 			private function initView(): void {
-				FeatureModel.instance().registerSubView(this);
+				Model.instance().registerSubView(this);
 				ClientEvtDispatcher.instance().addEventListener(
 					FeatureSelectEvent.FEATURE_SELECTED, onSelect);
 				ClientEvtDispatcher.instance().addEventListener(
@@ -59,7 +59,7 @@
 				this.tabMap = new Dictionary();
 				
 				// Get the xml of current feature.
-				var fs: XMLList = FeatureModel.instance().features.source.(@id==String(this.featureId));
+				var fs: XMLList = Model.instance().entities.source.(@id==String(this.featureId));
 				if (fs.length() <= 0) {
 					return;
 				}
@@ -77,9 +77,9 @@
 				this.tabMap[BASIC_INFO_KEY] = basic;
 				
 				// Add name, description and optionality
-				addTab(FeatureModel.instance().attrs.source.(@name==Cst.ATTR_FEATURE_NAME)[0]);
-				addTab(FeatureModel.instance().attrs.source.(@name==Cst.ATTR_FEATURE_DES)[0]);	
-				addTab(FeatureModel.instance().attrs.source.(@name==Cst.ATTR_FEATURE_OPT)[0]);
+				addTab(Model.instance().attrs.source.(@name==Cst.ATTR_FEATURE_NAME)[0]);
+				addTab(Model.instance().attrs.source.(@name==Cst.ATTR_FEATURE_DES)[0]);	
+				addTab(Model.instance().attrs.source.(@name==Cst.ATTR_FEATURE_OPT)[0]);
 				
 				//TODO: Add refinement and binary constraints
 				/*var refine: RefinementTab = new RefinementTab();
@@ -94,7 +94,7 @@
 				*/
 				
 				// Add other tabs
-				for each (var attr: Object in FeatureModel.instance().attrs.source) {
+				for each (var attr: Object in Model.instance().attrs.source) {
 					if (attr.@name == Cst.ATTR_FEATURE_DES ||
 						attr.@name == Cst.ATTR_FEATURE_NAME ||
 						attr.@name == Cst.ATTR_FEATURE_OPT) {
@@ -127,10 +127,18 @@
 			}
 			
 			// IOperationListener methods
-			public function handleVoteAddFeature(op: Object): void {
+			public function handleEditAddEntityType(op: Object): void {
+				// TODO
+			}
+			
+			public function handleEditAddBinRelType(op: Object): void {
+				// TODO
+			}
+			
+			public function handleVoteAddEntity(op: Object): void {
 				// Only handles the removal of current feature
 				if (op["featureId"] == String(this.featureId) &&
-					op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
+					op[Model.SHOULD_DELETE_ELEMENT] == true) {
 					tabNav.removeAllChildren();
 				}
 			}
@@ -139,22 +147,22 @@
 				// Do nothing (the relationship tabs will update themselves.)
 			}
 			
-			public function handleAddAttribute(op: Object): void {
+			public function handleEditAddAttributeDef(op: Object): void {
 				// Do nothing (only add tab when creating new values)
 			}
 			
-			public function handleAddEnumAttribute(op: Object): void {
+			public function handleEditAddEnumAttributeDef(op: Object): void {
 				// Do nothing
 			}
 			
-			public function handleAddNumericAttribute(op: Object): void {
+			public function handleEditAddNumericAttributeDef(op: Object): void {
 				// Do nothing
 			}
 			
 			public function handleVoteAddValue(op: Object): void {
 				if (op["featureId"] == String(this.featureId)) {
 					var a: XMLList = 
-						FeatureModel.instance().features.source.(@id==op["featureId"])..attr.(@name==op["attr"]);
+						Model.instance().entities.source.(@id==op["featureId"])..attr.(@name==op["attr"]);
 					if (a.length() <= 0) {
 						return;
 					}
@@ -169,7 +177,7 @@
 				}
 			}
 			
-			public function handleInferVoteOnFeature(op: Object): void {
+			public function handleInferVoteOnEntity(op: Object): void {
 				// Do nothing (because only YES votes can be inferred, and this change can be updated in 
 				// Basic Info Tab
 			}

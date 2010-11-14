@@ -14,8 +14,8 @@ package cofm.model
 			super();
 		}
 		
-		override protected function getFeatureDisplayName(feature: Object): String {
-			var allNames: XMLList = FeatureModel.instance().getValuesOfAttr(XML(feature), Cst.ATTR_FEATURE_NAME);
+		override protected function getEntityDisplayName(feature: Object): String {
+			var allNames: XMLList = Model.instance().getValuesByAttrName(XML(feature), Cst.ATTR_FEATURE_NAME);
 			if (allNames.length() <= 0) {
 				return UNNAMED;
 			}
@@ -56,12 +56,12 @@ package cofm.model
 			return XMLList(o.no.user.(text().toString()==me)).length() <= 0;
 		}
 		
-		override protected function onDataUpdateComplete(): void {
+		override protected function afterDataUpdated(): void {
 			ClientEvtDispatcher.instance().dispatchEvent(
 				new ModelUpdateEvent(ModelUpdateEvent.WORKING_VIEW_COMPLETE, null));
 		}
 		
-		override protected function onDataUpdateStart(): void {
+		override protected function beforeDataUpdating(): void {
 		}
 	}
 }

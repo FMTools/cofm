@@ -40,7 +40,7 @@ package cofm.model
 		}
 		
 		public function CurrentFeature() {
-			FeatureModel.instance().registerSubView(this);
+			Model.instance().registerSubView(this);
 			
 			ClientEvtDispatcher.instance().addEventListener(
 				ModelUpdateEvent.SUCCESS, onModelUpdate);
@@ -78,7 +78,7 @@ package cofm.model
 			
 			// Set the feature id
 			id = evt.id;
-			_feature = XML(FeatureModel.instance().features.source.(@id==String(evt.id))[0]);
+			_feature = XML(Model.instance().entities.source.(@id==String(evt.id))[0]);
 			
 			// update creator info
 			var creator: String = UserList.instance().getNameById(int(_feature.@creator));
@@ -168,7 +168,7 @@ package cofm.model
 		private function updateRefinements(): void {
 			parents.source = [];
 			children.source = [];
-			for each (var r: Object in FeatureModel.instance().binaries.source) {
+			for each (var r: Object in Model.instance().binaries.source) {
 				if (r.@type == Cst.BIN_REL_REFINES) {
 					if (r.@left == String(this.id)) {
 						children.addItem({
@@ -201,7 +201,7 @@ package cofm.model
 		
 		private function updateBinaryConstraints(): void {
 			binaryConstraints.source = [];
-			for each (var r: Object in FeatureModel.instance().binaries.source) {
+			for each (var r: Object in Model.instance().binaries.source) {
 				if (r.@type == Cst.BIN_REL_REQUIRES) {
 					if (r.@left == String(this.id)) {
 						binaryConstraints.addItem({
@@ -264,9 +264,17 @@ package cofm.model
 			binaryConstraints.refresh();
 		}
 		
-		public function handleVoteAddFeature(op:Object): void {
+		public function handleEditAddEntityType(op: Object): void {
+			// TODO
+		}
+		
+		public function handleEditAddBinRelType(op: Object): void {
+			// TODO
+		}
+		
+		public function handleVoteAddEntity(op:Object): void {
 			if (op["featureId"] == String(id)) {
-				if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
+				if (op[Model.SHOULD_DELETE_ELEMENT] == true) {
 					this.clear();
 				} else {
 					this.updateVotes();
@@ -292,23 +300,23 @@ package cofm.model
 		}
 		
 		// Do nothing with add attribute methods
-		public function handleAddAttribute(op: Object): void {
+		public function handleEditAddAttributeDef(op: Object): void {
 			
 		}
 		
-		public function handleAddEnumAttribute(op: Object): void {
+		public function handleEditAddEnumAttributeDef(op: Object): void {
 			
 		}
 		
-		public function handleAddNumericAttribute(op: Object): void {
+		public function handleEditAddNumericAttributeDef(op: Object): void {
 			
 		}
 		
 		public function handleVoteAddValue(op: Object): void {
 			if (op["featureId"] == String(id)) {
 				
-				var a: XMLList = FeatureModel.instance()
-					.features.source.(@id==op["featureId"])    // Find the feature with specific ID...
+				var a: XMLList = Model.instance()
+					.entities.source.(@id==op["featureId"])    // Find the feature with specific ID...
 					..attr.(@name==op["attr"]); // then find the specific attribute in this feature
 				if (a.length() <= 0) {
 					return; // No such attribute, return.
@@ -320,7 +328,7 @@ package cofm.model
 			}
 		}
 		
-		public function handleInferVoteOnFeature(op:Object): void {
+		public function handleInferVoteOnEntity(op:Object): void {
 			if (op["featureId"] == String(id)) {
 				this.updateVotes();
 				

@@ -72,7 +72,7 @@
 				var aName: String = StringUtil.trim(nameInput.text);
 				// Make sure the name is not empty, and does not exist in the fm's attribute set.
 				if (aName == "" || 
-					XMLList(FeatureModel.instance().attrs.source.(@name==aName)).length() > 0) {
+					XMLList(Model.instance().attrs.source.(@name==aName)).length() > 0) {
 					return;
 				}
 				
@@ -121,7 +121,7 @@
 	
 	<s:VGroup>
 		<s:Label text="{RS.m_ca_cur}"/>
-		<mx:DataGrid dataProvider="{FeatureModel.instance().attrs}" rowCount="9" width="230">
+		<mx:DataGrid dataProvider="{Model.instance().attrs}" rowCount="9" width="230">
 			<mx:columns>
 				<mx:DataGridColumn dataField="@name" headerText="{RS.m_ca_name}"/>
 				<mx:DataGridColumn dataField="@type" headerText="{RS.m_ca_type}"/>

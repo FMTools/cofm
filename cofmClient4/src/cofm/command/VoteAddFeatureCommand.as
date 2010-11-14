@@ -24,7 +24,7 @@ package cofm.command
 			_id = CommandBuffer.instance().addCommand(this);
 			var request: Object = {
 					id: _id,
-					name: Cst.REQ_VA_FEATURE,
+					name: Cst.REQ_VA_ENTITY,
 					requesterId: UserList.instance().myId,
 					modelId: ModelCollection.instance().currentModelId,
 					yes: _vote,
@@ -51,7 +51,7 @@ package cofm.command
 		public function handleResponse(data:Object):void
 		{
 			if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME] &&
-				Cst.REQ_VA_FEATURE == data[Cst.FIELD_RSP_SOURCE_NAME]) {
+				Cst.REQ_VA_ENTITY == data[Cst.FIELD_RSP_SOURCE_NAME]) {
 
 				CommandBuffer.instance().removeCommand(_id);
 

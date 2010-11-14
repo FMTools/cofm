@@ -7,8 +7,12 @@ package cofm.command
 	public class AddEnumAttributeCommand extends AddAttributeCommand {
 		private var _enums: Array;
 
-		public function AddEnumAttributeCommand(name: String, enums: Array, multi: Boolean=true, dup: Boolean=true) {
-			super(name, Cst.ATTR_TYPE_ENUM, multi, dup);
+		public function AddEnumAttributeCommand(
+			name: String, enums: Array, 
+			entypeId: int,
+			multi: Boolean=true, dup: Boolean=true,
+			modelId: int = -1, attrId: int = -1) {
+			super(name, Cst.ATTR_TYPE_ENUM, entypeId, multi, dup, modelId, attrId);
 			_enums = enums;
 		}
 
@@ -18,13 +22,17 @@ package cofm.command
 					id: _id,
 					name: Cst.REQ_VA_ATTR_ENUM,
 					requesterId: UserList.instance().myId,
-					modelId: ModelCollection.instance().currentModelId,
+					modelId: (_modelId < 0) ? ModelCollection.instance().currentModelId : _modelId,
 					attr: _name,
 					type: _type,
 					multiYes: _multi,
 					allowDup: _dup,
+					entityTypeId: _entypeId,
 					vlist: _enums
 				};
+			if (_attrId > 0) {
+				request.attrId = _attrId;
+			}
 			Connector.instance().send(JsonUtil.objectToJson(request));
 		}
 

@@ -34,12 +34,14 @@
 			
 			private function initData(): void {
 				var a: XML = <a/>;
-				for each (var obj: Object in FeatureModel.instance().attrs.source) {
+				/*
+				for each (var obj: Object in Model.instance().attrs.source) {
 					// Disallow adding value for enumeration-typed attributes.
 					if (obj.@type != Cst.ATTR_TYPE_ENUM) {
 						a.appendChild(XML(obj).copy());
 					}
 				}
+				*/
 				attrs.source = a.attr;
 			}
 			

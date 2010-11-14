@@ -46,7 +46,7 @@
 			private function forceModelsToInit(): void {
 				ModelCollection.instance();
 				UserList.instance();
-				FeatureModel.instance();
+				Model.instance();
 				FeatureNameList.instance();
 				CurrentFeature.instance();
 				GlobalTreeData.instance();

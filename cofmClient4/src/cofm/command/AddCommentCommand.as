@@ -57,7 +57,7 @@ package cofm.command
 					int(data[Cst.FIELD_RSP_SOURCE_USER_ID]),
 					int(data["featureId"]),
 					String(data["content"]),
-					String(data["dateTime"])));
+					String(data["execTime"])));
 			}
 		}
 		

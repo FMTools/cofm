@@ -3,13 +3,15 @@
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
 			   xmlns:mx="library://ns.adobe.com/flex/mx" width="660" height="580"
 			   title="Create a model" xmlns:common="cofm.component.common.*"
-			   close="onCancel();">
+			   close="onCancel();"
+			   creationComplete="initView();">
 	<s:states>
 		<s:State name="Basic"/>
 		<s:State name="EntityBegin" stateGroups="Entity"/>
 		<s:State name="TypeSelected" stateGroups="Entity"/>
 		<s:State name="AttrSelected" stateGroups="Entity"/>
-		<s:State name="Relation"/>
+		<s:State name="RelationSelected" stateGroups="Relation"/>
+		<s:State name="RelationUnselected" stateGroups="Relation"/>
 	</s:states>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
@@ -34,17 +36,20 @@
 			[Bindable] public var modelName: String;
 			
 			[Bindable]
+			public var entityTypeList: XMLListCollection = new XMLListCollection();
+			
+			[Bindable]
 			public var entityTypes: XMLListCollection = 
 				new XMLListCollection(new XMLList(
-					<et><et id={typeId} name="Feature"/></et>));
+					<et><et id="1" name="Feature"/></et>));
 			
 			[Bindable]
 			public var entityAttrs: XMLListCollection = 
 				new XMLListCollection(new XMLList(
-					<et id={typeId}>
-						<attr name="Name" type={Cst.ATTR_TYPE_STRING} multi="true" dup="false"/>
-						<attr name="Description" type={Cst.ATTR_TYPE_TEXT} multi="true" dup="true"/>
-						<attr name="Optionality" type={Cst.ATTR_TYPE_ENUM} multi="false" dup="true">
+					<et id="1">
+						<attr name={Cst.ATTR_FEATURE_NAME} type={Cst.ATTR_TYPE_STRING} multi="true" dup="false"/>
+						<attr name={Cst.ATTR_FEATURE_DES} type={Cst.ATTR_TYPE_TEXT} multi="true" dup="true"/>
+						<attr name={Cst.ATTR_FEATURE_OPT} type={Cst.ATTR_TYPE_ENUM} multi="false" dup="true">
 							<enums>
 								<enum>{Cst.VAL_OPT_MAN}</enum>
 								<enum>{Cst.VAL_OPT_OPT}</enum>
@@ -54,17 +59,53 @@
 			
 			private static const defaultRelation: XML = 
 				<binrel>
-					<binrel name={Cst.BIN_REL_REFINES} refine="true" left="Feature" right="Feature"/>
-					<binrel name={Cst.BIN_REL_REQUIRES} refine="false" left="Feature" right="Feature"/>
-					<binrel name={Cst.BIN_REL_EXCLUDES} refine="false" left="Feature" right="Feature"/>
+					<binrel name={Cst.BIN_REL_REFINES} dir="true" hier="true" left="1" right="1"
+							leftName="Feature" rightName="Feature" />
+					<binrel name={Cst.BIN_REL_REQUIRES} dir="true" hier="false" left="1" right="1"
+							leftName="Feature" rightName="Feature" />
+					<binrel name={Cst.BIN_REL_EXCLUDES} dir="false" hier="false" left="1" right="1"
+							leftName="Feature" rightName="Feature" />
 				</binrel>;
 			
 			[Bindable]
 			public var binRelations: XMLListCollection = new XMLListCollection(defaultRelation.binrel);
 			
+			private function initView(): void {
+				ClientEvtDispatcher.instance().addEventListener(
+					ModelSelectEvent.SELECTED, onModelSelected);
+			}
+			
+			private function onModelSelected(evt: ModelSelectEvent): void {
+				ClientEvtDispatcher.instance().removeEventListener(
+					ModelSelectEvent.SELECTED, onModelSelected);
+				onCancel();
+			}
+			
 			// return the root of entityTypes
 			private function etRoot(): XML {
 				return XML(entityTypes.getItemAt(0));
+			}
+			
+			private function resetEntityNamesInRelations(): void {
+				var brs: XML = <brs/>;
+				for each (var binrel: Object in binRelations.source) {
+					var ln: String = getEntityNameById(String(binrel.@left));
+					var rn: String = getEntityNameById(String(binrel.@right));
+					if (ln != null && rn != null) {
+						binrel.@leftName = ln;
+						binrel.@rightName = rn;
+						brs.appendChild(binrel);
+					}
+				}
+				binRelations.source = brs.binrel;
+			}
+			
+			private function getEntityNameById(id: String): String {
+				var entities: XMLList = this.etRoot()..et.(@id==id);
+				if (entities.length() > 0) { 
+					return entities[0].@name;
+				}
+				return null;
 			}
 			
 			private function onTypeClicked(evt: ListEvent): void {
@@ -106,6 +147,7 @@
 				
 				// Force user to select another type to delete or add subtype.
 				currentState = "EntityBegin";
+				typeTree.selectedIndex = -1;  // Make sure no item is selected on the tree.
 			}
 			
 			private function onAttributeClicked(): void {
@@ -131,6 +173,58 @@
 						entityAttrs.source.(@id==selectedTypeId)[0].attr;
 				}
 				this.currentState = "TypeSelected";
+				attrGrid.selectedIndex = -1;  // Make sure the attribute grid is not selected.
+			}
+			
+			private function onRelationClicked(): void {
+				this.currentState = "RelationSelected";
+				var r: XML = XML(relationGrid.selectedItem);
+				relationNameInput.text = r.@name;
+				leftTypeSelect.selectedItem = entityTypeList.source.(@id==r.@left)[0];
+				rightTypeSelect.selectedItem = entityTypeList.source.(@id==r.@right)[0];
+				hierCheck.selected = ModelUtil.isTrue(String(r.@hier));
+				dirCheck.selected = ModelUtil.isTrue(String(r.@dir));
+			}
+			
+			private function isValidRelation(): Boolean {
+				// name must not be used.
+				var names: XMLList = binRelations.source.(@name==relationNameInput.text);
+				if (names.length() > 0) {
+					return false;
+				}
+				return true;
+			}
+			
+			private function onRelationChanged(): void {
+				if (this.currentState == "RelationSelected") {
+					var old: Object = relationGrid.selectedItem;
+					old.@name = relationNameInput.text;
+					old.@left = leftTypeSelect.selectedItem.@id;
+					old.@right = rightTypeSelect.selectedItem.@id;
+					old.@leftName = leftTypeSelect.selectedItem.@name;
+					old.@rightName = rightTypeSelect.selectedItem.@name;
+					old.@hier = hierCheck.selected;
+					old.@dir = dirCheck.selected;
+				} else if (isValidRelation()) {
+					binRelations.addItem(<binrel 
+						name={relationNameInput.text}
+						left={leftTypeSelect.selectedItem.@id}
+						right={rightTypeSelect.selectedItem.@id}
+						leftName={leftTypeSelect.selectedItem.@name}
+						rightName={rightTypeSelect.selectedItem.@name}
+						hier={hierCheck.selected}
+						dir={dirCheck.selected} />);
+				}
+				this.currentState = "RelationUnselected";
+				relationGrid.selectedIndex = -1;
+			}
+			
+			private function onRelationDeleted(): void {
+				var n: String = String(relationGrid.selectedItem.@name);
+				var r:XML = XML(binRelations.source.(@name==n)[0]);
+				binRelations.removeItemAt(binRelations.getItemIndex(r));
+				this.currentState = "RelationUnselected";
+				relationGrid.selectedIndex = -1;
 			}
 			
 			private function onBack(): void {
@@ -140,7 +234,8 @@
 					case "AttrSelected":
 						this.currentState = "Basic";
 						break;
-					case "Relation":
+					case "RelationSelected":
+					case "RelationUnselected":
 						this.currentState = "EntityBegin";
 						break;
 				}
@@ -154,10 +249,15 @@
 					case "EntityBegin":
 					case "TypeSelected":
 					case "AttrSelected":
-						this.currentState = "Relation";
+						this.currentState = "RelationUnselected";
+						// Init entityTypeList
+						entityTypeList.source = entityTypes.source..et;
+						// Init relations' names.
+						resetEntityNamesInRelations();
 						break;
-					case "Relation":
-						doCreateFeature();
+					case "RelationSelected":
+					case "RelationUnselected":
+						doCreateModel();
 						break;
 				}	
 			}
@@ -166,10 +266,80 @@
 				PopUpManager.removePopUp(this);
 			}
 			
-			private function doCreateFeature(): void {
-				//new CreateModelCommand(modelName.text, modelDes.text).execute();
+			private function doCreateModel(): void {
+				// Build the model information object for CreateModelCompositeCommand
+				var etArray: Array = new Array();
+				for each (var top: Object in this.etRoot().et) {
+					buildEntypeHierarchy(XML(top), etArray);
+				}
+				
+				var btArray: Array = new Array();
+				for each (var binrel: Object in binRelations.source) {
+					btArray.push({
+						typeName: binrel.@name,
+						sourceId: binrel.@left,
+						targetId: binrel.@right,
+						hier: binrel.@hier,
+						dir: binrel.@dir
+					});
+				}
+				
+				var info: Object = {
+					name: nameInput.text,
+					description: introInput.text,
+					entypes: etArray,
+					bintypes: btArray
+				};
+				
+				new CreateModelCompositeCommand(info).execute();
 			}
 			
+			private function buildEntypeHierarchy(top: XML, dst: Array): void {
+				trace ("______BUILD TYPE_______");
+				trace (top.toXMLString());
+				var superId: int = -1;
+				var entype: XML = top;
+				do {
+					dst.push(buildEntype(entype, superId));
+					superId = int(entype.@id);
+					entype = entype.et[0];
+				} while (entype != null);
+			}
+			
+			private function buildEntype(et: XML, superId: int): Object {
+				var attrDefs: Array = new Array();
+				var defs: XMLList = entityAttrs.source.(@id==String(et.@id));
+				if (defs.length() > 0) {
+					for each (var def: Object in defs[0].attr) {
+						var d: Object = {
+							name: def.@name,
+							type: def.@type,
+							multi: def.@multi,
+							dup: def.@dup
+						};
+						if (Cst.ATTR_TYPE_ENUM == String(def.@type)) {
+							var es: Array = new Array();
+							for each (var e: Object in def.enums.enum) {
+								es.push(XML(e).text().toString());
+							}
+							d.enums = es;
+						} else if (Cst.ATTR_TYPE_NUMBER == String(def.@type)) {
+							d.min = def.min.text().toString();
+							d.max = def.max.text().toString();
+							d.unit = def.unit.text().toString();
+						}
+						attrDefs.push(d);
+					}
+				}
+				var rslt: Object = {
+					id: et.@id,
+						typeName: et.@name,
+						superId: superId,
+						typeId: -1,      // typeId is unknown before creation
+						attrDefs: attrDefs
+				};
+				return rslt;
+			}
 		]]>
 	</fx:Script>
 	<mx:Form width="100%" height="490" includeIn="Basic">
@@ -224,15 +394,47 @@
 		<s:Label text="Define the types of relationships in this model. (Only binary relation now.)"/>
 		
 		<mx:DataGrid id="relationGrid" rowCount="10" width="100%"
+					 itemClick="onRelationClicked();"
 					 dataProvider="{binRelations}">
 			<mx:columns>
 				<mx:DataGridColumn dataField="@name" headerText="Name"/>
-				<mx:DataGridColumn dataField="@refine" headerText="Is Refinement"/>
-				<mx:DataGridColumn dataField="@left" headerText="Entity 1">
+				<mx:DataGridColumn dataField="@hier" headerText="Is Refinement"/>
+				<mx:DataGridColumn dataField="@dir" headerText="Is Directed"/>
+				<mx:DataGridColumn dataField="@leftName" headerText="Entity Type 1">
 				</mx:DataGridColumn>
-				<mx:DataGridColumn dataField="@right" headerText="Entity 2"/>
+				<mx:DataGridColumn dataField="@rightName" headerText="Entity Type 2"/>
 			</mx:columns>
 		</mx:DataGrid>
+		
+		<mx:Form>
+			<mx:FormItem label="Relation Name">
+				<s:TextInput widthInChars="20" id="relationNameInput" />
+			</mx:FormItem>
+			<mx:FormItem label="End Types" direction="horizontal">
+				<s:Label text="Left"/>
+				<s:ComboBox id="leftTypeSelect"
+						    dataProvider="{entityTypeList}"
+						    requireSelection="true"
+						    labelField="@name" />
+				<s:Label text="Right" />
+				<s:ComboBox id="rightTypeSelect"
+							dataProvider="{entityTypeList}"
+							requireSelection="true"
+							labelField="@name" />
+			</mx:FormItem>
+			<mx:FormItem direction="horizontal">
+				<s:CheckBox id="hierCheck" label="Is Refinement" />
+				<mx:Spacer />
+				<s:CheckBox id="dirCheck" label="Is Directed" />
+			</mx:FormItem>
+			<mx:FormItem direction="horizontal">
+				<s:Button label.RelationSelected="Save changes" label.RelationUnselected="Create a new one" 
+						  click="onRelationChanged();" />
+				<s:Button label="Delete" enabled.RelationUnselected="false"
+						  enabled.RelationSelected="true" 
+						  click="onRelationDeleted();" />
+			</mx:FormItem>
+		</mx:Form>
 	</s:VGroup>
 	
 	<mx:Canvas height="30" width="100%" bottom="10">

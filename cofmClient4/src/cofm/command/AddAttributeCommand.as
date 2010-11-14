@@ -6,16 +6,27 @@ package cofm.command
 
 	public class AddAttributeCommand implements IDurableCommand {
 		protected var _id: int;
+		
 		protected var _name: String;
 		protected var _type: String;
 		protected var _multi: Boolean;
 		protected var _dup: Boolean;
+		protected var _attrId: int;
+		protected var _modelId: int;
+		protected var _entypeId: int;
 
-		public function AddAttributeCommand(name: String, type: String, multi: Boolean=true, dup: Boolean=true) {
+		public function AddAttributeCommand(
+			name: String, type: String,
+			entypeId: int,
+			multi: Boolean=true, dup: Boolean=true,
+			modelId: int = -1, attrId: int = -1) {
 			_name = name;
 			_type = type;
 			_multi = multi;
 			_dup = dup;
+			_attrId = attrId;
+			_modelId = modelId;
+			_entypeId = entypeId;
 		}
 
 		public function execute(): void {
@@ -24,12 +35,16 @@ package cofm.command
 					id: _id,
 					name: Cst.REQ_VA_ATTR,
 					requesterId: UserList.instance().myId,
-					modelId: ModelCollection.instance().currentModelId,
+					modelId: (_modelId < 0) ? ModelCollection.instance().currentModelId : _modelId,
 					attr: _name,
 					type: _type,
 					multiYes: _multi,
-					allowDup: _dup
+					allowDup: _dup,
+					entityTypeId: _entypeId
 				};
+			if (_attrId > 0) {
+				request.attrId = _attrId;
+			}
 			Connector.instance().send(JsonUtil.objectToJson(request));
 		}
 

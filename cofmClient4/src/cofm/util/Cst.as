@@ -13,12 +13,15 @@ package cofm.util
 		public static const FIELD_RSP_EXIST: String = "exist";
 		public static const FIELD_RSP_INFER_VOTES: String = "inferVotes";
 		
+		public static const FIELD_CMD_HANDLE: String = "__CMD_HANDLE__";
 		
-		public static const REQ_VA_FEATURE: String  = "vaFeature";
+		public static const REQ_EA_ENTITY_TYPE: String = "eaEntityType";
+		public static const REQ_EA_BINREL_TYPE: String = "eaBinRelationType";
+		public static const REQ_VA_ENTITY: String  = "vaEntity";
 		public static const REQ_VA_BIN_REL: String  = "vaRelationBin";
-		public static const REQ_VA_ATTR: String  = "vaAttrStr";
-		public static const REQ_VA_ATTR_ENUM: String  = "vaAttrEnum";
-		public static const REQ_VA_ATTR_NUMBER: String  = "vaAttrNumber";
+		public static const REQ_VA_ATTR: String  = "eaAttrStr";
+		public static const REQ_VA_ATTR_ENUM: String  = "eaAttrEnum";
+		public static const REQ_VA_ATTR_NUMBER: String  = "eaAttrNumber";
 		public static const REQ_VA_VALUE: String = "vaValue";
 		
 		public static const REQ_COMMENT: String = "comment";
