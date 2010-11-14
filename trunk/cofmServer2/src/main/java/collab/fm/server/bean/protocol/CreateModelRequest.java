@@ -37,8 +37,7 @@ public class CreateModelRequest extends Request {
 		public boolean checkRequest(Request req) {
 			if (!(req instanceof CreateModelRequest)) return false;
 			CreateModelRequest r = (CreateModelRequest) req;
-			return r.getModelName() != null && !(r.getModelName().trim().isEmpty()) &&
-				r.getDescription() != null && !(r.getDescription().trim().isEmpty());
+			return r.getModelName() != null && !(r.getModelName().trim().isEmpty());
 		}
 
 		public boolean process(Request req, ResponseGroup rg)

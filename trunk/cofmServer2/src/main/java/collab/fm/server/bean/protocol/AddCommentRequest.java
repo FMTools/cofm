@@ -62,7 +62,7 @@ public class AddCommentRequest extends Request {
 			DaoUtil.getEntityDao().save(f);
 			
 			// Set the date/time in response
-			rsp.setDateTime(DataItemUtil.formatDate(c.getCreateTime()));
+			rsp.setExecTime(DataItemUtil.formatDate(c.getCreateTime()));
 			
 			// Write responses
 			rsp.setName(Resources.RSP_SUCCESS);
@@ -80,7 +80,6 @@ public class AddCommentRequest extends Request {
 		
 		private Long entityId;
 		private String content;
-		private String dateTime;
 		
 		public AddCommentResponse(AddCommentRequest r) {
 			super(r);
@@ -101,12 +100,6 @@ public class AddCommentRequest extends Request {
 		}
 		public void setContent(String content) {
 			this.content = content;
-		}
-		public String getDateTime() {
-			return dateTime;
-		}
-		public void setDateTime(String dateTime) {
-			this.dateTime = dateTime;
 		}
 	}
 	

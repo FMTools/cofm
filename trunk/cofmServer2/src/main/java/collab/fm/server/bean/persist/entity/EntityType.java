@@ -43,7 +43,11 @@ public class EntityType extends ElementType {
 		EntityType2 that = (EntityType2)target;
 		super.transfer(that);
 		that.setTypeName(this.getTypeName());
-		that.setSuperId(this.getSuperType().getId());
+		if (this.getSuperType() != null) {
+			that.setSuperId(this.getSuperType().getId());
+		} else {
+			that.setSuperId(null);
+		}
 		that.setModel(this.getModel().getId());
 		for (AttributeType t: this.getAttrDefs()) {
 			that.getAttrDefs().add(DataItemUtil.transferAttributeType(t));

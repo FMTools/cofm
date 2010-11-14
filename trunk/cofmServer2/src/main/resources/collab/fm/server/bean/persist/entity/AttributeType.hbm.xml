@@ -22,9 +22,8 @@
   	<property name="multipleSupport" type="boolean" column="MULTIPLE_SUPPORT"></property>
   	<property name="enableGlobalDupValues" type="boolean" column="ENABLE_GLOBAL_DUPLICATES"></property>
   	
-  	<!-- One-to-one association with EntityType -->
-  	<many-to-one name="hostType" class="EntityType" 
-               column="ENTITY_TYPE_ID" unique="true" />
+  	<!-- Many-to-one association with EntityType -->
+  	<many-to-one name="hostType" class="EntityType" column="ENTITY_TYPE_ID" />
                
   	<!-- Subclasses -->
   	<joined-subclass name="EnumAttributeType" table="ENUM_ATTRIBUTE_TYPE">
