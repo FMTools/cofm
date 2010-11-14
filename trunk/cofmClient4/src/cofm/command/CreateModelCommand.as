@@ -53,8 +53,6 @@ package cofm.command
 				// Model selection happens automatically after model creation.
 				ClientEvtDispatcher.instance().dispatchEvent(
 					new ModelCreateEvent(ModelCreateEvent.SUCCESS, theModel));
-				ClientEvtDispatcher.instance().dispatchEvent(
-					new ModelSelectEvent(ModelSelectEvent.SELECTED, data.modelId, _name));
 			}
 		}
 

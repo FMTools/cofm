@@ -28,7 +28,7 @@ package cofm.model
 			nameIdMap = new Dictionary();
 			ClientEvtDispatcher.instance().addEventListener(
 				ModelUpdateEvent.LOCAL_MODEL_COMPLETE, onLocalModelUpdate);
-			FeatureModel.instance().registerSubView(this);
+			Model.instance().registerSubView(this);
 		}
 		
 		public function contains(name: String): Boolean {
@@ -64,7 +64,15 @@ package cofm.model
 			}
 		}
 		
-		public function handleInferVoteOnFeature(op: Object): void {
+		public function handleEditAddEntityType(op: Object): void {
+			// TODO
+		}
+		
+		public function handleEditAddBinRelType(op: Object): void {
+			// TODO
+		}
+		
+		public function handleInferVoteOnEntity(op: Object): void {
 			// Do nothing
 		}
 		
@@ -72,15 +80,15 @@ package cofm.model
 			// Do nothing
 		}
 		
-		public function handleAddAttribute(op: Object): void {
+		public function handleEditAddAttributeDef(op: Object): void {
 			// Do nothing
 		}
 		
-		public function handleAddEnumAttribute(op: Object): void {
+		public function handleEditAddEnumAttributeDef(op: Object): void {
 			// Do nothing
 		}
 		
-		public function handleAddNumericAttribute(op: Object): void {
+		public function handleEditAddNumericAttributeDef(op: Object): void {
 			// Do nothing
 		}
 		
@@ -91,22 +99,22 @@ package cofm.model
 			}
 			
 			var n: String = String(op["val"]);
-			if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
+			if (op[Model.IS_NEW_ELEMENT] == true) {
 				addName(n, int(op["featureId"]));
 			}
 			
-			if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
+			if (op[Model.SHOULD_DELETE_ELEMENT] == true) {
 				removeByName(n);
 			}
 		}
 		
-		public function handleVoteAddFeature(op:Object): void {
+		public function handleVoteAddEntity(op:Object): void {
 			// if new feature
-			if (op[FeatureModel.IS_NEW_ELEMENT] == true) {
+			if (op[Model.IS_NEW_ELEMENT] == true) {
 				addName(String(op["featureName"]), int(op["featureId"]));
 			}
 			
-			if (op[FeatureModel.SHOULD_DELETE_ELEMENT] == true) {
+			if (op[Model.SHOULD_DELETE_ELEMENT] == true) {
 				removeById(int(op["featureId"]));
 			}
 			//			if (op[FeatureModel.VOTE_NO_TO_FEATURE] == true) {
@@ -126,11 +134,11 @@ package cofm.model
 		private function reset(): void {
 			names.source = [];
 			nameIdMap = new Dictionary();
-			for each (var o: Object in FeatureModel.instance().features.source) {
+			for each (var o: Object in Model.instance().entities.source) {
 				var f: XML = XML(o);
 				//trace (f.toXMLString());
 				// Get all names of the feature f.
-				for each (var obj: Object in FeatureModel.instance().getValuesOfAttr(f, Cst.ATTR_FEATURE_NAME)) {
+				for each (var obj: Object in Model.instance().getValuesByAttrName(f, Cst.ATTR_FEATURE_NAME)) {
 					addName(XML(obj.str).text().toString(), int(f.@id));
 				}
 			}

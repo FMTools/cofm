@@ -31,6 +31,12 @@ package cofm.component.fm
 				} else {
 					setStyle("fontWeight", 'normal');
 				}
+				
+				if (TreeData.KIND_CLASS == String(cur[0].@kind)) {
+					setStyle("textDecoration", "underline");
+				} else {
+					setStyle("textDecoration", "none");
+				}
 			}
 		}
 		

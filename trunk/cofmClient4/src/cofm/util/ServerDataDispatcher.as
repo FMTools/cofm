@@ -36,7 +36,7 @@ package cofm.util
 					case Cst.REQ_VA_ATTR_ENUM:
 					case Cst.REQ_VA_ATTR_NUMBER:
 					case Cst.REQ_VA_BIN_REL:
-					case Cst.REQ_VA_FEATURE:
+					case Cst.REQ_VA_ENTITY:
 					case Cst.REQ_VA_VALUE:
 						ClientEvtDispatcher.instance().dispatchEvent(
 							new OperationCommitEvent(

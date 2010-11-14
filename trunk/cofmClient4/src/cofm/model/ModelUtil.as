@@ -44,12 +44,12 @@ package cofm.model
 		
 		public static function getFeatureNameById(fId: String): String {
 			// First, try to get name from working tree
-			var n: String = WorkingTreeData.instance().getFeatureNameById(fId);
+			var n: String = WorkingTreeData.instance().getEntityNameById(fId);
 			if (n != null) {
 				return n;
 			}
 			// Then try to get name from global tree
-			n = GlobalTreeData.instance().getFeatureNameById(fId);
+			n = GlobalTreeData.instance().getEntityNameById(fId);
 			if (n != null) {
 				return n;
 			}
@@ -64,7 +64,7 @@ package cofm.model
 		
 		// TODO: move this method into FeaureModel
 		// return false if there are no "YES" voters.
-		public static function updateVoters(vote: String, userId: String, root: XML): Boolean {
+		public static function updateVoters(vote: String, userId: String, root: XML, time: String): Boolean {
 			var user: XML = <user>{userId}</user>;
 			var userInYes: Boolean = XMLList(root.yes.user).contains(user);
 			var userInNo: Boolean = XMLList(root.no.user).contains(user);
@@ -83,6 +83,8 @@ package cofm.model
 					}
 				}
 			}
+			root.@mid = userId;
+			root.@mtime = time;
 			return XMLList(root.yes.user).length() > 0;
 		}
 		

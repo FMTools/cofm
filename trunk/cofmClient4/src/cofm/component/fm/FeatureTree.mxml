@@ -21,16 +21,17 @@
 			private var lastSelectedFeatureId: int = -1;
 			
 			private function onItemClicked(evt: ListEvent): void {
-				var curId: int = int(selectedItem.@id);
-				ClientEvtDispatcher.instance().dispatchEvent(
-					new FeatureSelectEvent(FeatureSelectEvent.FEATURE_SELECTED,
-						curId, selectedItem.@name));
 				
-				if (lastSelectedFeatureId != curId) {
-					// Broadcast the selection
-					new StartEditFeatureCommand(curId).execute();
-				}
-				lastSelectedFeatureId = curId;
+//				var curId: int = int(selectedItem.@id);
+//				ClientEvtDispatcher.instance().dispatchEvent(
+//					new FeatureSelectEvent(FeatureSelectEvent.FEATURE_SELECTED,
+//						curId, selectedItem.@name));
+//				
+//				if (lastSelectedFeatureId != curId) {
+//					// Broadcast the selection
+//					new StartEditFeatureCommand(curId).execute();
+//				}
+//				lastSelectedFeatureId = curId;
 			}
 		]]>
 	</fx:Script>

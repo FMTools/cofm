@@ -22,7 +22,7 @@
 			// Toolbar
 			private var createFeatureDlg: CreateFeatureDlg;
 			private var createRelationDlg: CreateRelationDlg;
-			private var addAttributeDlg: AddAttributeDlg;
+			//private var addAttributeDlg: AddAttributeDlg;
 			
 			public function retrieveFeatureModel(modelId: int, modelName: String): void {
 				new UpdateCommand(modelId).execute();
@@ -40,8 +40,8 @@
 			}
 			
 			private function doAddAttribute(): void {
-				addAttributeDlg = AddAttributeDlg(PopUpManager.createPopUp(this, AddAttributeDlg, true));
-				PopUpManager.centerPopUp(addAttributeDlg);
+				//addAttributeDlg = AddAttributeDlg(PopUpManager.createPopUp(this, AddAttributeDlg, true));
+				//PopUpManager.centerPopUp(addAttributeDlg);
 			}
 		]]>
 	</fx:Script>
@@ -70,7 +70,7 @@
 		</s:Panel>
 		
 		<s:Panel id="featureEditor" title="{RS.m_fe_title}">
-			<fm:FeatureEditor/>
+			<!--<fm:FeatureEditor/>-->
 		</s:Panel>
 	</s:HGroup>
 </s:SkinnableContainer>

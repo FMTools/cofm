@@ -1,6 +1,6 @@
 package cofm.component.fm
 {
-	import cofm.model.FeatureModel;
+	import cofm.model.Model;
 	import cofm.util.*;
 	
 	public class AttributeSheetFactory
@@ -51,7 +51,7 @@ package cofm.component.fm
 			// any vote on it, so we need to add those non-voted values to the "src". 
 			// (See "setValuesForEnum()" for details.)
 			if (sheet.attributeType == Cst.ATTR_TYPE_ENUM) {
-				var allEnums: XMLList = XMLList(FeatureModel.instance().attrs
+				var allEnums: XMLList = XMLList(Model.instance().attrs
 										.source.(@name==String(src.@name))[0]
 										.enums.enum);  // get all possible enum-values
 				for each (var enum: Object in allEnums) {
