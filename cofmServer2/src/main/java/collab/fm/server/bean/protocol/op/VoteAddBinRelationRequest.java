@@ -130,7 +130,8 @@ public class VoteAddBinRelationRequest extends Request {
 				if (br.vote(r.getYes(), r.getRequesterId()) == DataItem.REMOVAL_EXECUTED) {
 					DaoUtil.getRelationDao().delete(br);
 				} else {
-					DaoUtil.getRelationDao().save(br);
+					br = (BinRelation) DaoUtil.getRelationDao().save(br);
+					rsp.setExecTime(DataItemUtil.formatDate(br.getLastModifyTime()));
 				}
 				
 			} else {
@@ -173,13 +174,14 @@ public class VoteAddBinRelationRequest extends Request {
 				
 				// Creation always leads to a YES vote.
 				br.vote(true, r.getRequesterId());
+				br.setLastModifier(r.getRequesterId());
 				
 				br = (BinRelation) DaoUtil.getRelationDao().save(br);
 				rsp.setRelationId(br.getId());
 				
 				// Set the inferred votes (because the "vote" always is "YES" here.)
 				rsp.setInferVotes(computeInferVotes(br));
-				
+				rsp.setExecTime(DataItemUtil.formatDate(br.getLastModifyTime()));
 			}
 			
 			// Add "back" and "broadcast" responses to the response group

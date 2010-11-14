@@ -98,7 +98,8 @@ public class VoteAddEntityRequest extends Request {
 				if (en.vote(r.getYes().booleanValue(), r.getRequesterId()) == DataItem.REMOVAL_EXECUTED) {
 					DaoUtil.getEntityDao().delete(en);
 				} else {
-					DaoUtil.getEntityDao().save(en);
+					en = DaoUtil.getEntityDao().save(en);
+					rsp.setExecTime(DataItemUtil.formatDate(en.getLastModifyTime()));
 				}
 				
 			} else {
@@ -121,6 +122,8 @@ public class VoteAddEntityRequest extends Request {
 				
 				en = DaoUtil.getEntityDao().save(en);
 				DaoUtil.getModelDao().save(m);
+				
+				rsp.setExecTime(DataItemUtil.formatDate(en.getLastModifyTime()));
 			}
 			
 			rsp.setEntityId(en.getId());
@@ -159,6 +162,7 @@ public class VoteAddEntityRequest extends Request {
 		
 		// inference votes on relationships (if any)
 		private List<Long> inferVotes;
+		
 		
 		public DefaultResponse(VoteAddEntityRequest r) {
 			super(r);

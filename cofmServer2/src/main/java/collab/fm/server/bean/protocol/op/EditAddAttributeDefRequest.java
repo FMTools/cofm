@@ -122,7 +122,7 @@ public class EditAddAttributeDefRequest extends Request {
 				// An editing operation
 				a.setAttrName(r.getAttr());
 				a.setLastModifier(r.getRequesterId());
-				DaoUtil.getAttributeDefDao().save(a);
+				a = DaoUtil.getAttributeDefDao().save(a);
 			} else {
 				// An adding operation
 				if (entp.findAttributeTypeDef(r.getAttr()) != null) {
@@ -141,10 +141,12 @@ public class EditAddAttributeDefRequest extends Request {
 			}
 			
 			DefaultResponse rsp = createResponse(r);
+			rsp.setExecTime(DataItemUtil.formatDate(a.getLastModifyTime()));
 			rsp.setName(Resources.RSP_SUCCESS);
 			rg.setBack(rsp);
 			
 			DefaultResponse rsp2 = createResponse(r);
+			rsp.setExecTime(DataItemUtil.formatDate(a.getLastModifyTime()));
 			rsp2.setName(Resources.RSP_FORWARD);
 			rg.setBroadcast(rsp2);
 			

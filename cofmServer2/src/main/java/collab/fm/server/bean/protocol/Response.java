@@ -4,13 +4,15 @@ package collab.fm.server.bean.protocol;
 public class Response implements Cloneable {
 	public static final String TERMINATOR = "\0";
 	
-	private String name;
+	protected String name;
 	
-	private Long requestId;
-	private String requestName;
-	private Long requesterId;
+	protected Long requestId;
+	protected String requestName;
+	protected Long requesterId;
 	
-	private String message;
+	protected String message;
+	
+	protected String execTime;
 	
 	public Response() {
 		
@@ -39,6 +41,14 @@ public class Response implements Cloneable {
 		return name != null;
 	}
 
+	public String getExecTime() {
+		return execTime;
+	}
+
+	public void setExecTime(String execTime) {
+		this.execTime = execTime;
+	}
+	
 	public String getMessage() {
 		return message;
 	}

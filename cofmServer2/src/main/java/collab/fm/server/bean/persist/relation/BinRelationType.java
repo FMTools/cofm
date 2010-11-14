@@ -17,7 +17,7 @@ public class BinRelationType extends RelationType {
 		BinRelationType2 that = (BinRelationType2) item;
 		super.transfer(that);
 		that.setTypeName(this.getTypeName());
-		that.setSuperId(this.getSuperType().getId());
+		that.setSuperId(null);  // relatioType's super type is always null.
 		that.setModel(this.getModel().getId());
 		that.setHier(this.isHierarchical());
 		that.setDir(this.isDirected());

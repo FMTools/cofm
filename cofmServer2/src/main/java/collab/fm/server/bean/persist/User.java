@@ -23,7 +23,11 @@ public class User extends DataItem {
 		User2 u2 = (User2) u;
 		u2.setId(this.getId());
 		u2.setName(this.getName());
-		u2.setLastLoginTime(DataItemUtil.formatDate(this.getLastLoginTime()));
+		if (this.getLastLoginTime() != null) {
+			u2.setLastLoginTime(DataItemUtil.formatDate(this.getLastLoginTime()));
+		} else {
+			u2.setLastLoginTime(null);
+		}
 	}
 	
 	@Override

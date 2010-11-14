@@ -12,6 +12,7 @@ import collab.fm.server.bean.protocol.Response;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
+import collab.fm.server.util.DataItemUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.ItemPersistenceException;
@@ -117,8 +118,10 @@ public class VoteAddValueRequest extends Request {
 				return false;
 			}
 			
-			DaoUtil.getEntityDao().save(en);
+			en.setLastModifier(r.getRequesterId());
+			en = DaoUtil.getEntityDao().save(en);
 			
+			rsp.setExecTime(DataItemUtil.formatDate(en.getLastModifyTime()));
 			rsp.setEntityId(en.getId());
 			rsp.setName(Resources.RSP_SUCCESS);
 			rg.setBack(rsp);

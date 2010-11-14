@@ -25,6 +25,8 @@ public class Controller {
 		Resources.REQ_CREATE_MODEL,
 		Resources.REQ_LIST_MODEL,
 		Resources.REQ_LIST_USER,
+		Resources.REQ_EA_BIN_RELAION_TYPE,
+		Resources.REQ_EA_ENTITY_TYPE,
 		Resources.REQ_EA_ATTR_ENUM,
 		Resources.REQ_EA_ATTR_NUMBER,
 		Resources.REQ_EA_ATTR_STR,

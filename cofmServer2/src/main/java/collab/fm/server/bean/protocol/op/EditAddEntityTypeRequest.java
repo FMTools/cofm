@@ -85,7 +85,7 @@ public class EditAddEntityTypeRequest extends Request {
 					(entp = DaoUtil.getEntityTypeDao().getById(r.getTypeId(), false)) != null) {
 				entp.setTypeName(r.getTypeName());
 				entp.setLastModifier(r.getRequesterId());
-				DaoUtil.getEntityTypeDao().save(entp);
+				entp = DaoUtil.getEntityTypeDao().save(entp);
 			} else {
 				EntityType sup = null;
 				for (EntityType et: m.getEntityTypes()) {
@@ -111,10 +111,12 @@ public class EditAddEntityTypeRequest extends Request {
 			}
 			
 			DefaultResponse rsp = new DefaultResponse(r);
+			rsp.setExecTime(DataItemUtil.formatDate(entp.getLastModifyTime()));
 			rsp.setName(Resources.RSP_SUCCESS);
 			rg.setBack(rsp);
 			
 			DefaultResponse rsp2 = new DefaultResponse(r);
+			rsp.setExecTime(DataItemUtil.formatDate(entp.getLastModifyTime()));
 			rsp2.setName(Resources.RSP_FORWARD);
 			rg.setBroadcast(rsp2);
 			

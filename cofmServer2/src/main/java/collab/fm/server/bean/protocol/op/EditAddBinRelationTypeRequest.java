@@ -118,7 +118,7 @@ public class EditAddBinRelationTypeRequest extends Request {
 				// An editing operation
 				brt.setTypeName(r.getTypeName());
 				brt.setLastModifier(r.getRequesterId());
-				DaoUtil.getRelationTypeDao().save(brt);
+				brt = (BinRelationType) DaoUtil.getRelationTypeDao().save(brt);
 			} else {
 				// An adding operation
 				for (RelationType rt: m.getRelationTypes()) {
@@ -155,10 +155,12 @@ public class EditAddBinRelationTypeRequest extends Request {
 			}
 			
 			DefaultResponse rsp = new DefaultResponse(r);
+			rsp.setExecTime(DataItemUtil.formatDate(brt.getLastModifyTime()));
 			rsp.setName(Resources.RSP_SUCCESS);
 			rg.setBack(rsp);
 			
 			DefaultResponse rsp2 = new DefaultResponse(r);
+			rsp.setExecTime(DataItemUtil.formatDate(brt.getLastModifyTime()));
 			rsp2.setName(Resources.RSP_FORWARD);
 			rg.setBroadcast(rsp2);
 			

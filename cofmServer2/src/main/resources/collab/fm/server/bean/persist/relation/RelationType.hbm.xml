@@ -17,9 +17,9 @@
   	<joined-subclass name="BinRelationType" table="BIN_RELATION_TYPE">
   	  <key column="BIN_RELATION_TYPE_ID" />
   	  <many-to-one name="sourceType" class="collab.fm.server.bean.persist.ElementType" 
-  	  			   column="SOURCE_ELEMENT_TYPE_ID" unique="true" />
-  	  <many-to-one name="superType" class="collab.fm.server.bean.persist.ElementType" 
-  	  			   column="TARGET_ELEMENT_TYPE_ID" unique="true" />
+  	  			   column="SOURCE_ELEMENT_TYPE_ID"  />
+  	  <many-to-one name="targetType" class="collab.fm.server.bean.persist.ElementType" 
+  	  			   column="TARGET_ELEMENT_TYPE_ID"  />
   	</joined-subclass>
   </joined-subclass>
 </hibernate-mapping>
