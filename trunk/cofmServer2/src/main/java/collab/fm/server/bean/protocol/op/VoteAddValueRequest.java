@@ -94,8 +94,9 @@ public class VoteAddValueRequest extends Request {
 			if (en == null) {
 				throw new InvalidOperationException("Invalid entity ID: " + r.getEntityId());
 			}
-
-			AttributeType attrDef = ((EntityType) en.getType()).findAttributeTypeDef(r.getAttrId());
+			
+			EntityType entp = DaoUtil.getEntityTypeDao().getById(en.getType().getId(), false);
+			AttributeType attrDef = entp.findAttributeTypeDef(r.getAttrId(), false);
 			if (attrDef == null) {
 				throw new InvalidOperationException("Unknown attribute definition of the entity.");
 			}

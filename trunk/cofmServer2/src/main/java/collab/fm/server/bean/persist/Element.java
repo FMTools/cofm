@@ -50,7 +50,9 @@ public abstract class Element extends DataItem implements Votable {
 		for (Long n: vote.getOpponents()) {
 			ve2.addV0(n);
 		}
-		ve2.setTypeId(this.getType().getId());
+		if (this.getType() != null) {
+			ve2.setTypeId(this.getType().getId());
+		}
 	}
 	
 	public Vote getVote() {

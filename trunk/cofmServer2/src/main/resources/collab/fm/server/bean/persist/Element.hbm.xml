@@ -30,9 +30,9 @@
   	</set>
   </component>
   
-  <!-- One-to-one association with ElementType, no cascading is needed. -->
+  <!-- many-to-one association with ElementType, no cascading is needed. -->
   <many-to-one name="type" class="ElementType" 
-               column="ELEMENT_TYPE_ID" unique="true" />
+               column="ELEMENT_TYPE_ID"  />
   
   <!-- Many-to-many association with Relation 
 		The statement "inverse=true" tells Hibernate that 

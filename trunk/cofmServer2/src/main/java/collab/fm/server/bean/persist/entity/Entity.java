@@ -68,7 +68,15 @@ public class Entity extends Element {
 	// Return Votable.CREATION_EXECUTED (if added new value) or VOTE_EXECUTED (if voted on existing value).
 	public int voteOrAddValue(Long attrId, String value, boolean yes, Long userId) {
 		// Check the validity of the value.
-		AttributeType atype = ((EntityType)this.getType()).findAttributeTypeDef(attrId);
+		EntityType entp;
+		try {
+			entp = DaoUtil.getEntityTypeDao().getById(this.getType().getId(), false);
+		} catch (ItemPersistenceException e) {
+			return DataItem.INVALID_OPERATION;
+		} catch (StaleDataException e) {
+			return DataItem.INVALID_OPERATION;
+		}
+		AttributeType atype = entp.findAttributeTypeDef(attrId, false);
 		if (atype == null || !atype.valueConformsToType(value)) {
 			return DataItem.INVALID_OPERATION;
 		}
