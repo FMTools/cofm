@@ -15,7 +15,6 @@
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 		
 	</fx:Declarations>
-	
 	<fx:Script>
 		<![CDATA[
 			import cofm.command.*;
@@ -81,30 +80,51 @@
 			
 			public function set attrXml(xml: XML): void {
 				nameInput.text = xml.@name;
-				
-				switch (String(xml.@type)) {
-					case Cst.ATTR_TYPE_STRING:
-						currentState = "StringLike";
-						typeSelect.selectedIndex = 0;
-						break;
-					case Cst.ATTR_TYPE_TEXT:
-						currentState = "StringLike";
-						typeSelect.selectedIndex = 1;
-						break;
-					case Cst.ATTR_TYPE_ENUM:
-						currentState = "Enum";
-						typeSelect.selectedIndex = 2;
-						setEnumValues(XML(xml.enums));
-						break;
-					case Cst.ATTR_TYPE_NUMBER:
-						currentState = "Number";
-						typeSelect.selectedIndex = 3;
-						minInput.text = xml.min.text().toString();
-						maxInput.text = xml.max.text().toString();
-						unitInput.text = xml.unit.text().toString();
-						break;
+				if (nameInput.text == Cst.ATTR_FEATURE_NAME ||
+					nameInput.text == Cst.ATTR_FEATURE_DES) {
+					currentState = "StringLike";
+					
+					nameInput.editable = false;
+					
+					typeInput.text = xml.@type;
+					typeInput.visible = true;
+					typeInput.includeInLayout = true;
+					
+					typeSelect.selectedIndex = 0;
+					typeSelect.visible = false;
+					typeSelect.includeInLayout = false;
+				} else {
+					nameInput.editable = true;
+					
+					typeInput.visible = false;
+					typeInput.includeInLayout = false;
+					
+					typeSelect.visible = true;
+					typeSelect.includeInLayout = true;
+					
+					switch (String(xml.@type)) {
+						case Cst.ATTR_TYPE_STRING:
+							currentState = "StringLike";
+							typeSelect.selectedIndex = 0;
+							break;
+						case Cst.ATTR_TYPE_TEXT:
+							currentState = "StringLike";
+							typeSelect.selectedIndex = 1;
+							break;
+						case Cst.ATTR_TYPE_ENUM:
+							currentState = "Enum";
+							typeSelect.selectedIndex = 2;
+							setEnumValues(XML(xml.enums));
+							break;
+						case Cst.ATTR_TYPE_NUMBER:
+							currentState = "Number";
+							typeSelect.selectedIndex = 3;
+							minInput.text = xml.min.text().toString();
+							maxInput.text = xml.max.text().toString();
+							unitInput.text = xml.unit.text().toString();
+							break;
+					}
 				}
-				
 				dupSelect.selected = !ModelUtil.isTrue(String(xml.@dup));
 				
 			}
@@ -190,6 +210,7 @@
 	</mx:FormItem>
 	
 	<mx:FormItem label="{RS.m_ca_type}">
+		<s:TextInput id="typeInput" editable="false" />
 		<s:ComboBox id="typeSelect" requireSelection="true" 
 					change="onTypeChange(event);"
 				    valueCommit="onTypeSet(event);">

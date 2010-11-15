@@ -5,15 +5,23 @@
 			   width="510" height="420"
 			   creationComplete="initView();" 
 			   xmlns:validator="cofm.component.validator.*">
+	
+	<s:states>
+		<s:State name="Unselected" />
+		<s:State name="TypeSelected" />
+		<s:State name="EntitySelected" />
+	</s:states>
 	<fx:Declarations>
+		
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<!--
 		<s:RadioButtonGroup id="parentSwitch" change="onSwitch();"/>
 		
 		<validator:FeatureNameValidator id="nameVdt" triggerEvent="change"
 									    nameMustExist="false"
 									    source="{nameInput}"
 										property="selectedItem"/>
-		<!--
+	
 		<validator:FeatureNameValidator id="parentVdt" triggerEvent="change"
 									    allowEmpty="{isRoot}"
 									    nameMustExist="true"
@@ -26,17 +34,19 @@
 		<![CDATA[
 			import cofm.command.*;
 			import cofm.event.*;
-			import cofm.util.*;
 			import cofm.model.*;
+			import cofm.util.*;
 			
-			import mx.utils.StringUtil;
 			import mx.events.ValidationResultEvent;
 			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
 			
 			[Bindable]
 			public var isRoot: Boolean;
 			
 			private var parentId: int;
+			
+			private var typeId: int;
 			
 			private function initView(): void {
 				ClientEvtDispatcher.instance().addEventListener(
@@ -46,36 +56,41 @@
 			}
 			
 			public function resetForm(): void {
-				nameInput.textInput.text = "";
-				
-				// If user is editing a feature(the feature is highlighted in feature tree), 
-				// then set parent to this feature by default.
-				if (CurrentFeature.instance().id > 0) {
-					var n: String = ModelUtil.getFeatureNameById(String(CurrentFeature.instance().id));
-					if (n != null) {
-						parentInput.selectedItem = n;
-						parentId = CurrentFeature.instance().id;
-						isRoot = false;
-						parentSwitch.selectedValue = "Exist";
-					} 
-				} else {
-					parentInput.textInput.text = "";
-					isRoot = true;
-					parentSwitch.selectedValue = "None";
+				if (CurrentFeature.instance().id <= 0) {
+					this.currentState = "Unselected";
+					parentId = -1;
+				} else if (CurrentFeature.instance().kind == TreeData.KIND_CLASS) {
+					this.currentState = "TypeSelected";
+					typeName.text = CurrentFeature.instance().name;
+					typeId = CurrentFeature.instance().id;
+					parentId = -1;
+				} else if (CurrentFeature.instance().kind == TreeData.KIND_OBJECT) {
+					this.currentState = "EntitySelected";
+					typeName.text = Model.instance().getEntityTypeNameById(
+						String(CurrentFeature.instance().typeId));
+					parentId = CurrentFeature.instance().id;
+					typeId = CurrentFeature.instance().typeId;
 				}
+//				nameInput.textInput.text = "";
+//				
+//				// If user is editing a feature(the feature is highlighted in feature tree), 
+//				// then set parent to this feature by default.
+//				if (CurrentFeature.instance().id > 0) {
+//					var n: String = ModelUtil.getFeatureNameById(String(CurrentFeature.instance().id));
+//					if (n != null) {
+//						parentInput.selectedItem = n;
+//						parentId = CurrentFeature.instance().id;
+//						isRoot = false;
+//						parentSwitch.selectedValue = "Exist";
+//					} 
+//				} else {
+//					parentInput.textInput.text = "";
+//					isRoot = true;
+//					parentSwitch.selectedValue = "None";
+//				}
 			}
 			
-			private function onFocusParent(): void {
-				if (parentSwitch.selectedValue != "Exist") {
-					parentSwitch.selectedValue = "Exist";
-					isRoot = false;
-				}
-			}
-			
-			private function onSwitch(): void {
-				isRoot = parentSwitch.selectedValue == "None";
-			}
-			
+		
 			private function doClose(): void {
 				// For dialogs, the event listener that has been added
 				// in initView() must be removed here.
@@ -88,38 +103,60 @@
 				if (!validateNames()) {
 					return;
 				}
-				if (parentSwitch.selectedValue == "Exist") {
-					parentId = FeatureNameList.instance().getIdByName(String(parentInput.selectedItem));
-				} else {
-					parentId = -1;
+				
+				if (this.currentState == "Unselected") {
+					this.typeId = int(typeSelect.selectedItem.@id);
 				}
 				// Commit feature creation first, then if the feature is successfully
 				// created, a FeatureCreatedLocally event will be dispatched and captured
 				// by onFeatureCreatedLocally() method.
-				new VoteAddFeatureCommand(String(nameInput.selectedItem)).execute();
+				new VoteAddFeatureCommand(this.typeId).execute();
 			}
 			
 			private function validateNames(): Boolean {
-				var rslt:Array = [];
-				rslt.push(nameVdt.validate());
-				//rslt.push(parentVdt.validate());
-				for each (var o: Object in rslt) {
-					if (ValidationResultEvent(o).type == ValidationResultEvent.INVALID) {
-						return false;
-					}
-				}
+//				var rslt:Array = [];
+//				rslt.push(nameVdt.validate());
+//				//rslt.push(parentVdt.validate());
+//				for each (var o: Object in rslt) {
+//					if (ValidationResultEvent(o).type == ValidationResultEvent.INVALID) {
+//						return false;
+//					}
+//				}
 				return true;
 			}
 			
 			private function onFeatureCreatedLocally(evt: ModelMinorChangeEvent): void {
+				// Create Name for the feature
+				var newEntities: XMLList = Model.instance().entities.source.(@id==String(evt.data));
+				if (newEntities.length() <= 0) {
+					return;
+				}
+				var newEntity: XML = newEntities[0];
+				new VoteAddValueCommand(
+					Model.instance().getAttrIdByName(newEntity, Cst.ATTR_FEATURE_NAME),
+					nameInput.text,
+					int(evt.data)).execute();
+						
 				// The feature has created, we need to create the refinement relationship, if any,
 				// and feature description.
 				if (parentId > 0) {
-					new VoteAddBinRelationCommand(
-						Cst.BIN_REL_REFINES, parentId, int(evt.data)).execute();
+					var parentEntity: XML = Model.instance().entities.source.(@id==parentId)[0];
+					if (parentEntity == null) {
+						return;
+					}
+					var binrels: XMLList = Model.instance().getBinRelationTypesByEnds(
+						int(parentEntity.@typeId), int(newEntity.@typeId));
+					for each (var r: Object in binrels) {
+						if (ModelUtil.isTrue(r.@hier)) {  // if is a refinement
+							new VoteAddBinRelationCommand(
+								int(r.@id), parentId, int(evt.data)).execute();
+							break;
+						}
+					}
 				}
 				if (mx.utils.StringUtil.trim(desInput.text) != "") {
-					new VoteAddValueCommand(Cst.ATTR_FEATURE_DES,
+					new VoteAddValueCommand(
+						Model.instance().getAttrIdByName(newEntity, Cst.ATTR_FEATURE_DES),
 						desInput.text,
 						int(evt.data)).execute();
 				}
@@ -130,16 +167,28 @@
 	<mx:Form width="100%" height="100%">
 		
 		<mx:FormItem label="{RS.m_cf_name}">
-			<s:ComboBox id="nameInput" dataProvider="{FeatureNameList.instance().names}"/>
+			<!--<s:ComboBox id="nameInput" dataProvider="{FeatureNameList.instance().names}"/>-->
+			<s:TextInput id="nameInput" widthInChars="30" />
 		</mx:FormItem>
 		
-		<mx:FormItem label="{RS.m_cf_parent}" >
-			<s:RadioButton groupName="parentSwitch" value="None" label="{RS.m_cf_root}"/>
+		<mx:FormItem label="{RS.m_cf_parent}" includeIn="EntitySelected">
+			<!--<s:RadioButton groupName="parentSwitch" value="None" label="{RS.m_cf_root}"/>
 			<s:HGroup>
 				<s:RadioButton groupName="parentSwitch" value="Exist" label="{RS.m_cf_select}"/>
 				<s:ComboBox id="parentInput" dataProvider="{FeatureNameList.instance().names}"
 						    focusIn="onFocusParent();"/>
 			</s:HGroup>
+			-->
+			<s:TextInput id="parentName" editable="false" 
+						 text="{CurrentFeature.instance().name}"/>
+		</mx:FormItem>
+		
+		<mx:FormItem label="Type">
+			<s:TextInput id="typeName" editable="false" excludeFrom="Unselected" />
+			<s:ComboBox id="typeSelect" dataProvider="{Model.instance().entypes}"
+					    requireSelection="true"
+					    labelField="@name" 
+					    includeIn="Unselected" />
 		</mx:FormItem>
 		
 		<mx:FormItem label="{RS.m_cf_des}" >

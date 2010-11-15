@@ -55,6 +55,14 @@ package cofm.model
 		}
 		
 		// Utility methods
+		public function getEntityTypeNameById(id: String): String {
+			var ets: XMLList = this.entypes.source.(@id==id);
+			if (ets.length() > 0) {
+				return ets[0].@name;
+			}
+			return null;
+		}
+		
 		public function getValuesByAttrName(entity: XML, attrName: String): XMLList {
 			var attrDefs: XMLList = this.entypes.source.(@id==entity.@typeId)[0]
 				.attrDefs.attrDef.(@name==attrName);
@@ -75,6 +83,16 @@ package cofm.model
 			return attrDefs[0].@name;
 		}
 		
+		public function getAttrIdByName(entity: XML, attrName: String): int {
+			var tpId: String = String(entity.@typeId);
+			var tps: XMLList = this.entypes.source.(@id==tpId);
+			var attrDefs: XMLList = tps[0].attrDefs.attrDef.(@name==attrName);
+			if (attrDefs.length() <= 0) {
+				return -1;
+			}
+			return attrDefs[0].@id;
+		}
+		
 		public function getRefinementId(parent: String, child: String): String {
 			// Get all binary relations in the form of "Parent Relation Child"
 			var rs: XMLList = this.binaries.source.
@@ -90,13 +108,55 @@ package cofm.model
 			return null;
 		}
 		
+		public function getBinRelationTypesByEnds(sourceTypeId: int, targetTypeId: int): XMLList {
+			// return the BinRelation type (X r Y) where:
+			// X == sourceTypeId or X is-supertype-of sourceTypeId,
+			// Y is similar.
+			
+			// 1. find by source type id.
+			var id: String = String(sourceTypeId);
+			var candidates: XML = <all/>;
+			do {	
+				var cand: XMLList = this.bintypes.source.(@sourceTypeId==id);
+				if (cand.length() > 0) {
+					candidates.appendChild(cand);
+				}
+				
+				var superTypeId: Object = this.entypes.source.(@id==id)[0].@superId;
+				if (superTypeId != null && !isNaN(Number(superTypeId))) {
+					id = Number(superTypeId).toString();
+				} else {
+					break;
+				}
+			} while (true);
+			
+			// 2. Filter candidates by target type id.
+			var results: XML = <result/>;
+			var id2: String = String(targetTypeId);
+			do {	
+				var cand2: XMLList = candidates.bintype.(@targetTypeId==id2);
+				if (cand2.length() > 0) {
+					results.appendChild(cand2);
+				}
+				
+				var superTypeId2: Object = this.entypes.source.(@id==id2)[0].@superId;
+				if (superTypeId2 != null && !isNaN(Number(superTypeId2))) {
+					id2 = Number(superTypeId2).toString();
+				} else {
+					break;
+				}
+			} while (true);
+			
+			return results.bintype;
+		}
+		
 		public function isRefinement(binrelation: XML): Boolean {
 			return this.isRefinementById(binrelation.@typeId);
 		}
 		
 		public function isRefinementById(typeId: String): Boolean {
 			var rTypes: XMLList = this.bintypes.source.(@id==typeId);
-			if (rTypes.length() > 0 && rTypes[0].@hier == "true") {
+			if (rTypes.length() > 0 && ModelUtil.isTrue(rTypes[0].@hier)) {
 				return true;
 			}
 			return false;
@@ -398,7 +458,7 @@ package cofm.model
 			if (a.length() <= 0) {
 				// No such attribute, create it first
 				curAttr = <attr id={op["attrId"]}><values/></attr>;
-				curFeature.appendChild(curAttr);
+				curFeature.attrs.appendChild(curAttr);
 			} else {
 				curAttr = a[0];
 			}
@@ -445,7 +505,7 @@ package cofm.model
 					mid={op[Cst.FIELD_RSP_SOURCE_USER_ID]}
 					ctime={op["execTime"]}
 					mtime={op["execTime"]}
-					typdId={op["typeId"]} >
+					typeId={op["typeId"]} >
 						<yes><user>{op[Cst.FIELD_RSP_SOURCE_USER_ID]}</user></yes>
 						<no/>
 						<attrs/>

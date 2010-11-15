@@ -4,6 +4,8 @@ package cofm.model
 	import cofm.event.*;
 	import cofm.util.*;
 	
+	import flash.events.Event;
+	
 	import mx.collections.ArrayCollection;
 	import mx.collections.IViewCursor;
 	import mx.collections.Sort;
@@ -16,7 +18,7 @@ package cofm.model
 	public class CurrentFeature implements IOperationListener {
 		private static var _instance: CurrentFeature = new CurrentFeature();
 		
-		private var _feature: XML;
+		public var element: XML;
 		
 		public var id: int;
 		
@@ -35,6 +37,10 @@ package cofm.model
 		[Bindable]
 		public var basicInfo: XMLListCollection = new XMLListCollection();
 		
+		[Bindable] public var typeId: int;
+		[Bindable] public var name: String;
+		[Bindable] public var kind: String;
+		
 		public static function instance(): CurrentFeature {
 			return _instance;
 		}
@@ -46,6 +52,8 @@ package cofm.model
 				ModelUpdateEvent.SUCCESS, onModelUpdate);
 			ClientEvtDispatcher.instance().addEventListener(
 				FeatureSelectEvent.FEATURE_SELECTED, onCurrentFeatureSelected);
+			ClientEvtDispatcher.instance().addEventListener(
+				FeatureSelectEvent.TYPE_SELECTED, onTypeSelected);
 			
 			id = -1;
 		}
@@ -60,6 +68,8 @@ package cofm.model
 		
 		private function clear(): void {
 			id = -1;
+			typeId = -1;
+			name = "";
 			votes.source = [];
 			parents.source = [];
 			children.source = [];
@@ -73,24 +83,35 @@ package cofm.model
 			this.clear();
 		}
 		
+		private function onTypeSelected(evt: FeatureSelectEvent): void {
+			this.clear();
+			
+			kind = TreeData.KIND_CLASS;
+			id = evt.id;
+			typeId = id;
+			name = evt.name;
+			element = XML(Model.instance().entypes.source.(@id==String(evt.id))[0]);
+		}
+		
 		private function onCurrentFeatureSelected(evt: FeatureSelectEvent): void {	
 			this.clear();
 			
-			// Set the feature id
+			kind = TreeData.KIND_OBJECT;
 			id = evt.id;
-			_feature = XML(Model.instance().entities.source.(@id==String(evt.id))[0]);
-			
+			name = evt.name;
+			element = XML(Model.instance().entities.source.(@id==String(evt.id))[0]);
+			typeId = element.@typeId;
 			// update creator info
-			var creator: String = UserList.instance().getNameById(int(_feature.@creator));
-			basicInfo.addItem(<attr name="creator" type={Cst.ATTR_TYPE_STRING} label="Creator" value={creator}/>);
-			
-			updateVotes(); // votes to this feature
-			updateRefinements();
-			updateBinaryConstraints();
-			updateAllAttrbutes();
-			
-			// update basic info
-			ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
+//			var creator: String = UserList.instance().getNameById(int(_feature.@creator));
+//			basicInfo.addItem(<attr name="creator" type={Cst.ATTR_TYPE_STRING} label="Creator" value={creator}/>);
+//			
+//			updateVotes(); // votes to this feature
+//			updateRefinements();
+//			updateBinaryConstraints();
+//			updateAllAttrbutes();
+//			
+//			// update basic info
+//			ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
 			trace("CurrentFeature - basic info updated.");
 			
 		}
@@ -98,8 +119,8 @@ package cofm.model
 		private function updateVotes(): void {
 			votes.source = [];
 			// no votes
-			var noNum: int = XMLList(_feature.no.user).length();
-			var yesNum: int = XMLList(_feature.yes.user).length();
+			var noNum: int = XMLList(element.no.user).length();
+			var yesNum: int = XMLList(element.yes.user).length();
 			var yesRatio: Number = (noNum <= 0) ? 100 : (100 * yesNum / (yesNum + noNum));
 			var noRatio: Number = 100 - yesRatio;
 			
@@ -107,19 +128,19 @@ package cofm.model
 				"label": RS.m_fe_basic_votes_no,
 				"num": noNum,
 				"ratio": ((noRatio > 0) ? noRatio.toPrecision(3) : "0") + "%",
-				"n": toUserArray(XMLList(_feature.no.user))
+				"n": toUserArray(XMLList(element.no.user))
 			});
 			// yes votes
 			votes.addItem({
 				"label": RS.m_fe_basic_votes_yes,
 				"num": yesNum,
 				"ratio": ((yesRatio > 0) ? yesRatio.toPrecision(3) : "0") + "%",
-				"y": toUserArray(XMLList(_feature.yes.user))
+				"y": toUserArray(XMLList(element.yes.user))
 			});
 		}
 		
 		private function updateAllAttrbutes(): void {
-			for each (var attr: Object in _feature.attrs.attr) {
+			for each (var attr: Object in element.attrs.attr) {
 				updateAttr(XML(attr));
 			}
 		}
@@ -338,8 +359,8 @@ package cofm.model
 		}
 		
 		public function handleInferVoteOnRelation(op:Object): void {
-			updateRefinements();
-			updateBinaryConstraints();
+//			updateRefinements();
+//			updateBinaryConstraints();
 			
 			// update basic info
 			//ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));

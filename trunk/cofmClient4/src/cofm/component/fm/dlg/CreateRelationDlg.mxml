@@ -54,7 +54,7 @@
 					var f1: int = FeatureNameList.instance().getIdByName(String(leftInput.selectedItem));
 					var f2: int = FeatureNameList.instance().getIdByName(String(rightInput.selectedItem));
 					if (f1 > 0 && f2 > 0) {
-						new VoteAddBinRelationCommand(relationType, f1, f2).execute();
+						//new VoteAddBinRelationCommand(relationType, f1, f2).execute();
 						doClose();
 					}
 				}
