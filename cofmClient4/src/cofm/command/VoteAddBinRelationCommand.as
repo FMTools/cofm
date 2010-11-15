@@ -6,16 +6,16 @@ package cofm.command
 	
 	public class VoteAddBinRelationCommand implements IDurableCommand
 	{
-		private var _type: String;
+		private var _typeId: int;
 		private var _left: int;
 		private var _right: int;
 		private var _relationId: int;
 		private var _vote: Boolean;
 		private var _id: int;
 		
-		public function VoteAddBinRelationCommand(type: String, left: int, right: int, relationId: int=-1, vote: Boolean=true)
+		public function VoteAddBinRelationCommand(typeId: int, left: int, right: int, relationId: int=-1, vote: Boolean=true)
 		{
-			_type = type;
+			_typeId = typeId;
 			_left = left;
 			_right = right;
 			_relationId = relationId;
@@ -31,12 +31,12 @@ package cofm.command
 					requesterId: UserList.instance().myId,
 					modelId: ModelCollection.instance().currentModelId,
 					yes: _vote,
-					type: _type,
-					leftFeatureId: _left,
-					rightFeatureId: _right
+					typeId: _typeId,
+					sourceId: _left,
+					targetId: _right
 				};
 			if (_relationId > 0) {
-				request.relationshipId = _relationId;
+				request.relationId = _relationId;
 			}
 			Connector.instance().send(JsonUtil.objectToJson(request));
 		}

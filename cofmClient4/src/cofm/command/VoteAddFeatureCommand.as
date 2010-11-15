@@ -1,7 +1,7 @@
 package cofm.command 
 {
-	import cofm.model.*;
 	import cofm.event.*;
+	import cofm.model.*;
 	import cofm.util.*;
 	
 	import mx.utils.StringUtil;
@@ -9,13 +9,13 @@ package cofm.command
 	public class VoteAddFeatureCommand implements IDurableCommand
 	{
 		private var _id: int;
-		private var _name: String;
-		private var _feature: int;
+		private var _typeId: int;
+		private var _entityId: int;
 		private var _vote: Boolean;
-		public function VoteAddFeatureCommand(name: String, feature: int=-1, vote: Boolean=true)
+		public function VoteAddFeatureCommand(typeId: int, entityId: int = -1, vote: Boolean=true)
 		{
-			_name = StringUtil.trim(name);
-			_feature = feature;
+			_typeId = typeId;
+			_entityId = entityId;
 			_vote = vote;
 		}
 
@@ -28,10 +28,10 @@ package cofm.command
 					requesterId: UserList.instance().myId,
 					modelId: ModelCollection.instance().currentModelId,
 					yes: _vote,
-					featureName: _name
+					typeId: _typeId
 				};
-			if (_feature > 0) {
-				request.featureId = _feature;
+			if (_entityId > 0) {
+				request._entityId = _entityId;
 			}
 			Connector.instance().send(JsonUtil.objectToJson(request));
 		}

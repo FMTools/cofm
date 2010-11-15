@@ -8,12 +8,12 @@ package cofm.command
 	{
 		private var _id: int;
 		
-		private var _typeName: String;
-		private var _superId: int;
-		private var _typeId: int;
-		private var _modelId: int;
+		public var _typeName: String;
+		public var _superId: int;
+		public var _typeId: int;
+		public var _modelId: int;
 		
-		private var _handle: int;
+		public var _handle: int;
 		
 		public function EditAddEntityTypeCommand(typeName: String, superId: int = -1, modelId: int = -1, typeId: int = -1, handle: int = -1)
 		{

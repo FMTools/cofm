@@ -96,13 +96,24 @@ package cofm.command
 				// set the typeId for the entity type
 				_info.entypes[index].typeId = int(data["typeId"]);
 				
+				// change the superId for its sub-type commands
+				for each (var cmd: Object in _commandQueue) {
+					if (cmd is EditAddEntityTypeCommand) {
+						var c: EditAddEntityTypeCommand = EditAddEntityTypeCommand(cmd);
+						if (c._superId == _info.entypes[index].id) {
+							c._superId = int(data["typeId"]);
+						}
+					}
+				}
+				
 				// Followed by several EditAddAttributeDefCommands for the entity type
 				for each (var attrDef: Object in _info.entypes[index].attrDefs) {
 					if (Cst.ATTR_TYPE_ENUM == String(attrDef.type)) {
 						_commandQueue.push(new AddEnumAttributeCommand(
 							attrDef.name, attrDef.enums, 
 							int(data["typeId"]), 
-							attrDef.multi, attrDef.dup, 
+							ModelUtil.isTrue(attrDef.multi), 
+							ModelUtil.isTrue(attrDef.dup), 
 							this._modelId));
 					} else if (Cst.ATTR_TYPE_NUMBER == String(attrDef.type)) {
 						_commandQueue.push(new AddNumericAttributeCommand(
@@ -131,7 +142,9 @@ package cofm.command
 					if (srcId > 0 && targetId > 0) {
 						_commandQueue.push(new EditAddBinRelationTypeCommand(
 							bintype.typeName, srcId, targetId,
-							bintype.hier, bintype.dir, this._modelId, -1));
+							ModelUtil.isTrue(bintype.hier), 
+							ModelUtil.isTrue(bintype.dir),
+							this._modelId, -1));
 						trace("________BinRel CMD ______ ready entity type = " + _readyEntityTypeCount);
 						trace(" = " + bintype.typeName);
 					}

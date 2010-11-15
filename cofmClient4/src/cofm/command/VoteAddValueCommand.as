@@ -6,17 +6,17 @@ package cofm.command
 	
 	public class VoteAddValueCommand implements IDurableCommand
 	{
-		private var _attr: String;
+		private var _attrId: int;
 		private var _val: String;
 		private var _vote: Boolean;
 		private var _id: int;
-		private var _fid: int;
+		private var _entityId: int;
 		
-		public function VoteAddValueCommand(attr: String, val: String, fid: int, vote: Boolean = true)
+		public function VoteAddValueCommand(attrId: int, val: String, entityId: int, vote: Boolean = true)
 		{
-			_attr = attr;
+			_attrId = attrId;
 			_val = val;
-			_fid = fid;
+			_entityId = entityId;
 			_vote = vote;
 		}
 
@@ -28,10 +28,10 @@ package cofm.command
 					name: Cst.REQ_VA_VALUE,
 					requesterId: UserList.instance().myId,
 					modelId: ModelCollection.instance().currentModelId,
-					featureId: _fid,
 					yes: _vote,
-					attr: _attr,
-					val: _val
+					val: _val,
+					attrId: _attrId,
+					entityId: _entityId
 				};
 			Connector.instance().send(JsonUtil.objectToJson(request));
 		}
