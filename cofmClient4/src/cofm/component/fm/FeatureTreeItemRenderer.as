@@ -18,6 +18,8 @@ package cofm.component.fm
 				var cur: XMLList = new XMLList(TreeListData(super.listData).item);
 				if (TreeData.KIND_CLASS == String(cur[0].@kind)) {
 					setStyle("textDecoration", "underline");
+					setStyle("color", "blue");
+					setStyle("fontWeight", "bold");
 				} else {
 					setStyle("textDecoration", "none");
 				
