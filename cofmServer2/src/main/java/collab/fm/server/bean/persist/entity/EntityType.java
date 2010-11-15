@@ -7,32 +7,59 @@ import collab.fm.server.bean.persist.ElementType;
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.transfer.DataItem2;
 import collab.fm.server.bean.transfer.EntityType2;
+import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.DataItemUtil;
+import collab.fm.server.util.exception.ItemPersistenceException;
+import collab.fm.server.util.exception.StaleDataException;
 
 public class EntityType extends ElementType {
 
 	protected List<AttributeType> attrDefs = new ArrayList<AttributeType>();
 	protected Model model;
 	
-	public AttributeType findAttributeTypeDef(Long attrId) {
+	public AttributeType findAttributeTypeDef(Long attrId, boolean immediate) {
 		for (EntityType et = this; 
-			et != null; et = (EntityType) et.getSuperType()) {
+			et != null; ) {
 			for (AttributeType a: et.getAttrDefs()) {
 				if (a.getId().equals(attrId)) {
 					return a;
 				}
 			}
+			try {
+				if (!immediate && et.getSuperType() != null) {
+					et = DaoUtil.getEntityTypeDao().getById(et.getSuperType().getId(), false);
+				} else {
+					return null;
+				}
+			} catch (ItemPersistenceException e) {
+				return null;
+			} catch (StaleDataException e) {
+				// TODO Auto-generated catch block
+				return null;
+			}
 		}
 		return null;
 	}
 	
-	public AttributeType findAttributeTypeDef(String attrName) {
+	public AttributeType findAttributeTypeDef(String attrName, boolean immediate) {
 		for (EntityType et = this; 
-			et != null; et = (EntityType) et.getSuperType()) {
+			et != null;) {
 			for (AttributeType a: et.getAttrDefs()) {
 				if (a.getAttrName().equals(attrName)) {
 					return a;
 				}
+			}
+			try {
+				if (!immediate && et.getSuperType() != null) {
+					et = DaoUtil.getEntityTypeDao().getById(et.getSuperType().getId(), false);
+				} else {
+					return null;
+				}
+			} catch (ItemPersistenceException e) {
+				return null;
+			} catch (StaleDataException e) {
+				// TODO Auto-generated catch block
+				return null;
 			}
 		}
 		return null;

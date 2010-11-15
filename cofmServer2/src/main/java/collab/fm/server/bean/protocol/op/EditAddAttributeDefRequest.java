@@ -125,7 +125,7 @@ public class EditAddAttributeDefRequest extends Request {
 				a = DaoUtil.getAttributeDefDao().save(a);
 			} else {
 				// An adding operation
-				if (entp.findAttributeTypeDef(r.getAttr()) != null) {
+				if (entp.findAttributeTypeDef(r.getAttr(), true) != null) {
 					throw new InvalidOperationException("Attribute has already existed: " + r.getAttr());
 				}
 				
