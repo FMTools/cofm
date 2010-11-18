@@ -16,8 +16,13 @@ public class User extends DataItem {
 	private String password;
 	private String email;
 	
+	private Boolean validated;
+	private String validationStr;
+	
 	private Set<Model> models = new HashSet<Model>();
 
+	private Set<Preference> preferences = new HashSet<Preference>();
+	
 	@Override
 	public void transfer(DataItem2 u) {
 		User2 u2 = (User2) u;
@@ -80,6 +85,30 @@ public class User extends DataItem {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public Set<Preference> getPreferences() {
+		return preferences;
+	}
+
+	public void setPreferences(Set<Preference> preferences) {
+		this.preferences = preferences;
+	}
+
+	public Boolean isValidated() {
+		return validated;
+	}
+
+	public void setValidated(Boolean validated) {
+		this.validated = validated;
+	}
+
+	public String getValidationStr() {
+		return validationStr;
+	}
+
+	public void setValidationStr(String validationStr) {
+		this.validationStr = validationStr;
 	}
 
 }

@@ -141,6 +141,7 @@ public class Entity extends Element {
 				value.transfer(value2);
 				v2.getVals().add(value2);
 			}
+			that.getAttrs().add(v2);
 		}
 	}
 	

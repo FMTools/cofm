@@ -21,6 +21,7 @@
         <mapping resource="collab/fm/server/bean/persist/ElementType.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/persist/Model.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/persist/User.hbm.xml"/>
+        <mapping resource="collab/fm/server/bean/persist/Preference.hbm.xml"/>
         
         <mapping resource="collab/fm/server/bean/persist/entity/Entity.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/persist/entity/EntityType.hbm.xml"/>
