@@ -19,13 +19,20 @@
   <property name="name" column="USER_NAME" type="string"></property>
   <property name="password" column="USER_PASSWORD" type="string"></property>
   <property name="email" column="EMAIL" type="string"></property>
+  <property name="validated" column="VALIDATED" type="boolean"></property>
+  <property name="validationStr" column="VALIDATION_STR" type="string"></property>
   
   <!-- Many-to-many bidirectional association to Model -->
   <set name="models" table="MODEL_USER_ASSOC">
   	<key column="USER_ID"></key>
   	<many-to-many column="MODEL_ID" class="Model"></many-to-many>
   </set>
-  	
+  
+  <!-- One-to-many association with Preference -->
+  <set name="preferences" table="USER_PREFERENCE_ASSOC" inverse="true">
+    <key column="USER_ID"></key>
+    <one-to-many class="Preference"></one-to-many>
+  </set>
 </class>
 
 </hibernate-mapping>
