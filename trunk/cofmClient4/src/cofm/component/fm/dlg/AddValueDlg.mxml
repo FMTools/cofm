@@ -3,10 +3,8 @@
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
 			   xmlns:mx="library://ns.adobe.com/flex/mx"
 			   width="400" height="300"
-			   preinitialize="initData();"
 			   title="{RS.m_cv_title}">
 	<s:states>
-		<s:State name="AddName"/>
 		<s:State name="AddString"/>
 		<s:State name="AddText"/>
 		<s:State name="AddNumber"/>
@@ -30,66 +28,54 @@
 			
 			import spark.events.IndexChangeEvent;
 			
-			[Bindable] public var attrs: XMLListCollection = new XMLListCollection();
+			private var _attrId: String;
 			
-			private function initData(): void {
-				var a: XML = <a/>;
-				/*
-				for each (var obj: Object in Model.instance().attrs.source) {
-					// Disallow adding value for enumeration-typed attributes.
-					if (obj.@type != Cst.ATTR_TYPE_ENUM) {
-						a.appendChild(XML(obj).copy());
-					}
+			[Bindable] 
+			public function set attrId(a: String): void {
+				_attrId = a;
+				var attrDef: XML = Model.instance().getAttrDefById(
+					CurrentFeature.instance().element, _attrId);
+				if (attrDef != null) {
+					changeForm(attrDef);
+					attrInput.text = attrDef.@name;
 				}
-				*/
-				attrs.source = a.attr;
 			}
 			
-			private function onAttrChange(evt: IndexChangeEvent): void {
-				changeForm(evt.currentTarget.selectedItem);
+			public function get attrId(): String {
+				return _attrId;
 			}
 			
 			private function changeForm(a: Object): void {
-				if (String(a.@name) == Cst.ATTR_FEATURE_NAME) {
-					currentState = "AddName";
-				} else {
-					switch (String(a.@type)) {
-						case Cst.ATTR_TYPE_TEXT:
-							currentState = "AddText";
-							break;
-						case Cst.ATTR_TYPE_NUMBER:
-							currentState = "AddNumber";
-							numInfo.text = a.min.text().toString() +
-									" - " + a.max.text().toString() + 
-									" (" + a.unit.text().toString() + ")";
-							break;
-						default:
-							currentState = "AddString";
-							break;
-					} 
-				}
+				switch (String(a.@type)) {
+					case Cst.ATTR_TYPE_TEXT:
+						currentState = "AddText";
+						break;
+					case Cst.ATTR_TYPE_NUMBER:
+						currentState = "AddNumber";
+						numInfo.text = a.min.text().toString() +
+						" - " + a.max.text().toString() + 
+						" (" + a.unit.text().toString() + ")";
+						break;
+					default:
+						currentState = "AddString";
+						break;
+				} 
 			}
 			
 			private function doAddValue(): void {
 				//TODO: validate
 				var val: String;
-				switch (currentState) {
-					case "AddName":
-						val = String(nameVal.selectedItem);
-						break;
-					case "AddString":
-					case "AddNumber":
-						val = strVal.text;
-						break;
-					case "AddText":
-						val = textVal.text;
-						break;
+				if (this.currentState == "AddText") {
+					val = textVal.text;
+				} else {
+					val = strVal.text;
 				}
 				val = StringUtil.trim(val);
 				
 				new VoteAddValueCommand(
-					String(attrSelect.selectedItem.@name),
-					val, CurrentFeature.instance().id).execute();
+					int(this.attrId),
+					val, 
+					CurrentFeature.instance().id).execute();
 				doClose();
 			}
 			
@@ -101,15 +87,9 @@
 	
 	<mx:Form>
 		<mx:FormItem label="{RS.m_cv_attr}">
-			<s:ComboBox id="attrSelect"
-						labelField="@name" dataProvider="{attrs}"
-					    change="onAttrChange(event);"/>
+			<s:TextInput id="attrInput" editable="false" />
 		</mx:FormItem>
 		<mx:FormItem label="{RS.m_cv_value}">
-			
-			<!-- The input for feature name -->
-			<s:ComboBox id="nameVal"
-						includeIn="AddName" dataProvider="{FeatureNameList.instance().names}"/>
 			
 			<!-- The input for String-typed & Numeric attributes -->
 			<s:TextInput id="strVal" includeIn="AddString, AddNumber"/>

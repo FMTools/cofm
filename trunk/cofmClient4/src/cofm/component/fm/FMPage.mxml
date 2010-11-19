@@ -21,7 +21,7 @@
 			
 			// Toolbar
 			private var createFeatureDlg: CreateFeatureDlg;
-			private var createRelationDlg: CreateRelationDlg;
+			private var createRelationDlg: CreateBinRelationDlg;
 			//private var addAttributeDlg: AddAttributeDlg;
 			
 			public function retrieveFeatureModel(modelId: int, modelName: String): void {
@@ -35,7 +35,7 @@
 			}
 			
 			private function doCreateRelation(): void {
-				createRelationDlg = CreateRelationDlg(PopUpManager.createPopUp(this, CreateRelationDlg, true));
+				createRelationDlg = CreateBinRelationDlg(PopUpManager.createPopUp(this, CreateBinRelationDlg, true));
 				PopUpManager.centerPopUp(createRelationDlg);
 			}
 			
@@ -69,8 +69,11 @@
 			</mx:TabNavigator>
 		</s:Panel>
 		
-		<s:Panel id="featureEditor" title="{RS.m_fe_title}">
-			<!--<fm:FeatureEditor/>-->
-		</s:Panel>
+		<s:VGroup>
+			<s:Panel id="featureEditor" title="{RS.m_fe_title}">
+				<fm:FeatureEditor/>
+			</s:Panel>
+		</s:VGroup>
+		
 	</s:HGroup>
 </s:SkinnableContainer>

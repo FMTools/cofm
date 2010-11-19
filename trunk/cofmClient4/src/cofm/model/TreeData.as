@@ -148,7 +148,7 @@ package cofm.model
 			}
 			var rs: XMLList = Model.instance().binaries.source.(@id==id);
 			if (rs.length() <= 0 || 
-				!Model.instance().isRefinement(XML(rs[0])) || 
+				!Model.instance().isInstanceOfRefinement(XML(rs[0])) || 
 				!isPartOfTree(rs[0])) {
 				return;
 			}
@@ -199,7 +199,7 @@ package cofm.model
 			var child: String;
 			if (parentId == null || childId == null) {
 				var rs: XMLList = Model.instance().binaries.source.(@id==id);
-				if (rs.length() <= 0 || !Model.instance().isRefinement(XML(rs[0]))) {
+				if (rs.length() <= 0 || !Model.instance().isInstanceOfRefinement(XML(rs[0]))) {
 					return;
 				}
 				parent = rs[0].@sourceId;
@@ -394,9 +394,9 @@ package cofm.model
 				
 				if (removal) {
 					// remove the refinement
-					if (info != null && Model.instance().isRefinement(XML(info))) {
+					if (info != null && Model.instance().isInstanceOfRefinement(XML(info))) {
 						removeRefinement(info.@id, info.@sourceId, info.@targetId);
-					} else if (rel != null && Model.instance().isRefinement(rel)) {
+					} else if (rel != null && Model.instance().isInstanceOfRefinement(rel)) {
 						removeRefinement(rel.@id, rel.@sourceId, rel.@targetId);
 					}
 				}

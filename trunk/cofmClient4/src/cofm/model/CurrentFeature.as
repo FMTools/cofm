@@ -91,6 +91,8 @@ package cofm.model
 			typeId = id;
 			name = evt.name;
 			element = XML(Model.instance().entypes.source.(@id==String(evt.id))[0]);
+			
+			// No updating on binding data.
 		}
 		
 		private function onCurrentFeatureSelected(evt: FeatureSelectEvent): void {	
@@ -101,17 +103,18 @@ package cofm.model
 			name = evt.name;
 			element = XML(Model.instance().entities.source.(@id==String(evt.id))[0]);
 			typeId = element.@typeId;
+			
 			// update creator info
-//			var creator: String = UserList.instance().getNameById(int(_feature.@creator));
-//			basicInfo.addItem(<attr name="creator" type={Cst.ATTR_TYPE_STRING} label="Creator" value={creator}/>);
-//			
-//			updateVotes(); // votes to this feature
-//			updateRefinements();
-//			updateBinaryConstraints();
-//			updateAllAttrbutes();
-//			
-//			// update basic info
-//			ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
+			var creator: String = UserList.instance().getNameById(int(element.@creator));
+			basicInfo.addItem(<attr name="creator" type={Cst.ATTR_TYPE_STRING} label="Creator" value={creator}/>);
+			
+			updateVotes(); // votes to this feature
+			updateRefinements();
+			updateBinaryConstraints();
+			updateAllAttrbutes();
+			
+			// update basic info
+			ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
 			trace("CurrentFeature - basic info updated.");
 			
 		}
@@ -146,15 +149,16 @@ package cofm.model
 		}
 		
 		private function updateAttr(a: XML): void {
+			var def: XML = Model.instance().getAttrDefById(element, String(a.@id));
 			
-			var result: XML = <attr name={a.@name} type={a.@type} />;
+			var result: XML = <attr name={def.@name} type={def.@type} />;
 			
 			// result.@label = "{Name}:" (Capitalize the first letter of a.@name)
-			var label: String = a.@name;
+			var label: String = def.@name;
 			label = label.charAt(0).toUpperCase() + label.substr(1);
 			result.@label = label;
 			
-			if (String(a.@type) != Cst.ATTR_TYPE_ENUM) {
+			if (String(def.@type) != Cst.ATTR_TYPE_ENUM) {
 				// result.@value = the primary value of a.values
 				var val: Object = ModelUtil.getPrimaryValueAndRate(a.values.value);
 				if (val.value == null) {
@@ -162,11 +166,11 @@ package cofm.model
 				}
 				result.@value = val.value;
 				result.@rate = val.rate;
-				if (String(a.@type) == Cst.ATTR_TYPE_NUMBER) {
+				if (String(def.@type) == Cst.ATTR_TYPE_NUMBER) {
 					result.@unit = a.unit.text().toString();
 				}
 			} else {
-				for each (var e: Object in a.enums.enum) {
+				for each (var e: Object in def.enums.enum) {
 					var en: XML = <enum value={XML(e).text().toString()} />;
 					en.@rate = ModelUtil.getSupportRateOfValue(en.@value, a.values.value);
 					result.appendChild(en);
@@ -190,30 +194,30 @@ package cofm.model
 			parents.source = [];
 			children.source = [];
 			for each (var r: Object in Model.instance().binaries.source) {
-				if (r.@type == Cst.BIN_REL_REFINES) {
-					if (r.@left == String(this.id)) {
+				if (Model.instance().isInstanceOfRefinement(XML(r))) {
+					if (r.@sourceId == String(this.id)) {
 						children.addItem({
 							"id": r.@id,
-							"name": ModelUtil.getFeatureNameById(r.@right),
-							"supporters": XMLList(r.yes.user).length(),
-							"opponents": XMLList(r.no.user).length(),
+							"name": ModelUtil.getFeatureNameById(r.@targetId),
+							"numSupporters": XMLList(r.yes.user).length(),
+							"numOpponents": XMLList(r.no.user).length(),
 							"y": toUserArray(XMLList(r.yes.user)),
 							"n": toUserArray(XMLList(r.no.user)),
-							"type": Cst.BIN_REL_REFINES,
-							"left": r.@left,
-							"right": r.@right
+							"typeId": r.@typeId,
+							"left": r.@sourceId,
+							"right": r.@targetId
 						});
-					} else if (r.@right == String(this.id)) {
+					} else if (r.@targetId == String(this.id)) {
 						parents.addItem({
 							"id": r.@id,
-							"name": ModelUtil.getFeatureNameById(r.@left),
-							"supporters": XMLList(r.yes.user).length(),
-							"opponents": XMLList(r.no.user).length(),
+							"name": ModelUtil.getFeatureNameById(r.@sourceId),
+							"numSupporters": XMLList(r.yes.user).length(),
+							"numOpponents": XMLList(r.no.user).length(),
 							"y": toUserArray(XMLList(r.yes.user)),
 							"n": toUserArray(XMLList(r.no.user)),
-							"type": Cst.BIN_REL_REFINES,
-							"left": r.@left,
-							"right": r.@right
+							"typeId": r.@typeId,
+							"left": r.@sourceId,
+							"right": r.@targetId
 						});
 					}
 				}
@@ -223,56 +227,34 @@ package cofm.model
 		private function updateBinaryConstraints(): void {
 			binaryConstraints.source = [];
 			for each (var r: Object in Model.instance().binaries.source) {
-				if (r.@type == Cst.BIN_REL_REQUIRES) {
-					if (r.@left == String(this.id)) {
-						binaryConstraints.addItem({
-							"id": r.@id,
-							"name": "this requires " + ModelUtil.getFeatureNameById(r.@right),
-							"supporters": XMLList(r.yes.user).length(),
-							"opponents": XMLList(r.no.user).length(),
-							"y": toUserArray(XMLList(r.yes.user)),
-							"n": toUserArray(XMLList(r.no.user)),
-							"type": Cst.BIN_REL_REQUIRES,
-							"left": r.@left,
-							"right": r.@right
-						});
-					} else if (r.@right == String(this.id)) {
-						binaryConstraints.addItem({
-							"id": r.@id,
-							"name": ModelUtil.getFeatureNameById(r.@left) + " requires this",
-							"supporters": XMLList(r.yes.user).length(),
-							"opponents": XMLList(r.no.user).length(),
-							"y": toUserArray(XMLList(r.yes.user)),
-							"n": toUserArray(XMLList(r.no.user)),
-							"type": Cst.BIN_REL_REQUIRES,
-							"left": r.@left,
-							"right": r.@right
-						});
+				if (!Model.instance().isInstanceOfRefinement(XML(r))) {
+					var tp: XML = Model.instance().getBinRelationTypeByInstance(XML(r));
+					if (tp == null) {
+						continue;
 					}
-				} else if (r.@type == Cst.BIN_REL_EXCLUDES) {
-					if (r.@left == String(this.id)) {
+					if (r.@sourceId == String(this.id)) {
 						binaryConstraints.addItem({
 							"id": r.@id,
-							"name": "this excludes " + ModelUtil.getFeatureNameById(r.@right),
-							"supporters": XMLList(r.yes.user).length(),
-							"opponents": XMLList(r.no.user).length(),
+							"name": "this " + tp.@name + " " + ModelUtil.getFeatureNameById(r.@targetId),
+							"numSupporters": XMLList(r.yes.user).length(),
+							"numOpponents": XMLList(r.no.user).length(),
 							"y": toUserArray(XMLList(r.yes.user)),
 							"n": toUserArray(XMLList(r.no.user)),
-							"type": Cst.BIN_REL_EXCLUDES,
-							"left": r.@left,
-							"right": r.@right
+							"typeId": r.@typeId,
+							"left": r.@sourceId,
+							"right": r.@targetId
 						});
-					} else if (r.@right == String(this.id)) {
+					} else if (r.@targetId == String(this.id)) {
 						binaryConstraints.addItem({
 							"id": r.@id,
-							"name": "this excludes " + ModelUtil.getFeatureNameById(r.@left),
-							"supporters": XMLList(r.yes.user).length(),
-							"opponents": XMLList(r.no.user).length(),
+							"name": ModelUtil.getFeatureNameById(r.@sourceId) + " " + tp.@name + " this",
+							"numSupporters": XMLList(r.yes.user).length(),
+							"numOpponents": XMLList(r.no.user).length(),
 							"y": toUserArray(XMLList(r.yes.user)),
 							"n": toUserArray(XMLList(r.no.user)),
-							"type": Cst.BIN_REL_EXCLUDES,
-							"left": r.@left,
-							"right": r.@right
+							"typeId": r.@typeId,
+							"left": r.@sourceId,
+							"right": r.@targetId
 						});
 					}
 				}
@@ -280,21 +262,21 @@ package cofm.model
 			
 			// Sort binaryConstraints on "type" first, "id" second.
 			var sort: Sort = new Sort();
-			sort.fields = [new SortField("type", true), new SortField("id", true)];
+			sort.fields = [new SortField("typeId", true), new SortField("id", true)];
 			binaryConstraints.sort = sort;
 			binaryConstraints.refresh();
 		}
 		
 		public function handleEditAddEntityType(op: Object): void {
-			// TODO
+			// do nothing
 		}
 		
 		public function handleEditAddBinRelType(op: Object): void {
-			// TODO
+			// do nothing
 		}
 		
 		public function handleVoteAddEntity(op:Object): void {
-			if (op["featureId"] == String(id)) {
+			if (op["entityId"] == String(id)) {
 				if (op[Model.SHOULD_DELETE_ELEMENT] == true) {
 					this.clear();
 				} else {
@@ -306,17 +288,12 @@ package cofm.model
 		}
 		
 		public function handleVoteAddBinRel(op:Object): void {
-			if (op["leftFeatureId"] == String(id) || op["rightFeatureId"] == String(id)) {
-				switch (op["type"]) {
-					case Cst.BIN_REL_REFINES:
-						this.updateRefinements();
-						break;
-					case Cst.BIN_REL_REQUIRES:
-					case Cst.BIN_REL_EXCLUDES:
-						this.updateBinaryConstraints();
-						break;
+			if (op["sourceId"] == String(id) || op["targetId"] == String(id)) {
+				if (Model.instance().isInstanceOfRefinementByTypeId(op["typeId"])) {
+					this.updateRefinements();
+				} else {
+					this.updateBinaryConstraints();
 				}
-				
 			}
 		}
 		
@@ -334,15 +311,13 @@ package cofm.model
 		}
 		
 		public function handleVoteAddValue(op: Object): void {
-			if (op["featureId"] == String(id)) {
-				
-				var a: XMLList = Model.instance()
-					.entities.source.(@id==op["featureId"])    // Find the feature with specific ID...
-					..attr.(@name==op["attr"]); // then find the specific attribute in this feature
-				if (a.length() <= 0) {
-					return; // No such attribute, return.
+			if (op["entityId"] == String(id)) {
+				var ent: XML = Model.instance().getEntityById(op["entityId"]);
+				if (ent == null) {
+					return;
 				}
-				this.updateAttr(XML(a[0]));
+				var a: XML = Model.instance().getAttrById(ent, op["attrId"]);
+				this.updateAttr(a);
 				
 				// update basic info
 				ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));
@@ -350,7 +325,7 @@ package cofm.model
 		}
 		
 		public function handleInferVoteOnEntity(op:Object): void {
-			if (op["featureId"] == String(id)) {
+			if (op["entityId"] == String(id)) {
 				this.updateVotes();
 				
 				// update basic info
@@ -359,8 +334,8 @@ package cofm.model
 		}
 		
 		public function handleInferVoteOnRelation(op:Object): void {
-//			updateRefinements();
-//			updateBinaryConstraints();
+			updateRefinements();
+			updateBinaryConstraints();
 			
 			// update basic info
 			//ClientEvtDispatcher.instance().dispatchEvent(new ClientEvent(ClientEvent.BASIC_INFO_UPDATED));

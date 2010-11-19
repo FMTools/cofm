@@ -48,12 +48,12 @@ package cofm.util
 		public function send(data: String): void {
 			socket.send(data);
 			Console.info("Connector - Data sent: " + data);
-			trace("--- Data sent: " + data);
+			trace("<<<--- Data sent: " + data + "\n");
 		}
 		
 		private function onData(evt: DataEvent): void {
 			Console.info("Connector - Data received: " + Console.trunc(evt.data));
-			trace("--- Data received: " + evt.data);
+			trace("--->>> Data received: " + evt.data + "\n");
 			var sdata: Object = JsonUtil.jsonToObject(evt.data);
 			ServerDataDispatcher.dispatchData(sdata);
 		}
