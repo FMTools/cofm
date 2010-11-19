@@ -147,7 +147,7 @@
 					var binrels: XMLList = Model.instance().getBinRelationTypesByEnds(
 						int(parentEntity.@typeId), int(newEntity.@typeId));
 					for each (var r: Object in binrels) {
-						if (ModelUtil.isTrue(r.@hier)) {  // if is a refinement
+						if (Model.instance().isRefinement(XML(r))) {  // if is a refinement
 							new VoteAddBinRelationCommand(
 								int(r.@id), parentId, int(evt.data)).execute();
 							break;

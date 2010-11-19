@@ -17,11 +17,10 @@
 			
 			import spark.components.NavigatorContent;
 			
-			private static const BASIC_INFO_KEY: String = "__basic_info_tab__";
+			private static const BASIC_INFO_KEY: int = 0;
 			
 			private var tabMap: Dictionary = new Dictionary();
 			
-			private var featureXml: XML;
 			private var featureId: int;
 			
 			private function initView(): void {
@@ -29,9 +28,19 @@
 				ClientEvtDispatcher.instance().addEventListener(
 					FeatureSelectEvent.FEATURE_SELECTED, onSelect);
 				ClientEvtDispatcher.instance().addEventListener(
+					FeatureSelectEvent.TYPE_SELECTED, onTypeSelect);
+				ClientEvtDispatcher.instance().addEventListener(
 					ClientEvent.CURRENT_FEATURE_DELETED, onDelete);
 				ClientEvtDispatcher.instance().addEventListener(
 					ClientEvent.BASIC_INFO_UPDATED, onBasicInfoUpdated);
+			}
+			
+			private function onTypeSelect(evt: FeatureSelectEvent): void {
+				if (this.featureId == evt.id) {
+					return;
+				}	
+				this.featureId = evt.id;
+				tabNav.removeAllChildren();
 			}
 			
 			private function onSelect(evt: FeatureSelectEvent): void {
@@ -58,13 +67,6 @@
 				tabNav.removeAllChildren();
 				this.tabMap = new Dictionary();
 				
-				// Get the xml of current feature.
-				var fs: XMLList = Model.instance().entities.source.(@id==String(this.featureId));
-				if (fs.length() <= 0) {
-					return;
-				}
-				this.featureXml = fs[0];
-				
 				// Insert the Basic_info_tab first
 				var basic: FeatureBasicInfo = new FeatureBasicInfo();
 				basic.width = Size.EDITOR_W;
@@ -76,10 +78,32 @@
 				this.tabNav.addChild(tabWrapper);
 				this.tabMap[BASIC_INFO_KEY] = basic;
 				
-				// Add name, description and optionality
-				addTab(Model.instance().attrs.source.(@name==Cst.ATTR_FEATURE_NAME)[0]);
-				addTab(Model.instance().attrs.source.(@name==Cst.ATTR_FEATURE_DES)[0]);	
-				addTab(Model.instance().attrs.source.(@name==Cst.ATTR_FEATURE_OPT)[0]);
+				var allAttrDefs: XMLList = Model.instance().getAttrDefsOfEntity(
+					CurrentFeature.instance().element);
+				
+				// Add name and description 
+				addTab(CurrentFeature.instance().element,
+					allAttrDefs.(@name==Cst.ATTR_FEATURE_NAME)[0]);
+				addTab(CurrentFeature.instance().element,
+					allAttrDefs.(@name==Cst.ATTR_FEATURE_DES)[0]);	
+				
+				var tabWrapper2: NavigatorContent = new NavigatorContent();
+				var ref: RefinementSheet = new RefinementSheet();
+				ref.width = Size.EDITOR_W;
+				ref.height = Size.EDITOR_H;
+				tabWrapper2.addElement(ref);
+				tabWrapper2.label = RS.m_fe_refine_tab;
+				this.tabNav.addChild(tabWrapper2);
+				
+				var tabWrapper3: NavigatorContent = new NavigatorContent();
+				var cons: BinConstaintSheet = new BinConstaintSheet();
+				cons.width = Size.EDITOR_W;
+				cons.height = Size.EDITOR_H;
+				cons.dataSource = CurrentFeature.instance().binaryConstraints;
+				cons.info = "Binary constaints on current entity instance: ";
+				tabWrapper3.addElement(cons);
+				tabWrapper3.label = RS.m_fe_cons_tab;
+				this.tabNav.addChild(tabWrapper3);
 				
 				//TODO: Add refinement and binary constraints
 				/*var refine: RefinementTab = new RefinementTab();
@@ -94,50 +118,50 @@
 				*/
 				
 				// Add other tabs
-				for each (var attr: Object in Model.instance().attrs.source) {
-					if (attr.@name == Cst.ATTR_FEATURE_DES ||
-						attr.@name == Cst.ATTR_FEATURE_NAME ||
-						attr.@name == Cst.ATTR_FEATURE_OPT) {
-						continue;
+				for each (var def: Object in allAttrDefs) {
+					if (def.@name != Cst.ATTR_FEATURE_DES &&
+						def.@name != Cst.ATTR_FEATURE_NAME) {
+						addTab(CurrentFeature.instance().element, def);
 					}
-					
-					addTab(attr);
 				}
 			}
 			
 			// 
-			private function addTab(attrSetItem: Object): void {
-				// Get the attribute item in current feature, if there's no such 
+			private function addTab(entity: XML, attrDef: Object): void {
+				// Get the attribute instance in current feature, if there's no such 
 				// item in current feature, then add tab according to the attrSetItem
-				var attr: XML;
-				var a: XMLList = featureXml.attrs.attr.(@name==String(attrSetItem.@name));
-				if (a.length() > 0) {
-					attr = a[0];
-				} else {
-					attr = XML(attrSetItem);
+				if (entity == null || attrDef == null) {
+					return;
+				}
+				var attr: XML = Model.instance().getAttrById(
+					entity,
+					String(attrDef.@id));
+				if (attr == null) {
+					attr = XML(attrDef);
 				}
 				
 				var tabWrapper: NavigatorContent = new NavigatorContent();
-				var sheet: AttributeSheet = AttributeSheetFactory.createAttributeSheet(attr);
+				var sheet: AttributeSheet = 
+					AttributeSheetFactory.createAttributeSheet(attr..value, XML(attrDef));
 				tabWrapper.addElement(sheet);
-				tabWrapper.label = sheet.attributeName
+				tabWrapper.label = sheet.attributeName;
 				this.tabNav.addChild(tabWrapper);
 				// Manage this tab by the tabMap.
-				this.tabMap[sheet.attributeName] = sheet; 
+				this.tabMap[sheet.attributeId] = sheet; 
 			}
 			
 			// IOperationListener methods
 			public function handleEditAddEntityType(op: Object): void {
-				// TODO
+				// do nothing
 			}
 			
 			public function handleEditAddBinRelType(op: Object): void {
-				// TODO
+				// do nothing
 			}
 			
 			public function handleVoteAddEntity(op: Object): void {
 				// Only handles the removal of current feature
-				if (op["featureId"] == String(this.featureId) &&
+				if (op["entityId"] == String(this.featureId) &&
 					op[Model.SHOULD_DELETE_ELEMENT] == true) {
 					tabNav.removeAllChildren();
 				}
@@ -160,19 +184,31 @@
 			}
 			
 			public function handleVoteAddValue(op: Object): void {
-				if (op["featureId"] == String(this.featureId)) {
-					var a: XMLList = 
-						Model.instance().entities.source.(@id==op["featureId"])..attr.(@name==op["attr"]);
-					if (a.length() <= 0) {
+				if (op["entityId"] == String(this.featureId)) {
+					var entity: XML = Model.instance().getEntityById(String(op["entityId"]));
+					if (entity == null) {
+						return;
+					}
+					var a: XML = Model.instance().getAttrById(entity,
+						String(op["attrId"]));
+					if (a == null) {
+						return;
+					}
+					
+					var def: XML = Model.instance().getAttrDefById(
+						entity, String(op["attrId"]));
+					if (def == null) {
 						return;
 					}
 					
 					// If the attribute tab hasn't been created...
-					if (this.tabMap[String(op["attr"])] == null) {
-						this.addTab(a[0]);
+					if (this.tabMap[String(op["attrId"])] == null) {
+						this.addTab(entity, def);
 					} else {
 						AttributeSheetFactory.setValuesForSheet(
-							AttributeSheet(this.tabMap[String(op["attr"])]), a[0]);
+							AttributeSheet(this.tabMap[String(op["attrId"])]), 
+							a..value,
+							def);
 					}
 				}
 			}

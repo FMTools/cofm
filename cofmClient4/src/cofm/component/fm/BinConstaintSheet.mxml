@@ -14,47 +14,21 @@
 			import cofm.command.*;
 			import cofm.component.fm.dlg.AddValueDlg;
 			import cofm.event.*;
+			import cofm.model.*;
 			import cofm.util.*;
 			
 			import mx.collections.ArrayCollection;
 			import mx.managers.PopUpManager;
 			
-			[Bindable] public var allowNewValues: Boolean;
-			
-			[Bindable] public var showValueIndex: Boolean;
-			
-			[Bindable] public var info: String;
-			
 			public var maxGridRows: int = 10;
 			public var minGridRows: int = 3;
 			
-			public var attributeId: int;
-			public var attributeName: String;
-			public var attributeType: String;
+			[Bindable] public var info: String;
 			
-			[Bindable] public var values: ArrayCollection = new ArrayCollection();
-			
-			private var addValueDlg: AddValueDlg;
-			
-			public function setValues(vals: XMLList): void {
-				values.source = [];
-				var index: int = 1;
-				for each (var obj: Object in vals) {
-					var item: AttributeValueInfo = new AttributeValueInfo();
-					item.attributeId = this.attributeId;
-					item.attributeName = this.attributeName;
-					item.attributeType = this.attributeType;
-					item.valueIndex = index++;
-					item.value = XML(obj.str).text().toString();
-					item.numSupporters = XMLList(obj.yes.user).length();
-					item.numOpponents = XMLList(obj.no.user).length();
-					
-					values.addItem(item);
-				}
-			}
+			[Bindable] public var dataSource: Object;
 			
 			private function adjustGridHeight(): void {
-				var itemCount: int = values.length;
+				var itemCount: int = CurrentFeature.instance().binaryConstraints.length;
 				if (itemCount < minGridRows) {
 					itemCount = minGridRows;
 				}
@@ -63,26 +37,17 @@
 				}
 				grid.height = grid.measureHeightOfItems(-1, itemCount);
 			}
-			
-			private function doAddValue(): void {
-				addValueDlg = AddValueDlg(PopUpManager.createPopUp(this, AddValueDlg, true));
-				addValueDlg.attrId = String(this.attributeId);
-				PopUpManager.centerPopUp(addValueDlg);
-			}
 		]]>
 	</fx:Script>
 	
-	<s:Button label="{RS.m_new_v}" visible="{allowNewValues}" includeInLayout="{allowNewValues}"
-			  click="doAddValue();"/>
 	<s:Label text="{info}"/>
-	<mx:AdvancedDataGrid id="grid" dataProvider="{values}"
+	<mx:AdvancedDataGrid id="grid" 
+						 dataProvider="{dataSource}"
 						 creationComplete="adjustGridHeight();"
 						 updateComplete="adjustGridHeight();"
 						 width="95%">
 		<mx:columns>
-			<mx:AdvancedDataGridColumn visible="{showValueIndex}" dataField="valueIndex"
-									   headerText="{RS.m_fe_grid_index}"/>
-			<mx:AdvancedDataGridColumn dataField="value" headerText="{RS.m_fe_grid_value}"/>
+			<mx:AdvancedDataGridColumn dataField="name" headerText="{RS.m_fe_cons_grid_name}"/>
 			<mx:AdvancedDataGridColumn dataField="numSupporters" headerText="{RS.m_fe_grid_yes}"
 									   width="95"/>
 			<mx:AdvancedDataGridColumn dataField="numOpponents" headerText="{RS.m_fe_grid_no}"
@@ -94,23 +59,25 @@
 						<s:MXAdvancedDataGridItemRenderer>
 							<fx:Script>
 								<![CDATA[
-									import cofm.util.*;
 									import cofm.command.*;
 									import cofm.model.CurrentFeature;
+									import cofm.util.*;
 									
 									private function doVoteYes(): void {
-										new VoteAddValueCommand(
-											data.attributeId,
-											data.value,
-											CurrentFeature.instance().id, 
+										new VoteAddBinRelationCommand(
+											int(data.typeId),
+											int(data.left),
+											int(data.right),
+											int(data.id),
 											true).execute();
 									}
 									
 									private function doVoteNo(): void {
-										new VoteAddValueCommand(
-											data.attributeId,
-											data.value,
-											CurrentFeature.instance().id, 
+										new VoteAddBinRelationCommand(
+											int(data.typeId),
+											int(data.left),
+											int(data.right),
+											int(data.id),
 											false).execute();
 									}
 								]]>
@@ -126,5 +93,4 @@
 			</mx:AdvancedDataGridColumn>
 		</mx:columns>
 	</mx:AdvancedDataGrid>
-	
 </s:SkinnableContainer>

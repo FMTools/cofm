@@ -55,6 +55,45 @@ package cofm.model
 		}
 		
 		// Utility methods
+		public function isSubType(subTypeId: String, baseTypeId: String): Boolean {
+			do {
+				if (subTypeId == baseTypeId) {
+					return true;
+				}
+				var subtypes: XMLList = this.entypes.source.(@id==subTypeId);
+				if (subtypes.length() <= 0) {
+					return false;
+				}
+				if (String(subtypes[0].@superId) == baseTypeId) {
+					return true;
+				}
+				subTypeId = String(subtypes[0].@superId);
+			} while (!isNaN(Number(subTypeId)));
+			return false;
+		}
+		
+		public function getEntityById(id: String): XML {
+			var es: XMLList = this.entities.source.(@id==id);
+			if (es.length() > 0) {
+				return es[0];
+			}
+			return null;
+		}
+		
+		public function getEntityByType(typeId: String): XMLList {
+			return this.entities.source.(@typeId==typeId);
+		}
+		
+		public function getEntityTypeHierarchy(baseTypeId: String): XMLList {
+			var result: XML = <result/>;
+			result.appendChild(this.entypes.source.(@id==baseTypeId));
+			var subs: XMLList = this.entypes.source.(@superId==baseTypeId);
+			for each (var subtype: Object in subs) {
+				result.appendChild(getEntityTypeHierarchy(String(subtype.@id)));
+			}
+			return result.entype;
+		}
+		
 		public function getEntityTypeNameById(id: String): String {
 			var ets: XMLList = this.entypes.source.(@id==id);
 			if (ets.length() > 0) {
@@ -74,23 +113,70 @@ package cofm.model
 			return entity.attrs.attr.(@id==attrId).values.value;
 		}
 		
-		public function getAttrNameById(entity: XML, attrId: String): String {
+		public function getPrimaryValueOfAttr(entity: XML, attrName: String): String {
+			// Primary value == value with highest support rate
+			var vals: XMLList = getValuesByAttrName(entity, attrName);
+			if (vals.length() <= 0) {
+				return null;
+			}
+			var highest: Number = -1;
+			var cur: Number = -1;
+			var highestVal: Object = null;
+			for each (var val: Object in vals) {
+				cur = this.getSupportRate(XML(val));
+				if (cur > highest) {
+					highest = cur;
+				}
+				highestVal = val;
+			}
+			if (highestVal != null) {
+				return highestVal.str.text().toString();
+			}
+			return null;
+		}
+		
+		public function getAttrDefById(entity: XML, attrId: String): XML {
 			var attrDefs: XMLList = this.entypes.source.(@id==entity.@typeId)[0]
 				.attrDefs.attrDef.(@id==attrId);
 			if (attrDefs.length() <= 0) {
 				return null;
 			}
-			return attrDefs[0].@name;
+			return attrDefs[0];
 		}
 		
-		public function getAttrIdByName(entity: XML, attrName: String): int {
+		public function getAttrNameById(entity: XML, attrId: String): String {
+			var attrDef: XML = getAttrDefById(entity, attrId);
+			if (attrDef == null) {
+				return null;
+			}
+			return attrDef.@name;
+		}
+		
+		public function getAttrDefByName(entity: XML, attrName: String): XML {
 			var tpId: String = String(entity.@typeId);
 			var tps: XMLList = this.entypes.source.(@id==tpId);
 			var attrDefs: XMLList = tps[0].attrDefs.attrDef.(@name==attrName);
 			if (attrDefs.length() <= 0) {
+				return null
+			}
+			return attrDefs[0];
+		}
+		
+		public function getAttrIdByName(entity: XML, attrName: String): int {
+			var attrDef: XML = getAttrDefByName(entity, attrName);
+			if (attrDef == null) {
 				return -1;
 			}
-			return attrDefs[0].@id;
+			return attrDef.@id;
+		}
+		
+		public function getAttrById(entity: XML, attrId: String): XML {
+			return entity..attr.(@id==attrId)[0];
+		}
+		
+		public function getAttrDefsOfEntity(entity: XML): XMLList {
+			var typeId: String = String(entity.@typeId);
+			return this.entypes.source.(@id==typeId).attrDefs.attrDef;
 		}
 		
 		public function getRefinementId(parent: String, child: String): String {
@@ -100,7 +186,7 @@ package cofm.model
 			if (rs.length() > 0) {
 				for each (var r: Object in rs) {
 					// return the relation which is a hierarchical type (i.e. a Refinement).
-					if (isRefinement(XML(r))) {
+					if (isInstanceOfRefinement(XML(r))) {
 						return r.@id;
 					}
 				}
@@ -150,11 +236,20 @@ package cofm.model
 			return results.bintype;
 		}
 		
-		public function isRefinement(binrelation: XML): Boolean {
-			return this.isRefinementById(binrelation.@typeId);
+		public function getBinRelationTypeByInstance(instance: XML): XML {
+			var d: String = String(instance.@typeId);
+			return this.bintypes.source.(@id==d)[0];
 		}
 		
-		public function isRefinementById(typeId: String): Boolean {
+		public function isRefinement(relationType: XML): Boolean {
+			return ModelUtil.isTrue(relationType.@hier);
+		}
+		
+		public function isInstanceOfRefinement(binrelation: XML): Boolean {
+			return this.isInstanceOfRefinementByTypeId(binrelation.@typeId);
+		}
+		
+		public function isInstanceOfRefinementByTypeId(typeId: String): Boolean {
 			var rTypes: XMLList = this.bintypes.source.(@id==typeId);
 			if (rTypes.length() > 0 && ModelUtil.isTrue(rTypes[0].@hier)) {
 				return true;
@@ -553,7 +648,7 @@ package cofm.model
 				);
 			}
 			
-			op[Model.IS_A_REFINEMENT] = this.isRefinementById(op["typeId"]);
+			op[Model.IS_A_REFINEMENT] = this.isInstanceOfRefinementByTypeId(op["typeId"]);
 		}
 		
 		private function onModelUpdate(evt: ModelUpdateEvent): void {

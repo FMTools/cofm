@@ -25,11 +25,13 @@
 			}
 			
 			private function doVoteYesOnFeature(): void {
-				new VoteAddFeatureCommand("", CurrentFeature.instance().id, true).execute();
+				new VoteAddFeatureCommand(
+					CurrentFeature.instance().typeId, CurrentFeature.instance().id, true).execute();
 			}
 			
 			private function doVoteNoOnFeature(): void {
-				new VoteAddFeatureCommand("", CurrentFeature.instance().id, false).execute();
+				new VoteAddFeatureCommand(
+					CurrentFeature.instance().typeId, CurrentFeature.instance().id, false).execute();
 			}
 		]]>
 	</fx:Script>
