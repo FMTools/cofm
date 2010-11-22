@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Form xmlns:fx="http://ns.adobe.com/mxml/2009" 
 		 xmlns:s="library://ns.adobe.com/flex/spark" 
-		 xmlns:mx="library://ns.adobe.com/flex/mx">
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 creationComplete="reset();">
 	<mx:states>
 		<s:State name="StringLike"/>
 		<s:State name="Enum"/>
@@ -29,6 +30,19 @@
 			
 			private static const MAX_ENUM_LENGTH: int = 40;
 			private static const ENUM_INPUT_WIDTH: int = 110;
+			
+			public function reset(): void {
+				nameInput.editable = true;
+				
+				typeInput.visible = false;
+				typeInput.includeInLayout = false;
+				
+				typeSelect.visible = true;
+				typeSelect.includeInLayout = true;
+				
+				currentState = "StringLike";
+				typeSelect.selectedIndex = 0;
+			}
 			
 			private function onTypeChange(evt: IndexChangeEvent): void {
 				changeType(evt.currentTarget.selectedItem.label);
