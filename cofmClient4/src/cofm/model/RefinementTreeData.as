@@ -8,7 +8,7 @@ package cofm.model
 	
 	import mx.collections.XMLListCollection;
 	
-	public class TreeData implements IOperationListener {
+	public class RefinementTreeData implements IOperationListener {
 		
 		/** The XML of tree
 		 *  <node>
@@ -28,7 +28,7 @@ package cofm.model
 		public static const KIND_CLASS: String = "CLASS";
 		public static const KIND_OBJECT: String = "OBJECT";
 		
-		public function TreeData() {
+		public function RefinementTreeData() {
 			this.xml = new XMLListCollection(new XMLList(<node/>));
 			
 			ClientEvtDispatcher.instance().addEventListener(
@@ -61,7 +61,7 @@ package cofm.model
 			}
 			var name: String = getEntityDisplayName(fs[0]);
 			return <node id={id} 
-				kind={TreeData.KIND_OBJECT}
+				kind={RefinementTreeData.KIND_OBJECT}
 				typeId={fs[0].@typeId}
 				creator={fs[0].@creator}
 				time={fs[0].@mtime}
@@ -71,52 +71,17 @@ package cofm.model
 				people="" />; 
 		}
 		
-		protected function createClassHierarchy(entype: XML): void {
-			// make sure the super class nodes are created first
-			var nodeStack: Array = new Array();
-			var cs: XML = entype;
-			var base: XML = null;
-			while (cs != null) {
-				var ns: XMLList = this.getNodeById(TreeData.KIND_CLASS, cs.@id);
-				if (ns.length() > 0) {
-					base = ns[0];
-					break;
-				}
-				var thisNode: XML = <node id={cs.@id}
-						kind={TreeData.KIND_CLASS}
-						name={cs.@name}
-						superId={cs.@superId} />;
-				nodeStack.push(thisNode);
-				var superId: Number = new Number(cs.@superId);
-				if (!isNaN(superId)){
-					var idstr: String = superId.toString();
-					var supers: XMLList = Model.instance().entypes.source.(@id==idstr);
-					if (supers.length() > 0) {
-						cs = supers[0];
-					} else {
-						cs = null;
-					}
-				} else {
-					break;
-				}
-			}
-			if (nodeStack.length <= 0) {
-				return;
-			}
+		protected function createRootClassNode(entype: XML): void {
+			// Create root class node for entype.
+			var cs: XML = Model.instance().getRootType(entype);
 			
-			// Append the first node
-			var first: XML = nodeStack.pop();
-			if (base == null) {
-				this.root.appendChild(first);
-			} else {
-				base.appendChild(first);
-			}
-			
-			// Then append the others
-			var cur: XML = first;
-			while (nodeStack.length > 0) {
-				cur.appendChild(nodeStack.pop());
-				cur = cur.children()[0];
+			var ns: XMLList = this.getNodeById(RefinementTreeData.KIND_CLASS, cs.@id);
+			if (ns.length() <= 0) {
+				this.root.appendChild(
+					<node id={cs.@id}
+					kind={RefinementTreeData.KIND_CLASS}
+					name={cs.@name}
+					superId={cs.@superId} />);
 			}
 		}
 		
@@ -130,7 +95,7 @@ package cofm.model
 		}
 		
 		protected function removeEntityById(id: String): void {
-			var targets: XMLList = getNodeById(TreeData.KIND_OBJECT, id);
+			var targets: XMLList = getNodeById(RefinementTreeData.KIND_OBJECT, id);
 			// for all children of targets, we should remove refinement of them first.
 			// After that, we remove the targets.
 			if (targets.length() > 0) {
@@ -154,8 +119,8 @@ package cofm.model
 			}
 			var parent: String = rs[0].@sourceId;
 			var child: String = rs[0].@targetId;
-			var p: XMLList = this.getNodeById(TreeData.KIND_OBJECT, parent);
-			var c: XMLList = this.getNodeById(TreeData.KIND_OBJECT, child);
+			var p: XMLList = this.getNodeById(RefinementTreeData.KIND_OBJECT, parent);
+			var c: XMLList = this.getNodeById(RefinementTreeData.KIND_OBJECT, child);
 			
 			ensureNonEmptyList(p, parent);
 			ensureNonEmptyList(c, child);
@@ -178,7 +143,7 @@ package cofm.model
 				}
 				if (hasNewParent) {
 					// Increase child.parents by 1.
-					for each (var chd: Object in this.getNodeById(TreeData.KIND_OBJECT, child)) {
+					for each (var chd: Object in this.getNodeById(RefinementTreeData.KIND_OBJECT, child)) {
 						chd.@parents = int(chd.@parents) + 1;
 					}
 				}
@@ -209,8 +174,8 @@ package cofm.model
 				child = childId;
 			}
 			
-			var p: XMLList = this.getNodeById(TreeData.KIND_OBJECT, parent);
-			var c: XMLList = this.getNodeById(TreeData.KIND_OBJECT, child);
+			var p: XMLList = this.getNodeById(RefinementTreeData.KIND_OBJECT, parent);
+			var c: XMLList = this.getNodeById(RefinementTreeData.KIND_OBJECT, child);
 			
 			if (c.length() > 0 && p.length() > 0) {
 				var ch: XML = XML(c[0]).copy();
@@ -228,7 +193,7 @@ package cofm.model
 				if (ch.@parents == "1") {  // make ch a root feature
 					addToRootOfClass(ch);
 				}
-				for each (var chd: Object in this.getNodeById(TreeData.KIND_OBJECT, child)) {
+				for each (var chd: Object in this.getNodeById(RefinementTreeData.KIND_OBJECT, child)) {
 					chd.@parents = int(chd.@parents) - 1;
 				}
 				
@@ -249,14 +214,18 @@ package cofm.model
 		
 		private function addToRootOfClass(node: XML): void {
 			// Actually, move node to the root of its Class-Node
-			var classNode: XMLList = this.getNodeById(TreeData.KIND_CLASS, node.@typeId);
-			if (classNode.length() > 0) {
-				XML(classNode[0]).appendChild(node);
+			var entype: XML = Model.instance().getRootTypeById(node.@typeId);
+			if (entype != null) {
+				var classNode: XMLList = this.getNodeById(RefinementTreeData.KIND_CLASS, entype.@id);
+				if (classNode.length() > 0) {
+					XML(classNode[0]).appendChild(node);
+				}
 			}
+			
 		}
 		
 		protected function addPersonLocation(id: String, person: String): void {
-			for each (var node: Object in getNodeById(TreeData.KIND_OBJECT, id)) {
+			for each (var node: Object in getNodeById(RefinementTreeData.KIND_OBJECT, id)) {
 				var people: String = node.@people;
 				if (people != "") {
 					people += ", ";   // append a person to other people.
@@ -287,7 +256,7 @@ package cofm.model
 		
 		protected function updateEntitySupportRate(id: String): void {
 			var sr: Number = Model.instance().getEntitySupportRate(id);
-			for each (var f: Object in this.getNodeById(TreeData.KIND_OBJECT, id)) {
+			for each (var f: Object in this.getNodeById(RefinementTreeData.KIND_OBJECT, id)) {
 				f.@support = sr;
 			}
 		}
@@ -304,7 +273,7 @@ package cofm.model
 			
 			// Create the Class Nodes
 			for each (var c: Object in Model.instance().entypes.source) {
-				this.createClassHierarchy(XML(c));
+				this.createRootClassNode(XML(c));
 			}
 			
 			// Create the Object Nodes
@@ -316,7 +285,7 @@ package cofm.model
 			}	
 			// Create Refinements between Objects
 			for each (var r: Object in Model.instance().binaries.source) {
-				if (r.@type == Cst.BIN_REL_REFINES) {
+				if (Model.instance().isInstanceOfRefinement(XML(r))) {
 					addRefinement(r.@id);
 				}
 			}
@@ -349,7 +318,7 @@ package cofm.model
 		public function handleEditAddEntityType(op: Object): void {
 			var _entypes: XMLList = Model.instance().entypes.source.(@id==op["typeId"]);
 			if (_entypes.length() > 0) {
-				this.createClassHierarchy(XML(_entypes[0]));
+				this.createRootClassNode(XML(_entypes[0]));
 			}
 		}
 		
@@ -429,7 +398,7 @@ package cofm.model
 			
 			// recalculate the displayed name (primary name)
 			var name: String = this.getEntityDisplayName(fs[0]);
-			for each (var f: Object in this.getNodeById(TreeData.KIND_OBJECT, op["entityId"])) {
+			for each (var f: Object in this.getNodeById(RefinementTreeData.KIND_OBJECT, op["entityId"])) {
 				f.@name = name;
 			}
 		}
@@ -510,7 +479,7 @@ package cofm.model
 		}
 		
 		public function getEntityNameById(id: String): String {
-			var fs: XMLList = this.getNodeById(TreeData.KIND_OBJECT, id);
+			var fs: XMLList = this.getNodeById(RefinementTreeData.KIND_OBJECT, id);
 			if (fs.length() > 0) {
 				return fs[0].@name;
 			}
@@ -522,7 +491,7 @@ package cofm.model
 		}
 		
 		protected function containsEntity(id: String): Boolean {
-			return this.getNodeById(TreeData.KIND_OBJECT, id).length() > 0;
+			return this.getNodeById(RefinementTreeData.KIND_OBJECT, id).length() > 0;
 		}
 		
 		

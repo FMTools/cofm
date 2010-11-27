@@ -59,12 +59,12 @@
 				if (CurrentFeature.instance().id <= 0) {
 					this.currentState = "Unselected";
 					parentId = -1;
-				} else if (CurrentFeature.instance().kind == TreeData.KIND_CLASS) {
+				} else if (CurrentFeature.instance().kind == RefinementTreeData.KIND_CLASS) {
 					this.currentState = "TypeSelected";
 					typeName.text = CurrentFeature.instance().name;
 					typeId = CurrentFeature.instance().id;
 					parentId = -1;
-				} else if (CurrentFeature.instance().kind == TreeData.KIND_OBJECT) {
+				} else if (CurrentFeature.instance().kind == RefinementTreeData.KIND_OBJECT) {
 					this.currentState = "EntitySelected";
 					typeName.text = Model.instance().getEntityTypeNameById(
 						String(CurrentFeature.instance().typeId));

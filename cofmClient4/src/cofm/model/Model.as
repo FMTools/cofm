@@ -84,6 +84,34 @@ package cofm.model
 			return this.entities.source.(@typeId==typeId);
 		}
 		
+		public function getRootType(entype: XML): XML {
+			// find the root class
+			var cs: XML = entype;
+			while (true) {
+				var superId: Number = new Number(cs.@superId);
+				if (!isNaN(superId)){
+					var idstr: String = superId.toString();
+					var supers: XMLList = Model.instance().entypes.source.(@id==idstr);
+					if (supers.length() > 0) {
+						cs = supers[0];
+					} else {
+						break;
+					}
+				} else {
+					break;
+				}
+			}
+			return cs;
+		}
+		
+		public function getRootTypeById(typeId: String): XML {
+			var entype: XML = this.entypes.source.(@id==typeId)[0];
+			if (entype != null) {
+				return this.getRootType(entype);
+			}
+			return null;
+		}
+		
 		public function getEntityTypeHierarchy(baseTypeId: String): XMLList {
 			var result: XML = <result/>;
 			result.appendChild(this.entypes.source.(@id==baseTypeId));

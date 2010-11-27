@@ -1,6 +1,6 @@
 package cofm.component.fm
 {
-	import cofm.model.TreeData;
+	import cofm.model.RefinementTreeData;
 	
 	import mx.utils.StringUtil;
 	import mx.controls.treeClasses.*;
@@ -16,7 +16,7 @@ package cofm.component.fm
 			if (value != null) {
 				super.data = value;
 				var cur: XMLList = new XMLList(TreeListData(super.listData).item);
-				if (TreeData.KIND_CLASS == String(cur[0].@kind)) {
+				if (RefinementTreeData.KIND_CLASS == String(cur[0].@kind)) {
 					setStyle("textDecoration", "underline");
 					setStyle("color", "blue");
 					setStyle("fontWeight", "bold");
@@ -25,7 +25,7 @@ package cofm.component.fm
 				
 					// Set errors to red color
 					var e1: int = int(cur[0].@parents);
-					var unnamed: Boolean = String(cur[0].@name) == TreeData.UNNAMED;
+					var unnamed: Boolean = String(cur[0].@name) == RefinementTreeData.UNNAMED;
 					if (e1 > 1 || unnamed) {
 						setStyle("color", 0xff0000);
 					} else {
@@ -49,7 +49,7 @@ package cofm.component.fm
 			super.updateDisplayList(unscaledWidth, unscaledHeight);
 			if (super.data) {
 				var curItems: XMLList = new XMLList(TreeListData(super.listData).item);
-				if (TreeData.KIND_OBJECT == String(curItems[0].@kind)) {
+				if (RefinementTreeData.KIND_OBJECT == String(curItems[0].@kind)) {
 					var extraInfo: String = "";
 					var rate: Number = Number(curItems[0].@support);
 					if (rate < 1) {

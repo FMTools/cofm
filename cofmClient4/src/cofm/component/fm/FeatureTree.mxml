@@ -15,7 +15,7 @@
 			import cofm.command.*;
 			import cofm.event.*;
 			import cofm.util.*;
-			import cofm.model.TreeData;
+			import cofm.model.RefinementTreeData;
 			
 			import mx.events.ListEvent;
 			
@@ -25,7 +25,7 @@
 				
 				var curId: int = int(selectedItem.@id);
 				var eventType: String;
-				if (String(selectedItem.@kind) == TreeData.KIND_CLASS) {
+				if (String(selectedItem.@kind) == RefinementTreeData.KIND_CLASS) {
 					eventType = FeatureSelectEvent.TYPE_SELECTED;
 				} else {
 					eventType = FeatureSelectEvent.FEATURE_SELECTED;

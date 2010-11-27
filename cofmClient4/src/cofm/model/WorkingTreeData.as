@@ -3,7 +3,7 @@ package cofm.model
 	import cofm.event.*;
 	import cofm.util.*;
 	
-	public class WorkingTreeData extends TreeData implements IOperationListener {
+	public class WorkingTreeData extends RefinementTreeData implements IOperationListener {
 		private static var _instance: WorkingTreeData = new WorkingTreeData();
 		
 		public static function instance(): WorkingTreeData {

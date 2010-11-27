@@ -2,7 +2,7 @@ package cofm.model
 {
 	import cofm.util.*;
 
-	public class PersonalTreeData extends TreeData
+	public class PersonalTreeData extends RefinementTreeData
 	{
 		private static var _instance: PersonalTreeData = new PersonalTreeData();
 		
