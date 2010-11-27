@@ -54,6 +54,10 @@
 		
 		<s:Panel id="featureBrowser">
 			<mx:TabNavigator paddingTop="0">
+				<s:NavigatorContent label="Type View">
+					<fm:FeatureTree dataProvider="{ClassificationTreeData.instance().xml}"
+									width="{Size.TREE_W}" height="{Size.TREE_H}"/>
+				</s:NavigatorContent>
 				<s:NavigatorContent label="Global View">
 					<fm:FeatureTree dataProvider="{GlobalTreeData.instance().xml}"
 									width="{Size.TREE_W}" height="{Size.TREE_H}"/>

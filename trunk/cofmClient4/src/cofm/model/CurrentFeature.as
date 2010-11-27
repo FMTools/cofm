@@ -86,7 +86,7 @@ package cofm.model
 		private function onTypeSelected(evt: FeatureSelectEvent): void {
 			this.clear();
 			
-			kind = TreeData.KIND_CLASS;
+			kind = RefinementTreeData.KIND_CLASS;
 			id = evt.id;
 			typeId = id;
 			name = evt.name;
@@ -98,7 +98,7 @@ package cofm.model
 		private function onCurrentFeatureSelected(evt: FeatureSelectEvent): void {	
 			this.clear();
 			
-			kind = TreeData.KIND_OBJECT;
+			kind = RefinementTreeData.KIND_OBJECT;
 			id = evt.id;
 			name = evt.name;
 			element = XML(Model.instance().entities.source.(@id==String(evt.id))[0]);

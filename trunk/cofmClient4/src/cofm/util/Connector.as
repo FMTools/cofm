@@ -63,7 +63,7 @@ package cofm.util
 		}
 		
 		private function onSecurityError(evt: SecurityErrorEvent): void {
-			Alert.show("Unable to connect the server, or the server hasn't started up.", "Cannot establish connection");
+			Alert.show("A security error occured. (" + evt.toString() + ")", "Cannot establish connection");
 		}
 	}
 }

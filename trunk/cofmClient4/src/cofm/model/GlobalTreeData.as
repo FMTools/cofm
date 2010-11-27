@@ -3,7 +3,7 @@ package cofm.model
 	import cofm.event.*;
 	import cofm.util.*;
 	
-	public class GlobalTreeData extends TreeData {
+	public class GlobalTreeData extends RefinementTreeData {
 		private static var _instance: GlobalTreeData = new GlobalTreeData();
 		
 		public static function instance(): GlobalTreeData {
