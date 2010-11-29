@@ -235,7 +235,9 @@ package cofm.model
 					if (r.@sourceId == String(this.id)) {
 						binaryConstraints.addItem({
 							"id": r.@id,
-							"name": "this " + tp.@name + " " + ModelUtil.getFeatureNameById(r.@targetId),
+							"name": "this <b><font color='#088A08'>" 
+									+ tp.@name + "</font></b> " 
+									+ ModelUtil.getFeatureNameById(r.@targetId),
 							"numSupporters": XMLList(r.yes.user).length(),
 							"numOpponents": XMLList(r.no.user).length(),
 							"y": toUserArray(XMLList(r.yes.user)),
@@ -247,7 +249,9 @@ package cofm.model
 					} else if (r.@targetId == String(this.id)) {
 						binaryConstraints.addItem({
 							"id": r.@id,
-							"name": ModelUtil.getFeatureNameById(r.@sourceId) + " " + tp.@name + " this",
+							"name": ModelUtil.getFeatureNameById(r.@sourceId) 
+									+ " <b><font color='#088A08'>" 
+									+ tp.@name + "</font></b> this",
 							"numSupporters": XMLList(r.yes.user).length(),
 							"numOpponents": XMLList(r.no.user).length(),
 							"y": toUserArray(XMLList(r.yes.user)),

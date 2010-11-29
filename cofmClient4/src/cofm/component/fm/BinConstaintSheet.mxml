@@ -47,7 +47,15 @@
 						 updateComplete="adjustGridHeight();"
 						 width="95%">
 		<mx:columns>
-			<mx:AdvancedDataGridColumn dataField="name" headerText="{RS.m_fe_cons_grid_name}"/>
+			<mx:AdvancedDataGridColumn dataField="name" headerText="{RS.m_fe_cons_grid_name}">
+				<mx:itemRenderer>
+					<fx:Component>
+						<s:MXAdvancedDataGridItemRenderer>
+							<mx:Text htmlText="{data.name}" />
+						</s:MXAdvancedDataGridItemRenderer>
+					</fx:Component>
+				</mx:itemRenderer>
+			</mx:AdvancedDataGridColumn>
 			<mx:AdvancedDataGridColumn dataField="numSupporters" headerText="{RS.m_fe_grid_yes}"
 									   width="95"/>
 			<mx:AdvancedDataGridColumn dataField="numOpponents" headerText="{RS.m_fe_grid_no}"
