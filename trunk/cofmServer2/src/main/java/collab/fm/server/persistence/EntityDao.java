@@ -10,4 +10,5 @@ public interface EntityDao extends GenericDao<Entity, Long> {
 
 	public List<Entity> getByAttrValue(Long modelId, Long attrId, String val, boolean similar) throws ItemPersistenceException, StaleDataException;
 	
+	public List<Entity> getAllByTypeId(Long modelId, Long typeId) throws ItemPersistenceException, StaleDataException;
 }
