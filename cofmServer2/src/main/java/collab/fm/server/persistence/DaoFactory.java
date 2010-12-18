@@ -49,11 +49,6 @@ public abstract class DaoFactory {
 			
 		}
 		
-		public static class ElementTypeDaoImpl extends GenericDaoImpl<ElementType, Long>
-			implements ElementTypeDao {
-		
-		}
-		
 		public static class ElementDaoImpl extends GenericDaoImpl<Element, Long>
 			implements ElementDao {
 			
