@@ -20,7 +20,7 @@ import collab.fm.server.bean.persist.relation.RelationType;
  */
 public interface IQuery {
 	
-	public List<Entity> getEntityByName(Long modelId, String name);
+	public List<Entity> getEntityByName(Long modelId, Long entityTypeId, String name);
 	
 	public EntityType getEntityTypeByName(Long modelId, String name);
 	
@@ -31,7 +31,7 @@ public interface IQuery {
 	public List<Entity> getParents(Long entityId);
 	public List<Entity> getChildren(Long entityId);
 	
-	public List<Entity> getInvolvedEntities(Long entityId, Long relationTypeId);
+	public List<Entity> getInvolvedEntities(Long entityId, String relationTypeName);
 	
 	public ValueList getPossibleValues(Long entityId, String attrName);
 }
