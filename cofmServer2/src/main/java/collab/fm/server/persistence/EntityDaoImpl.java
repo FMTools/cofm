@@ -26,7 +26,7 @@ public class EntityDaoImpl extends GenericDaoImpl<Entity, Long> implements Entit
 			throws ItemPersistenceException, StaleDataException {
 		try {
 			List result = HibernateUtil.getCurrentSession().createQuery(
-					"select entity from Entity as entity" +
+					"select entity from Entity as entity " +
 					"join entity.model as m" +
 					"join entity.type as t" +
 					"where m.id = :mId and t.id = :tId ")
