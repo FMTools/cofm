@@ -68,8 +68,8 @@
 			import collab.fm.client.event.*;
 			
 			private var relType: String = Cst.BIN_REL_REFINES;
-			private var left: int;
-			private var right: int;
+			private var leftF: int;
+			private var rightF: int;
 			
 			private function onClose(): void {
 				PopUpManager.removePopUp(this);
@@ -96,10 +96,10 @@
 				
 				if (relType == Cst.BIN_REL_REFINES || relType == Cst.BIN_REL_EXCLUDES
 					|| relType == Cst.BIN_REL_REQUIRES) {
-					left = FeatureNameList.instance.getIdByName(leftFeature.text);
-					right = FeatureNameList.instance.getIdByName(rightFeature.text);
-					if (left > 0 && right > 0) {
-						new CreateOrVoteBinaryRelationshipCommand(relType, left, right).execute();
+					leftF = FeatureNameList.instance.getIdByName(leftFeature.text);
+					rightF = FeatureNameList.instance.getIdByName(rightFeature.text);
+					if (leftF > 0 && rightF > 0) {
+						new CreateOrVoteBinaryRelationshipCommand(relType, leftF, rightF).execute();
 					} else {
 						Console.error("CreateRelationshipDlg - couldn't get ID by feature name.");
 					}
