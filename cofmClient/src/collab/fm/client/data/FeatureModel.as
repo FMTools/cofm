@@ -465,6 +465,8 @@ package collab.fm.client.data {
 		public function stats(): String {
 			// Number of features
 			var numFeature: int = this.features.source.length();
+			var numRefinement: int = 0;
+			var numConstraint: int = 0;
 			// Number of common features (NO vote == 0)
 			var numCommon: int = 0;
 			// Number of optional features (NO vote == 1, 2, 3, ...)
@@ -483,11 +485,20 @@ package collab.fm.client.data {
 				}
 			}
 			
+			for each (var r: Object in this.binaries.source) {
+				if (r.@type == Cst.BIN_REL_REFINES) {
+					numRefinement ++;
+				} else {
+					numConstraint ++;
+				}
+			}
+			
 			var s: String = "FeatureModel - Total: " + numFeature + " features; Common: " +
 				numCommon + "; ";
 			for (var a: Object in numOpt) {
 				s += "NO by " + a + " user(s): " + numOpt[a] + " features; ";
 			}
+			s += "\nRefinement: " + numRefinement + ", Constraint: " + numConstraint;
 			return s;
 		}
 		
