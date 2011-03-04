@@ -98,7 +98,7 @@
 			<s:TextArea id="textVal" includeIn="AddText"/>
 			
 			<!-- The prompt for number unit, min and max values -->
-			<s:Label id="numInfo" includeIn="AddNumber"/>
+			<s:Label id="numInfo"/>
 		</mx:FormItem>
 		<mx:FormItem direction="horizontal">
 			<s:Button label="{RS.ok}" click="doAddValue();"/>

@@ -148,7 +148,7 @@
 				var aType: String = typeSelect.selectedItem.label;
 				var allowDup: Boolean = dupSelect.selected == false;
 				
-				var rslt: XML = <attr name={aName} type={aType} dup={allowDup} multi="true"/>;
+				var rslt: XML = <attrDef name={aName} type={aType} dup={allowDup} multi="true"/>;
 				
 				switch (aType) {
 					case Cst.ATTR_TYPE_ENUM:

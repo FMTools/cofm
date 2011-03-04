@@ -22,6 +22,7 @@
 			// Toolbar
 			private var createFeatureDlg: CreateFeatureDlg;
 			private var createRelationDlg: CreateBinRelationDlg;
+			private var editTypeDlg: EditEntityTypeDlg;
 			//private var addAttributeDlg: AddAttributeDlg;
 			
 			public function retrieveFeatureModel(modelId: int, modelName: String): void {
@@ -40,8 +41,8 @@
 			}
 			
 			private function doAddAttribute(): void {
-				//addAttributeDlg = AddAttributeDlg(PopUpManager.createPopUp(this, AddAttributeDlg, true));
-				//PopUpManager.centerPopUp(addAttributeDlg);
+				editTypeDlg = EditEntityTypeDlg(PopUpManager.createPopUp(this, EditEntityTypeDlg, true));
+				PopUpManager.centerPopUp(editTypeDlg);
 			}
 		]]>
 	</fx:Script>
