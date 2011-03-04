@@ -15,7 +15,7 @@ package cofm.command
 			multi: Boolean=true, dup: Boolean=true,
 			modelId: int = -1, attrId: int = -1) {
 			
-			super(name, Cst.ATTR_TYPE_ENUM, entypeId, multi, dup, modelId, attrId);
+			super(name, Cst.ATTR_TYPE_NUMBER, entypeId, multi, dup, modelId, attrId);
 			_min = min;
 			_max = max;
 			_unit = unit;

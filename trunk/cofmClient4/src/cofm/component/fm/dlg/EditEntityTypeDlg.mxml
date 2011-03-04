@@ -6,6 +6,9 @@
 			   xmlns:common="cofm.component.common.*"
 			   close="onCancel();"
 			   creationComplete="initView();">
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
 	<s:states>
 		<s:State name="EntityBegin" />
 		<s:State name="TypeSelected" />
@@ -23,136 +26,107 @@
 			import cofm.util.*;
 			
 			import mx.collections.XMLListCollection;
+			import mx.events.FlexEvent;
 			import mx.events.ListEvent;
 			import mx.managers.PopUpManager;
 			
 			private static const TO_BE_DELETED: String = "____TO_BE_DELETED____";
-			private var typeId: int = 1;
+			private var typeId: int = 0;
 			
-			private var selectedTypeId: int;
+			private var selectedTypeId: String;
 			
-			[Bindable] public var modelName: String;
-			
-			[Bindable]
-			public var entityTypeList: XMLListCollection = new XMLListCollection();
+			private static const nameAttrXml: XML = <attrDef name={Cst.ATTR_FEATURE_NAME} type={Cst.ATTR_TYPE_STRING} multi="true" dup="false"/>;
+			private static const desAttrXml: XML = <attrDef name={Cst.ATTR_FEATURE_DES} type={Cst.ATTR_TYPE_TEXT} multi="true" dup="true"/>;
 			
 			[Bindable]
-			public var entityTypes: XMLListCollection = 
-				new XMLListCollection(new XMLList(
-					<et><et id="1" name="Feature"/></et>));
+			public var entityTypes: XMLListCollection;
 			
 			[Bindable]
-			public var entityAttrs: XMLListCollection = 
-				new XMLListCollection(new XMLList(
-					<et id="1">
-						<attr name={Cst.ATTR_FEATURE_NAME} type={Cst.ATTR_TYPE_STRING} multi="true" dup="false"/>
-						<attr name={Cst.ATTR_FEATURE_DES} type={Cst.ATTR_TYPE_TEXT} multi="true" dup="true"/>
-						<attr name={Cst.ATTR_FEATURE_OPT} type={Cst.ATTR_TYPE_ENUM} multi="false" dup="true">
-							<enums>
-								<enum>{Cst.VAL_OPT_MAN}</enum>
-								<enum>{Cst.VAL_OPT_OPT}</enum>
-							</enums>
-						</attr>
-					</et>));
-			
-			private static const nameAttrXml: XML = <attr name={Cst.ATTR_FEATURE_NAME} type={Cst.ATTR_TYPE_STRING} multi="true" dup="false"/>;
-			private static const desAttrXml: XML = <attr name={Cst.ATTR_FEATURE_DES} type={Cst.ATTR_TYPE_TEXT} multi="true" dup="true"/>;
-			
-			private static const defaultRelation: XML = 
-				<binrel>
-					<binrel name={Cst.BIN_REL_REQUIRES} dir="true" hier="false" left="1" right="1"
-							leftName="Feature" rightName="Feature" />
-					<binrel name={Cst.BIN_REL_EXCLUDES} dir="false" hier="false" left="1" right="1"
-							leftName="Feature" rightName="Feature" />
-				</binrel>;
-			
-			[Bindable]
-			public var binRelations: XMLListCollection = new XMLListCollection(defaultRelation.binrel);
+			public var typeTreeData: XMLListCollection;
 			
 			private function initView(): void {
-				ClientEvtDispatcher.instance().addEventListener(
-					ModelSelectEvent.SELECTED, onModelSelected);
-			}
-			
-			private function onModelSelected(evt: ModelSelectEvent): void {
-				ClientEvtDispatcher.instance().removeEventListener(
-					ModelSelectEvent.SELECTED, onModelSelected);
-				onCancel();
-			}
-			
-			// return the root of entityTypes
-			private function etRoot(): XML {
-				return XML(entityTypes.getItemAt(0));
-			}
-			
-			private function resetEntityNamesInRelations(): void {
-				var brs: XML = <brs/>;
-				for each (var binrel: Object in binRelations.source) {
-					var ln: String = getEntityNameById(String(binrel.@left));
-					var rn: String = getEntityNameById(String(binrel.@right));
-					if (ln != null && rn != null) {
-						binrel.@leftName = ln;
-						binrel.@rightName = rn;
-						brs.appendChild(binrel);
+				// Copy entity types from Model and generate into a tree.
+				entityTypes = new XMLListCollection();
+				typeTreeData = new XMLListCollection(new XMLList(<entype/>));
+				for (var t: Object in Model.instance().entypes.source) {
+					entityTypes.addItem(XML(t).copy());
+					
+					var rootType: XML = Model.instance().getRootType(XML(t));
+					if (getNodeById(rootType.@id) == null) {
+						var base: XML = rootNode();
+						for (var curType: Object in Model.instance().getEntityTypeHierarchy(rootType.@id)) {
+							var cur: XML = XML(curType).copy();
+							// Remove the <attrDefs/> part from the <entype> node, otherwise
+							// the <attrDefs/> will appear as a node in the tree.
+							delete cur.attrDefs;
+							base.appendChild(cur);
+							base = cur;
+						}
 					}
 				}
-				binRelations.source = brs.binrel;
+				
 			}
 			
-			private function getEntityNameById(id: String): String {
-				var entities: XMLList = this.etRoot()..et.(@id==id);
-				if (entities.length() > 0) { 
-					return entities[0].@name;
+			private function rootNode(): XML {
+				return XML(typeTreeData.getItemAt(0));
+			}
+			
+			private function getNodeById(id: String): XML {
+				var nodes: XMLList = rootNode()..entype.(@id==id);
+				if (nodes.length() > 0) {
+					return XML(nodes[0]);
 				}
 				return null;
+			}
+			
+			private function onTypeNameChanged(evt: ListEvent): void {
+				// TODO: 1. store the old name when clicked the item.
+				// 2. get the new name by item ID
+				// 3. see if the name has been changed.
+				trace ("+++ " + rootNode()..entype.(@id==selectedTypeId)[0].@name);
 			}
 			
 			private function onTypeClicked(evt: ListEvent): void {
 				this.currentState = "TypeSelected";	
 				
+				selectedTypeId = String(typeTree.selectedItem.@id);
+
 				attrGrid.dataProvider = 
-					entityAttrs.source.(@id==String(typeTree.selectedItem.@id))[0].attr;
-				
-				selectedTypeId = int(typeTree.selectedItem.@id);
+					entityTypes.source.(@id==selectedTypeId)[0].attrDefs.attrDef;
 				
 				attrForm.reset();
 			}
 			
 			private function onNewType(): void {
-				var n: XML = <et id={++typeId} name="Enter type name here"/>;
-				etRoot().appendChild(n);
+				// Auto-generated temporary ID is equal or less than 0.
+				var n: XML = <entype id={typeId--} name="Enter type name here"/>;
+				rootNode().appendChild(n);
 				typeTree.selectedItem = n;
 				
-				var nAttrs: XML = n.copy();
-				// Add the default attributes.
-				nAttrs.appendChild(nameAttrXml.copy());
-				nAttrs.appendChild(desAttrXml.copy());
-				entityAttrs.addItem(nAttrs);
+				// Add the default attributes and copy to entityTypes.
+				var c: XML = n.copy();
+				c.appendChild(<attrDefs/>);
+				c.attrDefs.appendChild(nameAttrXml.copy());
+				c.attrDefs.appendChild(desAttrXml.copy());
+				entityTypes.addItem(c);
 			}
 			
 			private function onNewSubtype(): void {
-				var n: XML = <et id={++typeId} name="Enter type name here"/>;
-				var parent: XML = XML(etRoot()..et.(@id==String(typeTree.selectedItem.@id))[0]);
-				parent.appendChild(n);
-				//typeTree.selectedItem = n;
+				var parentType: XML = XML(entityTypes.source.(@id==selectedTypeId)[0]);
+				var parentNode: XML = getNodeById(selectedTypeId);
+				if (parentNode == null) {
+					return;
+				}
+				
+				var n: XML = <entype id={typeId--} superId={parentType.@id} name="Enter type name here"/>;
+				parentNode.appendChild(n);
+				typeTree.expandItem(parentNode, true);
+				typeTree.selectedItem = n;
 				
 				// A subtype inherits all attributes from its parent.
-				var pid: String = String(parent.@id);
-				var parentAttrs: XML = entityAttrs.source.(@id==pid)[0];
-				var subAttrs: XML = parentAttrs.copy();
-				subAttrs.@id = n.@id;
-				entityAttrs.addItem(subAttrs);
-			}
-			
-			private function onDeleteType(): void {
-				var enId: String = String(typeTree.selectedItem.@id); 
-				// Delete entity type and its attributes
-				delete etRoot()..et.(@id==enId)[0];
-				delete entityAttrs.source.(@id==enId)[0];
-				
-				// Force user to select another type to delete or add subtype.
-				currentState = "EntityBegin";
-				typeTree.selectedIndex = -1;  // Make sure no item is selected on the tree.
+				var type: XML = n.copy();
+				type.attrDefs = parentType.attrDefs.copy();
+				entityTypes.addItem(type);				
 			}
 			
 			private function onAttributeClicked(): void {
@@ -173,108 +147,21 @@
 					
 				} else {
 					// Add the new attribute
-					XML(entityAttrs.source.(@id==selectedTypeId)[0]).appendChild(cur.copy());
+					XML(entityTypes.source.(@id==selectedTypeId)[0]).appendChild(cur.copy());
 					attrGrid.dataProvider = 
-						entityAttrs.source.(@id==selectedTypeId)[0].attr;
+						entityTypes.source.(@id==selectedTypeId)[0].attrDefs.attrDef;
 				}
 				this.currentState = "TypeSelected";
 				attrGrid.selectedIndex = -1;  // Make sure the attribute grid is not selected.
 				attrForm.reset();
 			}
-			
-			private function onRelationClicked(): void {
-				this.currentState = "RelationSelected";
-				var r: XML = XML(relationGrid.selectedItem);
-				relationNameInput.text = r.@name;
-				leftTypeSelect.selectedItem = entityTypeList.source.(@id==r.@left)[0];
-				rightTypeSelect.selectedItem = entityTypeList.source.(@id==r.@right)[0];
-				//hierCheck.selected = ModelUtil.isTrue(String(r.@hier));
-				dirCheck.selected = ModelUtil.isTrue(String(r.@dir));
-			}
-			
-			private function isValidRelation(): Boolean {
-				// name must not be used.
-				var names: XMLList = binRelations.source.(@name==relationNameInput.text);
-				if (names.length() > 0) {
-					return false;
-				}
-				return true;
-			}
-			
-			private function onRelationChanged(): void {
-				if (this.currentState == "RelationSelected") {
-					var old: Object = relationGrid.selectedItem;
-					old.@name = relationNameInput.text;
-					old.@left = leftTypeSelect.selectedItem.@id;
-					old.@right = rightTypeSelect.selectedItem.@id;
-					old.@leftName = leftTypeSelect.selectedItem.@name;
-					old.@rightName = rightTypeSelect.selectedItem.@name;
-					//old.@hier = hierCheck.selected;
-					old.@hier = false;
-					old.@dir = dirCheck.selected;
-				} else if (isValidRelation()) {
-					binRelations.addItem(<binrel 
-						name={relationNameInput.text}
-						left={leftTypeSelect.selectedItem.@id}
-						right={rightTypeSelect.selectedItem.@id}
-						leftName={leftTypeSelect.selectedItem.@name}
-						rightName={rightTypeSelect.selectedItem.@name}
-						hier="false"
-						dir={dirCheck.selected} />);
-					//hier={hierCheck.selected}
-				}
-				this.currentState = "RelationUnselected";
-				relationGrid.selectedIndex = -1;
-			}
-			
-			private function onRelationDeleted(): void {
-				var n: String = String(relationGrid.selectedItem.@name);
-				var r:XML = XML(binRelations.source.(@name==n)[0]);
-				binRelations.removeItemAt(binRelations.getItemIndex(r));
-				this.currentState = "RelationUnselected";
-				relationGrid.selectedIndex = -1;
-			}
-			
-			private function onBack(): void {
-				switch (this.currentState) {
-					case "EntityBegin":
-					case "TypeSelected":
-					case "AttrSelected":
-						this.currentState = "Basic";
-						break;
-					case "RelationSelected":
-					case "RelationUnselected":
-						this.currentState = "EntityBegin";
-						break;
-				}
-			}
-			
-			private function onNext(): void {
-				switch (this.currentState) {
-					case "Basic":
-						this.currentState = "EntityBegin";
-						break;
-					case "EntityBegin":
-					case "TypeSelected":
-					case "AttrSelected":
-						this.currentState = "RelationUnselected";
-						// Init entityTypeList
-						entityTypeList.source = entityTypes.source..et;
-						// Init relations' names.
-						resetEntityNamesInRelations();
-						break;
-					case "RelationSelected":
-					case "RelationUnselected":
-						doCreateModel();
-						break;
-				}	
-			}
+		
 			
 			private function onCancel(): void {
 				PopUpManager.removePopUp(this);
 			}
 			
-			private function doCreateModel(): void {
+			/*private function doCreateModel(): void {
 				// Build the model information object for CreateModelCompositeCommand
 				var etArray: Array = new Array();
 				for each (var top: Object in this.etRoot().et) {
@@ -356,7 +243,7 @@
 						attrDefs: attrDefs
 				};
 				return rslt;
-			}
+			} */
 		]]>
 	</fx:Script>
 	
@@ -368,15 +255,13 @@
 				<s:Button label="New Subtype" 
 						  enabled="true" enabled.EntityBegin="false" 
 						  click="onNewSubtype();"/>
-				<s:Button label="Delete Type"
-						  enabled="true" enabled.EntityBegin="false"
-						  click="onDeleteType();"/>
+				<!-- The DELETE operation is not allowed. -->
 			</s:HGroup>
 			<s:Label fontWeight="bold" text="Current types:"/>
 			<mx:Tree id="typeTree" dataProvider="{entityTypes}"
 					 borderStyle="solid" width="100%" height="100%"
 					 labelField="@name" itemClick="onTypeClicked(event);"
-					 editable="true" showRoot="false"/>
+					 editable="true" showRoot="false" itemEditEnd="onTypeNameChanged(event);"/>
 		</s:VGroup>
 		
 		<s:VGroup width="50%" height="100%" includeIn="AttrSelected, TypeSelected">
@@ -398,7 +283,6 @@
 	
 	<mx:Canvas height="30" width="100%" bottom="10">
 		<s:HGroup right="10">
-			<s:Button label="{RS.ok}" click="onNext();"/>
 			<s:Button label="{RS.close}" click="onCancel();"/>
 		</s:HGroup>
 	</mx:Canvas>

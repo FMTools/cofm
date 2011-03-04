@@ -6,6 +6,14 @@ package cofm.model
 	
 	import mx.collections.XMLListCollection;
 	
+	/**
+	 * NOTE: all methods start with "get" will return the reference of the XML,
+	 * while "extract" will return the COPY of the XML so that it can be append to
+	 * other XML nodes. (Do NOT append "get" result directly to other XML nodes!)
+	 *      var xml: XML = get...();
+	 *      other.appendChild(xml);  // !!! WRONG !!!
+	 *      other.appendChild(xml.copy());   // OK
+	 */
 	// The data of current feature model
 	public class Model implements IOperationListener {
 		/*

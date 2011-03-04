@@ -47,18 +47,18 @@
 			public var entityAttrs: XMLListCollection = 
 				new XMLListCollection(new XMLList(
 					<et id="1">
-						<attr name={Cst.ATTR_FEATURE_NAME} type={Cst.ATTR_TYPE_STRING} multi="true" dup="false"/>
-						<attr name={Cst.ATTR_FEATURE_DES} type={Cst.ATTR_TYPE_TEXT} multi="true" dup="true"/>
-						<attr name={Cst.ATTR_FEATURE_OPT} type={Cst.ATTR_TYPE_ENUM} multi="false" dup="true">
+						<attrDef name={Cst.ATTR_FEATURE_NAME} type={Cst.ATTR_TYPE_STRING} multi="true" dup="false"/>
+						<attrDef name={Cst.ATTR_FEATURE_DES} type={Cst.ATTR_TYPE_TEXT} multi="true" dup="true"/>
+						<attrDef name={Cst.ATTR_FEATURE_OPT} type={Cst.ATTR_TYPE_ENUM} multi="false" dup="true">
 							<enums>
 								<enum>{Cst.VAL_OPT_MAN}</enum>
 								<enum>{Cst.VAL_OPT_OPT}</enum>
 							</enums>
-						</attr>
+						</attrDef>
 					</et>));
 			
-			private static const nameAttrXml: XML = <attr name={Cst.ATTR_FEATURE_NAME} type={Cst.ATTR_TYPE_STRING} multi="true" dup="false"/>;
-			private static const desAttrXml: XML = <attr name={Cst.ATTR_FEATURE_DES} type={Cst.ATTR_TYPE_TEXT} multi="true" dup="true"/>;
+			private static const nameAttrXml: XML = <attrDef name={Cst.ATTR_FEATURE_NAME} type={Cst.ATTR_TYPE_STRING} multi="true" dup="false"/>;
+			private static const desAttrXml: XML = <attrDef name={Cst.ATTR_FEATURE_DES} type={Cst.ATTR_TYPE_TEXT} multi="true" dup="true"/>;
 			
 			private static const defaultRelation: XML = 
 				<binrel>
@@ -113,7 +113,7 @@
 				this.currentState = "TypeSelected";	
 				
 				attrGrid.dataProvider = 
-					entityAttrs.source.(@id==String(typeTree.selectedItem.@id))[0].attr;
+					entityAttrs.source.(@id==String(typeTree.selectedItem.@id))[0].attrDef;
 				
 				selectedTypeId = int(typeTree.selectedItem.@id);
 				
@@ -177,7 +177,7 @@
 					// Add the new attribute
 					XML(entityAttrs.source.(@id==selectedTypeId)[0]).appendChild(cur.copy());
 					attrGrid.dataProvider = 
-						entityAttrs.source.(@id==selectedTypeId)[0].attr;
+						entityAttrs.source.(@id==selectedTypeId)[0].attrDef;
 				}
 				this.currentState = "TypeSelected";
 				attrGrid.selectedIndex = -1;  // Make sure the attribute grid is not selected.
@@ -329,7 +329,7 @@
 				var attrDefs: Array = new Array();
 				var defs: XMLList = entityAttrs.source.(@id==String(et.@id));
 				if (defs.length() > 0) {
-					for each (var def: Object in defs[0].attr) {
+					for each (var def: Object in defs[0].attrDef) {
 						var d: Object = {
 							name: def.@name,
 							type: def.@type,
