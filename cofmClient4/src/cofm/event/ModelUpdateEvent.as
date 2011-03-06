@@ -4,7 +4,7 @@ package cofm.event
 
 	public class ModelUpdateEvent extends Event {
 		public static const SUCCESS: String = "ModelUpdateSuccess";
-		public static const LOCAL_MODEL_COMPLETE: String = "LocalModelComplete";
+		public static const LOCAL_MODEL_UPDATED: String = "LocalModelUpdated";
 		public static const WORKING_VIEW_COMPLETE: String = "WorkingViewComplete";
 		public var model: Object;
 

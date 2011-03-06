@@ -34,6 +34,7 @@
 			private var typeId: int = 0;
 			
 			private var selectedTypeId: String;
+			private var selectedTypeName: String;
 			
 			private static const nameAttrXml: XML = <attrDef name={Cst.ATTR_FEATURE_NAME} type={Cst.ATTR_TYPE_STRING} multi="true" dup="false"/>;
 			private static const desAttrXml: XML = <attrDef name={Cst.ATTR_FEATURE_DES} type={Cst.ATTR_TYPE_TEXT} multi="true" dup="true"/>;
@@ -48,13 +49,13 @@
 				// Copy entity types from Model and generate into a tree.
 				entityTypes = new XMLListCollection();
 				typeTreeData = new XMLListCollection(new XMLList(<entype/>));
-				for (var t: Object in Model.instance().entypes.source) {
+				for each (var t: Object in Model.instance().entypes.source) {
 					entityTypes.addItem(XML(t).copy());
 					
 					var rootType: XML = Model.instance().getRootType(XML(t));
 					if (getNodeById(rootType.@id) == null) {
 						var base: XML = rootNode();
-						for (var curType: Object in Model.instance().getEntityTypeHierarchy(rootType.@id)) {
+						for each (var curType: Object in Model.instance().getEntityTypeHierarchy(rootType.@id)) {
 							var cur: XML = XML(curType).copy();
 							// Remove the <attrDefs/> part from the <entype> node, otherwise
 							// the <attrDefs/> will appear as a node in the tree.
@@ -65,6 +66,8 @@
 					}
 				}
 				
+				ClientEvtDispatcher.instance().addEventListener(
+					ModelUpdateEvent.LOCAL_MODEL_UPDATED, onLocalModelUpdated);
 			}
 			
 			private function rootNode(): XML {
@@ -79,18 +82,29 @@
 				return null;
 			}
 			
+			private function onLocalModelUpdated(evt: ModelUpdateEvent): void {
+				// Update selectedTypeId, entityTypes, typeTreeData, attrId
+				// Create default attrs if new type has been created (use evt.model.handle to locate
+				// the original ID of the entity type).
+			}
+			
 			private function onTypeNameChanged(evt: ListEvent): void {
-				// TODO: 1. store the old name when clicked the item.
-				// 2. get the new name by item ID
-				// 3. see if the name has been changed.
-				trace ("+++ " + rootNode()..entype.(@id==selectedTypeId)[0].@name);
+				var curType: XML = XML(rootNode()..entype.(@id==selectedTypeId)[0]);
+				var newName: String = String(curType.@name);
+				if (newName != selectedTypeName) {
+					new EditAddEntityTypeCommand(newName,
+												-1,
+												ModelCollection.instance().currentModelId,
+												int(curType.@id)).execute();
+				}
 			}
 			
 			private function onTypeClicked(evt: ListEvent): void {
 				this.currentState = "TypeSelected";	
 				
 				selectedTypeId = String(typeTree.selectedItem.@id);
-
+				selectedTypeName = String(typeTree.selectedItem.@name);
+				
 				attrGrid.dataProvider = 
 					entityTypes.source.(@id==selectedTypeId)[0].attrDefs.attrDef;
 				
@@ -102,6 +116,8 @@
 				var n: XML = <entype id={typeId--} name="Enter type name here"/>;
 				rootNode().appendChild(n);
 				typeTree.selectedItem = n;
+				selectedTypeId = String(n.@id);
+				selectedTypeName = String(n.@name);
 				
 				// Add the default attributes and copy to entityTypes.
 				var c: XML = n.copy();
@@ -109,6 +125,9 @@
 				c.attrDefs.appendChild(nameAttrXml.copy());
 				c.attrDefs.appendChild(desAttrXml.copy());
 				entityTypes.addItem(c);
+				
+				// TODO: Force type to be created at server (for example, use a new modal
+				// dialog displaying "waiting..." to reject further user interactions)
 			}
 			
 			private function onNewSubtype(): void {
@@ -122,11 +141,15 @@
 				parentNode.appendChild(n);
 				typeTree.expandItem(parentNode, true);
 				typeTree.selectedItem = n;
+				selectedTypeId = String(n.@id);
+				selectedTypeName = String(n.@name);
 				
 				// A subtype inherits all attributes from its parent.
 				var type: XML = n.copy();
 				type.attrDefs = parentType.attrDefs.copy();
-				entityTypes.addItem(type);				
+				entityTypes.addItem(type);		
+				
+				// TODO: Force type to be created at server
 			}
 			
 			private function onAttributeClicked(): void {
@@ -136,15 +159,16 @@
 			
 			private function onAttributeChanged(): void {
 				var cur: XML = attrForm.attrXml;
+				var attrId: int = -1;
 				if (this.currentState == "AttrSelected") {
 					// Replace the selected attribute with the edited one.
 					var old: XML = XML(attrGrid.selectedItem);
+					attrId = int(attrGrid.selectedItem.@id);
 					old.@name = cur.@name;
 					old.@type = cur.@type;
 					old.@multi = cur.@multi;
 					old.@dup = cur.@dup;
 					old.setChildren(cur.children());
-					
 				} else {
 					// Add the new attribute
 					XML(entityTypes.source.(@id==selectedTypeId)[0]).appendChild(cur.copy());
@@ -154,9 +178,39 @@
 				this.currentState = "TypeSelected";
 				attrGrid.selectedIndex = -1;  // Make sure the attribute grid is not selected.
 				attrForm.reset();
+				
+				if (String(cur.@type) == Cst.ATTR_TYPE_ENUM) {
+					var enums: Array = new Array();
+					for each (var enum: Object in cur.enums.enum) {
+						enums.push(XML(enum).text().toString());
+					}
+					new AddEnumAttributeCommand(String(cur.@name),
+						enums, int(selectedTypeId),
+						ModelUtil.isTrue(String(cur.@multi)),
+						ModelUtil.isTrue(String(cur.@dup)),
+						ModelCollection.instance().currentModelId,
+						attrId).execute();
+				} else if (String(cur.@type) == Cst.ATTR_TYPE_NUMBER) {
+					var min: Number = Number(cur.min.text().toString());
+					var max: Number = Number(cur.max.text().toString());
+					var unit: String = cur.unit.text().toString();
+					new AddNumericAttributeCommand(String(cur.@name),
+						min, max, unit, int(selectedTypeId),
+						ModelUtil.isTrue(String(cur.@multi)),
+						ModelUtil.isTrue(String(cur.@dup)),
+						ModelCollection.instance().currentModelId,
+						attrId).execute();
+				} else {
+					new AddAttributeCommand(String(cur.@name),
+						String(cur.@type), int(selectedTypeId),
+						ModelUtil.isTrue(String(cur.@multi)),
+						ModelUtil.isTrue(String(cur.@dup)),
+						ModelCollection.instance().currentModelId,
+						attrId).execute();
+				}
+				
 			}
 		
-			
 			private function onCancel(): void {
 				PopUpManager.removePopUp(this);
 			}
