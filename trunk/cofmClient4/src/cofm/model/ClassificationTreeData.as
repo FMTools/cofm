@@ -36,7 +36,7 @@ package cofm.model
 			this.xml = new XMLListCollection(new XMLList(<node/>));
 			
 			ClientEvtDispatcher.instance().addEventListener(
-				ModelUpdateEvent.LOCAL_MODEL_COMPLETE, onLocalModelUpdate);
+				ModelUpdateEvent.LOCAL_MODEL_UPDATED, onLocalModelUpdate);
 			
 			Model.instance().registerSubView(this);
 		}

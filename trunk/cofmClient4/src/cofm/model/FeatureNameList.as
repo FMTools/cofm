@@ -27,7 +27,7 @@ package cofm.model
 			names = new ArrayCollection();
 			nameIdMap = new Dictionary();
 			ClientEvtDispatcher.instance().addEventListener(
-				ModelUpdateEvent.LOCAL_MODEL_COMPLETE, onLocalModelUpdate);
+				ModelUpdateEvent.LOCAL_MODEL_UPDATED, onLocalModelUpdate);
 			Model.instance().registerSubView(this);
 		}
 		

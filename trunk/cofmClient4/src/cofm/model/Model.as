@@ -433,19 +433,22 @@ package cofm.model
 				_entypes[0].@name = op["typeName"];
 				_entypes[0].@mid = op[Cst.FIELD_RSP_SOURCE_USER_ID];
 				_entypes[0].@mtime= op["execTime"];
-				return;
+			} else {
+				// an adding
+				this.entypes.addItem(			
+					<entype id={op["typeId"]} 
+						creator={op[Cst.FIELD_RSP_SOURCE_USER_ID]} 
+						ctime={op["execTime"]} 
+						mid={op[Cst.FIELD_RSP_SOURCE_USER_ID]} 
+						mtime={op["execTime"]}
+						name={op["typeName"]}
+						superId={op["superTypeId"]} >
+						<attrDefs/>
+					</entype>);
 			}
-			// an adding
-			this.entypes.addItem(			
-				<entype id={op["typeId"]} 
-					creator={op[Cst.FIELD_RSP_SOURCE_USER_ID]} 
-					ctime={op["execTime"]} 
-					mid={op[Cst.FIELD_RSP_SOURCE_USER_ID]} 
-					mtime={op["execTime"]}
-					name={op["typeName"]}
-					superId={op["superTypeId"]} >
-					<attrDefs/>
-				</entype>);
+			
+			ClientEvtDispatcher.instance().dispatchEvent(
+				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
 		}
 		
 		public function handleEditAddBinRelType(op: Object): void {
@@ -454,20 +457,22 @@ package cofm.model
 				_bintypes[0].name = op["typeName"];
 				_bintypes[0].@mid = op[Cst.FIELD_RSP_SOURCE_USER_ID];
 				_bintypes[0].@mtime= op["execTime"];
-				return;
+			} else {
+				this.bintypes.addItem(
+					<bintype id={op["relId"]} 
+					creator={op[Cst.FIELD_RSP_SOURCE_USER_ID]} 
+					ctime={op["execTime"]} 
+					mid={op[Cst.FIELD_RSP_SOURCE_USER_ID]} 
+					mtime={op["execTime"]}
+					name={op["typeName"]}
+					hier={op["hierarchical"]}
+					dir={op["directed"]}
+					sourceTypeId={op["sourceId"]} 
+					targetTypeId={op["targetId"]} />
+				);
 			}
-			this.bintypes.addItem(
-				<bintype id={op["relId"]} 
-				creator={op[Cst.FIELD_RSP_SOURCE_USER_ID]} 
-				ctime={op["execTime"]} 
-				mid={op[Cst.FIELD_RSP_SOURCE_USER_ID]} 
-				mtime={op["execTime"]}
-				name={op["typeName"]}
-				hier={op["hierarchical"]}
-				dir={op["directed"]}
-				sourceTypeId={op["sourceId"]} 
-				targetTypeId={op["targetId"]} />
-			);
+			ClientEvtDispatcher.instance().dispatchEvent(
+				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
 		}
 		
 		/**
@@ -480,6 +485,9 @@ package cofm.model
 					ModelUtil.updateVoters("true", op[Cst.FIELD_RSP_SOURCE_USER_ID], XML(targets[0]), op["execTime"]);
 				}
 			}
+			
+			ClientEvtDispatcher.instance().dispatchEvent(
+				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
 		}
 		
 		/**
@@ -502,6 +510,9 @@ package cofm.model
 					}
 				}
 			}
+			
+			ClientEvtDispatcher.instance().dispatchEvent(
+				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
 		}
 		
 		/**
@@ -518,6 +529,9 @@ package cofm.model
 			</attrDef>;
 			
 			editOrAddAttributeDef(op, def);
+			
+			ClientEvtDispatcher.instance().dispatchEvent(
+				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
 		}
 		
 		public function handleEditAddEnumAttributeDef(op: Object): void {
@@ -537,6 +551,9 @@ package cofm.model
 			def.appendChild(xmlEnum);
 			
 			editOrAddAttributeDef(op, def);
+			
+			ClientEvtDispatcher.instance().dispatchEvent(
+				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
 		}
 		
 		public function handleEditAddNumericAttributeDef(op: Object): void {
@@ -553,6 +570,9 @@ package cofm.model
 			</attrDef>;
 			
 			editOrAddAttributeDef(op, def);
+			
+			ClientEvtDispatcher.instance().dispatchEvent(
+				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
 		}
 		
 		private function editOrAddAttributeDef(op: Object, attrDef: XML): void {
@@ -566,10 +586,13 @@ package cofm.model
 				defs[0].@name = op["attr"];
 				defs[0].@mid = op[Cst.FIELD_RSP_SOURCE_USER_ID];
 				defs[0].@mtime= op["execTime"];
-				return;
+			} else {
+				// an adding
+				XML(entypes[0].attrDefs).appendChild(attrDef);
 			}
-			// an adding
-			XML(entypes[0].attrDefs).appendChild(attrDef);
+			
+			ClientEvtDispatcher.instance().dispatchEvent(
+				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
 		}
 		
 		public function handleVoteAddValue(op: Object): void {
@@ -614,6 +637,9 @@ package cofm.model
 						<no/>
 					</value>);
 			}
+			
+			ClientEvtDispatcher.instance().dispatchEvent(
+				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
 		}
 		
 		public function handleVoteAddEntity(op:Object): void {
@@ -648,6 +674,9 @@ package cofm.model
 						new ModelMinorChangeEvent(ModelMinorChangeEvent.FEATURE_CREATED_LOCALLY, op["entityId"]));
 				}
 			}
+			
+			ClientEvtDispatcher.instance().dispatchEvent(
+				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
 		}
 		
 		public function handleVoteAddBinRel(op:Object): void {
@@ -685,6 +714,9 @@ package cofm.model
 			}
 			
 			op[Model.IS_A_REFINEMENT] = this.isInstanceOfRefinementByTypeId(op["typeId"]);
+			
+			ClientEvtDispatcher.instance().dispatchEvent(
+				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
 		}
 		
 		private function onModelUpdate(evt: ModelUpdateEvent): void {
@@ -713,7 +745,7 @@ package cofm.model
 			bintypes.source = bts.bintype;
 			
 			ClientEvtDispatcher.instance().dispatchEvent(
-				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_COMPLETE, null));
+				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, null));
 			
 		}
 		

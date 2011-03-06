@@ -34,7 +34,7 @@ package cofm.model
 			ClientEvtDispatcher.instance().addEventListener(
 				FeatureSelectEvent.OTHER_PEOPLE_SELECT_ON_TREE, onOtherPeopleSelect);
 			ClientEvtDispatcher.instance().addEventListener(
-				ModelUpdateEvent.LOCAL_MODEL_COMPLETE, onLocalModelUpdate);
+				ModelUpdateEvent.LOCAL_MODEL_UPDATED, onLocalModelUpdate);
 			ClientEvtDispatcher.instance().addEventListener(
 				LogoutEvent.LOGGED_OUT, onPeopleLogout);
 			ClientEvtDispatcher.instance().addEventListener(
