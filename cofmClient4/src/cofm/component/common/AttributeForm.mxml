@@ -31,6 +31,9 @@
 			private static const MAX_ENUM_LENGTH: int = 40;
 			private static const ENUM_INPUT_WIDTH: int = 110;
 			
+			[Bindable]
+			public var submitBtnLabel: String = RS.ok;
+			
 			public function reset(): void {
 				nameInput.editable = true;
 				
@@ -234,6 +237,7 @@
 					<fx:Object label="{Cst.ATTR_TYPE_TEXT}"/>
 					<fx:Object label="{Cst.ATTR_TYPE_ENUM}"/>
 					<fx:Object label="{Cst.ATTR_TYPE_NUMBER}"/>
+					<fx:Object label="{Cst.ATTR_TYPE_PTR}"/>
 				</s:ArrayCollection>
 			</s:dataProvider>
 		</s:ComboBox>
@@ -265,7 +269,7 @@
 	</mx:FormItem>
 	
 	<mx:FormItem>
-		<s:Button label="{RS.ok}" click="this.dispatchEvent(new Event('submit'));"/>
+		<s:Button label="{submitBtnLabel}" click="this.dispatchEvent(new Event('submit'));"/>
 	</mx:FormItem>
 	
 </mx:Form>

@@ -56,6 +56,7 @@ package cofm.util
 		public static const ATTR_TYPE_ENUM: String = "enum";
 		public static const ATTR_TYPE_NUMBER: String = "number";
 		public static const ATTR_TYPE_LIST: String = "list";
+		public static const ATTR_TYPE_PTR: String = "pointer";
 		
 		public static const ATTR_FEATURE_NAME: String = "Name";
 		public static const ATTR_FEATURE_DES: String = "Description";
