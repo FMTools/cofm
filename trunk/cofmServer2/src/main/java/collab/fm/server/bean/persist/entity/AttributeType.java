@@ -14,6 +14,7 @@ public class AttributeType extends DataItem {
 	public static final String TYPE_TEXT = "text";
 	public static final String TYPE_ENUM = "enum";
 	public static final String TYPE_NUMBER = "number";
+	public static final String TYPE_PTR = "pointer";
 
 	protected EntityType hostType;
 	

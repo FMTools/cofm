@@ -44,7 +44,8 @@ public class QueryImpl implements IQuery {
 			// Check for every hierarchical relation (i.e. refinements) connected
 			// with "me".
 			for (Relation rel: me.getRels()) {
-				if (((RelationType)rel.getType()).isHierarchical()) {
+				if ((rel.getType() instanceof RelationType) &&
+						((RelationType)rel.getType()).isHierarchical()) {
 					// Consider only binary relations here.
 					if (rel instanceof BinRelation) {
 						BinRelation br = (BinRelation) rel;
@@ -91,7 +92,8 @@ public class QueryImpl implements IQuery {
 			// Check for every hierarchical relation (i.e. refinements) connected
 			// with "me".
 			for (Relation rel: me.getRels()) {
-				if (((RelationType)rel.getType()).isHierarchical()) {
+				if ((rel.getType() instanceof RelationType) &&
+						((RelationType)rel.getType()).isHierarchical()) {
 					// Consider only binary relations here.
 					if (rel instanceof BinRelation) {
 						BinRelation br = (BinRelation) rel;
