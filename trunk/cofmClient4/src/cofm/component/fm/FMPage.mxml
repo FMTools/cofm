@@ -49,7 +49,7 @@
 	<s:HGroup id="fmToolBar">
 		<s:Button label="{RS.m_new_f}" click="doCreateFeature();"/>
 		<s:Button label="{RS.m_new_r}" click="doCreateRelation();"/>
-		<s:Button label="{RS.m_new_a}" click="doAddAttribute();"/>
+		<s:Button label="Edit Type Definitions" click="doAddAttribute();"/>
 	</s:HGroup>
 	<s:HGroup>
 		

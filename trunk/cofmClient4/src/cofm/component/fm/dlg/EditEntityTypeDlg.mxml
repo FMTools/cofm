@@ -21,6 +21,7 @@
 	<fx:Script>
 		<![CDATA[
 			import cofm.command.*;
+			import cofm.component.common.PromptWindow;
 			import cofm.event.*;
 			import cofm.model.*;
 			import cofm.util.*;
@@ -31,13 +32,15 @@
 			import mx.managers.PopUpManager;
 			
 			private static const TO_BE_DELETED: String = "____TO_BE_DELETED____";
-			private var typeId: int = 0;
+			private var typeId: int = -2;  // starts below -1
 			
 			private var selectedTypeId: String;
 			private var selectedTypeName: String;
 			
 			private static const nameAttrXml: XML = <attrDef name={Cst.ATTR_FEATURE_NAME} type={Cst.ATTR_TYPE_STRING} multi="true" dup="false"/>;
 			private static const desAttrXml: XML = <attrDef name={Cst.ATTR_FEATURE_DES} type={Cst.ATTR_TYPE_TEXT} multi="true" dup="true"/>;
+			
+			private var promptDlg: PromptWindow = null;
 			
 			[Bindable]
 			public var entityTypes: XMLListCollection;
@@ -86,6 +89,49 @@
 				// Update selectedTypeId, entityTypes, typeTreeData, attrId
 				// Create default attrs if new type has been created (use evt.model.handle to locate
 				// the original ID of the entity type).
+				// Handles changing on type only.
+				if (evt.model == null) {
+					return;
+				}
+				
+				if (evt.model[Cst.FIELD_RSP_SOURCE_NAME] == Cst.REQ_EA_ENTITY_TYPE) {
+					// Handle adding or editing entity type
+					var handle: int = int(evt.model[Cst.FIELD_CMD_HANDLE]);
+					var typeXMLs: XMLList;
+					var treeXML: XML;
+					if (handle < -1) {
+						// An adding operation, get type XML by HANDLE, and set real type ID
+						// and add default attributes
+						typeXMLs = entityTypes.source.(@id==handle);
+						if (typeXMLs.length() > 0) {
+							typeXMLs[0].@id = evt.model["typeId"];
+						}
+						treeXML = getNodeById(String(handle));
+						if (treeXML != null) {
+							treeXML.@id = evt.model["typeId"];
+						}
+						new AddAttributeCommand(Cst.ATTR_FEATURE_NAME,
+							Cst.ATTR_TYPE_STRING, int(evt.model["typeId"]),
+							true, false, ModelCollection.instance().currentModelId).execute();
+						new AddAttributeCommand(Cst.ATTR_FEATURE_DES,
+							Cst.ATTR_TYPE_TEXT, int(evt.model["typeId"]),
+							true, true, ModelCollection.instance().currentModelId).execute();
+					} else {
+						// An editing operation, get type XML by ID, and set new name
+						typeXMLs = entityTypes.source.(@id==String(evt.model["typeId"]));
+						if (typeXMLs.length() > 0) {
+							typeXMLs[0].@name = evt.model["typeName"];
+						}
+						treeXML = getNodeById(String(evt.model["typeId"]));
+						if (treeXML != null) {
+							treeXML.@name = evt.model["typeName"];
+						}
+					}
+					
+					if (promptDlg != null) {
+						PopUpManager.removePopUp(promptDlg);
+					}
+				}
 			}
 			
 			private function onTypeNameChanged(evt: ListEvent): void {
@@ -109,6 +155,7 @@
 					entityTypes.source.(@id==selectedTypeId)[0].attrDefs.attrDef;
 				
 				attrForm.reset();
+				attrForm.submitBtnLabel = "Add Attribute";
 			}
 			
 			private function onNewType(): void {
@@ -126,8 +173,18 @@
 				c.attrDefs.appendChild(desAttrXml.copy());
 				entityTypes.addItem(c);
 				
-				// TODO: Force type to be created at server (for example, use a new modal
-				// dialog displaying "waiting..." to reject further user interactions)
+				promptDlg = PromptWindow(PopUpManager.createPopUp(this, PromptWindow, true));
+				promptDlg.width = 200;
+				promptDlg.height = 90;
+				promptDlg.prompt = "Waiting...";
+				PopUpManager.centerPopUp(promptDlg);
+				
+				// Add a random number to avoid name conflict at the server.
+				new EditAddEntityTypeCommand(String(n.@name) + Math.random().toString(),
+					-1,
+					ModelCollection.instance().currentModelId,
+					-1,
+					int(n.@id)).execute();
 			}
 			
 			private function onNewSubtype(): void {
@@ -149,12 +206,23 @@
 				type.attrDefs = parentType.attrDefs.copy();
 				entityTypes.addItem(type);		
 				
-				// TODO: Force type to be created at server
+				promptDlg = PromptWindow(PopUpManager.createPopUp(this, PromptWindow, true));
+				promptDlg.width = 200;
+				promptDlg.height = 90;
+				promptDlg.prompt = "Waiting...";
+				PopUpManager.centerPopUp(promptDlg);
+				
+				new EditAddEntityTypeCommand(String(n.@name) + Math.random().toString(),
+					int(n.@superId),
+					ModelCollection.instance().currentModelId,
+					-1,
+					int(n.@id)).execute();
 			}
 			
 			private function onAttributeClicked(): void {
 				this.currentState = "AttrSelected";
 				attrForm.attrXml = XML(attrGrid.selectedItem);
+				attrForm.submitBtnLabel = "Submit";
 			}
 			
 			private function onAttributeChanged(): void {
@@ -171,13 +239,14 @@
 					old.setChildren(cur.children());
 				} else {
 					// Add the new attribute
-					XML(entityTypes.source.(@id==selectedTypeId)[0]).appendChild(cur.copy());
+					XML(entityTypes.source.(@id==selectedTypeId)[0]).attrDefs.appendChild(cur.copy());
 					attrGrid.dataProvider = 
 						entityTypes.source.(@id==selectedTypeId)[0].attrDefs.attrDef;
 				}
 				this.currentState = "TypeSelected";
 				attrGrid.selectedIndex = -1;  // Make sure the attribute grid is not selected.
 				attrForm.reset();
+				attrForm.submitBtnLabel = "Add Attribute";
 				
 				if (String(cur.@type) == Cst.ATTR_TYPE_ENUM) {
 					var enums: Array = new Array();
@@ -212,6 +281,8 @@
 			}
 		
 			private function onCancel(): void {
+				ClientEvtDispatcher.instance().removeEventListener(
+					ModelUpdateEvent.LOCAL_MODEL_UPDATED, onLocalModelUpdated);
 				PopUpManager.removePopUp(this);
 			}
 			
@@ -312,7 +383,7 @@
 				<!-- The DELETE operation is not allowed. -->
 			</s:HGroup>
 			<s:Label fontWeight="bold" text="Current types:"/>
-			<mx:Tree id="typeTree" dataProvider="{entityTypes}"
+			<mx:Tree id="typeTree" dataProvider="{typeTreeData}"
 					 borderStyle="solid" width="100%" height="100%"
 					 labelField="@name" itemClick="onTypeClicked(event);"
 					 editable="true" showRoot="false" itemEditEnd="onTypeNameChanged(event);"/>
@@ -334,11 +405,5 @@
 			<common:AttributeForm id="attrForm" submit="onAttributeChanged();"/>
 		</s:VGroup>
 	</s:HGroup>
-	
-	<mx:Canvas height="30" width="100%" bottom="10">
-		<s:HGroup right="10">
-			<s:Button label="{RS.close}" click="onCancel();"/>
-		</s:HGroup>
-	</mx:Canvas>
 	
 </s:TitleWindow>
