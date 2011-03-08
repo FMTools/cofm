@@ -15,6 +15,7 @@
 			import cofm.component.fm.dlg.AddValueDlg;
 			import cofm.event.*;
 			import cofm.util.*;
+			import cofm.model.*;
 			
 			import mx.collections.ArrayCollection;
 			import mx.managers.PopUpManager;
@@ -46,6 +47,10 @@
 					item.attributeType = this.attributeType;
 					item.valueIndex = index++;
 					item.value = XML(obj.str).text().toString();
+					// If attribute type == POINTER, then convert the value (pointee ID) to the name of entity
+					if (this.attributeType == Cst.ATTR_TYPE_PTR) {
+						item.value = GlobalTreeData.instance().getEntityNameById(item.value);
+					}
 					item.numSupporters = XMLList(obj.yes.user).length();
 					item.numOpponents = XMLList(obj.no.user).length();
 					

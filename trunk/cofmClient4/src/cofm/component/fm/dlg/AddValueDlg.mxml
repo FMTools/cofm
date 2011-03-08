@@ -8,6 +8,7 @@
 		<s:State name="AddString"/>
 		<s:State name="AddText"/>
 		<s:State name="AddNumber"/>
+		<s:State name="AddPointer"/>
 	</s:states>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
@@ -56,10 +57,18 @@
 						" - " + a.max.text().toString() + 
 						" (" + a.unit.text().toString() + ")";
 						break;
+					case Cst.ATTR_TYPE_PTR:
+						currentState = "AddPointer";
+						break;
 					default:
 						currentState = "AddString";
 						break;
 				} 
+			}
+			
+			private function extractEntityName(item: Object): String {
+				// use the name displayed in the global tree.
+				return GlobalTreeData.instance().getEntityNameById(String(item.@id));
 			}
 			
 			private function doAddValue(): void {
@@ -67,6 +76,8 @@
 				var val: String;
 				if (this.currentState == "AddText") {
 					val = textVal.text;
+				} else if (this.currentState == "AddPointer") {
+					val = ptrVal.selectedItem.@id;  // Only store the ID of pointed entity at the server.
 				} else {
 					val = strVal.text;
 				}
@@ -96,6 +107,12 @@
 			
 			<!-- The input for Text-typed attributes -->
 			<s:TextArea id="textVal" includeIn="AddText"/>
+			
+			<!-- The input for Pointer-typed attributes -->
+			<s:ComboBox id="ptrVal" includeIn="AddPointer" 
+						dataProvider="{Model.instance().entities}"
+					    labelFunction="extractEntityName"
+					    requireSelection="true" />
 			
 			<!-- The prompt for number unit, min and max values -->
 			<s:Label id="numInfo"/>
