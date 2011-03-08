@@ -483,7 +483,7 @@ package cofm.model
 			if (fs.length() > 0) {
 				return fs[0].@name;
 			}
-			return null;
+			return "Instance #" + id;
 		}
 		
 		protected function onLocalModelUpdate(evt: ModelUpdateEvent): void {
