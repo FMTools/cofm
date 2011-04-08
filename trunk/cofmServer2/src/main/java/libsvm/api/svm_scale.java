@@ -44,7 +44,7 @@ import java.text.DecimalFormat;
 
 import collab.fm.server.util.exception.SvmException;
 
-class svm_scale
+public class svm_scale
 {
 	private String line = null;
 	private double lower = -1.0;
@@ -124,7 +124,7 @@ class svm_scale
 		return line;
 	}
 
-	private void run(String []argv) throws IOException, SvmException
+	public void run(String []argv) throws IOException, SvmException
 	{
 		int i,index;
 		BufferedReader fp = null, fp_restore = null;
