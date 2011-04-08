@@ -34,6 +34,18 @@ public class Entity extends Element {
 	
 	protected List<Comment> comments = new ArrayList<Comment>();
 
+	public List<Value> getValuesByAttrName(String attrName) {
+		AttributeType attr = this.getType().findAttributeTypeDef(attrName, false);
+		if (attr == null) {
+			return null;
+		}
+		ValueList values = attrs.get(attr.getId());
+		if (values == null) {
+			return null;
+		}
+		return values.getValues();
+	}
+	
 	@Override
 	public String toValueString() {
 		if (this.getId() != null) {
