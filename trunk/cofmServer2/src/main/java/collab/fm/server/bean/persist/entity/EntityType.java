@@ -17,6 +17,7 @@ public class EntityType extends ElementType {
 	protected List<AttributeType> attrDefs = new ArrayList<AttributeType>();
 	protected Model model;
 	
+	@Override
 	public AttributeType findAttributeTypeDef(Long attrId, boolean immediate) {
 		for (EntityType et = this; 
 			et != null; ) {
@@ -41,6 +42,7 @@ public class EntityType extends ElementType {
 		return null;
 	}
 	
+	@Override
 	public AttributeType findAttributeTypeDef(String attrName, boolean immediate) {
 		for (EntityType et = this; 
 			et != null;) {

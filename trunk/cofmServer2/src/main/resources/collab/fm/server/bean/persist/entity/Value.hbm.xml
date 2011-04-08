@@ -6,7 +6,7 @@
   <joined-subclass name="Value" extends="collab.fm.server.bean.persist.Element" table="VALUE">
     <key column="VALUE_ID" />
     
-    <property name="val" type="string" column="VALUE_STRING" />
+    <property name="val" type="text" column="VALUE_STRING" />
     
   </joined-subclass>
 </hibernate-mapping>

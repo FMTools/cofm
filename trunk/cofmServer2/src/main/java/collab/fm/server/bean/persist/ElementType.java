@@ -1,5 +1,6 @@
 package collab.fm.server.bean.persist;
 
+import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.transfer.DataItem2;
 
 /**
@@ -38,6 +39,12 @@ public class ElementType extends DataItem {
 		this.superType = superType;
 	}
 
+	public AttributeType findAttributeTypeDef(String attrName, boolean immediate) {
+		return null;
+	}
 	
+	public AttributeType findAttributeTypeDef(Long attrId, boolean immediate) {
+		return null;
+	}
 
 }

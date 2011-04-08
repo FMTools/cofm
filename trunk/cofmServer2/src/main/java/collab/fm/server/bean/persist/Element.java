@@ -30,6 +30,16 @@ public abstract class Element extends DataItem implements Votable {
 	public int getSupporterNum() {
 		return vote.getSupporters().size();
 	}
+	
+	public float getSupportRate() {
+		if (this.getSupporterNum() <= 0) {
+			return 0.0f;
+		}
+		if (this.getOpponentNum() <= 0) {
+			return 1.0f;
+		}
+		return ((float) this.getSupporterNum()) / (this.getOpponentNum() + this.getSupporterNum());
+	}
 
 	public int vote(boolean yes, Long userid) {
 		this.vote.vote(yes, userid);

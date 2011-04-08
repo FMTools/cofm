@@ -10,6 +10,7 @@ import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.persist.entity.Entity;
 import collab.fm.server.bean.persist.entity.EnumAttributeType;
 import collab.fm.server.bean.persist.entity.NumericAttributeType;
+import collab.fm.server.bean.persist.relation.BinRelation;
 import collab.fm.server.bean.persist.relation.Relation;
 import collab.fm.server.bean.transfer.AttributeType2;
 import collab.fm.server.bean.transfer.EnumAttributeType2;
@@ -32,6 +33,16 @@ public class DataItemUtil {
 				addRelationForElement(elem, r);
 			}
 		}
+	}
+	
+	// Is "r" a binary relation between "e1" and "e2" ?
+	public static boolean isBinRelationBetween(Relation r, Entity e1, Entity e2) {
+		if (!(r instanceof BinRelation)) {
+			return false;
+		}
+		BinRelation br = (BinRelation) r;
+		return (br.getSourceId().equals(e1.getId()) && br.getTargetId().equals(e2.getId()))
+		|| (br.getSourceId().equals(e2.getId()) && br.getTargetId().equals(e1.getId()));
 	}
 	
 	public static void generateInferVotes(Relation relation, List<Long> votes) {
