@@ -16,6 +16,8 @@ import org.hibernate.Session;
 
 import libsvm.api.*;
 
+import collab.fm.mining.opt.Optimizable;
+import collab.fm.mining.opt.Solution;
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.entity.Entity;
 import collab.fm.server.bean.persist.entity.Value;
@@ -26,7 +28,7 @@ import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 import collab.fm.server.util.exception.SvmException;
 
-public class SVM {
+public class SVM implements Optimizable {
 
 	static Logger logger = Logger.getLogger(SVM.class);
 	
@@ -45,7 +47,8 @@ public class SVM {
 	
 	// Training: Default gamma = 1 / number of attributes
 	public static boolean useDefaultGamma = true;
-	public static double gamma = (double) 1 / FeaturePair.NUM_ATTRIBUTES;
+	public static final double DEFAULT_GAMMA = (double) 1 / FeaturePair.NUM_ATTRIBUTES;
+	public static double gamma = DEFAULT_GAMMA;
 	public static int reqWeight = 5;   // Bonus for finding a "require" constraint.
 	public static int excWeight = 5;   // Bonus for finding a "exclude" constraint.
 	public static int cvFold = 4;    // The fold of CV
@@ -199,5 +202,17 @@ public class SVM {
 		public double accuracy;
 		public double meanSquareError;
 		public double squareCoefficient;
+	}
+
+	// Cost = 1 - Accuracy
+	public double computeCost(Solution s) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	// Solution = [gamma, reqWeight, excWeight]
+	public Solution defineSolution() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
