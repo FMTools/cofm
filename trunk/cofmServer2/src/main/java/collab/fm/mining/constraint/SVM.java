@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
@@ -27,6 +28,8 @@ import collab.fm.server.util.exception.SvmException;
 
 public class SVM {
 
+	static Logger logger = Logger.getLogger(SVM.class);
+	
 	public static final String TRAINING_FILE = "mining/cons_svm_train";
 	public static final String SCALED_FILE_SUFFIX = ".scale";
 	public static final String SCALE_RANGE_FILE = "mining/cons_svm_scale_range";
@@ -34,10 +37,39 @@ public class SVM {
 	public static final String TEST_FILE = "mining/cons_svm_test";
 	
 	// ----------- Parameters ------------
+	// We can adjust these parameters to find optimized values.
 	
 	// Scale the data to [-1, 1]
 	public static final String ARG_SCALE = 
 		"-l -1 -u 1 -s " + SCALE_RANGE_FILE + " " + TRAINING_FILE;
+	
+	// Training: Default gamma = 1 / number of attributes
+	public static boolean useDefaultGamma = true;
+	public static double gamma = (double) 1 / FeaturePair.NUM_ATTRIBUTES;
+	public static int reqWeight = 5;   // Bonus for finding a "require" constraint.
+	public static int excWeight = 5;   // Bonus for finding a "exclude" constraint.
+	public static int cvFold = 4;    // The fold of CV
+	
+	public static String ARG_TRAIN = 
+		(useDefaultGamma ? "" : "-g " + gamma + " ")
+		+ "-w1 " + reqWeight + " -w2 " + excWeight + " -v " + cvFold + " " + TRAINING_FILE;
+	
+	public SVM.CV cvResult;
+	
+	// Train and then do cross-validation (CV)
+	public boolean trainWithCV() {
+		svm_train t = new svm_train();
+		try {
+			t.run(SVM.ARG_TRAIN.split("\\s"), cvResult);
+			return true;
+		} catch (IOException e) {
+			logger.error("IO error.", e);
+			return false;
+		} catch (SvmException e) {
+			logger.error("Training error.", e);
+			return false;
+		}
+	}
 	
 	/**
 	 * Generate training file for LIBSVM. 
@@ -45,6 +77,7 @@ public class SVM {
 	 * @throws IOException 
 	 */
 	public boolean dumpTrainingFile(Model model) {
+		logger.info("*** Dump Training File");
 		BufferedWriter tf;
 		try {
 			tf = new BufferedWriter(new FileWriter(SVM.TRAINING_FILE));
@@ -57,43 +90,43 @@ public class SVM {
 					FeaturePair pair = new FeaturePair(features[i], features[j]);
 					tf.write(formatPair(pair) + "\n");
 					if (pair.getSimilarity() > 0.0f) {
-						System.out.println(formatPair(pair));
 						simPairs.add(pair.getSimilarity());
 					}		
 					numPair++;
 				}
 			}
 			tf.close();
-			System.out.println(features.length + " features, " + numPair + " pairs, " + simPairs.size() + " pairs of similar feaures.");
+			logger.info("*** Dump Training File END.");
+			logger.info(features.length + " features, " + numPair + " pairs, " + simPairs.size() + " pairs of similar feaures.");
 			Float[] sims = simPairs.toArray(new Float[0]);
 			Arrays.sort(sims);
-			System.out.println("Sorted similarity:");
+			String s = "Sorted similarity:\n";
 			for (int i = 0; i < sims.length;) {
 				int j = i;
 				for (; j < sims.length && sims[i].equals(sims[j]); j++) {
 					// empty loop body
 				}
-				System.out.print(sims[i]);
+				s += "\t" + sims[i].toString();
 				if (j - i > 1) {
-					System.out.print("  (" + (j-i) + ")");
+					s += "  (" + (j-i) + ")";
 				}
-				System.out.println();
+				s += "\n";
 				i = j;
 			}
+			logger.debug(s);
 			return true;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Cannot open training file", e);
 			return false;
 		}
 	}
 	
 	public boolean scaleData() {
-		System.out.println("*** Scale data to [-1, 1]");
+		logger.info("*** Scale data to [-1, 1]");
+		PrintStream stdout = System.out;
 		try {
 			// First, we need to redirect the System.out to a file
 			PrintStream scaleFile = new PrintStream(SVM.TRAINING_FILE + SVM.SCALED_FILE_SUFFIX);
-			PrintStream stdout = System.out;
 			System.setOut(scaleFile);
 			
 			// Call the svm_scale.run() with arguments
@@ -101,24 +134,20 @@ public class SVM {
 			s.run(SVM.ARG_SCALE.split("\\s"));
 			
 			scaleFile.close();
-			
-			System.setOut(stdout);
-			System.out.println("*** Scale END.");
+			logger.info("*** Scale END.");
 			return true;
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("IO error.", e);
 			return false;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("IO error.", e);
 			return false;
 		} catch (SvmException e) {
-			// TODO Auto-generated catch block
-			System.err.println("Scale failed.");
+			logger.error("Scale failed.", e);
 			return false;
+		} finally {
+			System.setOut(stdout);
 		}
-		
 	}
 	
 	private String formatPair(FeaturePair pair) {
@@ -138,28 +167,37 @@ public class SVM {
 			
 			Model model = DaoUtil.getModelDao().getByName("Media Player");
 			if (model == null) {
-				System.err.println("No such model");
+				logger.warn("No such model");
 			} else {
 				SVM svm = new SVM();
+				svm.cvResult = new SVM.CV();
 				if (svm.dumpTrainingFile(model)) {
 					svm.scaleData();
+					svm.trainWithCV();
+					logger.info("Cross Validation Accuracy = " + svm.cvResult.accuracy + "%");
 				}
 			}
 			
 			session.getTransaction().commit();
+			
 		} catch (HibernateException he) {
 			session.getTransaction().rollback();
-			he.printStackTrace();
+			logger.error("Database error.", he);
 			session.close();
 		} catch (ItemPersistenceException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Database error.", e);
 			session.close();
 		} catch (StaleDataException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error("Database error.", e);
 			session.close();
 		} 
 			
+	}
+	
+	// result for cross-validation (CV)
+	public static class CV {
+		public double accuracy;
+		public double meanSquareError;
+		public double squareCoefficient;
 	}
 }

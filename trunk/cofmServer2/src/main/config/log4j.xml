@@ -14,6 +14,18 @@
     		</layout>
     </appender>   
     
+    <!-- for mining -->
+    <appender name="M" class="org.apache.log4j.DailyRollingFileAppender">
+    		<param name="Encoding" value="UTF-8" />
+    		<param name="Append" value="false"/>
+    		<param name="DatePattern" value=".yyyy-MM-dd"/>
+    		<param name="Threshold" value="DEBUG"/>
+    		<param name="File" value="mining/log/debug.log"/>
+    		<layout class="org.apache.log4j.PatternLayout">
+    			<param name="ConversionPattern" value="%-25d %c [%-5p] %m %n"/>
+    		</layout>
+    </appender>
+    
     <!-- for user activity -->
     <appender name="F2" class="org.apache.log4j.DailyRollingFileAppender">
     		<param name="Encoding" value="UTF-8" />
@@ -52,6 +64,12 @@
 	
 	<logger name="collab.fm.server">
 		<level value="DEBUG"/>
+	</logger>
+	
+	<logger name="collab.fm.mining" additivity="false">
+		<level value="DEBUG"/>
+		<appender-ref ref="STDOUT"/>
+		<appender-ref ref="M"/>
 	</logger>
 	
 	<!-- Reporters only appends to F3 -->
