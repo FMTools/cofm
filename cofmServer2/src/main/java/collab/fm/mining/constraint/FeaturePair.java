@@ -56,6 +56,7 @@ public class FeaturePair {
 	private Entity first;
 	private Entity second;
 	
+	public static int NUM_ATTRIBUTES = 6;
 	// ------ Attributes for machine learning ------
 	// The Class label of the pair
 	private int label;

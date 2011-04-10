@@ -3,9 +3,10 @@ import libsvm.*;
 import java.io.*;
 import java.util.*;
 
+import collab.fm.mining.constraint.SVM;
 import collab.fm.server.util.exception.SvmException;
 
-class svm_train {
+public class svm_train {
 	private svm_parameter param;		// set by parse_command_line
 	private svm_problem prob;		// set by read_problem
 	private svm_model model;
@@ -54,7 +55,7 @@ class svm_train {
 		throw new SvmException();
 	}
 
-	private void do_cross_validation()
+	private void do_cross_validation(SVM.CV cvResult)
 	{
 		int i;
 		int total_correct = 0;
@@ -63,6 +64,9 @@ class svm_train {
 		double[] target = new double[prob.l];
 
 		svm.svm_cross_validation(prob,param,nr_fold,target);
+		if (cvResult == null) {
+			cvResult = new SVM.CV();
+		}
 		if(param.svm_type == svm_parameter.EPSILON_SVR ||
 		   param.svm_type == svm_parameter.NU_SVR)
 		{
@@ -77,10 +81,13 @@ class svm_train {
 				sumyy += y*y;
 				sumvy += v*y;
 			}
-			System.out.print("Cross Validation Mean squared error = "+total_error/prob.l+"\n");
-			System.out.print("Cross Validation Squared correlation coefficient = "+
+			cvResult.meanSquareError = total_error/prob.l;
+			cvResult.squareCoefficient = 
 				((prob.l*sumvy-sumv*sumy)*(prob.l*sumvy-sumv*sumy))/
-				((prob.l*sumvv-sumv*sumv)*(prob.l*sumyy-sumy*sumy))+"\n"
+				((prob.l*sumvv-sumv*sumv)*(prob.l*sumyy-sumy*sumy));
+			System.out.print("Cross Validation Mean squared error = "+cvResult.meanSquareError+"\n");
+			System.out.print("Cross Validation Squared correlation coefficient = "+
+					cvResult.squareCoefficient+"\n"
 				);
 		}
 		else
@@ -88,11 +95,12 @@ class svm_train {
 			for(i=0;i<prob.l;i++)
 				if(target[i] == prob.y[i])
 					++total_correct;
-			System.out.print("Cross Validation Accuracy = "+100.0*total_correct/prob.l+"%\n");
+			cvResult.accuracy = 100.0*total_correct/prob.l;		
+			System.out.print("Cross Validation Accuracy = "+cvResult.accuracy+"%\n");
 		}
 	}
 	
-	private void run(String argv[]) throws IOException, SvmException
+	public void run(String argv[], SVM.CV cvResult) throws IOException, SvmException
 	{
 		parse_command_line(argv);
 		read_problem();
@@ -106,7 +114,7 @@ class svm_train {
 
 		if(cross_validation != 0)
 		{
-			do_cross_validation();
+			do_cross_validation(cvResult);
 		}
 		else
 		{
@@ -118,7 +126,7 @@ class svm_train {
 	public static void main(String argv[]) throws IOException, SvmException
 	{
 		svm_train t = new svm_train();
-		t.run(argv);
+		t.run(argv, null);
 	}
 
 	private static double atof(String s) throws SvmException
