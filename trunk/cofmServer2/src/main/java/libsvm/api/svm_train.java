@@ -85,10 +85,10 @@ public class svm_train {
 			cvResult.squareCoefficient = 
 				((prob.l*sumvy-sumv*sumy)*(prob.l*sumvy-sumv*sumy))/
 				((prob.l*sumvv-sumv*sumv)*(prob.l*sumyy-sumy*sumy));
-			System.out.print("Cross Validation Mean squared error = "+cvResult.meanSquareError+"\n");
-			System.out.print("Cross Validation Squared correlation coefficient = "+
-					cvResult.squareCoefficient+"\n"
-				);
+			//System.out.print("Cross Validation Mean squared error = "+cvResult.meanSquareError+"\n");
+			//System.out.print("Cross Validation Squared correlation coefficient = "+
+			//		cvResult.squareCoefficient+"\n"
+			//	);
 		}
 		else
 		{
@@ -96,7 +96,7 @@ public class svm_train {
 				if(target[i] == prob.y[i])
 					++total_correct;
 			cvResult.accuracy = 100.0*total_correct/prob.l;		
-			System.out.print("Cross Validation Accuracy = "+cvResult.accuracy+"%\n");
+			//System.out.print("Cross Validation Accuracy = "+cvResult.accuracy+"%\n");
 		}
 	}
 	

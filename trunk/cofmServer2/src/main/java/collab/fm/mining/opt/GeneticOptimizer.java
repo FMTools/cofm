@@ -51,7 +51,7 @@ public class GeneticOptimizer implements Optimizer {
 		for (int i = 0; i < generation; i++) {
 			Arrays.sort(spieces);
 			
-			logger.info("Generation #" + i + ": Best is " + spieces[0].toString());
+			logger.info("Generation #" + i + ": Best =  " + spieces[0].toString());
 			
 			// Keep the top elites, and add new solutions by mutating or crossing-over
 			for (int j = top; j < population; j++) {
@@ -115,8 +115,8 @@ public class GeneticOptimizer implements Optimizer {
 
 		public Solution defineSolution() {
 			Domain[] ds = new Domain[] {
-				new Domain(0.0, 1.0, 0.1),
-				new Domain(1.0, 5.0, 0.4)
+				new Domain(false, 0.0, 1.0, 0.1),
+				new Domain(false, 1.0, 5.0, 0.4)
 			};
 			Solution s = new Solution();
 			s.parts = ds;

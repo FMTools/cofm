@@ -5,7 +5,7 @@ import java.util.*;
 
 import collab.fm.server.util.exception.SvmException;
 
-class svm_predict {
+public class svm_predict {
 	private static double atof(String s)
 	{
 		return Double.valueOf(s).doubleValue();

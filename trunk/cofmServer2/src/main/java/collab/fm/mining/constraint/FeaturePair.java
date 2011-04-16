@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.log4j.Logger;
 
 import collab.fm.mining.TextSimilarity;
 import collab.fm.server.bean.persist.Model;
@@ -11,8 +12,12 @@ import collab.fm.server.bean.persist.entity.Entity;
 import collab.fm.server.bean.persist.entity.Value;
 import collab.fm.server.bean.persist.relation.BinRelation;
 import collab.fm.server.bean.persist.relation.Relation;
+import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.DataItemUtil;
+import collab.fm.server.util.Pair;
 import collab.fm.server.util.Resources;
+import collab.fm.server.util.exception.ItemPersistenceException;
+import collab.fm.server.util.exception.StaleDataException;
 
 /**
  * The data item generated from a pair of features, used for constraints discovery.  
@@ -20,6 +25,8 @@ import collab.fm.server.util.Resources;
  *
  */
 public class FeaturePair {
+	
+	static Logger logger = Logger.getLogger(FeaturePair.class);
 	
 	// The aliases of "require" relation used in the model. For example,
 	// the "implemented-by" relation is a kind of "require" relation.
@@ -56,7 +63,7 @@ public class FeaturePair {
 	private Entity first;
 	private Entity second;
 	
-	public static int NUM_ATTRIBUTES = 6;
+	public static int NUM_ATTRIBUTES = 8;
 	// ------ Attributes for machine learning ------
 	// The Class label of the pair
 	private int label;
@@ -73,11 +80,17 @@ public class FeaturePair {
 	// How many mandatory features in this pair? (None = -1, Unknown = 0, One, Two)
 	private int numMandatory;
 	
-	// Does one of the features require (required by) a feature who is not in this pair?
+	// Does the features require (required by) a feature who is not in this pair?
 	private int requireOut;
 	
-	// Does one of the features exclude a feature who is not in this pair?
+	// Does the features exclude a feature who is not in this pair?
 	private int excludeOut;
+	
+	// Does their parents require a outside-feature?
+	private int parentRequireOut;
+	
+	// Does their parents exclude a outside-feature?
+	private int parentExcludeOut;
 	
 	public FeaturePair() {
 		// Leave it for Hibernate framework.
@@ -101,10 +114,11 @@ public class FeaturePair {
 		this.setLabel(NO_CONSTRAINT);
 		this.setParental(NO);
 		this.setSibling(UNKNOWN);
-		this.setRequireOut(NO);
-		this.setExcludeOut(NO);
+		
+		int ro1 = NO, ro2 = NO, eo1 = NO, eo2 = NO;
 		
 		List<Long> parentsOfFirst = new ArrayList<Long>();
+		List<Long> parentsOfSecond = new ArrayList<Long>();
 		
 		for (Relation rel: first.getRels()) {
 			if (!(rel instanceof BinRelation)) {
@@ -120,16 +134,16 @@ public class FeaturePair {
 					if (this.getLabel() == NO_CONSTRAINT) {
 						this.setLabel(EXCLUDE);
 					}
-				} else if (isRefine(r)) {
+				} else {
 					this.setParental(YES);
 					this.setSibling(NO);
 				}
 			} else {
 				if (isRequire(r)) {
-					this.setRequireOut(YES);
+					ro1 = YES;
 				} else if (isExclude(r)) {
-					this.setExcludeOut(YES);
-				} else if (isRefine(r) && r.getTargetId().equals(first.getId())) {
+					eo1 = YES;
+				} else if (r.getTargetId().equals(first.getId())) {
 					// If "first" is a child of another feature, record the feature.
 					parentsOfFirst.add(r.getSourceId());
 				}
@@ -140,21 +154,19 @@ public class FeaturePair {
 			if (!(rel instanceof BinRelation)) {
 				continue;
 			}
-			if (this.getRequireOut() == YES && this.getExcludeOut() == YES &&
-					this.getSibling() != UNKNOWN) {
-				break;
-			}
 			BinRelation r = (BinRelation) rel;
 			if (!DataItemUtil.isBinRelationBetween(r, first, second)) {
 				if (isRequire(r)) {
-					this.setRequireOut(YES);
+					ro2 = YES;
 				} else if (isExclude(r)) {
-					this.setExcludeOut(YES);
-				} else if (isRefine(r) && this.getSibling() == UNKNOWN && 
-						r.getTargetId().equals(second.getId())) {
-					if (parentsOfFirst.contains(r.getSourceId())) {
+					eo2 = YES;
+				} else if (r.getTargetId().equals(second.getId())) {
+					if ( this.getSibling() == UNKNOWN &&
+							parentsOfFirst.contains(r.getSourceId())) {
 						this.setSibling(YES);
+						this.setParental(NO);
 					}
+					parentsOfSecond.add(r.getSourceId());
 				}
 			}
 		}
@@ -162,11 +174,82 @@ public class FeaturePair {
 		if (this.getSibling() == UNKNOWN) {
 			this.setSibling(NO);
 		}
+		
+		this.setRequireOut(sumThreeValueVars(ro1, ro2));
+		this.setExcludeOut(sumThreeValueVars(eo1, eo2));
+		
+		Pair<Integer, Integer> po1 = calcPCO(parentsOfFirst, first, second);
+		Pair<Integer, Integer> po2 = calcPCO(parentsOfSecond, first, second);
+		this.setParentRequireOut(sumThreeValueVars(po1.first, po2.first));
+		this.setParentExcludeOut(sumThreeValueVars(po1.second, po2.second));
+	}
+	
+	private Pair<Integer, Integer> calcPCO(List<Long> parentIDs, Entity child1, Entity child2) {
+		int pro = NO, peo = NO;
+		logger.debug("Parent is " + parentIDs.toString());
+		for (Long pid: parentIDs) {
+			if (pro == YES && peo == YES) {
+				break;
+			}
+			try {
+				Entity p = DaoUtil.getEntityDao().getById(pid, false);
+				if (p == null) {
+					continue;
+				}
+				Pair<Integer, Integer> po = calcParentConstrainOutside(p, child1, child2);
+				if (pro == NO) {
+					pro = po.first;
+				} 
+				if (peo == NO) {
+					peo = po.second;
+				}
+			} catch (ItemPersistenceException e) {
+				logger.warn("Cannot read parent.", e);
+				continue;
+			} catch (StaleDataException e) {
+				logger.warn("Cannot read parent.", e);
+				continue;
+			}
+		}
+		return Pair.make(pro, peo);
+	}
+	
+	private Pair<Integer, Integer> calcParentConstrainOutside(Entity parent, Entity child1, Entity child2) {
+		Pair<Integer, Integer> result = Pair.make(new Integer(NO), new Integer(NO));
+		for (Relation r: parent.getRels()) {
+			if (!(r instanceof BinRelation)) {
+				continue;
+			}
+			BinRelation rel = (BinRelation) r;
+			if (isRequire(rel) &&
+				!rel.getTargetId().equals(child1.getId()) &&
+				!rel.getTargetId().equals(child2.getId()) &&
+				!rel.getSourceId().equals(child1.getId()) &&
+				!rel.getSourceId().equals(child2.getId())) {
+				result.first = YES;
+			} else if (isExclude(rel)) {
+				if (
+				!rel.getTargetId().equals(child1.getId()) &&
+				!rel.getTargetId().equals(child2.getId()) &&
+				!rel.getSourceId().equals(child1.getId()) &&
+				!rel.getSourceId().equals(child2.getId())) {
+					result.second = YES;
+				}
+			}
+		}
+		return result;
 	}
 	
 	private String getDescriptions(Entity en) {
-		// Combine all descriptions of "en" into a whole.
+		// Combine all names
 		String des = "";
+		List<Value> ns = en.getValuesByAttrName(Resources.ATTR_ENTITY_NAME);
+		if (ns != null) {
+			for (Value n: ns) {
+				des += n.getVal() + " ";
+			}
+		}
+		// Combine all descriptions of "en" into a whole.
 		List<Value> values = en.getValuesByAttrName(Resources.ATTR_ENTITY_DES);
 		if (values != null) {
 			for (Value v: values) {
@@ -180,29 +263,34 @@ public class FeaturePair {
 		return TextSimilarity.bySimpleTf(getDescriptions(first), getDescriptions(second));
 	}
 		
-	private int calcNumMan(Entity first, Entity second) {
-		int m1 = isMandatory(first), m2 = isMandatory(second);
-		switch (m1) {
+	// Sum 2 Three-value variables (i.e., unknown/no/one values)
+	private int sumThreeValueVars(int var1, int var2) {
+		switch (var1) {
 		case UNKNOWN:
-			if (m2 == YES) {
-				return 1;   // At least 1 mandatory.
+			if (var2 == 1) {
+				return 1;   // At least 1.
 			}
 			return UNKNOWN;
-		case YES:
-			if (m2 == YES) {
-				return 2;   // 2 mandatory features
+		case 1:
+			if (var2 == 1) {
+				return 2;  
 			}
 			return 1;   // At least 1.
 		case NO:
-			if (m2 == YES) {
+			if (var2 == 1) {
 				return 1;
 			}
-			if (m2 == NO) {
+			if (var2 == NO) {
 				return NO;
 			}
 			return UNKNOWN;
 		}
 		return UNKNOWN;
+	}
+	
+	private int calcNumMan(Entity first, Entity second) {
+		int m1 = isMandatory(first), m2 = isMandatory(second);
+		return sumThreeValueVars(m1, m2);
 	}
 	
 	private int isMandatory(Entity en) {
@@ -233,10 +321,6 @@ public class FeaturePair {
 	
 	private boolean isExclude(Relation rel) {
 		return ArrayUtils.contains(excludeAlias, rel.getType().getTypeName());
-	}
-	
-	private boolean isRefine(Relation rel) {
-		return ArrayUtils.contains(refineAlias, rel.getType().getTypeName());
 	}
 	
 	// ------- Setters and Getters ------- 
@@ -327,6 +411,22 @@ public class FeaturePair {
 
 	public void setExcludeOut(int excludeOut) {
 		this.excludeOut = excludeOut;
+	}
+
+	public void setParentExcludeOut(int parentExcludeOut) {
+		this.parentExcludeOut = parentExcludeOut;
+	}
+
+	public int getParentExcludeOut() {
+		return parentExcludeOut;
+	}
+
+	public void setParentRequireOut(int parentRequireOut) {
+		this.parentRequireOut = parentRequireOut;
+	}
+
+	public int getParentRequireOut() {
+		return parentRequireOut;
 	}
 	
 	

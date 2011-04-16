@@ -1976,8 +1976,9 @@ public class svm {
 				for(j=0;j<nr_class;j++)
 					if(param.weight_label[i] == label[j])
 						break;
-				if(j == nr_class)
-					System.err.print("warning: class label "+param.weight_label[i]+" specified in weight is not found\n");
+				if(j == nr_class){
+					//System.err.print("warning: class label "+param.weight_label[i]+" specified in weight is not found\n");
+				}
 				else
 					weighted_C[j] *= param.weight[i];
 			}
