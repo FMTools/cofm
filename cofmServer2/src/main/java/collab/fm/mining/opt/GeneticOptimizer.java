@@ -38,7 +38,7 @@ public class GeneticOptimizer implements Optimizer {
 		for (int i = 0; i < population; i++) {
 			Domain[] init = Arrays.copyOf(solutionDef.parts, solutionDef.parts.length);
 			for (Domain d: init) {
-				d.randomValue();
+				d.getInitValue();
 			}
 			Solution s = new Solution();
 			s.parts = init;
@@ -101,27 +101,5 @@ public class GeneticOptimizer implements Optimizer {
 		sol.cost = target.computeCost(sol);
 		return sol;
 	} 
-
-	public static void main(String[] argv) {
-		// A simple test
-		new GeneticOptimizer().optimize(new TestProblem());
-	}
 	
-	private static class TestProblem implements Optimizable {
-
-		public double computeCost(Solution s) {
-			return Math.random();
-		}
-
-		public Solution defineSolution() {
-			Domain[] ds = new Domain[] {
-				new Domain(false, 0.0, 1.0, 0.1),
-				new Domain(false, 1.0, 5.0, 0.4)
-			};
-			Solution s = new Solution();
-			s.parts = ds;
-			return s;
-		}
-		
-	}
 }
