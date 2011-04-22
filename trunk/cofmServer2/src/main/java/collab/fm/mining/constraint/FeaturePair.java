@@ -1,6 +1,7 @@
 package collab.fm.mining.constraint;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -62,8 +63,9 @@ public class FeaturePair {
 	private Model model;
 	private Entity first;
 	private Entity second;
+	private Relation constraint;  // Constraint between the first and second feature (if any).
 	
-	public static int NUM_ATTRIBUTES = 8;
+	public static int NUM_ATTRIBUTES = 6;
 	// ------ Attributes for machine learning ------
 	// The Class label of the pair
 	private int label;
@@ -78,6 +80,7 @@ public class FeaturePair {
 	private int sibling;
 	
 	// How many mandatory features in this pair? (None = -1, Unknown = 0, One, Two)
+	// Here the mandatory is global (i.e. a common feature to all products)
 	private int numMandatory;
 	
 	// Does the features require (required by) a feature who is not in this pair?
@@ -114,6 +117,7 @@ public class FeaturePair {
 		this.setLabel(NO_CONSTRAINT);
 		this.setParental(NO);
 		this.setSibling(UNKNOWN);
+		this.setConstraint(null);
 		
 		int ro1 = NO, ro2 = NO, eo1 = NO, eo2 = NO;
 		
@@ -129,10 +133,12 @@ public class FeaturePair {
 				if (isRequire(r)) {
 					if (this.getLabel() == NO_CONSTRAINT) {
 						this.setLabel(REQUIRE);
+						this.setConstraint(rel);
 					}
 				} else if (isExclude(r)) {
 					if (this.getLabel() == NO_CONSTRAINT) {
 						this.setLabel(EXCLUDE);
+						this.setConstraint(rel);
 					}
 				} else {
 					this.setParental(YES);
@@ -186,7 +192,6 @@ public class FeaturePair {
 	
 	private Pair<Integer, Integer> calcPCO(List<Long> parentIDs, Entity child1, Entity child2) {
 		int pro = NO, peo = NO;
-		logger.debug("Parent is " + parentIDs.toString());
 		for (Long pid: parentIDs) {
 			if (pro == YES && peo == YES) {
 				break;
@@ -289,11 +294,63 @@ public class FeaturePair {
 	}
 	
 	private int calcNumMan(Entity first, Entity second) {
-		int m1 = isMandatory(first), m2 = isMandatory(second);
+		int m1 = isGloballyMandatory(first), m2 = isGloballyMandatory(second);
 		return sumThreeValueVars(m1, m2);
 	}
 	
-	private int isMandatory(Entity en) {
+	private int isGloballyMandatory(Entity en) {
+		// See if all its ancestor features are locally mandatory
+		if (isLocallyMandatory(en) == NO) {
+			return NO;
+		}
+		if (isLocallyMandatory(en) == UNKNOWN) {
+			return UNKNOWN;
+		}
+		
+		boolean isRoot = true;
+		List<Long> parents = new ArrayList<Long>();
+		for (Relation r: en.getRels()) {
+			if (!(r instanceof BinRelation)) {
+				continue;
+			}
+			// Find en's parents
+			BinRelation br = (BinRelation) r;
+			if (br.getTargetId().equals(en.getId())
+					&& !isRequire(br) && !isExclude(br)) {
+				isRoot = false;
+				parents.add(br.getSourceId());
+			}
+		}
+		if (isRoot) {
+			return YES;
+		}
+		
+		boolean parentStatusUnknown = true;
+		// YES if one of my parents is globally mandatory
+		for (Long p: parents) {
+			try {
+				Entity parent = DaoUtil.getEntityDao().getById(p, false);
+				int status = isGloballyMandatory(parent);
+				if (status == YES) {
+					return YES;
+				}
+				if (status == NO) {
+					parentStatusUnknown = false;
+				}
+			} catch (ItemPersistenceException e) {
+				continue;
+			} catch (StaleDataException e) {
+				continue;
+			}
+		}
+		
+		if (parentStatusUnknown) {
+			return UNKNOWN;
+		}
+		return NO;
+	}
+	
+	private int isLocallyMandatory(Entity en) {
 		List<Value> values = en.getValuesByAttrName(Resources.ATTR_FEATURE_OPT);
 		if (values != null) {
 			Float manSupport = 0.0f, optSupport = 0.0f;
@@ -321,6 +378,43 @@ public class FeaturePair {
 	
 	private boolean isExclude(Relation rel) {
 		return ArrayUtils.contains(excludeAlias, rel.getType().getTypeName());
+	}
+	
+	public String getPairInfo() {
+		return "Feature #1: " + printFeature(first) + "Feature #2: " + printFeature(second);
+	}
+	
+	private String printFeature(Entity en) {
+		// Format: 
+		// Name 1 (Alias 1.1, Alias 1.2)
+		//     Description 1.1
+		//     Description 1.2
+		String result = "";
+		List<Value> name1 = en.getValuesByAttrName(Resources.ATTR_ENTITY_NAME);
+		if (name1 == null) {
+			result += "(Unnamed)";
+		} else {
+			Collections.sort(name1);
+			Collections.reverse(name1);
+			result += name1.get(0).getVal();
+			if (name1.size() > 1) {
+				result += " (Aliases: " + name1.get(1).getVal();
+			}
+			for (int i = 2; i < name1.size(); i++) {
+				result += ", " + name1.get(i).getVal();
+			}
+			if (name1.size() > 1) {
+				result += ")";
+			}
+		}
+		result += "\n";
+		List<Value> des = en.getValuesByAttrName(Resources.ATTR_ENTITY_DES);
+		if (des != null) {
+			for (Value d: des) {
+				result += "\t" + d.getVal() + "\n";
+			}
+		}
+		return result;
 	}
 	
 	// ------- Setters and Getters ------- 
@@ -427,6 +521,14 @@ public class FeaturePair {
 
 	public int getParentRequireOut() {
 		return parentRequireOut;
+	}
+
+	public void setConstraint(Relation constraint) {
+		this.constraint = constraint;
+	}
+
+	public Relation getConstraint() {
+		return constraint;
 	}
 	
 	

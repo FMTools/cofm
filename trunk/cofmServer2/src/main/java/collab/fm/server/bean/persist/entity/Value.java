@@ -10,7 +10,7 @@ import collab.fm.server.bean.transfer.Value2;
  * @author mark
  *
  */
-public class Value extends Element {
+public class Value extends Element implements Comparable<Value> {
 
 	private String val;
 	
@@ -36,6 +36,10 @@ public class Value extends Element {
 		Value2 v2 = (Value2) v;
 		super.transfer(v2);
 		v2.setVal(this.getVal());
+	}
+
+	public int compareTo(Value o) {
+		return new Float(this.getSupportRate()).compareTo(new Float(o.getSupportRate()));
 	}
 
 }
