@@ -7,10 +7,12 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -83,9 +85,7 @@ public class SVM implements Optimizable {
 	public static final String TEST_FILE = "mining/cons_svm_test";
 	public static final String PREDICT_RESULT_FILE = "mining/cons_svm_predict";
 	
-	// ----------- Parameters ------------
-	// We can adjust these parameters to find optimized values.
-	
+	// ----------- Arguments for calling LIBSVM ------------
 	// Scale the data to [-1, 1]
 	public static final String ARG_SCALE_TRAINING = 
 		"-l -1 -u 1 -s " + SCALE_RANGE_FILE + " " + TRAINING_FILE;
@@ -95,10 +95,6 @@ public class SVM implements Optimizable {
 	
 	// Training: Default gamma = 1 / number of attributes
 	public static final double DEFAULT_GAMMA = (double) 1 / FeaturePair.NUM_ATTRIBUTES;
-	public static double gamma = DEFAULT_GAMMA;
-	public static int reqWeight = 5;   // Bonus for finding a "require" constraint.
-	public static int excWeight = 5;   // Bonus for finding a "exclude" constraint.
-	public static int cvFold = 4;    // The fold of CV
 	
 	// Store the cross-validation result.
 	public SVM.CV cvResult;
@@ -137,10 +133,33 @@ public class SVM implements Optimizable {
 			logger.info("*** Dump Training Set END.");
 			logger.info(stats.toString());
 			
+			// Do scaling
+			this.scaleTrainingSet();
+			
 		} catch (IOException e) {
 			logger.error("Cannot open data file", e);
 		}
 	}
+	
+	private List<FeaturePair> dumpTestSet(List<Model> testFMs, int mode) {
+		List<FeaturePair> testPairs = new ArrayList<FeaturePair>();
+		BufferedWriter out;
+		try {
+			out = new BufferedWriter(new FileWriter(SVM.TEST_FILE));
+			logger.info("*** Dump Test Set.");
+			for (Model tfm: testFMs) {
+				testPairs.addAll(this.dumpModel(out, tfm, mode));
+			}
+			out.close();
+			logger.info("*** Dump Test Set END.");
+			this.scaleTestSet();
+		} catch (IOException e) {
+			logger.warn("Cannot dump test set.", e);
+		}
+		
+		return testPairs;
+	}
+	
 	
 	private static final int MODE_TEST_ALL = 0;
 	private static final int MODE_TEST_BLANK = 1;
@@ -259,12 +278,6 @@ public class SVM implements Optimizable {
 	}
 	
 	// ------------ Step 3. Training ------------
-	
-	// ------------ Step 4. Predict and check -------------
-	
-	// ------------ Main --------------
-	
-	
 	// Train and then do cross-validation (CV)
 	private boolean trainWithCV() {
 		
@@ -286,7 +299,7 @@ public class SVM implements Optimizable {
 		}
 	}
 	
-	private boolean train() {
+	private boolean trainWithoutCV() {
 		svm_train t = new svm_train();
 		try {
 			String arg_training = 
@@ -306,78 +319,48 @@ public class SVM implements Optimizable {
 		}
 	}
 	
-
-	
-	private boolean predict(String outputFile) {
-			String argPredict = TEST_FILE + SCALED_FILE_SUFFIX +
-				" " + MODEL_FILE + " " + outputFile;
-			try {
-				svm_predict.run(argPredict.split("\\s"));
-				return true;
-			} catch (IOException e) {
-				logger.error("IO error.", e);
-				return false;
-			} catch (SvmException e) {
-				logger.error("Predict error.", e);
-				return false;
-			}
-	}
-	
-	
-	
-	
-	
-
-
 	// Cost = 100 - Accuracy
 	public double computeCost(Solution s) {
-		SVM.gamma = s.parts[0].value;
-		SVM.reqWeight = Double.valueOf(s.parts[1].value).intValue();
-		SVM.excWeight = Double.valueOf(s.parts[2].value).intValue();
+		gamma = s.parts[0].value;
+		reqWeight = Double.valueOf(s.parts[1].value).intValue();
+		excWeight = Double.valueOf(s.parts[2].value).intValue();
 		
 		this.trainWithCV();
 		
 		return 100.0 - this.cvResult.accuracy;
 	}
 
+	private double gamma, gammaLo, gammaHi, gammaStep;
+	private int reqWeight, reqLo, reqHi, reqStep;
+	private int excWeight, excLo, excHi, excStep;
+	private int cvFold;
+	
 	// Solution = [gamma, reqWeight, excWeight]
 	public Solution defineSolution() {
 		Domain[] parts = new Domain[] {
-			new Domain(false, SVM.DEFAULT_GAMMA / 2, SVM.DEFAULT_GAMMA * 2, 0.02, Double.NaN),
-			new Domain(true, 5, 30, 1, Double.NaN),
-			new Domain(true, 5, 30, 1, Double.NaN) 
+			new Domain(false, gammaLo, gammaHi, gammaStep, Double.NaN),
+			new Domain(true, reqLo, reqHi, reqStep, Double.NaN),
+			new Domain(true, excLo, excHi, excStep, Double.NaN) 
 		};
 		Solution s = new Solution();
 		s.parts = parts;
 		return s;
 	}
 	
-	public Solution optimizeParameters(Model model) {
-		this.cvResult = new SVM.CV();
-			
-		this.scaleTrainingSet();
-
-		logger.info("*** Optimizing Parameters");
-		long startTime = System.currentTimeMillis();
-		GeneticOptimizer o = new GeneticOptimizer();
-		o.population = 25;
-		o.generation = 80;
-		Solution best = o.optimize(this);
-		long elapsedTime = System.currentTimeMillis() - startTime;
-		logger.info("*** Optimizing over, time elapsed: "
-				+ (elapsedTime / 1000.0f) + " seconds.");
-		logger.info("*** Optimized Parameter:" + "\n\tgamma = "
-				+ best.parts[0].value + "\n\tweight of require class = "
-				+ best.parts[1].value + "\n\tweight of exclude class = "
-				+ best.parts[2].value + "\nAccuracy = " + (100 - best.cost)
-				+ "%");
-		return best;
-			
-	}
-	
-	public void trainModel() {
-		this.scaleTrainingSet();
-		this.train();
+	// ------------ Step 4. Predict and check -------------
+	private boolean predict() {
+		String argPredict = TEST_FILE + SCALED_FILE_SUFFIX +
+			" " + MODEL_FILE + " " + PREDICT_RESULT_FILE;
+		try {
+			svm_predict.run(argPredict.split("\\s"));
+			return true;
+		} catch (IOException e) {
+			logger.error("IO error.", e);
+			return false;
+		} catch (SvmException e) {
+			logger.error("Predict error.", e);
+			return false;
+		}
 	}
 	
 	public static final int NO_CONSTRAINT = 0;
@@ -453,20 +436,116 @@ public class SVM implements Optimizable {
 		}
 	}
 	
-	public void predictAndCheck(Model test) {
-		List<FeaturePair> testPairs = null;
-		int pairIndex = 0;
-		if ((testPairs = this.dumpDataFile(test, SVM.TEST_FILE)) != null) {
-			this.scaleTestSet();
-			this.predict(SVM.PREDICT_RESULT_FILE);
+	private List<Model> getFMs(Properties cfg, String key) {
+		String[] names = cfg.getProperty(key).split(";");
+		List<Model> models = new ArrayList<Model>(names.length);
+		for (String s: names) {
+			try {
+				Model m = DaoUtil.getModelDao().getByName(s);
+				if (m != null) {
+					models.add(m);
+				}
+			} catch (ItemPersistenceException e) {
+				logger.warn("Cannot get model: " + s, e);
+			} catch (StaleDataException e) {
+				logger.warn("Cannot get model: " + s, e);
+			}
+		}
+		return models;
+	}
+	
+	// ------------ Main --------------
+	public static final String KEY_TRAIN_FM = "svm.train.fm";
+	public static final String KEY_TEST_FM = "svm.test.fm";
+	public static final String KEY_GAMMA = "svm.gamma";
+	public static final String KEY_WREQ = "svm.wreq";
+	public static final String KEY_WEXC = "svm.wexc";
+	public static final String KEY_CV = "svm.cv";
+	public static final String KEY_POPSIZE = "svm.opt.gen.popsize";
+	public static final String KEY_ITER = "svm.opt.gen.iter";
+	public static final String KEY_TOP = "svm.opt.gen.top";
+	public static final String KEY_CROSS = "svm.opt.gen.cross";
+	public static final String KEY_TEST_MODE = "svm.test.mode";
+	public static final String KEY_TEST_RESULT = "svm.test.result";
+	public static final String KEY_RUN_MODE = "svm.run.mode";
+	// Run mode #1
+	public Solution optimizeParameters(Properties cfg) {
+		this.cvResult = new SVM.CV();
+		logger.info("*** Optimizing Parameters");
+		List<Model> trainFMs = getFMs(cfg, KEY_TRAIN_FM);
+		List<Model> testFMs = getFMs(cfg, KEY_TEST_FM);
+		
+		this.dumpTrainingSet(trainFMs, testFMs);
+		this.scaleTrainingSet();
+		
+		String[] gammas = cfg.getProperty(KEY_GAMMA).split(";");
+		String[] wreqs = cfg.getProperty(KEY_WREQ).split(";");
+		String[] wexcs = cfg.getProperty(KEY_WEXC).split(";");
+		
+		this.gammaLo = Double.valueOf(gammas[1]);
+		this.gammaHi = Double.valueOf(gammas[2]);
+		this.gammaStep = Double.valueOf(gammas[3]);
+		this.reqLo = Integer.valueOf(wreqs[1]);
+		this.reqHi = Integer.valueOf(wreqs[2]);
+		this.reqStep = Integer.valueOf(wreqs[3]);
+		this.excLo = Integer.valueOf(wexcs[1]);
+		this.excHi = Integer.valueOf(wexcs[2]);
+		this.excStep = Integer.valueOf(wexcs[3]);
+		this.cvFold = Integer.valueOf(cfg.getProperty(KEY_CV));
+		
+		GeneticOptimizer o = new GeneticOptimizer();
+		o.population = Integer.valueOf(cfg.getProperty(KEY_POPSIZE));
+		o.generation = Integer.valueOf(cfg.getProperty(KEY_ITER));
+		o.breedProb = Double.valueOf(cfg.getProperty(KEY_CROSS));
+		o.elite = Float.valueOf(cfg.getProperty(KEY_TOP));
+		
+		long startTime = System.currentTimeMillis();
+		Solution best = o.optimize(this);
+		long elapsedTime = System.currentTimeMillis() - startTime;
+		logger.info("*** Optimizing over, time elapsed: "
+				+ (elapsedTime / 1000.0f) + " seconds.");
+		logger.info("*** Optimized Parameter:" + "\n\tgamma = "
+				+ best.parts[0].value + "\n\tweight of require class = "
+				+ best.parts[1].value + "\n\tweight of exclude class = "
+				+ best.parts[2].value + "\nAccuracy = " + (100 - best.cost)
+				+ "%");
+		return best;	
+	}
+	
+	// Run mode #2: train and predict, no optimization (use the parameters
+	// defined in the properties file.)
+	public void trainAndPredict(Properties cfg) {
+		String[] gammas = cfg.getProperty(KEY_GAMMA).split(";");
+		String[] wreqs = cfg.getProperty(KEY_WREQ).split(";");
+		String[] wexcs = cfg.getProperty(KEY_WEXC).split(";");
+		this.gamma = Double.valueOf(gammas[0]);
+		this.reqWeight = Integer.valueOf(wreqs[0]);
+		this.excWeight = Integer.valueOf(wexcs[0]);
+		
+		int numDisplayResult = Integer.valueOf(cfg.getProperty(KEY_TEST_RESULT));
+		int testMode = Integer.valueOf(cfg.getProperty(KEY_TEST_MODE));
+		int again = 0;
+		do {
+			List<Model> trainFMs = getFMs(cfg, KEY_TRAIN_FM);
+			List<Model> testFMs = getFMs(cfg, KEY_TEST_FM);
+			
+			this.dumpTrainingSet(trainFMs, testFMs);
+			
+			
+			List<FeaturePair> testPairs = this.dumpTestSet(testFMs, testMode);
+			
+			this.predict();
+			
+			int pairIndex = 0;
+			
 			try {
 				logger.info("\nPrediction checking begin.");
+				// Open the prediction result file and display results.
 				BufferedReader result = new BufferedReader(new FileReader(SVM.PREDICT_RESULT_FILE));
-				BufferedWriter tf = new BufferedWriter(new FileWriter(SVM.TRAINING_FILE, true)); // true = append mode
 					
 				String s;
 				int numCorrect = 0, numPrediction = 0;
-				while (numPrediction < MAX_PREDICTION_NUM && (s = result.readLine()) != null) {
+				while (numPrediction < numDisplayResult && (s = result.readLine()) != null) {
 					int label = Float.valueOf(s).intValue();
 					FeaturePair cur = testPairs.get(pairIndex++);
 					if (label != cur.getLabel()) {
@@ -499,9 +578,7 @@ public class SVM implements Optimizable {
 						if (type == label) {
 							numCorrect++;
 						}
-						// Add the pair to the training set.
-						tf.write(this.formatPair(cur) + "\n");
-						System.out.println("The answer has been added to traning set.");
+						
 						// if the answer type is different from cur pair (i.e. the test FM), 
 						// we need to apply the answer to the test FM
 						if (type != cur.getLabel()) {
@@ -515,56 +592,53 @@ public class SVM implements Optimizable {
 						}
 					}
 				}
+				
 				logger.info("\nPrediction checking end." +
 						"\nAccuracy = " + (100.0f * numCorrect / numPrediction) + "% (" +
 						numCorrect + "/" + numPrediction + ")");
 				result.close();
-				tf.close();
+				
 			} catch (FileNotFoundException e) {
 				logger.warn("Cannot open prediction file.", e);
 			} catch (IOException e) {
 				logger.warn("Cannot read prediction file.", e);
 			}
 			
-		}
+			System.out.print("\nPrediction end. Do it again? (0 = NO, 1 = YES):");
+			Scanner scanner = new Scanner(System.in);
+			again = scanner.nextInt();
+		} while (again == 1);
+		
 	}
 	
+	// Run mode #3 (Do not support now)
+	
+	public static final int RUN_OPT = 1;
+	public static final int RUN_PREDICT = 2;
+	public static final int RUN_OPT_AND_PREDICT = 3;
+	public static final String CFG_FILE = "classifier.properties";
+	
+	// The main method checks the run mode
 	public static void main(String[] argv) throws IOException {
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();;
 		try {
 			session.beginTransaction();
 			
-			Model model = DaoUtil.getModelDao().getByName("Media Player");
-			Model testModel = DaoUtil.getModelDao().getByName("IM");
-			if (model == null) {
-				logger.warn("No such model");
-			} else {
-				SVM svm = new SVM();
-				// Steps:
-				//   1. optimizeParameters with training FM.
-				//   2. trainModel with training FM and predictAndCheck with test FM
-				//   3. trainModel with null parameter and predictAndCheck with test FM
-				svm.attrClassStats(svm.dumpTrainingSet(model));
-//				for (int i = 0; i < 3; i++) {
-//				Solution best = svm.optimizeParameters(model);
-//				}
-				//SVM.gamma = best.parts[0].value;
-				//SVM.reqWeight = Double.valueOf(best.parts[1].value).intValue();
-				//SVM.excWeight = Double.valueOf(best.parts[2].value).intValue();
-				
-				SVM.gamma = 0.14490230819623984;
-				SVM.reqWeight = 9;
-				SVM.excWeight = 16;
-				
-				int again = 0;
-				do {
-					svm.trainModel();
-					svm.predictAndCheck(testModel);
-					
-					System.out.print("\nPrediction end. Do it again? (0 = NO, 1 = YES):");
-					Scanner scanner = new Scanner(System.in);
-					again = scanner.nextInt();
-				} while (again == 1);
+			Properties cfg = new Properties();
+			URL url = SVM.class.getClassLoader().getResource(CFG_FILE);
+			cfg.load(url.openStream());
+			
+			int runMode = Integer.valueOf(cfg.getProperty(KEY_RUN_MODE));
+			switch (runMode) {
+			case RUN_OPT:
+				new SVM().optimizeParameters(cfg);
+				break;
+			case RUN_PREDICT:
+				new SVM().trainAndPredict(cfg);
+				break;
+			case RUN_OPT_AND_PREDICT:
+				//TODO: add run mode support.
+				break;
 			}
 		
 			session.getTransaction().commit();
@@ -572,12 +646,6 @@ public class SVM implements Optimizable {
 		} catch (HibernateException he) {
 			session.getTransaction().rollback();
 			logger.error("Database error.", he);
-			session.close();
-		} catch (ItemPersistenceException e) {
-			logger.error("Database error.", e);
-			session.close();
-		} catch (StaleDataException e) {
-			logger.error("Database error.", e);
 			session.close();
 		} 		
 	}
