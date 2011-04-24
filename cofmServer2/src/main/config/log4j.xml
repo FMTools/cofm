@@ -26,6 +26,22 @@
     		</layout>
     </appender>
     
+    <!-- for optimization (in mining) -->
+    <appender name="OPT" class="org.apache.log4j.DailyRollingFileAppender">
+    		<param name="Encoding" value="UTF-8" />
+    		<param name="Append" value="true"/>
+    		<param name="DatePattern" value=".yyyy-MM-dd"/>
+    		<param name="Threshold" value="DEBUG"/>
+    		<param name="File" value="mining/log/opt.log"/>
+    		<layout class="org.apache.log4j.PatternLayout">
+    			<param name="ConversionPattern" value="%-25d %c [%-5p] %m %n"/>
+    		</layout>
+    		<filter class="collab.fm.server.util.FeatureModelLogFilter">
+    			<param name="Prefix" value="[opt]"/>
+    		</filter>
+    		<filter class="org.apache.log4j.varia.DenyAllFilter"/>
+    </appender>
+    
     <!-- for user activity -->
     <appender name="F2" class="org.apache.log4j.DailyRollingFileAppender">
     		<param name="Encoding" value="UTF-8" />
@@ -70,6 +86,7 @@
 		<level value="DEBUG"/>
 		<appender-ref ref="STDOUT"/>
 		<appender-ref ref="M"/>
+		<appender-ref ref="OPT"/>
 	</logger>
 	
 	<!-- Reporters only appends to F3 -->

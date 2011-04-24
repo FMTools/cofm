@@ -29,7 +29,7 @@ public class GeneticOptimizer implements Optimizer {
 	private Optimizable target;
 	
 	public Solution optimize(Optimizable o) {
-		logger.info("*** Optimize using genetic algorithm.");
+		logger.info("[opt] Genetic algorithm.");
 		target = o;
 		Solution solutionDef = o.defineSolution();
 		
@@ -51,7 +51,7 @@ public class GeneticOptimizer implements Optimizer {
 		for (int i = 0; i < generation; i++) {
 			Arrays.sort(spieces);
 			
-			logger.info("Generation #" + i + ": Best =  " + spieces[0].toString());
+			logger.debug("[opt] Generation #" + i + ": Best =  " + spieces[0].toString());
 			
 			// Keep the top elites, and add new solutions by mutating or crossing-over
 			for (int j = top; j < population; j++) {
@@ -61,9 +61,11 @@ public class GeneticOptimizer implements Optimizer {
 					spieces[j] = mutate(spieces[rand.nextInt(top)]);
 				}
 			}
+			System.out.print(".");
 		}
+		System.out.println();
 		Arrays.sort(spieces);
-		logger.info("*** Optimization END. Best is " + spieces[0].toString());
+		//logger.info("*** Optimization END. Best is " + spieces[0].toString());
 		return spieces[0];
 	}
 	
