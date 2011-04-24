@@ -478,7 +478,6 @@ public class SVM implements Optimizable {
 		List<Model> testFMs = getFMs(cfg, KEY_TEST_FM);
 		
 		this.dumpTrainingSet(trainFMs, testFMs);
-		this.scaleTrainingSet();
 		
 		String[] gammas = cfg.getProperty(KEY_GAMMA).split(";");
 		String[] wreqs = cfg.getProperty(KEY_WREQ).split(";");
