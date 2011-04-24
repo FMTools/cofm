@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
@@ -461,6 +462,7 @@ public class SVM implements Optimizable {
 	public static final String KEY_WREQ = "svm.wreq";
 	public static final String KEY_WEXC = "svm.wexc";
 	public static final String KEY_CV = "svm.cv";
+	public static final String KEY_OPT_PASS = "svm.opt.pass";
 	public static final String KEY_POPSIZE = "svm.opt.gen.popsize";
 	public static final String KEY_ITER = "svm.opt.gen.iter";
 	public static final String KEY_TOP = "svm.opt.gen.top";
@@ -469,9 +471,9 @@ public class SVM implements Optimizable {
 	public static final String KEY_TEST_RESULT = "svm.test.result";
 	public static final String KEY_RUN_MODE = "svm.run.mode";
 	// Run mode #1
-	public Solution optimizeParameters(Properties cfg) {
+	public void optimizeParameters(Properties cfg) {
 		this.cvResult = new SVM.CV();
-		logger.info("*** Optimizing Parameters");
+		
 		List<Model> trainFMs = getFMs(cfg, KEY_TRAIN_FM);
 		List<Model> testFMs = getFMs(cfg, KEY_TEST_FM);
 		
@@ -493,23 +495,44 @@ public class SVM implements Optimizable {
 		this.excStep = Integer.valueOf(wexcs[3]);
 		this.cvFold = Integer.valueOf(cfg.getProperty(KEY_CV));
 		
+		int pass = Integer.valueOf(cfg.getProperty(KEY_OPT_PASS));
+		
 		GeneticOptimizer o = new GeneticOptimizer();
 		o.population = Integer.valueOf(cfg.getProperty(KEY_POPSIZE));
 		o.generation = Integer.valueOf(cfg.getProperty(KEY_ITER));
 		o.breedProb = Double.valueOf(cfg.getProperty(KEY_CROSS));
 		o.elite = Float.valueOf(cfg.getProperty(KEY_TOP));
 		
-		long startTime = System.currentTimeMillis();
-		Solution best = o.optimize(this);
-		long elapsedTime = System.currentTimeMillis() - startTime;
-		logger.info("*** Optimizing over, time elapsed: "
-				+ (elapsedTime / 1000.0f) + " seconds.");
-		logger.info("*** Optimized Parameter:" + "\n\tgamma = "
-				+ best.parts[0].value + "\n\tweight of require class = "
-				+ best.parts[1].value + "\n\tweight of exclude class = "
-				+ best.parts[2].value + "\nAccuracy = " + (100 - best.cost)
-				+ "%");
-		return best;	
+		Solution best = null;
+		while (pass-- > 0) {
+			long startTime = System.currentTimeMillis();
+			logger.info("[opt] *** Optimizing Parameters");
+			Solution localBest = o.optimize(this);
+			if (best == null || best.cost > localBest.cost) {
+				best = localBest;
+			}
+			long elapsedTime = System.currentTimeMillis() - startTime;
+			logger.info("[opt] *** Optimizing over, time elapsed: "
+					+ (elapsedTime / 1000.0f) + " seconds.");
+			logger.info("[opt] *** Optimized Parameter:" + "\n\tgamma = "
+					+ best.parts[0].value + "\n\tweight of require class = "
+					+ best.parts[1].value + "\n\tweight of exclude class = "
+					+ best.parts[2].value + "\nAccuracy = " + (100 - best.cost)
+					+ "%");
+		}
+		
+		cfg.setProperty(KEY_GAMMA, best.parts[0].value + ";"
+				+ this.gammaLo + ";" + this.gammaHi + ";" + this.gammaStep);
+		cfg.setProperty(KEY_WREQ, best.parts[1].value + ";"
+				+ this.reqLo + ";" + this.reqHi + ";" + this.reqStep);
+		cfg.setProperty(KEY_WEXC, best.parts[2].value + ";"
+				+ this.excLo + ";" + this.excHi + ";" + this.excStep);
+		try {
+			cfg.store(new FileWriter(CFG_FILE), 
+					"Updated at " + (new Date().toString()));
+		} catch (IOException e) {
+			logger.warn("Cannot save property file.");
+		}
 	}
 	
 	// Run mode #2: train and predict, no optimization (use the parameters
@@ -620,6 +643,7 @@ public class SVM implements Optimizable {
 	
 	// The main method checks the run mode
 	public static void main(String[] argv) throws IOException {
+		
 		Session session = HibernateUtil.getSessionFactory().getCurrentSession();;
 		try {
 			session.beginTransaction();
