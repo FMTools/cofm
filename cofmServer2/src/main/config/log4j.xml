@@ -107,7 +107,7 @@
 	</logger>
 	
 	<logger name="org.hibernate" additivity="false">
-		<level value="INFO"/>
+		<level value="DEBUG"/>
 		<appender-ref ref="F"/>
 	</logger>
 	           

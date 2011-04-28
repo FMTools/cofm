@@ -20,7 +20,7 @@
     <property name="typeName" type="string" column="TYPE_NAME"></property>
     
     <!-- The super type of this type -->
-    <many-to-one name="superType" class="ElementType" column="SUPER_TYPE_ID" unique="true" />
+    <many-to-one name="superType" class="ElementType" column="SUPER_TYPE_ID" unique="false"/>
     
   </class>
 </hibernate-mapping>

@@ -14,8 +14,6 @@
         <!-- Enable Hibernate's automatic session context management -->
         <property name="current_session_context_class">thread</property>
         
-        <property name="hibernate.show_sql">false</property>
-        
         <mapping resource="collab/fm/server/bean/persist/Comment.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/persist/Element.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/persist/ElementType.hbm.xml"/>

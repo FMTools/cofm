@@ -304,6 +304,11 @@
    		<artifactId>c3p0</artifactId>
    		<version>0.9.1</version>
 	</dependency>
+	<dependency>
+		<groupId>edu.stanford.nlp</groupId>
+		<artifactId>stanford-postagger</artifactId>
+		<version>3.0.1</version>
+	</dependency>
 	<!-- 
 	<dependency>
 		<groupId>org.apache.commons</groupId>
