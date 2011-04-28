@@ -31,7 +31,7 @@ package cofm.command
 					typeId: _typeId
 				};
 			if (_entityId > 0) {
-				request._entityId = _entityId;
+				request.entityId = _entityId;
 			}
 			Connector.instance().send(JsonUtil.objectToJson(request));
 		}
