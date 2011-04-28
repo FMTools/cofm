@@ -21,6 +21,7 @@ public class TextSimilarity {
 	//      Sim(Vec1, Vec2) = (Vec1 * Vec2) / (Length_of_Vec1 * Length_of_Vec2)
 	public static double byTfIdf(Map<String, Integer> tfVec1, Map<String, Integer> tfVec2, 
 			Map<String, Integer> dfVec, int docCount) {
+		
 		double dotProduct = 0.0, len1 = 0.0, len2 = 0.0;
 		Set<String> computedTerm = new TreeSet<String>();
 		
@@ -42,10 +43,12 @@ public class TextSimilarity {
 			TermSim ts = calcTermSim(entry2.getKey(), entry2.getValue(),
 					tfVec1, dfVec, docCount);
 			dotProduct += ts.dotProduct;
-			len1 += ts.len1;
-			len2 += ts.len2;	
+			len1 += ts.len2;   // ts.len2 is "tfVec1" in previous call to "calcTermSim", so it should be added to len1.
+			len2 += ts.len1;   
 		}
-		
+		if (dotProduct == 0.0 || len1 == 0.0 || len2 == 0.0) {
+			return 0.0;
+		}
 		return dotProduct / (Math.sqrt(len1) * Math.sqrt(len2));
 	}
 	
@@ -57,10 +60,11 @@ public class TextSimilarity {
 		Integer tf2 = tfVec2.get(term);
 		if (tf2 != null) {
 			double val2 = tf2 * idf;
+			
 			ts.dotProduct = val1 * val2;
 			ts.len2 = val2 * val2;
 			ts.isZero = false;
-		}
+		} 
 		ts.len1 = val1 * val1;
 		return ts;
 	}
@@ -78,16 +82,13 @@ public class TextSimilarity {
 	}
 	
 	public static void main(String[] argv) throws IOException, ClassNotFoundException {
-		// Do a simple test
-//		System.out.println(TextSimilarity.bySimpleTf(
-//				"The song is good.", "The songs are good."));
-//		System.out.println(TextSimilarity.termVector.toString());
-		
-		TextData.clearDocumentSet();
+
+		TextData.resetDfVector();
 		TextData td = new TextData("You can search in the search result. Do some search.");
 		TextData td2 = new TextData("I can know you know I Know.");
-		
-		
+		System.out.println("all: " + TextSimilarity.byTfIdf(
+				td.getUntaggedTermVector(), td2.getUntaggedTermVector(), 
+				TextData.getDocumentVector(), TextData.getNumDocument()));
 		
 	}
 }
