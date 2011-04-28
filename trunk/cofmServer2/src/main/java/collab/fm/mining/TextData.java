@@ -57,7 +57,7 @@ public class TextData {
 		
 	}
 	
-	public static void clearDocumentSet() {
+	public static void resetDfVector() {
 		setNumDocument(0);
 		documentVector.clear();
 	}
@@ -66,16 +66,13 @@ public class TextData {
 		calcTermVector(text);
 	}
 	
-	public Map<String, Integer> getTaggedTermVector() {
-		return taggedTermVector;
-	}	
 	public static Map<String, Integer> getDocumentVector() {
 		return documentVector;
 	}
 	
 	// Get the term vectors for calculating text similarity (See TextSimilarity class)
 	
-	public Map<String, Double> getUntaggedTermVector() {
+	public Map<String, Integer> getUntaggedTermVector() {
 		return this.getFilteredTermVector(new TermPolicy() {
 
 			public boolean keepTaggedWord(String term) {
@@ -86,7 +83,7 @@ public class TextData {
 		});
 	}
 	
-	public Map<String, Double> getVerbVector() {
+	public Map<String, Integer> getVerbVector() {
 		return this.getFilteredTermVector(new TermPolicy() {
 
 			public boolean keepTaggedWord(String word) {
@@ -97,7 +94,7 @@ public class TextData {
 		});
 	}
 	
-	public Map<String, Double> getNounVector() {
+	public Map<String, Integer> getNounVector() {
 		return this.getFilteredTermVector(new TermPolicy() {
 
 			public boolean keepTaggedWord(String word) {
@@ -109,7 +106,7 @@ public class TextData {
 	}
 	
 	// A misc term is a word other than Verb or Noun.
-	public Map<String, Double> getMiscTermVector() {
+	public Map<String, Integer> getMiscTermVector() {
 		return this.getFilteredTermVector(new TermPolicy() {
 
 			public boolean keepTaggedWord(String word) {
@@ -120,8 +117,8 @@ public class TextData {
 	}
 	
 	// Term vector without tag
-	private Map<String, Double> getFilteredTermVector(TermPolicy policy) {
-		Map<String, Double> result = new HashMap<String, Double>();
+	private Map<String, Integer> getFilteredTermVector(TermPolicy policy) {
+		Map<String, Integer> result = new HashMap<String, Integer>();
 		for (String key: taggedTermVector.keySet()) {
 			if (!policy.keepTaggedWord(key)) {
 				continue;
@@ -134,9 +131,9 @@ public class TextData {
 			
 			// Compute the weight = tf * idf
 			int curTf = taggedTermVector.get(key);
-			Double val = result.get(s);
+			Integer val = result.get(s);
 			if (val == null) {
-				val = new Double(curTf);
+				val = curTf;
 			} else {
 				val += curTf;
 			}
@@ -172,14 +169,15 @@ public class TextData {
 			}
 
 			String myTag = this.convertTag(wt.tag());
-			this.checkAndInc(this.taggedTermVector, myTag + "_" + wt.word());
+			String myWord = wt.word().toLowerCase();
+			this.checkAndInc(this.taggedTermVector, myTag + "_" + myWord);
 			
 			// If the term appears in current document (the "text") for the 
 			// first time, we increase the document-frequency (df) here
 			// The df doesn't count different tags.
-			if (!termEncountered.contains(wt.word())) {
-				this.checkAndInc(TextData.documentVector, wt.word());
-				termEncountered.add(wt.word());
+			if (!termEncountered.contains(myWord)) {
+				this.checkAndInc(TextData.documentVector, myWord);
+				termEncountered.add(myWord);
 			}
 		}
 	}
@@ -199,11 +197,10 @@ public class TextData {
 	}
 	
 	public static void main(String[] argv) {
-		TextData.clearDocumentSet();
+		TextData.resetDfVector();
 		TextData td = new TextData("You can search in the search result. Do some search.");
 		TextData td2 = new TextData("I can know you know I Know.");
 		System.out.println("df: " + TextData.getDocumentVector().toString());
-		System.out.println("ttf: " + td.getTaggedTermVector().toString());
 		System.out.println("tw: " + td.getUntaggedTermVector().toString());
 		System.out.println("vw: " + td.getVerbVector().toString());
 		System.out.println("nw: " + td.getNounVector().toString());

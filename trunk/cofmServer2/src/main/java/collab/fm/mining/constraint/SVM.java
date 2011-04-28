@@ -104,14 +104,14 @@ public class SVM implements Optimizable {
 	private String formatPair(FeaturePair pair) {
 		// Format as LIBSVM required
 		return pair.getLabel()
-			   + " 1:" + pair.getSimilarity()
-			   + " 2:" + pair.getParental()
-			   + " 3:" + pair.getSibling() 
-			   + " 4:" + pair.getNumMandatory() 
-			   + " 5:" + pair.getRequireOut() 
-			   + " 6:" + pair.getExcludeOut() 
-		//	   + " 7:" + pair.getParentRequireOut()
-		//	   + " 8:" + pair.getParentExcludeOut()
+			   + " 1:" + pair.getTotalSim()
+			   + " 2:" + pair.getVerbSim()
+			   + " 3:" + pair.getNounSim()
+			   + " 4:" + pair.getParental()
+			   + " 5:" + pair.getSibling() 
+			   + " 6:" + pair.getNumMandatory() 
+			   + " 7:" + pair.getRequireOut() 
+			   + " 8:" + pair.getExcludeOut() 
 			   ;
 	}
 	
@@ -171,6 +171,7 @@ public class SVM implements Optimizable {
 	};
 	
 	private List<FeaturePair> dumpModel(BufferedWriter out, Model model, int mode) {
+		FeaturePair.clearFeatureSet();
 		Entity[] features = model.getEntities().toArray(new Entity[0]);
 		// Random shuffle the features.
 		Collections.shuffle(Arrays.asList(features));
@@ -208,14 +209,6 @@ public class SVM implements Optimizable {
 					continue;
 				}
 				pairs.add(pair);
-				try {
-					out.write(formatPair(pair) + "\n");
-				} catch (IOException e) {
-					logger.warn("Cannot write pair.", e);
-				}
-				if (pair.getSimilarity() > 0.0f) {
-					numSim++;
-				}
 				if (pair.getLabel() == FeaturePair.REQUIRE) {
 					numRequire++;
 				} else if (pair.getLabel() == FeaturePair.EXCLUDE) {
@@ -225,6 +218,18 @@ public class SVM implements Optimizable {
 			}
 		}
 
+		// Complete the pair similarity and output them.
+		for (FeaturePair p: pairs) {
+			p.updateTextSimilarity();
+			if (p.getTotalSim() > 0.0) {
+				numSim++;
+			}
+			try {
+				out.write(formatPair(p) + "\n");
+			} catch (IOException e) {
+				logger.warn("Cannot write pair.", e);
+			}
+		}
 		logger.info("Feature Model: '" + model.getName() + "': " 
 				+ modeName[mode] + ", "
 				+ features.length + " features, " 
@@ -741,9 +746,9 @@ public class SVM implements Optimizable {
 			for (FeaturePair pair: pairs) {
 				int index = (pair.getLabel() == FeaturePair.NO_CONSTRAINT ? 0 : 
 					(pair.getLabel() == FeaturePair.REQUIRE ? 1 : 2));
-				if (pair.getSimilarity() <= 0.3f) {
+				if (pair.getTotalSim() <= 0.3) {
 					simLow[index]++;
-				} else if (pair.getSimilarity() > 0.3f && pair.getSimilarity() < 0.6f) {
+				} else if (pair.getTotalSim() > 0.3 && pair.getTotalSim() < 0.6) {
 					simMed[index]++;
 				} else {
 					simHigh[index]++;

@@ -2,11 +2,14 @@ package collab.fm.mining.constraint;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 
+import collab.fm.mining.TextData;
 import collab.fm.mining.TextSimilarity;
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.entity.Entity;
@@ -46,6 +49,8 @@ public class FeaturePair {
 		Resources.BIN_REL_REFINES
 	};
 	
+	private static Map<Long, TextData> featureText = new HashMap<Long, TextData>();
+	
 	// For boolean, note that in machine learning there is always a chance of an "Unknown" state 
 	// so we use INT instead of BOOLEAN.
 	public static final int YES = 1;
@@ -65,13 +70,15 @@ public class FeaturePair {
 	private Entity second;
 	private Relation constraint;  // Constraint between the first and second feature (if any).
 	
-	public static int NUM_ATTRIBUTES = 6;
+	public static int NUM_ATTRIBUTES = 8;
 	// ------ Attributes for machine learning ------
 	// The Class label of the pair
 	private int label;
 	
 	// Similarity of the descriptions of the two features
-	private float similarity;  
+	private double verbSim;   // Verb similarity
+	private double nounSim;   // Noun similarity
+	private double totalSim; // Whole text similarity
 	
 	// Do they have a parental relationship?
 	private int parental;
@@ -95,6 +102,11 @@ public class FeaturePair {
 	// Does their parents exclude a outside-feature?
 	private int parentExcludeOut;
 	
+	public static void clearFeatureSet() {
+		FeaturePair.featureText.clear();
+		TextData.resetDfVector();
+	}
+	
 	public FeaturePair() {
 		// Leave it for Hibernate framework.
 	}
@@ -107,8 +119,37 @@ public class FeaturePair {
 		
 		calcRelationAttributes(first, second);
 		
-		this.setSimilarity(calcSimilarity(first, second));
 		this.setNumMandatory(calcNumMan(first, second));
+		
+		checkAndAddText(first);
+		checkAndAddText(second);
+	}
+	
+	public void updateTextSimilarity() {
+		this.setTotalSim(TextSimilarity.byTfIdf(
+				FeaturePair.featureText.get(first.getId()).getUntaggedTermVector(), 
+				FeaturePair.featureText.get(second.getId()).getUntaggedTermVector(),
+				TextData.getDocumentVector(),
+				TextData.getNumDocument()));
+		
+		this.setVerbSim(TextSimilarity.byTfIdf(
+				FeaturePair.featureText.get(first.getId()).getVerbVector(), 
+				FeaturePair.featureText.get(second.getId()).getVerbVector(),
+				TextData.getDocumentVector(),
+				TextData.getNumDocument()));
+		
+		this.setNounSim(TextSimilarity.byTfIdf(
+				FeaturePair.featureText.get(first.getId()).getNounVector(), 
+				FeaturePair.featureText.get(second.getId()).getNounVector(),
+				TextData.getDocumentVector(),
+				TextData.getNumDocument()));
+	}
+	
+	private void checkAndAddText(Entity feature) {
+		if (FeaturePair.featureText.get(feature.getId()) == null) {
+			FeaturePair.featureText.put(feature.getId(), 
+					new TextData(getDescriptions(feature)));
+		}
 	}
 	
 	private void calcRelationAttributes(Entity first, Entity second) {
@@ -264,10 +305,6 @@ public class FeaturePair {
 		return des;
 	}
 	
-	private float calcSimilarity(Entity first, Entity second) {
-		return TextSimilarity.bySimpleTf(getDescriptions(first), getDescriptions(second));
-	}
-		
 	// Sum 2 Three-value variables (i.e., unknown/no/one values)
 	private int sumThreeValueVars(int var1, int var2) {
 		switch (var1) {
@@ -459,14 +496,6 @@ public class FeaturePair {
 		this.second = second;
 	}
 
-	public float getSimilarity() {
-		return similarity;
-	}
-
-	public void setSimilarity(float similarity) {
-		this.similarity = similarity;
-	}
-
 	public int getParental() {
 		return parental;
 	}
@@ -530,6 +559,29 @@ public class FeaturePair {
 	public Relation getConstraint() {
 		return constraint;
 	}
-	
+
+	public void setVerbSim(double verbSim) {
+		this.verbSim = verbSim;
+	}
+
+	public double getVerbSim() {
+		return verbSim;
+	}
+
+	public void setNounSim(double nounSim) {
+		this.nounSim = nounSim;
+	}
+
+	public double getNounSim() {
+		return nounSim;
+	}
+
+	public void setTotalSim(double totalSim) {
+		this.totalSim = totalSim;
+	}
+
+	public double getTotalSim() {
+		return totalSim;
+	}
 	
 }
