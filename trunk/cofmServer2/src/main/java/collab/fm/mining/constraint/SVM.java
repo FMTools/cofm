@@ -164,11 +164,10 @@ public class SVM implements Optimizable {
 	
 	private static final int MODE_TEST_ALL = 0;
 	private static final int MODE_TEST_BLANK = 1;
-	private static final int MODE_TEST_NO_CON = 2;
-	private static final int MODE_TRAIN_ALL = 3; 
-	private static final int MODE_TRAIN_ONLY_CON = 4;
+	private static final int MODE_TRAIN_ALL = 2; 
+	private static final int MODE_TRAIN_ONLY_CON = 3;
 	private static final String[] modeName = {
-		"Test_All", "Test_Blank", "Test_No_Con", "Train_All", "Train_Only_Con"
+		"Test_All", "Test_Blank", "Train_All", "Train_Only_Con"
 	};
 	
 	private List<FeaturePair> dumpModel(BufferedWriter out, Model model, int mode) {
@@ -189,23 +188,22 @@ public class SVM implements Optimizable {
 					pair.setLabel(FeaturePair.NO_CONSTRAINT);
 					pair.setRequireOut(FeaturePair.UNKNOWN);
 					pair.setExcludeOut(FeaturePair.UNKNOWN);
-				} else {
-					if (pair.getLabel() == FeaturePair.NO_CONSTRAINT 
-							|| pair.getLabel() == FeaturePair.UNKNOWN) {
-						if (mode == MODE_TEST_NO_CON) {
-							if (pair.getRequireOut() == FeaturePair.NO){
-								pair.setRequireOut(FeaturePair.UNKNOWN);
-							}
-							if (pair.getExcludeOut() == FeaturePair.NO) {
-								pair.setExcludeOut(FeaturePair.UNKNOWN);
-							}
-						} else if (mode == MODE_TRAIN_ONLY_CON) {
-							keepPair = false; // Skip non-constraint pairs in training set
-						}
-					} else if (mode == MODE_TEST_NO_CON) {
-						keepPair = false;  // Skip constraint-pairs in test set
+				} else if (mode == MODE_TEST_ALL) {
+					// Set "No" to "Unknown" in test set
+					if (pair.getRequireOut() == FeaturePair.NO){
+						pair.setRequireOut(FeaturePair.UNKNOWN);
+					}
+					if (pair.getExcludeOut() == FeaturePair.NO) {
+						pair.setExcludeOut(FeaturePair.UNKNOWN);
 					}
 				}
+				
+				if (pair.getLabel() == FeaturePair.NO_CONSTRAINT 
+							|| pair.getLabel() == FeaturePair.UNKNOWN) {
+					// Skip non-constraint pairs in "train with constraints only" mode
+					keepPair = (mode != MODE_TRAIN_ONLY_CON); 
+				} 
+				
 				if (!keepPair) {
 					continue;
 				}
@@ -470,6 +468,30 @@ public class SVM implements Optimizable {
 	public static final String KEY_TEST_MODE = "svm.test.mode";
 	public static final String KEY_TEST_RESULT = "svm.test.result";
 	public static final String KEY_RUN_MODE = "svm.run.mode";
+	public static final String CLASSFIER_PROPERTIES_INTRO = 
+		"\nClassifier Options" + 
+		"\nRun mode: 1 = Optimize, 2 = Train and Predict, 3 = Optimize, Train and Predict" +
+		"\n    svm.run.mode=1/2/3" +
+		"\n\nSVM parameters: default; lowest; highest; change_step" +
+		"\n    svm.gamma=d;l;h;step" +
+		"\n    svm.wreq=d;l;h;step  (Weight of Require)" +
+		"\n    svm.wexc=d;l;h;step  (Weight of Exclude)" +
+		"\n\nCross Validation Fold" +
+		"\n    svm.cv=int" +
+		"\n\nOptimization Pass" +
+		"\n    svm.opt.pass=int" +
+		"\n\nGenetic Algorithm parameters" +
+		"\n    svm.opt.gen.popsize=int  (Size of population)" +
+		"\n    svm.opt.gen.iter=int  (Number of generations)" +
+		"\n    svm.opt.gen.top=0 to 1  (Proportion of top elites)" +
+		"\n    svm.opt.gen.cross=0 to 1  (Probability of Crossover)" +
+		"\n\nPrediction options" +
+		"\n    svm.test.mode=0/1  (Mode: 0 = ALL, 1 = BLANK)" +
+		"\n    svm.test.result=int  (Number of displayed results)" +
+		"\n\nData sets" +
+		"\n    svm.train.fm=Name1;Name2;...;Name_N  (Name of training FMs)" +
+		"\n    svm.test.fm=Name1;Name2;...;Name_N  (Name of test FMs)";
+	
 	// Run mode #1
 	public void optimizeParameters(Properties cfg) {
 		this.cvResult = new SVM.CV();
@@ -503,9 +525,9 @@ public class SVM implements Optimizable {
 		o.elite = Float.valueOf(cfg.getProperty(KEY_TOP));
 		
 		Solution best = null;
-		while (pass-- > 0) {
+		for (int i = 0; i < pass; i++) {
 			long startTime = System.currentTimeMillis();
-			logger.info("[opt] *** Optimizing Parameters");
+			logger.info("[opt] *** Optimizing Parameters (Pass " + (i+1) + " of " + pass + ')');
 			Solution localBest = o.optimize(this);
 			if (best == null || best.cost > localBest.cost) {
 				best = localBest;
@@ -513,12 +535,18 @@ public class SVM implements Optimizable {
 			long elapsedTime = System.currentTimeMillis() - startTime;
 			logger.info("[opt] *** Optimizing over, time elapsed: "
 					+ (elapsedTime / 1000.0f) + " seconds.");
-			logger.info("[opt] *** Optimized Parameter:" + "\n\tgamma = "
-					+ best.parts[0].value + "\n\tweight of require class = "
-					+ best.parts[1].value + "\n\tweight of exclude class = "
-					+ best.parts[2].value + "\nAccuracy = " + (100 - best.cost)
+			logger.debug("[opt] *** Local Optimized Parameter:" + "\n\tgamma = "
+					+ localBest.parts[0].value + "\n\tweight of require class = "
+					+ localBest.parts[1].value + "\n\tweight of exclude class = "
+					+ localBest.parts[2].value + "\nAccuracy = " + (100 - localBest.cost)
 					+ "%");
 		}
+		
+		logger.info("[opt] *** Optimized Parameter:" + "\n\tgamma = "
+				+ best.parts[0].value + "\n\tweight of require class = "
+				+ best.parts[1].value + "\n\tweight of exclude class = "
+				+ best.parts[2].value + "\nAccuracy = " + (100 - best.cost)
+				+ "%");
 		
 		cfg.setProperty(KEY_GAMMA, best.parts[0].value + ";"
 				+ this.gammaLo + ";" + this.gammaHi + ";" + this.gammaStep);
@@ -527,8 +555,9 @@ public class SVM implements Optimizable {
 		cfg.setProperty(KEY_WEXC, best.parts[2].value + ";"
 				+ this.excLo + ";" + this.excHi + ";" + this.excStep);
 		try {
-			cfg.store(new FileWriter(CFG_FILE), 
-					"Updated at " + (new Date().toString()));
+			cfg.store(new FileWriter("src/main/config/" + CFG_FILE), 
+					"Updated at " + (new Date().toString()) +
+					"\n" + CLASSFIER_PROPERTIES_INTRO);
 		} catch (IOException e) {
 			logger.warn("Cannot save property file.");
 		}
