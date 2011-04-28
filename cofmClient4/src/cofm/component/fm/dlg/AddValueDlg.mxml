@@ -3,7 +3,8 @@
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
 			   xmlns:mx="library://ns.adobe.com/flex/mx"
 			   width="400" height="300"
-			   title="{RS.m_cv_title}">
+			   title="{RS.m_cv_title}"
+			   creationComplete="initView();">
 	<s:states>
 		<s:State name="AddString"/>
 		<s:State name="AddText"/>
@@ -22,14 +23,20 @@
 			import cofm.util.*;
 			
 			import mx.collections.XMLListCollection;
-			
 			import mx.managers.PopUpManager;
-			
 			import mx.utils.StringUtil;
 			
 			import spark.events.IndexChangeEvent;
 			
 			private var _attrId: String;
+			
+			[Bindable]
+			private var ptrVals: XMLListCollection = Model.instance().entities;
+			
+			[Bindable]
+			private var ptrAttrs: XMLListCollection;
+			
+			private var curEntypeId: String;
 			
 			[Bindable] 
 			public function set attrId(a: String): void {
@@ -46,6 +53,29 @@
 				return _attrId;
 			}
 			
+			private function initView(): void {
+				
+			}
+			
+			private function filterEntityByType(item: Object): Boolean {
+				if (String(item.@typeId) == curEntypeId) {
+					return true;
+				}
+				return false;
+			}
+			
+			private function resetPtrComboBox(entype: Object): void {
+				curEntypeId = String(entype.@id);
+				ptrVals.filterFunction = filterEntityByType;
+				ptrVals.refresh();
+				ptrAttrs = new XMLListCollection(XMLList(entype.attrDefs.attrDef).copy());
+				ptrAttrs.addItemAt(<attrDef id="0" name='(NONE)'/>, 0);
+			}
+			
+			private function onTypeChange(evt: IndexChangeEvent): void {
+				resetPtrComboBox(ptrType.selectedItem);
+			}
+			
 			private function changeForm(a: Object): void {
 				switch (String(a.@type)) {
 					case Cst.ATTR_TYPE_TEXT:
@@ -59,6 +89,8 @@
 						break;
 					case Cst.ATTR_TYPE_PTR:
 						currentState = "AddPointer";
+						ptrType.selectedIndex = 0;
+						resetPtrComboBox(ptrType.selectedItem);
 						break;
 					default:
 						currentState = "AddString";
@@ -77,7 +109,8 @@
 				if (this.currentState == "AddText") {
 					val = textVal.text;
 				} else if (this.currentState == "AddPointer") {
-					val = ptrVal.selectedItem.@id;  // Only store the ID of pointed entity at the server.
+					// Val = ENTITY_ID + "," + ATTR_ID
+					val = ptrVal.selectedItem.@id + "," + ptrAttr.selectedItem.@id;
 				} else {
 					val = strVal.text;
 				}
@@ -98,21 +131,32 @@
 	
 	<mx:Form>
 		<mx:FormItem label="{RS.m_cv_attr}">
-			<s:TextInput id="attrInput" editable="false" />
+			<s:TextInput id="attrInput" editable="false" enabled="false"/>
 		</mx:FormItem>
-		<mx:FormItem label="{RS.m_cv_value}">
+		<mx:FormItem label="Target Type" includeIn="AddPointer">
+			<s:ComboBox id="ptrType" dataProvider="{Model.instance().entypes}"
+						labelField="@name"
+						requireSelection="true"
+					    change="onTypeChange(event);"/>
+		</mx:FormItem>
+		<mx:FormItem label="Target Instance" includeIn="AddPointer">
+			<s:ComboBox id="ptrVal"  
+						dataProvider="{ptrVals}"
+						labelFunction="extractEntityName"
+						requireSelection="true" />
+		</mx:FormItem>
+		<mx:FormItem label="Target Attribute (Optional)" includeIn="AddPointer">
+			<s:ComboBox id="ptrAttr" dataProvider="{ptrAttrs}"
+					    labelField="@name"
+					    requireSelection="true" />
+		</mx:FormItem>
+		<mx:FormItem label="{RS.m_cv_value}" excludeFrom="AddPointer">
 			
 			<!-- The input for String-typed & Numeric attributes -->
 			<s:TextInput id="strVal" includeIn="AddString, AddNumber"/>
 			
 			<!-- The input for Text-typed attributes -->
 			<s:TextArea id="textVal" includeIn="AddText"/>
-			
-			<!-- The input for Pointer-typed attributes -->
-			<s:ComboBox id="ptrVal" includeIn="AddPointer" 
-						dataProvider="{Model.instance().entities}"
-					    labelFunction="extractEntityName"
-					    requireSelection="true" />
 			
 			<!-- The prompt for number unit, min and max values -->
 			<s:Label id="numInfo"/>

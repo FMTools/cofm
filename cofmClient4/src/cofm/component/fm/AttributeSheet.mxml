@@ -14,8 +14,8 @@
 			import cofm.command.*;
 			import cofm.component.fm.dlg.AddValueDlg;
 			import cofm.event.*;
-			import cofm.util.*;
 			import cofm.model.*;
+			import cofm.util.*;
 			
 			import mx.collections.ArrayCollection;
 			import mx.managers.PopUpManager;
@@ -49,13 +49,26 @@
 					item.value = XML(obj.str).text().toString();
 					// If attribute type == POINTER, then convert the value (pointee ID) to the name of entity
 					if (this.attributeType == Cst.ATTR_TYPE_PTR) {
-						item.value = GlobalTreeData.instance().getEntityNameById(item.value);
+						item.value = getPointeeName(item.value);
 					}
 					item.numSupporters = XMLList(obj.yes.user).length();
 					item.numOpponents = XMLList(obj.no.user).length();
 					
 					values.addItem(item);
 				}
+			}
+			
+			private function getPointeeName(val: String): String {
+				var parts: Array = val.split(",");
+				// parts[0] == Entity_ID, parts[1] = The_Entity's_Attr_ID (optional)
+				var entityName: String = GlobalTreeData.instance().getEntityNameById(String(parts[0]));
+				if (parts[1] == null || int(parts[1]) <= 0) {
+					// No attr parts
+					return entityName;
+				}
+				var entity: XML = Model.instance().getEntityById(String(parts[0]));
+				var attrName: String = Model.instance().getAttrNameById(entity, String(parts[1]));
+				return attrName + " of " + entityName;
 			}
 			
 			private function adjustGridHeight(): void {
