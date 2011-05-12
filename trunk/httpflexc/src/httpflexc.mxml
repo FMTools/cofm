@@ -17,56 +17,28 @@
 			import mx.rpc.events.ResultEvent;
 			import mx.rpc.http.HTTPService;
 			
-			private var svr: HTTPService;
 			private var myId: int;
 			
+			
 			private function initView(): void {
-				svr = new HTTPService();
-				svr.method = "POST";
-				svr.url="http://fms.seforge.org";
-				svr.resultFormat="text";
-				svr.addEventListener(FaultEvent.FAULT, onFault);
-				svr.addEventListener(ResultEvent.RESULT, onResult);
-				svr.send({
-					mode: "handshake"
-				});
+				if (ExternalInterface.available) {
+					ExternalInterface.addCallback("handleResponse", handleResponse);
+					ExternalInterface.call("postData", "", "handshake");  // send a handshake message when init
+				}
+				
 			}
 			
-			private function onFault(evt: FaultEvent): void {
-				Alert.show(evt.fault.toString(), "Error");
-			}
-			
-			private function onResult(evt: ResultEvent): void {
-				var rsp: String = String(evt.result); 
-				trace (">>> '" + rsp + "', " + evt.statusCode);
-				if (rsp.indexOf("_Handshake_") == 0) {
-					myId = int(rsp.substr("_Handshake_".length));
-				} else if (rsp.length > 0) {
-					displayer.text += rsp + "\n";
-				}
-				// reconnect with "read" mode
-				if (rsp.length > 0) {
-					svr.send({
-						mode: "read",
-						clientId: myId
-					});
-				}
+			private function handleResponse(res: Object): void {
+				displayer.text += String(res) + "\n";
 			}
 			
 			private function onSendText(): void {
-				svr.disconnect();
-				svr.send({
-					mode: "write",
-					message: inputer.text,
-					clientId: myId
-				});
+				if (ExternalInterface.available) {
+					ExternalInterface.call("postData", inputer.text);
+				}
 			}
 			
 			private function onQuit(): void {
-				svr.send({
-					mode: "disconnect",
-					clientId: myId
-				});
 			}
 		]]>
 	</fx:Script>
