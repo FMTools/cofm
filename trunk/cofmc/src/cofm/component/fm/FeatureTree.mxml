@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Tree xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 labelField="@name"
+		 showRoot="false"
+		 itemClick="onItemClicked(event);"
+		 itemRenderer="cofm.component.fm.FeatureTreeItemRenderer">
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.event.*;
+			import cofm.util.*;
+			import cofm.model.RefinementTreeData;
+			
+			import mx.events.ListEvent;
+			
+			private var lastSelectedFeatureId: int = -1;
+			
+			private function onItemClicked(evt: ListEvent): void {
+				
+				var curId: int = int(selectedItem.@id);
+				var eventType: String;
+				if (String(selectedItem.@kind) == RefinementTreeData.KIND_CLASS) {
+					eventType = FeatureSelectEvent.TYPE_SELECTED;
+				} else {
+					eventType = FeatureSelectEvent.FEATURE_SELECTED;
+				}
+				if (lastSelectedFeatureId != curId) {
+					// Broadcast the selection
+					ClientEvtDispatcher.instance().dispatchEvent(
+						new FeatureSelectEvent(eventType,
+							curId, selectedItem.@name));
+					if (eventType == FeatureSelectEvent.FEATURE_SELECTED) {
+						new StartEditFeatureCommand(curId).execute();
+					}
+				}
+				lastSelectedFeatureId = curId;
+			}
+		]]>
+	</fx:Script>
+</mx:Tree>

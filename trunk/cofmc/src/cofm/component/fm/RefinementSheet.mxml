@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnableContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					  xmlns:s="library://ns.adobe.com/flex/spark" 
+					  xmlns:mx="library://ns.adobe.com/flex/mx">
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.event.*;
+			import cofm.model.*;
+			import cofm.util.*;
+			
+			import mx.events.FlexEvent;
+			import mx.collections.ArrayCollection;
+			import mx.managers.PopUpManager;
+			
+			public var maxGridRows: int = 10;
+			public var minGridRows: int = 2;
+			
+			private function onAdjustGrid(evt: FlexEvent): void {
+				if (parentGrid == evt.currentTarget) {
+					adjustGridHeight(
+						CurrentFeature.instance().parents.length,
+						parentGrid);
+				} else {
+					adjustGridHeight(
+						CurrentFeature.instance().children.length,
+						childGrid);
+				}
+			}
+			
+			private function adjustGridHeight(numItems: int, grid: AdvancedDataGrid): void {
+				if (numItems < minGridRows) {
+					numItems = minGridRows;
+				}
+				if (numItems > maxGridRows) {
+					numItems = maxGridRows;
+				}
+				grid.height = grid.measureHeightOfItems(-1, numItems);
+			}
+		]]>
+	</fx:Script>
+	
+	<s:Label text="{RS.m_fe_refine_parent}: "/>
+	<mx:AdvancedDataGrid id="parentGrid" 
+						 dataProvider="{CurrentFeature.instance().parents}"
+						 creationComplete="onAdjustGrid(event);"
+						 updateComplete="onAdjustGrid(event);"
+						 width="95%">
+		<mx:columns>
+			<mx:AdvancedDataGridColumn dataField="name" headerText="{RS.m_fe_refine_grid_name}"/>
+			<mx:AdvancedDataGridColumn dataField="numSupporters" headerText="{RS.m_fe_grid_yes}"
+									   width="95"/>
+			<mx:AdvancedDataGridColumn dataField="numOpponents" headerText="{RS.m_fe_grid_no}"
+									   width="90"/>
+			<mx:AdvancedDataGridColumn headerText="{RS.m_fe_grid_action}"
+									   resizable="false" sortable="false" width="150">
+				<mx:itemRenderer>
+					<fx:Component>
+						<s:MXAdvancedDataGridItemRenderer>
+							<fx:Script>
+								<![CDATA[
+									import cofm.command.*;
+									import cofm.model.CurrentFeature;
+									import cofm.util.*;
+									
+									private function doVoteYes(): void {
+										new VoteAddBinRelationCommand(
+											int(data.typeId),
+											int(data.left),
+											int(data.right),
+											int(data.id),
+											true).execute();
+									}
+									
+									private function doVoteNo(): void {
+										new VoteAddBinRelationCommand(
+											int(data.typeId),
+											int(data.left),
+											int(data.right),
+											int(data.id),
+											false).execute();
+									}
+								]]>
+							</fx:Script>
+							
+							<s:HGroup>
+								<s:Button label="{RS.m_yes}" click="doVoteYes();"/>
+								<s:Button label="{RS.m_no}" click="doVoteNo();"/>
+							</s:HGroup>
+						</s:MXAdvancedDataGridItemRenderer>
+					</fx:Component>
+				</mx:itemRenderer>
+			</mx:AdvancedDataGridColumn>
+		</mx:columns>
+	</mx:AdvancedDataGrid>
+	
+	<s:Label text="{RS.m_fe_refine_child}: "/>
+	<mx:AdvancedDataGrid id="childGrid" 
+						 dataProvider="{CurrentFeature.instance().children}"
+						 creationComplete="onAdjustGrid(event);"
+						 updateComplete="onAdjustGrid(event);"
+						 width="95%">
+		<mx:columns>
+			<mx:AdvancedDataGridColumn dataField="name" headerText="{RS.m_fe_refine_grid_name}"/>
+			<mx:AdvancedDataGridColumn dataField="numSupporters" headerText="{RS.m_fe_grid_yes}"
+									   width="95"/>
+			<mx:AdvancedDataGridColumn dataField="numOpponents" headerText="{RS.m_fe_grid_no}"
+									   width="90"/>
+			<mx:AdvancedDataGridColumn headerText="{RS.m_fe_grid_action}"
+									   resizable="false" sortable="false" width="150">
+				<mx:itemRenderer>
+					<fx:Component>
+						<s:MXAdvancedDataGridItemRenderer>
+							<fx:Script>
+								<![CDATA[
+									import cofm.command.*;
+									import cofm.model.CurrentFeature;
+									import cofm.util.*;
+									
+									private function doVoteYes(): void {
+										new VoteAddBinRelationCommand(
+											int(data.typeId),
+											int(data.left),
+											int(data.right),
+											int(data.id),
+											true).execute();
+									}
+									
+									private function doVoteNo(): void {
+										new VoteAddBinRelationCommand(
+											int(data.typeId),
+											int(data.left),
+											int(data.right),
+											int(data.id),
+											false).execute();
+									}
+								]]>
+							</fx:Script>
+							
+							<s:HGroup>
+								<s:Button label="{RS.m_yes}" click="doVoteYes();"/>
+								<s:Button label="{RS.m_no}" click="doVoteNo();"/>
+							</s:HGroup>
+						</s:MXAdvancedDataGridItemRenderer>
+					</fx:Component>
+				</mx:itemRenderer>
+			</mx:AdvancedDataGridColumn>
+		</mx:columns>
+	</mx:AdvancedDataGrid>
+	
+</s:SkinnableContainer>

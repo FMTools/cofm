@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="400" height="350"
+			   title="{RS.m_cr_title}"
+			   close="doClose();"
+			   creationComplete="initView();">
+	<s:states>
+		<s:State name="Refinement"/>
+		<s:State name="Constraint"/>
+	</s:states>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		<s:RadioButtonGroup id="categoryGroup" itemClick="onCategoryChanged(event);"/>
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.event.*;
+			import cofm.model.*;
+			import cofm.util.*;
+			
+			import mx.events.ItemClickEvent;
+			import mx.managers.PopUpManager;
+			
+			import spark.events.IndexChangeEvent;
+			
+			private var relation: Object;
+			
+			[Bindable] private static var sourceEntities: EntityList = new EntityList();
+			[Bindable] private static var targetEntities: EntityList = new EntityList();
+			
+			private var showRefinements: Boolean;
+			
+			private function entitySelectLabelFunc(item: Object): String {
+				return Model.instance().getPrimaryValueOfAttr(
+					XML(item), Cst.ATTR_FEATURE_NAME);
+			}
+			
+			private function initView(): void {
+				// Select the "Refinements" category by default;
+				categoryGroup.selectedValue = "Refinement";
+				showRefinements = true;
+				Model.instance().bintypes.filterFunction = filterBintypeByCategory;
+				Model.instance().bintypes.refresh();
+				typeSelect.selectedIndex = 0;
+				resetDialogByType(typeSelect.selectedItem);
+			}
+			
+			private function filterBintypeByCategory(item: Object): Boolean {
+				if (Model.instance().isRefinement(XML(item))) {
+					return showRefinements;
+				}
+				return !showRefinements;
+			}
+			
+			private function onCategoryChanged(evt: ItemClickEvent): void {
+				if (evt.label == "Refinement") {
+					showRefinements = true;
+					currentState = "Refinement";
+				} else {
+					showRefinements = false;
+					currentState = "Constraint";
+				}
+				Model.instance().bintypes.refresh();
+				typeSelect.selectedIndex = 0;
+				resetDialogByType(typeSelect.selectedItem);
+			}
+			
+			private function resetDialogByType(selectedRelation: Object): void {
+				if (selectedRelation == null) {
+					return;
+				}
+				relation = selectedRelation;
+				sourceEntities.filterByType(String(relation.@sourceTypeId));
+				targetEntities.filterByType(String(relation.@targetTypeId));
+			}
+			
+			private function onTypeChange(evt: IndexChangeEvent): void {
+				resetDialogByType(evt.currentTarget.selectedItem);
+			}
+			
+			private function doCreateRelation(): void {
+				// If binary relationship
+				var entity1: int = int(leftSelect.selectedItem.@id);
+				var entity2: int = int(rightSelect.selectedItem.@id);
+				if (entity1 > 0 && entity2 > 0) {
+					new VoteAddBinRelationCommand(
+						int(relation.@id),
+						entity1, entity2).execute();
+					doClose();
+				}
+			}
+			
+			private function doClose(): void {
+				Model.instance().bintypes.filterFunction = null;
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<mx:Form>
+		<mx:FormItem label="Category" direction="horizontal">
+			<s:RadioButton label="Refinement" group="{categoryGroup}" />
+			<s:RadioButton label="Constraint" group="{categoryGroup}" />
+		</mx:FormItem>
+		
+		<mx:FormItem label="{RS.m_cr_type}">
+			<s:ComboBox id="typeSelect"
+						width="200"
+						change="onTypeChange(event);" requireSelection="true" selectedIndex="0"
+					    dataProvider="{Model.instance().bintypes}"
+					    labelField="@name" />
+		</mx:FormItem>
+		
+		<mx:FormItem label.Refinement="{RS.m_cr_parent}" 
+					 label.Constraint="{RS.m_cr_left}">
+			<s:ComboBox id="leftSelect" 
+						width="200"
+						requireSelection="true" 
+						dataProvider="{sourceEntities.entities}"
+					    labelFunction="entitySelectLabelFunc"/>
+		</mx:FormItem>
+		<mx:FormItem label.Refinement="{RS.m_cr_child}" 
+					 label.Constraint="{RS.m_cr_right}">
+			<s:ComboBox id="rightSelect" width="200"
+						requireSelection="true" 
+						dataProvider="{targetEntities.entities}"
+					    labelFunction="entitySelectLabelFunc"/>
+		</mx:FormItem>
+		
+		<mx:FormItem direction="horizontal">
+			<s:Button label="{RS.ok}" click="doCreateRelation();"/>
+			<s:Button label="{RS.close}" click="doClose();"/>
+		</mx:FormItem>
+	</mx:Form>
+</s:TitleWindow>

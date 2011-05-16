@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnableContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					  xmlns:s="library://ns.adobe.com/flex/spark" 
+					  xmlns:mx="library://ns.adobe.com/flex/mx"
+					  creationComplete="initView();">
+	<s:layout>
+		<s:HorizontalLayout/>
+	</s:layout>
+	
+	<s:states>
+		<s:State name="NoCreate"/>
+		<s:State name="Create"/>
+	</s:states>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.component.home.dlg.CreateModelDlg;
+			import cofm.event.*;
+			import cofm.model.*;
+			import cofm.util.*;
+			
+			import com.adobe.utils.StringUtil;
+			
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+			
+			private var createModelDlg: CreateModelDlg;
+			
+			private var searchWord: String;
+			
+			private function initView(): void {
+				ClientEvtDispatcher.instance().addEventListener(ModelSearchEvent.SUCCESS, onModelSearched);
+				ClientEvtDispatcher.instance().addEventListener(LogoutEvent.LOGGED_OUT, onLogout);
+			}
+			
+			private function onModelSearched(evt: ModelSearchEvent): void {
+				if (evt.exactlyMatches) {
+					currentState = "NoCreate";
+				} else if (UserList.instance().isLogin) {
+					currentState = "Create";
+					intro.text = mx.utils.StringUtil.substitute(RS.fmlist_new_intro, evt.searchWord);
+					searchWord = evt.searchWord;
+				} else {
+					currentState = "NoCreate";
+				}
+			} 
+			
+			private function onLogout(evt: LogoutEvent): void {
+				currentState = "NoCreate";
+			}
+			
+			private function doSearch(): void {
+				// TODO: do local search first
+				ModelCollectionUpdater.instance().update(ModelCollectionUpdater.FAST_MODE, searchInput.text);
+			}
+			
+			private function doCreate(): void {
+				createModelDlg = CreateModelDlg(PopUpManager.createPopUp(this, CreateModelDlg, true));
+				createModelDlg.modelName = searchWord;
+				PopUpManager.centerPopUp(createModelDlg);
+				currentState = "NoCreate";
+			}
+			
+			private function onCancel(): void {
+				currentState = "NoCreate";
+			}
+		]]>
+	</fx:Script>
+	<s:TextInput id="searchInput" widthInChars="30"
+				 text="{RS.fmlist_search_prompt}"
+				 focusIn="TextInput(event.currentTarget).selectAll();"/>
+	<s:Button label="{RS.fmlist_search}" click="doSearch();"/>
+	<s:Label id="intro" includeIn="Create"/>
+	<s:Button label="Create a new model" click="doCreate();" includeIn="Create"/>
+</s:SkinnableContainer>
