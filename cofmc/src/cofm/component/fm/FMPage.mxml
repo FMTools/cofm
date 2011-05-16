@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:SkinnableContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					  xmlns:s="library://ns.adobe.com/flex/spark" 
+					  xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:fm="cofm.component.fm.*">
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.component.fm.dlg.*;
+			import cofm.event.*;
+			import cofm.model.*;
+			import cofm.util.*;
+			
+			import mx.managers.PopUpManager;
+			
+			// Toolbar
+			private var createFeatureDlg: CreateFeatureDlg;
+			private var createRelationDlg: CreateBinRelationDlg;
+			private var editTypeDlg: EditEntityTypeDlg;
+			//private var addAttributeDlg: AddAttributeDlg;
+			
+			public function retrieveFeatureModel(modelId: int, modelName: String): void {
+				new UpdateCommand(modelId).execute();
+				featureBrowser.title = RS.m_tree_title + ":  " + modelName;
+			}
+			
+			private function doCreateFeature(): void {
+				createFeatureDlg = CreateFeatureDlg(PopUpManager.createPopUp(this, CreateFeatureDlg, true));
+				PopUpManager.centerPopUp(createFeatureDlg);
+			}
+			
+			private function doCreateRelation(): void {
+				createRelationDlg = CreateBinRelationDlg(PopUpManager.createPopUp(this, CreateBinRelationDlg, true));
+				PopUpManager.centerPopUp(createRelationDlg);
+			}
+			
+			private function doAddAttribute(): void {
+				editTypeDlg = EditEntityTypeDlg(PopUpManager.createPopUp(this, EditEntityTypeDlg, true));
+				PopUpManager.centerPopUp(editTypeDlg);
+			}
+		]]>
+	</fx:Script>
+	<s:HGroup id="fmToolBar">
+		<s:Button label="{RS.m_new_f}" click="doCreateFeature();"/>
+		<s:Button label="{RS.m_new_r}" click="doCreateRelation();"/>
+		<s:Button label="Edit Type Definitions" click="doAddAttribute();"/>
+	</s:HGroup>
+	<s:HGroup>
+		
+		<s:Panel id="featureBrowser">
+			<mx:TabNavigator paddingTop="0">
+				<s:NavigatorContent label="Type View">
+					<fm:FeatureTree dataProvider="{ClassificationTreeData.instance().xml}"
+									width="{Size.TREE_W}" height="{Size.TREE_H}"/>
+				</s:NavigatorContent>
+				<s:NavigatorContent label="Global View">
+					<fm:FeatureTree dataProvider="{GlobalTreeData.instance().xml}"
+									width="{Size.TREE_W}" height="{Size.TREE_H}"/>
+				</s:NavigatorContent>
+				<s:NavigatorContent label="Working View">
+					<fm:FeatureTree dataProvider="{WorkingTreeData.instance().xml}"
+									width="{Size.TREE_W}" height="{Size.TREE_H}"/>
+				</s:NavigatorContent>
+				<s:NavigatorContent label="Personal View">
+					<fm:FeatureTree dataProvider="{PersonalTreeData.instance().xml}"
+									width="{Size.TREE_W}" height="{Size.TREE_H}"/>
+				</s:NavigatorContent>
+			</mx:TabNavigator>
+		</s:Panel>
+		
+		<s:VGroup>
+			<s:Panel id="featureEditor" title="{RS.m_fe_title}">
+				<fm:FeatureEditor/>
+			</s:Panel>
+		</s:VGroup>
+		
+	</s:HGroup>
+</s:SkinnableContainer>
