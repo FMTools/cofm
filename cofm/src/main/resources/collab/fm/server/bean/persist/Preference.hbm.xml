@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="collab.fm.server.bean.persist">
+  <class name="Preference" table="PREFERENCE">
+	  <!--+++++++++++++++++
+	  	DataItem properties 
+	    +++++++++++++++++-->
+	  <id name="id" type="long" column="USER_ID">
+	  	<generator class="native"></generator>
+	  </id>
+	  <timestamp name="lastModifyTime" column="LAST_MODIFIED" />
+	  <property name="createTime" type="timestamp" column="CREATED" />
+	  <property name="creator" type="long" column="CREATOR_ID" />
+	  <property name="lastModifier" type="long" column="LAST_MODIFIER_ID" />
+	  
+	  <!-- Many-to-one Model -->
+	  <many-to-one name="model" column="MODEL_ID" class="Model"></many-to-one>
+	  <property name="content" type="string" column="CONTENT"></property>
+	  
+  </class>
+</hibernate-mapping>

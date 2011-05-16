@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="collab.fm.server.bean.persist.entity">
+  <joined-subclass name="EntityType" extends="collab.fm.server.bean.persist.ElementType" 
+  				   table="ENTITY_TYPE">
+  	<key column="ENTITY_TYPE_ID"></key>
+  	
+  	<!-- One-to-many association with AttributeDef -->
+  	<list name="attrDefs" table="ENTITY_ATTRDEF_ASSOC" cascade="all, delete-orphan">
+      <key column="ENTITY_TYPE_ID" />
+      <list-index column="ATTRDEF_INDEX" />
+      <many-to-many class="AttributeType" column="ATTR_TYPE_ID" unique="true" />
+    </list>
+  	
+  	<many-to-one name="model" class="collab.fm.server.bean.persist.Model" 
+				 column="MODEL_ID" not-null="true" />
+  	
+  </joined-subclass>
+</hibernate-mapping>

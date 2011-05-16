@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="collab.fm.server.bean.persist.entity">
+  <joined-subclass name="Entity" extends="collab.fm.server.bean.persist.Element" table="ENTITY">
+  	<key column="ENTITY_ID" />
+  	
+  	<!-- One-to-many association with ValueList -->
+  	<map name="attrs" table="ENTITY_ATTRVALUES_ASSOC" cascade="all, delete-orphan">
+  	  <key column="ENTITY_ID" />
+  	  <map-key type="long" column="ATTR_TYPE_ID" />
+  	  <one-to-many class="ValueList" />
+  	</map>
+  	
+  	<!-- Many-to-one association with Model -->
+  	<many-to-one name="model" class="collab.fm.server.bean.persist.Model" 
+				 column="MODEL_ID" not-null="true" />
+	
+	<!-- One-to-many association with Comment -->
+	<list name="comments" table="ENTITY_COMMENT_ASSOC" cascade="all, delete-orphan">
+	  <key column="ENTITY_ID" />
+	  <list-index column="COMMENT_INDEX" />
+	  <many-to-many class="collab.fm.server.bean.persist.Comment" column="COMMENT_ID" unique="true" />
+	</list>
+	
+  </joined-subclass>
+</hibernate-mapping>

@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="collab.fm.server.bean.persist">
+  <class name="Element" table="ELEMENT">
+  
+  <!--+++++++++++++++++
+  	DataItem properties 
+    +++++++++++++++++-->
+  <id name="id" type="long" column="ELEMENT_ID">
+  	<generator class="native"></generator>
+  </id>
+  <timestamp name="lastModifyTime" column="LAST_MODIFIED" />
+  <property name="createTime" type="timestamp" column="CREATED" />
+  <property name="creator" type="long" column="CREATOR_ID" />
+  <property name="lastModifier" type="long" column="LAST_MODIFIER_ID" />
+  
+  <!--+++++++++++++++++
+    Element properties 
+    +++++++++++++++++-->
+  <component name="vote" class="Vote">
+  	<set name="supporters" table="ELEMENT_SUPPORTER">
+  		<key column="ELEMENT_ID"></key>
+  		<element type="long" column="SUPPORTER_ID" not-null="true"></element>
+  	</set>
+  	<set name="opponents" table="ELEMENT_OPPONENT">
+  		<key column="ELEMENT_ID"></key>
+  		<element type="long" column="OPPONENT_ID" not-null="true"></element>
+  	</set>
+  </component>
+  
+  <!-- many-to-one association with ElementType, no cascading is needed. -->
+  <many-to-one name="type" class="ElementType" 
+               column="ELEMENT_TYPE_ID"  />
+  
+  <!-- Many-to-many association with Relation 
+		The statement "inverse=true" tells Hibernate that 
+  	       1) the two statements in class Element and Relation
+  	          (namely "anElement.addRelation(aRel)" and "aRel.addElement(anElement)")  
+  	          happens on the same row in the table which persists the association.
+  	       2) the association is managed by Relation classes. (See BinRelation.resetElements()
+  	          for an example.) -->
+  	<set inverse="true" name="rels" table="ENTITY_RELATION_ASSOC">
+	<key column="ENTITY_ID" />
+		<many-to-many column="RELATION_ID"
+			class="collab.fm.server.bean.persist.relation.Relation" />
+	</set>
+  	
+  </class>
+</hibernate-mapping>

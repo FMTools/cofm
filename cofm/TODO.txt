@@ -1,0 +1,4 @@
+1. Set Maven to automatically create all logging folders, otherwise there will be errors in logger statements, and 
+it causes a HTTP 500 error.
+2. The client encodes all ' and " before converting to JSON and sending, and decodes after receiving and 
+converting from JSON.
