@@ -10,17 +10,17 @@
   
   <properties>  <!-- User-defined properties -->
     <!-- Glassfish 3 install directory -->
-    <glassfishInsDir>c:/glassfish3</glassfishInsDir>
+    <glassfishInsDir>D:/Program Files/glassfish3</glassfishInsDir>
     <!-- Glassfish server admin info -->
     <glassfishAdmin>admin</glassfishAdmin>
     <glassfishPass>123</glassfishPass>
     <!-- Server port -->
     <glassfishAdminPort>4848</glassfishAdminPort>
-    <glassfishHttpPort>8002</glassfishHttpPort>
+    <glassfishHttpPort>7000</glassfishHttpPort>
     <glassfishHttpsPort>8443</glassfishHttpsPort>
     
     <!-- The client (flash) bin directory -->
-    <flexBinDir>client-bin</flexBinDir>
+    <flexBinDir>D:/Code/flex4/cofmc/bin-debug</flexBinDir>
   </properties>
   
 <pluginRepositories>
