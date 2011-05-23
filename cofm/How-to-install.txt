@@ -15,8 +15,9 @@
     a) Run 1-install-local-lib.bat, it will install JAR for Stanford POS Library in Maven local repository.
     b) (Only for the first time!!) Run clear-and-init-db.bat, it creates the tables in database.
     c) (If necessary) Run update-db-schema.bat, it updates the schema in database.
-    d) Run 2-compile-and-deploy.bat
+    d) Run 2-compile-and-deploy.bat or 3-compile-and-redeploy.bat
+       d.1) On Windows, you should delete all files EXCEPT the *.bat under <glassfish install dir>/bin/.
 
-5. Run in web browser.
+5. Run in web browser: http://yourserver/cofm
      
     

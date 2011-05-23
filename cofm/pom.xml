@@ -10,19 +10,27 @@
   
   <properties>  <!-- User-defined properties -->
     <!-- Glassfish 3 install directory -->
-    <glassfishInsDir>d:/program files/glassfish3</glassfishInsDir>
+    <glassfishInsDir>c:/glassfish3</glassfishInsDir>
     <!-- Glassfish server admin info -->
     <glassfishAdmin>admin</glassfishAdmin>
     <glassfishPass>123</glassfishPass>
     <!-- Server port -->
     <glassfishAdminPort>4848</glassfishAdminPort>
-    <glassfishHttpPort>7000</glassfishHttpPort>
+    <glassfishHttpPort>8002</glassfishHttpPort>
     <glassfishHttpsPort>8443</glassfishHttpsPort>
     
     <!-- The client (flash) bin directory -->
-    <flexBinDir>D:/Code/flex4/cofmc/bin-debug</flexBinDir>
+    <flexBinDir>client-bin</flexBinDir>
   </properties>
   
+<pluginRepositories>
+        <pluginRepository>
+            <id>maven.java.net</id>
+            <name>Java.net Maven2 Repository</name>
+            <url>http://download.java.net/maven/2</url>
+        </pluginRepository>
+
+    </pluginRepositories>
   <repositories>
   	<repository>
   		<id>java.net</id>

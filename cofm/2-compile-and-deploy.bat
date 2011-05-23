@@ -1,1 +1,1 @@
-mvn -npu clean compile war:war glassfish:redeploy
+cmd /k mvn clean compile war:war glassfish:deploy
