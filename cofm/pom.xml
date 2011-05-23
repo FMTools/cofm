@@ -7,6 +7,22 @@
   <version>1.0</version>
   <name>cofm Maven Webapp</name>
   <url>http://maven.apache.org</url>
+  
+  <properties>  <!-- User-defined properties -->
+    <!-- Glassfish 3 install directory -->
+    <glassfishInsDir>d:/program files/glassfish3</glassfishInsDir>
+    <!-- Glassfish server admin info -->
+    <glassfishAdmin>admin</glassfishAdmin>
+    <glassfishPass>123</glassfishPass>
+    <!-- Server port -->
+    <glassfishAdminPort>4848</glassfishAdminPort>
+    <glassfishHttpPort>7000</glassfishHttpPort>
+    <glassfishHttpsPort>8443</glassfishHttpsPort>
+    
+    <!-- The client (flash) bin directory -->
+    <flexBinDir>D:/Code/flex4/cofmc/bin-debug</flexBinDir>
+  </properties>
+  
   <repositories>
   	<repository>
   		<id>java.net</id>
@@ -74,11 +90,6 @@
 		<artifactId>stanford-postagger</artifactId>
 		<version>3.0.1</version>
 	</dependency>
-	<dependency>
-	    <groupId>commons-lang</groupId>
-	    <artifactId>commons-lang</artifactId>
-	    <version>2.3</version>
-	</dependency>
   </dependencies>
   <build>
     <finalName>cofm</finalName>
@@ -122,7 +133,7 @@
               <outputDirectory>${project.build.directory}/${project.build.finalName}</outputDirectory>
               <resources>
                 <resource>
-                  <directory>D:/Code/flex4/cofmc/bin-debug</directory>
+                  <directory>${flexBinDir}</directory>
                 </resource>
               </resources>
             </configuration>
@@ -135,9 +146,9 @@
         <artifactId>maven-glassfish-plugin</artifactId>
         <version>2.1</version>
         <configuration>
-          <user>admin</user>
-          <adminPassword>123</adminPassword>
-          <glassfishDirectory>d:/program files/glassfish3</glassfishDirectory>
+          <user>${glassfishAdmin}</user>
+          <adminPassword>${glassfishPass}</adminPassword>
+          <glassfishDirectory>${glassfishInsDir}</glassfishDirectory>
           <components>
             <component>
               <name>${project.artifactId}</name>
@@ -146,9 +157,9 @@
           </components>
           <domain>
             <name>${project.artifactId}</name>
-            <adminPort>4848</adminPort>
-            <httpPort>7000</httpPort>
-            <httpsPort>8443</httpsPort>
+            <adminPort>${glassfishAdminPort}</adminPort>
+            <httpPort>${glassfishHttpPort}</httpPort>
+            <httpsPort>${glassfishHttpsPort}</httpsPort>
           </domain>
         </configuration>
       </plugin>

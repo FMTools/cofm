@@ -1,0 +1,22 @@
+1. Install Glassfish Server 3
+    a) Set the HTTP port.
+    b) Enable "comet support" for the HTTP listener.
+
+2. Install Maven 2
+
+3. Download the code and confirm the following settings: 
+    a) Set the logging folder in src/main/config/log4j.xml
+    b) Set the properties in pom.xml
+    c) Set the MySQL URL in src/main/config/hibernate.properties 
+        c.1) Create the database in MySQL, with utf8 encoding.
+        c.2) Set the URL.
+
+4. Compile and deploy
+    a) Run 1-install-local-lib.bat, it will install JAR for Stanford POS Library in Maven local repository.
+    b) (Only for the first time!!) Run clear-and-init-db.bat, it creates the tables in database.
+    c) (If necessary) Run update-db-schema.bat, it updates the schema in database.
+    d) Run 2-compile-and-deploy.bat
+
+5. Run in web browser.
+     
+    

@@ -1,4 +1,20 @@
-1. Set Maven to automatically create all logging folders, otherwise there will be errors in logger statements, and 
-it causes a HTTP 500 error.
-2. The client encodes all ' and " before converting to JSON and sending, and decodes after receiving and 
-converting from JSON.
+==================
+Install
+-----------------
+1. Set log folder.
+2. Run maven deploy. 
+3. (Optional) initialize database.
+Additional:
+1. Install maven.
+
+==================
+Overall
+------------------
+1. Email verification.
+2. Heartbeat message to determine if a client is still alive.
+
+==================
+Client
+------------------
+1. Input validation.
+2. Why the tree refreshes and closes after each operation?
