@@ -102,8 +102,9 @@ public class CometFmServlet extends HttpServlet {
 		public void onEvent(CometEvent event) throws IOException {
 			if (CometEvent.NOTIFY == event.getType()) {
 				PrintWriter writer = response.getWriter();
-				ResponseBuffer buf = resBuffer.get(clientId);
+				ResponseBuffer buf = resBuffer.get(Integer.valueOf(clientId));
 				if (buf != null) {
+					logger.debug("Write to " + this.toString());
 					buf.flushToWriter(writer);
 					
 					event.getCometContext().resumeCometHandler(this);
