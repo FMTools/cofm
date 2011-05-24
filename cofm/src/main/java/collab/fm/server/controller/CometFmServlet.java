@@ -32,7 +32,6 @@ public class CometFmServlet extends HttpServlet {
 	private class ResponseBuffer {
 		private List<String> res = new ArrayList<String>();
 		private boolean active = true;
-		private boolean closeAfterTransmission = false;
 		
 		private String toJsonString() {
 			// return "[res1, res2, ...]"
@@ -47,15 +46,10 @@ public class CometFmServlet extends HttpServlet {
 			return s.toString();
 		}
 		
-		public void flushToWriter(PrintWriter writer) {
-			writer.write("<script type='text/javascript'>parent.onResponseArrived('" 
-					+ this.toJsonString() + "');</script>\n");   
-			writer.flush();
-			
-			if (this.isCloseAfterTransmission()) {
-				this.setActive(false);
-			}
+		public String clear() {
+			String s = this.toJsonString();
 			res.clear();
+			return s;
 		}
 		
 		public int size() {
@@ -78,14 +72,6 @@ public class CometFmServlet extends HttpServlet {
 			this.active = active;
 		}
 
-		public boolean isCloseAfterTransmission() {
-			return closeAfterTransmission;
-		}
-
-		public void setCloseAfterTransmission(boolean closeAfterTransmission) {
-			this.closeAfterTransmission = closeAfterTransmission;
-		}
-		
 	}
 	
 	private Map<Integer, ResponseBuffer> resBuffer = new HashMap<Integer, ResponseBuffer>();
@@ -102,13 +88,10 @@ public class CometFmServlet extends HttpServlet {
 		public void onEvent(CometEvent event) throws IOException {
 			if (CometEvent.NOTIFY == event.getType()) {
 				PrintWriter writer = response.getWriter();
-				ResponseBuffer buf = resBuffer.get(Integer.valueOf(clientId));
-				if (buf != null) {
-					logger.debug("Write to " + this.toString());
-					buf.flushToWriter(writer);
-					
-					event.getCometContext().resumeCometHandler(this);
-				}
+				
+				responseGet(writer, clientId);
+
+				event.getCometContext().resumeCometHandler(this);
 			}
 		}
 
@@ -145,6 +128,25 @@ public class CometFmServlet extends HttpServlet {
 	private String contextPath = null;
 	private int nextClientId = 1;
 
+	private void responseGet(PrintWriter writer, int clientId) {
+		ResponseBuffer buf = resBuffer.get(clientId);
+		if (buf != null && buf.isActive() && !buf.isEmpty()) {
+			logger.debug("Write to client #" + clientId);
+			writer.write("<script type='text/javascript'>parent.onResponseArrived('" 
+					+ buf.clear() + "');</script>\n");   
+			writer.flush();
+		}
+	}
+	
+	private void responsePost(PrintWriter writer, int clientId) {
+		ResponseBuffer buf = resBuffer.get(clientId);
+		if (buf != null && buf.isActive() && !buf.isEmpty()) {
+			logger.debug("Write to client #" + clientId);
+			writer.write(buf.clear());
+			writer.flush();
+		}
+	}
+	
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		super.init(config);
@@ -191,7 +193,7 @@ public class CometFmServlet extends HttpServlet {
 		} else {
 			// Write buffered data immediately
 			logger.debug("GET from client #" + cId + ", " + buf.size() + " buffered responses.");
-			buf.flushToWriter(res.getWriter());
+			responseGet(res.getWriter(), Integer.valueOf(cId));
 		}
 		
 	}
@@ -242,7 +244,7 @@ public class CometFmServlet extends HttpServlet {
 				fmRes = Controller.instance().disconnectUser(Integer.valueOf(cId));
 				ResponseBuffer buf = resBuffer.get(Integer.valueOf(cId));
 				if (buf != null) {
-					buf.setCloseAfterTransmission(true);
+					buf.setActive(false);
 				}
 			}
 		} else {
@@ -258,28 +260,29 @@ public class CometFmServlet extends HttpServlet {
 		
 		// Write the response (fmRes) into corresponding buffer(s), there are 2 cases:
 		//   1. The response is sent to its requester. (if fmRes.getBack() != null)
-		//   2. The response is broadcast to all clients EXCEPT its requester. (if fmRes.getBroadcast() != null)
-		for (Map.Entry<Integer, ResponseBuffer> rb: resBuffer.entrySet()) {
-			if (rb.getValue().isActive()) {
-				if (fmRes.getBack() != null && 
-						rb.getKey().equals(fmRes.getBack().getRequestClientId())) {
-					rb.getValue().appendResponse(fmRes.getJsonBack());
-				}
-				if (fmRes.getBroadcast() != null &&
-						!rb.getKey().equals(fmRes.getBroadcast().getRequestClientId())) {
-					rb.getValue().appendResponse(fmRes.getJsonBroadcast());
-				}
-			} else {
-				// Remove inactive buffers
-				resBuffer.remove(rb.getKey());
-			}
+		if (fmRes.getBack() != null) {
+			ResponseBuffer buf = resBuffer.get(Integer.valueOf(cId));
+			buf.appendResponse(fmRes.getJsonBack());
+			responsePost(res.getWriter(), Integer.valueOf(cId));
 		}
-		
-		CometEngine engine = CometEngine.getEngine();
-		CometContext<?> context = engine.getCometContext(contextPath);
-		
-		logger.debug("Ready clients: " + context.getCometHandlers().toString());
-		
-		context.notify(null);  
+		//   2. The response is broadcast to all clients EXCEPT its requester. (if fmRes.getBroadcast() != null)
+		if (fmRes.getBroadcast() != null) {
+			for (Map.Entry<Integer, ResponseBuffer> rb: resBuffer.entrySet()) {
+				if (rb.getValue().isActive()) {
+					if (!rb.getKey().equals(fmRes.getBroadcast().getRequestClientId())) {
+						rb.getValue().appendResponse(fmRes.getJsonBroadcast());
+					}
+				} else {
+					// Remove inactive buffers
+					resBuffer.remove(rb.getKey());
+				}
+			}
+			CometEngine engine = CometEngine.getEngine();
+			CometContext<?> context = engine.getCometContext(contextPath);
+			
+			logger.debug("Ready clients: " + context.getCometHandlers().toString());
+			
+			context.notify(null);
+		}
 	}
 }
