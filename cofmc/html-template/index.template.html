@@ -75,6 +75,8 @@
 							myId = parseInt(res.substring("__handshake__".length));     
 							sendGet(); 	                
 							getFlexApp("${application}").notifyConnected();
+      	                } else {
+      	                    onResponseArrived(res);
       	                }
       	            });
       	    }

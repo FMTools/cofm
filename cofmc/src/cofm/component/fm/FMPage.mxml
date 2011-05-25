@@ -61,7 +61,8 @@
 				</s:NavigatorContent>
 				<s:NavigatorContent label="Global View">
 					<fm:FeatureTree dataProvider="{GlobalTreeData.instance().xml}"
-									width="{Size.TREE_W}" height="{Size.TREE_H}"/>
+									width="{Size.TREE_W}" height="{Size.TREE_H}"
+								    />
 				</s:NavigatorContent>
 				<s:NavigatorContent label="Working View">
 					<fm:FeatureTree dataProvider="{WorkingTreeData.instance().xml}"
