@@ -46,7 +46,7 @@ package cofm.util
 			if (ExternalInterface.available) {
 				var json: String = JsonUtil.objectToJson(encodeQuotes(data));
 				ExternalInterface.call("postData", json);
-				trace("<<<--- Data sent: " + json + "\n");
+				//trace("<<<--- Data sent: " + json + "\n");
 			}
 		}
 		
@@ -56,8 +56,9 @@ package cofm.util
 		}
 		
 		public function handleResponse(res: Object): void {
-			trace("--->>> Data received: " + String(res));
+			//trace("--->>> Data received: " + String(res));
 			var sdata: Object = decodeQuotes(JsonUtil.jsonToObject(String(res)));
+			trace ("Received " + (sdata as Array).length + " response(s).");
 			ServerDataDispatcher.dispatchData(sdata);
 		}
 		

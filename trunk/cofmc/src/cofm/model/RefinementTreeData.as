@@ -236,7 +236,7 @@ package cofm.model
 		}
 		
 		protected function removePersonLocation(person: String): void {
-			for each (var node: Object in this.root..node.(@kind==TreeData.KIND_OBJECT)) {	
+			for each (var node: Object in this.root..node.(@kind==RefinementTreeData.KIND_OBJECT)) {	
 				var people: Array = String(node.@people).split(/,\s*/);
 				var rslt: String = "";
 				var notEmpty: Boolean = false;
@@ -255,6 +255,7 @@ package cofm.model
 		}
 		
 		protected function updateEntitySupportRate(id: String): void {
+			trace ("Update entity support rate.");
 			var sr: Number = Model.instance().getEntitySupportRate(id);
 			for each (var f: Object in this.getNodeById(RefinementTreeData.KIND_OBJECT, id)) {
 				f.@support = sr;
