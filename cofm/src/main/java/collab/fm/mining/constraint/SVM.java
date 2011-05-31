@@ -78,6 +78,8 @@ public class SVM implements Optimizable {
 
 	static Logger logger = Logger.getLogger(SVM.class);
 	
+	private List<PairFilter> filters = new ArrayList<PairFilter>();
+	
 	public static final int MAX_PREDICTION_NUM = 20;
 	public static final String TRAINING_FILE = "D:/log/cofm/mining/cons_svm_train";
 	public static final String SCALED_FILE_SUFFIX = ".scale";
@@ -100,18 +102,37 @@ public class SVM implements Optimizable {
 	// Store the cross-validation result.
 	public SVM.CV cvResult;
 	
+	public SVM() {
+		buildFilterChain();
+	}
+	
+	private void buildFilterChain() {
+		filters.clear();
+		filters.add(new ConstraintsOnlyFilter());
+		filters.add(new CrossTreeOnlyFilter());
+	}
+	
 	// ------------ Step 1. Output data -------------
+	private boolean keepPair(FeaturePair pair, int mode) {
+		for (PairFilter filter: filters) {
+			if (!filter.keepPair(pair, mode)) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	private String formatPair(FeaturePair pair) {
 		// Format as LIBSVM required
 		return pair.getLabel()
 			   + " 1:" + pair.getTotalSim()
 			   + " 2:" + pair.getVerbSim()
 			   + " 3:" + pair.getNounSim()
-			   + " 4:" + pair.getParental()
-			   + " 5:" + pair.getSibling() 
+			  // + " 4:" + pair.getParental()
+			  // + " 5:" + pair.getSibling() 
 			   + " 6:" + pair.getNumMandatory() 
-			   + " 7:" + pair.getRequireOut() 
-			   + " 8:" + pair.getExcludeOut() 
+			  // + " 7:" + pair.getRequireOut() 
+			  // + " 8:" + pair.getExcludeOut() 
 			   ;
 	}
 	
@@ -162,11 +183,11 @@ public class SVM implements Optimizable {
 	}
 	
 	
-	private static final int MODE_TEST_ALL = 0;
-	private static final int MODE_TEST_BLANK = 1;
-	private static final int MODE_TRAIN_ALL = 2; 
-	private static final int MODE_TRAIN_ONLY_CON = 3;
-	private static final String[] modeName = {
+	public static final int MODE_TEST_ALL = 0;
+	public static final int MODE_TEST_BLANK = 1;
+	public static final int MODE_TRAIN_ALL = 2; 
+	public static final int MODE_TRAIN_ONLY_CON = 3;
+	public static final String[] modeName = {
 		"Test_All", "Test_Blank", "Train_All", "Train_Only_Con"
 	};
 	
@@ -176,13 +197,12 @@ public class SVM implements Optimizable {
 		// Random shuffle the features.
 		Collections.shuffle(Arrays.asList(features));
 
-		int numPair = 0, numSim = 0, numRequire = 0, numExclude = 0;
+		int numSim = 0, numRequire = 0, numExclude = 0;
 		List<FeaturePair> pairs = new ArrayList<FeaturePair>();
 		
 		for (int i = 0; i < features.length; i++) {
 			for (int j = i + 1; j < features.length; j++) {
 				FeaturePair pair = new FeaturePair(features[i], features[j]);
-				boolean keepPair = true;
 				if (mode == MODE_TEST_BLANK) {
 					// Set all pair to Non-constraint, and set all constraint-related
 					// attributes to UNKNOWN
@@ -198,23 +218,18 @@ public class SVM implements Optimizable {
 						pair.setExcludeOut(FeaturePair.UNKNOWN);
 					}
 				}
-				
-				if (pair.getLabel() == FeaturePair.NO_CONSTRAINT 
-							|| pair.getLabel() == FeaturePair.UNKNOWN) {
-					// Skip non-constraint pairs in "train with constraints only" mode
-					keepPair = (mode != MODE_TRAIN_ONLY_CON); 
-				} 
-				
-				if (!keepPair) {
-					continue;
+				if (this.keepPair(pair, mode)) {
+					pairs.add(pair);
+					if (pair.getLabel() == FeaturePair.REQUIRE) {
+						numRequire++;
+					} else if (pair.getLabel() == FeaturePair.EXCLUDE) {
+						numExclude++;
+					}
 				}
-				pairs.add(pair);
-				if (pair.getLabel() == FeaturePair.REQUIRE) {
-					numRequire++;
-				} else if (pair.getLabel() == FeaturePair.EXCLUDE) {
-					numExclude++;
-				}
-				numPair++;
+				
+				
+
+				
 			}
 		}
 
@@ -233,7 +248,7 @@ public class SVM implements Optimizable {
 		logger.info("Feature Model: '" + model.getName() + "': " 
 				+ modeName[mode] + ", "
 				+ features.length + " features, " 
-				+ numPair + " pairs, "
+				+ pairs.size() + " pairs, "
 				+ numRequire + " require-pairs, " + numExclude
 				+ " exclude-pairs, " + numSim + " pairs of similar features.");
 		return pairs;
@@ -707,6 +722,10 @@ public class SVM implements Optimizable {
 		} 		
 	}
 
+	public void addFilter(PairFilter pf) {
+		filters.add(pf);
+	}
+	
 	private static class PairStats {
 		
 		private int[] simTotal = new int[33];

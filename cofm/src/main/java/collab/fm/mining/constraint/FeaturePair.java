@@ -409,12 +409,16 @@ public class FeaturePair {
 		return UNKNOWN;
 	}
 		
-	private boolean isRequire(Relation rel) {
+	public static boolean isRequire(Relation rel) {
 		return ArrayUtils.contains(requireAlias, rel.getType().getTypeName());
 	}
 	
-	private boolean isExclude(Relation rel) {
+	public static boolean isExclude(Relation rel) {
 		return ArrayUtils.contains(excludeAlias, rel.getType().getTypeName());
+	}
+	
+	public static boolean isRefine(Relation rel) {
+		return !isRequire(rel) && !isExclude(rel);
 	}
 	
 	public String getPairInfo() {
