@@ -28,11 +28,11 @@ public class AccessValidator extends Filter {
 		public int clientId;
 		public Calendar lastAccessTime;
 		
-		public static final long MAX_INACTIVE_TIME = 1000 * 60 * 30;  // 30 minutes.
+		public static final long RELOGIN_TIME = 1000 * 60 * 10;  // 10 minutes.
 		
 		public boolean isInactive() {
 			Calendar now = Calendar.getInstance();
-			return now.getTimeInMillis() - lastAccessTime.getTimeInMillis() > MAX_INACTIVE_TIME;
+			return now.getTimeInMillis() - lastAccessTime.getTimeInMillis() > RELOGIN_TIME;
 		}
 	}
 	// Login user ID and the client ID (client is the software while user is the human).
