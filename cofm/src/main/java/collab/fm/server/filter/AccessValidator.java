@@ -1,6 +1,7 @@
 package collab.fm.server.filter;
 
 import java.text.MessageFormat;
+import java.util.Calendar;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -23,18 +24,30 @@ public class AccessValidator extends Filter {
 		Resources.REQ_CREATE_MODEL
 	};
 
-	// Login user ID and the client ID
-	private static ConcurrentHashMap<Long, Integer> loginClients =	new ConcurrentHashMap<Long, Integer>();
+	private class ClientAccessInfo {
+		public int clientId;
+		public Calendar lastAccessTime;
+		
+		public static final long MAX_INACTIVE_TIME = 1000 * 60 * 30;  // 30 minutes.
+		
+		public boolean isInactive() {
+			Calendar now = Calendar.getInstance();
+			return now.getTimeInMillis() - lastAccessTime.getTimeInMillis() > MAX_INACTIVE_TIME;
+		}
+	}
+	// Login user ID and the client ID (client is the software while user is the human).
+	private static ConcurrentHashMap<Long, ClientAccessInfo> loginClients =	new ConcurrentHashMap<Long, ClientAccessInfo>();
 	
 	@Override
 	protected boolean doForwardFilter(Request req, ResponseGroup rg) {
 		if (isRestricted(req.getName())) {
-			Integer clientId = loginClients.get(req.getRequesterId());
-			if (clientId == null || !clientId.equals(req.getClientId())) {
+			ClientAccessInfo info = loginClients.get(req.getRequesterId());
+			if (info == null || info.clientId != req.getClientId()) {
 				req.setLastError(Resources.MSG_ERROR_USER_DENIED);
 				logger.info("Access validation failed for: " + req.getName());
 				return false;
 			}
+			info.lastAccessTime = Calendar.getInstance();
 		}
 		// Handle log out
 		if (Resources.REQ_LOGOUT.equals(req.getName())) {
@@ -52,8 +65,9 @@ public class AccessValidator extends Filter {
 			}
 			if (Resources.RSP_SUCCESS.equals(rsp.getName()) &&
 					Resources.REQ_LOGIN.equals(req.getName())) {
+				ClientAccessInfo info = loginClients.get(req.getRequesterId());
 				// Prevent repeated login from different clients
-				if (loginClients.get(req.getRequesterId()) != null) {
+				if (info != null && !info.isInactive()) {
 					req.setLastError(MessageFormat.format(
 							Resources.MSG_ERROR_USER_LOGIN_REPEAT, 
 							((LoginRequest)req).getUser()));
@@ -61,7 +75,12 @@ public class AccessValidator extends Filter {
 							((LoginRequest)req).getUser() + ")");
 					return false;
 				}
-				loginClients.put(req.getRequesterId(), req.getClientId());
+				if (info == null) {
+					info = new ClientAccessInfo();
+					info.clientId = req.getClientId();
+				}
+				info.lastAccessTime = Calendar.getInstance();
+				loginClients.put(req.getRequesterId(), info);
 				logger.info("User login succeed.");
 			}
 			return true;
@@ -78,24 +97,24 @@ public class AccessValidator extends Filter {
 	}
 	
 	private void logoutUser(Long id, ResponseGroup rg) {
-		Integer client = loginClients.get(id);
-		if (client != null) {
+		ClientAccessInfo info = loginClients.get(id);
+		if (info != null) {
 			loginClients.remove(id);
-			logger.info(LogUtil.logOp(id, LogUtil.OP_LOGOUT, "" + client));
+			logger.info(LogUtil.logOp(id, LogUtil.OP_LOGOUT, "" + info.clientId));
 		}
 		Response r = new Response();
 		r.setName(Resources.RSP_FORWARD);
 		r.setRequestName(Resources.REQ_LOGOUT);
 		r.setRequesterId(id);
-		r.setRequestClientId(client);
+		r.setRequestClientId(info.clientId);
 		rg.setBroadcast(r);
 	}
 
 	@Override
 	protected void doDisconnection(Integer client, ResponseGroup rg) {
-		for (Map.Entry<Long, Integer> entry: loginClients.entrySet()) {
-			if (entry.getValue().equals(client)) {
-				logger.info("Client #" + entry.getValue() + " disconnected.");
+		for (Map.Entry<Long, ClientAccessInfo> entry: loginClients.entrySet()) {
+			if (entry.getValue().clientId == client) {
+				logger.info("Client #" + entry.getValue().clientId + " disconnected.");
 				logoutUser(entry.getKey(), rg);
 				return;
 			}
