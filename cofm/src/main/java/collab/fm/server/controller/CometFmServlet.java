@@ -95,6 +95,21 @@ public class CometFmServlet extends HttpServlet {
 			return "Client #" + clientId;
 		}
 		
+		@Override
+		public int hashCode() {
+			return this.toString().hashCode();
+		}
+
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) return true;
+			if (this == null || obj == null) return false;
+			if (!(obj instanceof FmHandler)) return false;
+			return this.hashCode() == obj.hashCode();
+		}
+
+
 		public void onEvent(CometEvent event) throws IOException {
 			if (CometEvent.NOTIFY == event.getType()) {
 				PrintWriter writer = response.getWriter();
