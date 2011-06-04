@@ -1,8 +1,10 @@
-package collab.fm.mining.constraint;
+package collab.fm.mining.constraint.filter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import collab.fm.mining.constraint.FeaturePair;
+import collab.fm.mining.constraint.PairFilter;
 import collab.fm.server.bean.persist.entity.Entity;
 import collab.fm.server.bean.persist.relation.BinRelation;
 import collab.fm.server.bean.persist.relation.Relation;
@@ -70,6 +72,11 @@ public class CrossTreeOnlyFilter implements PairFilter {
 		}
 		
 		return anc;
+	}
+
+	public void dispose() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

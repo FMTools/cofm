@@ -1,0 +1,216 @@
+-m 1
+-i Feature #1: Rescan Library
+	track changes to actual files in the library. If a file is moved or deleted, will automatically amend the library record
+Feature #2: DAAP music sharing
+	Allows sharing of music libraries with iTunes and other DAAP-compatible music software. The current version of Banshee is only partially compatible with iTunes 7, allowing iTunes to open a Banshee library, but not vice-versa.
+(total_sim=0.10902670954877765, verb_sim=0.0426457261387235, noun_sim=0.1681410266496857, is_refine=-1, is_sibling=-1, mandatory=1, req_out=2, exc_out=1
+-c library
+-N 16
+-m 1
+-i Feature #1: Rescan Library
+	track changes to actual files in the library. If a file is moved or deleted, will automatically amend the library record
+Feature #2: eMusic Importer/Downloader
+	eMusic is an online music and audiobook store that operates by subscription. It is headquartered in New York City and owned by Dimensional Associates, LLC. As of September 2008 eMusic has over 400,000 subscribers.
+eMusic was one of the first sites to sell music in the MP3 format, beginning in 1998. It differs from other well-known music download services (such as the iTunes Store and Amazon MP3) in that it is a download-to-own subscription service.
+(total_sim=0.016535335334371883, verb_sim=0.09114222731126324, noun_sim=0.0, is_refine=-1, is_sibling=-1, mandatory=1, req_out=2, exc_out=1
+-c
+-N 27
+-m 1
+-i Feature #1: Rescan Library
+	track changes to actual files in the library. If a file is moved or deleted, will automatically amend the library record
+Feature #2: Metadata searcher using Musicbrainz
+	Automatically retrieves missing and supplementary metadata for library items, including album art.
+(total_sim=0.10440665246219225, verb_sim=0.0, noun_sim=0.13160614462848708, is_refine=-1, is_sibling=1, mandatory=1, req_out=2, exc_out=-1
+-c library
+-N 13
+-m 1
+-i Feature #1: Rescan Library
+	track changes to actual files in the library. If a file is moved or deleted, will automatically amend the library record
+Feature #2: Rhythmbox migrator
+	Rhythmbox is an audio player that plays and helps organize digital music. Originally inspired by Apple's iTunes, it is free software, designed to work well under the GNOME Desktop using the GStreamer media framework.
+(total_sim=0.01463195979753256, verb_sim=0.05568744632167274, noun_sim=0.0, is_refine=-1, is_sibling=1, mandatory=2, req_out=2, exc_out=1
+-c
+-N 18
+-m 1
+-i Feature #1: Rescan Library
+	track changes to actual files in the library. If a file is moved or deleted, will automatically amend the library record
+Feature #2: Amarok migration
+	Amarok is a  free software music player for Linux and other varieties of Unix, as well as Windows since version 2.0 (through KDE for Windows). It makes use of the KDE Platform, but is released independently of the central KDE Software Compilation release cycle.
+(total_sim=0.011297324026973077, verb_sim=0.0932621418168096, noun_sim=0.0, is_refine=-1, is_sibling=1, mandatory=1, req_out=2, exc_out=1
+-c
+-N 23
+-m 1
+-i Feature #1: Rescan Library
+	track changes to actual files in the library. If a file is moved or deleted, will automatically amend the library record
+Feature #2: iTunes importer
+	iTunes importer
+	iTunes is a proprietary digital media player application, used for playing and organizing digital music and video files. The application is also an interface to manage the contents on Apple's iPod and iPhone lines, as well as the iPad.
+
+iTunes can connect to the iTunes Store to purchase and download music, music videos, television shows, iPod Games, Audiobooks, Podcasts, movies and movie rentals (not available in all countries), and Ringtones (only available on iPhone and iPod Touch 4th Generation). It is also used to download Apps from the App Store for the iPhone, iPod Touch and iPad.
+(total_sim=0.024925715882252942, verb_sim=0.07329934275608758, noun_sim=0.022672973133355957, is_refine=-1, is_sibling=1, mandatory=1, req_out=2, exc_out=-1
+-c file
+-N 35
+-m 1
+-i Feature #1: Rescan Library
+	track changes to actual files in the library. If a file is moved or deleted, will automatically amend the library record
+Feature #2: CD Ripping / Burning
+	Insert a CD automatically detects it and adds it to the side menu; click it Uncheck any tracks you don't want imported Press the Import CD button, located near the upper-right corner will begin importing the CD. As it finishes each track, it will appear in your Music Library
+(total_sim=0.13215791164457732, verb_sim=0.0, noun_sim=0.12176908985239701, is_refine=-1, is_sibling=-1, mandatory=1, req_out=2, exc_out=1
+-c library track
+-N 17
+-m 1
+-i Feature #1: Playlists
+	Playlists
+Feature #2: Manual reordering of playlists and play queue
+	Manual reordering of playlists and play queue
+(total_sim=0.33640316621437766, verb_sim=0.0, noun_sim=0.3790272377067786, is_refine=-1, is_sibling=-1, mandatory=2, req_out=2, exc_out=-1
+-c playlist
+-N 4
+-m 1
+-i Feature #1: Playlists
+	Playlists
+Feature #2: Sync device from playlist
+	Sync device from playlist
+(total_sim=0.43832945826376063, verb_sim=0.0, noun_sim=0.43832945826376063, is_refine=-1, is_sibling=-1, mandatory=1, req_out=2, exc_out=1
+-c playlist
+-N 3
+-m 1
+-i Feature #1: Run on iOS
+Feature #2: Run on Computer
+(total_sim=0.2223365259438814, verb_sim=0.0, noun_sim=0.2223365259438814, is_refine=-1, is_sibling=-1, mandatory=0, req_out=1, exc_out=2
+-c run
+-N 3
+-m 1
+-i Feature #1: DAAP music sharing
+	Allows sharing of music libraries with iTunes and other DAAP-compatible music software. The current version of Banshee is only partially compatible with iTunes 7, allowing iTunes to open a Banshee library, but not vice-versa.
+Feature #2: Media Library
+	library locations for music, videos and podcasts
+	keeps track of songs by creating a virtual library, allowing users to access and edit a song's attributes. These attributes, known as metadata, are stored in  library file. It caches information like artist and genre from the audio format's tag capabilities (the ID3 tag, for example) and stores information like play count and rating
+(total_sim=0.1222690657008173, verb_sim=0.1850593881849443, noun_sim=0.1457580037582333, is_refine=-1, is_sibling=-1, mandatory=1, req_out=2, exc_out=1
+-c music library
+-N 34
+-m 1
+-i Feature #1: DAAP music sharing
+	Allows sharing of music libraries with iTunes and other DAAP-compatible music software. The current version of Banshee is only partially compatible with iTunes 7, allowing iTunes to open a Banshee library, but not vice-versa.
+Feature #2: iTunes importer
+	iTunes importer
+	iTunes is a proprietary digital media player application, used for playing and organizing digital music and video files. The application is also an interface to manage the contents on Apple's iPod and iPhone lines, as well as the iPad.
+
+iTunes can connect to the iTunes Store to purchase and download music, music videos, television shows, iPod Games, Audiobooks, Podcasts, movies and movie rentals (not available in all countries), and Ringtones (only available on iPhone and iPod Touch 4th Generation). It is also used to download Apps from the App Store for the iPhone, iPod Touch and iPad.
+(total_sim=0.18492366360635767, verb_sim=0.08766118102499043, noun_sim=0.16533469026354725, is_refine=-1, is_sibling=-1, mandatory=-1, req_out=2, exc_out=1
+-c music itune itunes
+-N 38
+-m 1
+-i Feature #1: eMusic Importer/Downloader
+	eMusic is an online music and audiobook store that operates by subscription. It is headquartered in New York City and owned by Dimensional Associates, LLC. As of September 2008 eMusic has over 400,000 subscribers.
+eMusic was one of the first sites to sell music in the MP3 format, beginning in 1998. It differs from other well-known music download services (such as the iTunes Store and Amazon MP3) in that it is a download-to-own subscription service.
+Feature #2: Media Library
+	library locations for music, videos and podcasts
+	keeps track of songs by creating a virtual library, allowing users to access and edit a song's attributes. These attributes, known as metadata, are stored in  library file. It caches information like artist and genre from the audio format's tag capabilities (the ID3 tag, for example) and stores information like play count and rating
+(total_sim=0.0830610088904187, verb_sim=0.06823346438891965, noun_sim=0.06751893087947765, is_refine=-1, is_sibling=-1, mandatory=1, req_out=2, exc_out=1
+-c music store format
+-N 43
+-m 1
+-i Feature #1: Manual reordering of playlists and play queue
+	Manual reordering of playlists and play queue
+Feature #2: Sync device from playlist
+	Sync device from playlist
+(total_sim=0.147455417604962, verb_sim=0.0, noun_sim=0.1661388037712219, is_refine=-1, is_sibling=-1, mandatory=1, req_out=2, exc_out=1
+-c playlist
+-N 6
+-m 1
+-i Feature #1: Manual reordering of playlists and play queue
+	Manual reordering of playlists and play queue
+Feature #2: Play Queue
+	Play Queue
+(total_sim=0.5154276411570882, verb_sim=0.0, noun_sim=0.2334570053250223, is_refine=-1, is_sibling=-1, mandatory=1, req_out=1, exc_out=-1
+-c queue
+-N 5
+-m 1
+-i Feature #1: Sync device from playlist
+	Sync device from playlist
+Feature #2: iPod manager
+	Allows the transferring of songs, videos, and album art to and from the device.
+(total_sim=0.16861420502771876, verb_sim=0.0, noun_sim=0.2219302963551581, is_refine=-1, is_sibling=1, mandatory=0, req_out=2, exc_out=1
+-c device
+-N 8
+-m 1
+-i Feature #1: Media Library
+	library locations for music, videos and podcasts
+	keeps track of songs by creating a virtual library, allowing users to access and edit a song's attributes. These attributes, known as metadata, are stored in  library file. It caches information like artist and genre from the audio format's tag capabilities (the ID3 tag, for example) and stores information like play count and rating
+Feature #2: iPod manager
+	Allows the transferring of songs, videos, and album art to and from the device.
+(total_sim=0.10840671973944314, verb_sim=0.18245928562480201, noun_sim=0.1079874047858439, is_refine=-1, is_sibling=-1, mandatory=1, req_out=2, exc_out=-1
+-c song video
+-N 29
+-m 1
+-i Feature #1: Media Library
+	library locations for music, videos and podcasts
+	keeps track of songs by creating a virtual library, allowing users to access and edit a song's attributes. These attributes, known as metadata, are stored in  library file. It caches information like artist and genre from the audio format's tag capabilities (the ID3 tag, for example) and stores information like play count and rating
+Feature #2: CD Ripping / Burning
+	Insert a CD automatically detects it and adds it to the side menu; click it Uncheck any tracks you don't want imported Press the Import CD button, located near the upper-right corner will begin importing the CD. As it finishes each track, it will appear in your Music Library
+(total_sim=0.05101808983996127, verb_sim=0.0, noun_sim=0.08185956667757545, is_refine=-1, is_sibling=-1, mandatory=1, req_out=2, exc_out=1
+-c music track library
+-N 35
+-m 1
+-i Feature #1: Run on WinMobile
+Feature #2: Run on Computer
+(total_sim=0.2223365259438814, verb_sim=0.0, noun_sim=0.2223365259438814, is_refine=-1, is_sibling=-1, mandatory=0, req_out=1, exc_out=2
+-c run
+-N 3
+-m 1
+-i Feature #1: Multimedia keys support in GNOME
+	can be controlled via multimedia keys as configured through GNOME.
+Feature #2: Cross-platform support
+	having official beta builds for Mac OS X and stable builds for Linux (with various distributions releasing packages as well). There is also preliminary work being put towards a Windows build,
+(total_sim=0.021921053446172546, verb_sim=0.04034201759103469, noun_sim=0.024171240732023352, is_refine=-1, is_sibling=-1, mandatory=-1, req_out=2, exc_out=2
+-c support
+-N 11
+-m 1
+-i Feature #1: Run on Computer
+Feature #2: Run on Android
+(total_sim=0.2223365259438814, verb_sim=0.0, noun_sim=0.2223365259438814, is_refine=-1, is_sibling=-1, mandatory=0, req_out=1, exc_out=2
+-c run
+-N 3
+-m 1
+-i Feature #1: Run on Computer
+Feature #2: Run on WebOS
+(total_sim=0.2223365259438814, verb_sim=0.0, noun_sim=0.2223365259438814, is_refine=-1, is_sibling=-1, mandatory=0, req_out=1, exc_out=2
+-c run
+-N 3
+-m 1
+-i Feature #1: Run on Computer
+Feature #2: Run on Mobile Devices
+(total_sim=0.17826883079411576, verb_sim=0.0, noun_sim=0.17826883079411576, is_refine=-1, is_sibling=1, mandatory=0, req_out=1, exc_out=2
+-c run
+-N 4
+-m 1
+-i Feature #1: Run on Computer
+Feature #2: Run on BerryOS
+(total_sim=0.2223365259438814, verb_sim=0.0, noun_sim=0.2223365259438814, is_refine=-1, is_sibling=-1, mandatory=0, req_out=1, exc_out=2
+-c run
+-N 3
+-m 1
+-i Feature #1: Cross-platform support
+	having official beta builds for Mac OS X and stable builds for Linux (with various distributions releasing packages as well). There is also preliminary work being put towards a Windows build,
+Feature #2: Rhythmbox migrator
+	Rhythmbox is an audio player that plays and helps organize digital music. Originally inspired by Apple's iTunes, it is free software, designed to work well under the GNOME Desktop using the GStreamer media framework.
+(total_sim=0.06409662382741127, verb_sim=0.058069839057009055, noun_sim=0.0, is_refine=-1, is_sibling=-1, mandatory=1, req_out=2, exc_out=2
+-c
+-N 20
+-m 1
+-i Feature #1: Mobile Phone Connection
+Feature #2: Run on Mobile Devices
+(total_sim=0.32154545577930443, verb_sim=0.0, noun_sim=0.32154545577930443, is_refine=-1, is_sibling=-1, mandatory=0, req_out=1, exc_out=2
+-c mobile
+-N 5
+-m 2
+-i Feature #1: Webcam
+	A webcam is a video camera which feeds its images in real time to a computer or computer network, often via USB, ethernet or Wi-Fi.
+
+Their most popular use is the establishment of video links, permitting computers to act as videophones or videoconference stations. This common use as a video camera for the World Wide Web gave the webcam its name. Other popular uses include security surveillance and computer vision.
+Feature #2: Voice chat
+	voice chat feature using Voice over Internet Protocol (VoIP) technology. Until early 2009, if Voice Chat was being used in a chat room, users had to host the voice chat, making quality a problem. Some users have better system capabilities than others; therefore, voice quality and lag would be a problem.
+(total_sim=0.031394078166790726, verb_sim=0.01855644458504987, noun_sim=0.0, is_refine=-1, is_sibling=-1, mandatory=0, req_out=-1, exc_out=-1
+-c
+-N 38

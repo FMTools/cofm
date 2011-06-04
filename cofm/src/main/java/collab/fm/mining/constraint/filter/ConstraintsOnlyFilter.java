@@ -1,4 +1,8 @@
-package collab.fm.mining.constraint;
+package collab.fm.mining.constraint.filter;
+
+import collab.fm.mining.constraint.FeaturePair;
+import collab.fm.mining.constraint.PairFilter;
+import collab.fm.mining.constraint.SVM;
 
 public class ConstraintsOnlyFilter implements PairFilter {
 
@@ -9,6 +13,11 @@ public class ConstraintsOnlyFilter implements PairFilter {
 			return (mode != SVM.MODE_TRAIN_ONLY_CON); 
 		} 
 		return true;
+	}
+
+	public void dispose() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -125,6 +125,11 @@ public class FeaturePair {
 		checkAndAddText(second);
 	}
 	
+	public Pair<TextData, TextData> getPairText() {
+		return Pair.make(featureText.get(first.getId()), 
+				featureText.get(second.getId()));
+	}
+	
 	public void updateTextSimilarity() {
 		this.setTotalSim(TextSimilarity.byTfIdf(
 				FeaturePair.featureText.get(first.getId()).getUntaggedTermVector(), 
@@ -292,14 +297,14 @@ public class FeaturePair {
 		List<Value> ns = en.getValuesByAttrName(Resources.ATTR_ENTITY_NAME);
 		if (ns != null) {
 			for (Value n: ns) {
-				des += n.getVal() + " ";
+				des += n.decodeQuotes() + " ";
 			}
 		}
 		// Combine all descriptions of "en" into a whole.
 		List<Value> values = en.getValuesByAttrName(Resources.ATTR_ENTITY_DES);
 		if (values != null) {
 			for (Value v: values) {
-				des += v.getVal() + " ";
+				des += v.decodeQuotes() + " ";
 			}
 		}
 		return des;
@@ -445,12 +450,12 @@ public class FeaturePair {
 		} else {
 			Collections.sort(name1);
 			Collections.reverse(name1);
-			result += name1.get(0).getVal();
+			result += name1.get(0).decodeQuotes();
 			if (name1.size() > 1) {
-				result += " (Aliases: " + name1.get(1).getVal();
+				result += " (Aliases: " + name1.get(1).decodeQuotes();
 			}
 			for (int i = 2; i < name1.size(); i++) {
-				result += ", " + name1.get(i).getVal();
+				result += ", " + name1.get(i).decodeQuotes();
 			}
 			if (name1.size() > 1) {
 				result += ")";
@@ -460,7 +465,7 @@ public class FeaturePair {
 		List<Value> des = en.getValuesByAttrName(Resources.ATTR_ENTITY_DES);
 		if (des != null) {
 			for (Value d: des) {
-				result += "\t" + d.getVal() + "\n";
+				result += "\t" + d.decodeQuotes() + "\n";
 			}
 		}
 		return result;

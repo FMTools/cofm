@@ -21,6 +21,10 @@ public class Value extends Element implements Comparable<Value> {
 		super();
 	}
 	
+	public String decodeQuotes() {
+		return getVal().replaceAll(SINGLE_QUOTE, "\'").replaceAll(DOUBLE_QUOTE, "\"");
+	}
+	
 	public String getVal() {
 		return val;
 	}

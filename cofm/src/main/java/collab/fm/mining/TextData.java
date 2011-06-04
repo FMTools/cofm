@@ -126,10 +126,7 @@ public class TextData {
 			// Extract the word
 			String s = key.substring(key.indexOf("_") + 1);
 			
-			
-			
-			
-			// Compute the weight = tf * idf
+			// Compute the term-frequency (tf)
 			int curTf = taggedTermVector.get(key);
 			Integer val = result.get(s);
 			if (val == null) {
@@ -173,7 +170,7 @@ public class TextData {
 			this.checkAndInc(this.taggedTermVector, myTag + "_" + myWord);
 			
 			// If the term appears in current document (the "text") for the 
-			// first time, we increase the document-frequency (df) here
+			// first time, we increase the document-frequency (df).
 			// The df doesn't count different tags.
 			if (!termEncountered.contains(myWord)) {
 				this.checkAndInc(TextData.documentVector, myWord);

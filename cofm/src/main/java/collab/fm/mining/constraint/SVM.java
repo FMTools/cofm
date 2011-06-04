@@ -23,6 +23,7 @@ import org.hibernate.Session;
 
 import libsvm.api.*;
 
+import collab.fm.mining.constraint.filter.*;
 import collab.fm.mining.opt.Domain;
 import collab.fm.mining.opt.GeneticOptimizer;
 import collab.fm.mining.opt.Optimizable;
@@ -102,14 +103,25 @@ public class SVM implements Optimizable {
 	// Store the cross-validation result.
 	public SVM.CV cvResult;
 	
-	public SVM() {
+	private BufferedReader nounDictFile;
+	
+	private Properties cfg;
+	
+	public SVM(Properties cfg) {
+		this.cfg = cfg;
 		buildFilterChain();
 	}
 	
 	private void buildFilterChain() {
 		filters.clear();
 		filters.add(new ConstraintsOnlyFilter());
+		filters.add(new SimilarityFilter(0.0));
 		filters.add(new CrossTreeOnlyFilter());
+		
+		String listNounFile = cfg.getProperty(SVM.KEY_LIST_NOUN);
+		if (listNounFile != null && !listNounFile.isEmpty()) {
+			filters.add(new ListNounFilter(listNounFile));
+		}
 	}
 	
 	// ------------ Step 1. Output data -------------
@@ -125,7 +137,7 @@ public class SVM implements Optimizable {
 	private String formatPair(FeaturePair pair) {
 		// Format as LIBSVM required
 		return pair.getLabel()
-			   + " 1:" + pair.getTotalSim()
+			  // + " 1:" + pair.getTotalSim()
 			   + " 2:" + pair.getVerbSim()
 			   + " 3:" + pair.getNounSim()
 			  // + " 4:" + pair.getParental()
@@ -218,40 +230,38 @@ public class SVM implements Optimizable {
 						pair.setExcludeOut(FeaturePair.UNKNOWN);
 					}
 				}
-				if (this.keepPair(pair, mode)) {
-					pairs.add(pair);
-					if (pair.getLabel() == FeaturePair.REQUIRE) {
-						numRequire++;
-					} else if (pair.getLabel() == FeaturePair.EXCLUDE) {
-						numExclude++;
-					}
-				}
-				
-				
-
-				
+				pairs.add(pair);
 			}
 		}
 
 		// Complete the pair similarity and output them.
+		List<FeaturePair> kept = new ArrayList<FeaturePair>();
 		for (FeaturePair p: pairs) {
 			p.updateTextSimilarity();
-			if (p.getTotalSim() > 0.0) {
-				numSim++;
-			}
-			try {
-				out.write(formatPair(p) + "\n");
-			} catch (IOException e) {
-				logger.warn("Cannot write pair.", e);
+			if (this.keepPair(p, mode)) {
+				kept.add(p);
+				if (p.getLabel() == FeaturePair.REQUIRE) {
+					numRequire++;
+				} else if (p.getLabel() == FeaturePair.EXCLUDE) {
+					numExclude++;
+				}
+				if (p.getTotalSim() > 0.0) {
+					numSim++;
+				}
+				try {
+					out.write(formatPair(p) + "\n");
+				} catch (IOException e) {
+					logger.warn("Cannot write pair.", e);
+				}
 			}
 		}
 		logger.info("Feature Model: '" + model.getName() + "': " 
 				+ modeName[mode] + ", "
 				+ features.length + " features, " 
-				+ pairs.size() + " pairs, "
+				+ kept.size() + " valid pairs, including "
 				+ numRequire + " require-pairs, " + numExclude
-				+ " exclude-pairs, " + numSim + " pairs of similar features.");
-		return pairs;
+				+ " exclude-pairs, and " + numSim + " pairs of similar features.");
+		return kept;
 	}
 	
 	// ------------ Step 2. Scale data ------------
@@ -488,10 +498,12 @@ public class SVM implements Optimizable {
 	public static final String KEY_TEST_MODE = "svm.test.mode";
 	public static final String KEY_TEST_RESULT = "svm.test.result";
 	public static final String KEY_RUN_MODE = "svm.run.mode";
+	public static final String KEY_LIST_NOUN = "svm.list.noun";
+	public static final String KEY_DICT_NOUN = "svm.dict.noun";
 	public static final String CLASSFIER_PROPERTIES_INTRO = 
 		"\nClassifier Options" + 
-		"\nRun mode: 1 = Optimize, 2 = Train and Predict, 3 = Optimize, Train and Predict" +
-		"\n    svm.run.mode=1/2/3" +
+		"\nRun mode: 0 = Dump Data, 1 = Optimize, 2 = Train and Predict, 3 = Optimize, Train and Predict" +
+		"\n    svm.run.mode=0/1/2/3" +
 		"\n\nSVM parameters: default; lowest; highest; change_step" +
 		"\n    svm.gamma=d;l;h;step" +
 		"\n    svm.wreq=d;l;h;step  (Weight of Require)" +
@@ -510,10 +522,21 @@ public class SVM implements Optimizable {
 		"\n    svm.test.result=int  (Number of displayed results)" +
 		"\n\nData sets" +
 		"\n    svm.train.fm=Name1;Name2;...;Name_N  (Name of training FMs)" +
-		"\n    svm.test.fm=Name1;Name2;...;Name_N  (Name of test FMs)";
+		"\n    svm.test.fm=Name1;Name2;...;Name_N  (Name of test FMs)" +
+		"\n\nData preprocessing" +
+		"\n    svm.list.noun=FilePath    (Output all nouns in constrained-pairs)" +
+		"\n    svm.dict.noun=FilePath    (Dictionary of noun keywords)";
+	
+	// Run mode #0
+	public void dumpData() {
+		List<Model> trainFMs = getFMs(cfg, KEY_TRAIN_FM);
+		List<Model> testFMs = getFMs(cfg, KEY_TEST_FM);
+		
+		this.dumpTrainingSet(trainFMs, testFMs);
+	}
 	
 	// Run mode #1
-	public void optimizeParameters(Properties cfg) {
+	public void optimizeParameters() {
 		this.cvResult = new SVM.CV();
 		
 		List<Model> trainFMs = getFMs(cfg, KEY_TRAIN_FM);
@@ -585,7 +608,7 @@ public class SVM implements Optimizable {
 	
 	// Run mode #2: train and predict, no optimization (use the parameters
 	// defined in the properties file.)
-	public void trainAndPredict(Properties cfg) {
+	public void trainAndPredict() {
 		String[] gammas = cfg.getProperty(KEY_GAMMA).split(";");
 		String[] wreqs = cfg.getProperty(KEY_WREQ).split(";");
 		String[] wexcs = cfg.getProperty(KEY_WEXC).split(";");
@@ -601,7 +624,7 @@ public class SVM implements Optimizable {
 			List<Model> testFMs = getFMs(cfg, KEY_TEST_FM);
 			
 			this.dumpTrainingSet(trainFMs, testFMs);
-			
+			this.trainWithoutCV();
 			
 			List<FeaturePair> testPairs = this.dumpTestSet(testFMs, testMode);
 			
@@ -684,6 +707,7 @@ public class SVM implements Optimizable {
 	
 	// Run mode #3 (Do not support now)
 	
+	public static final int RUN_DUMP_DATA = 0; 
 	public static final int RUN_OPT = 1;
 	public static final int RUN_PREDICT = 2;
 	public static final int RUN_OPT_AND_PREDICT = 3;
@@ -692,7 +716,8 @@ public class SVM implements Optimizable {
 	// The main method checks the run mode
 	public static void main(String[] argv) throws IOException {
 		
-		Session session = HibernateUtil.getSessionFactory().getCurrentSession();;
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
+		SVM svm = null;
 		try {
 			session.beginTransaction();
 			
@@ -701,15 +726,20 @@ public class SVM implements Optimizable {
 			cfg.load(url.openStream());
 			
 			int runMode = Integer.valueOf(cfg.getProperty(KEY_RUN_MODE));
+			svm = new SVM(cfg);
+			svm.prepareFiles();
 			switch (runMode) {
+			case RUN_DUMP_DATA:
+				svm.dumpData();
+				break;
 			case RUN_OPT:
-				new SVM().optimizeParameters(cfg);
+				svm.optimizeParameters();
 				break;
 			case RUN_PREDICT:
-				new SVM().trainAndPredict(cfg);
+				svm.trainAndPredict();
 				break;
 			case RUN_OPT_AND_PREDICT:
-				//TODO: add run mode support.
+				//TODO: add run mode support. 
 				break;
 			}
 		
@@ -719,11 +749,31 @@ public class SVM implements Optimizable {
 			session.getTransaction().rollback();
 			logger.error("Database error.", he);
 			session.close();
-		} 		
+		} finally {
+			if (svm != null) {
+				svm.dispose();
+			}
+		}
+	}
+
+	public void prepareFiles() {
+		String dictNounFile = cfg.getProperty(KEY_DICT_NOUN);
+		try {
+			this.nounDictFile = new BufferedReader(new FileReader(dictNounFile));
+		} catch (FileNotFoundException e) {
+			logger.info("No noun-keyword file assigned.");
+			nounDictFile = null;
+		}
 	}
 
 	public void addFilter(PairFilter pf) {
 		filters.add(pf);
+	}
+	
+	public void dispose() {
+		for (PairFilter filter: filters) {
+			filter.dispose();
+		}
 	}
 	
 	private static class PairStats {

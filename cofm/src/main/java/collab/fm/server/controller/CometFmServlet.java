@@ -2,9 +2,13 @@ package collab.fm.server.controller;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -26,6 +30,7 @@ public class CometFmServlet extends HttpServlet {
 	
 	private static final String MODE_HANDSHAKE = "handshake";
 	private static final String MODE_QUIT = "quit";
+	private static final String MODE_HEARTBEAT = "heartbeat";
 	
 	private static final long serialVersionUID = -7923410507957675563L;
 
@@ -74,7 +79,12 @@ public class CometFmServlet extends HttpServlet {
 
 	}
 	
-	private Map<Integer, ResponseBuffer> resBuffer = new HashMap<Integer, ResponseBuffer>();
+	private ConcurrentHashMap<Integer, ResponseBuffer> resBuffer = new ConcurrentHashMap<Integer, ResponseBuffer>();
+	
+	private ConcurrentHashMap<Integer, Calendar> clientHeartbeat = new ConcurrentHashMap<Integer, Calendar>();
+	
+	private static final long MAX_INACTIVE_TIME = 1000 * 90; // 90 seconds
+	private Timer timer = new Timer();
 	
 	private class FmHandler implements CometHandler<HttpServletResponse> {
 
@@ -131,7 +141,7 @@ public class CometFmServlet extends HttpServlet {
 	private void responseGet(PrintWriter writer, int clientId) {
 		ResponseBuffer buf = resBuffer.get(clientId);
 		if (buf != null && buf.isActive() && !buf.isEmpty()) {
-			logger.debug("Write to client #" + clientId);
+			logger.debug("Write to client #" + clientId + " (GET)");
 			writer.write("<script type='text/javascript'>parent.onResponseArrived('" 
 					+ buf.clear() + "');</script>\n");   
 			writer.flush();
@@ -141,7 +151,7 @@ public class CometFmServlet extends HttpServlet {
 	private void responsePost(PrintWriter writer, int clientId) {
 		ResponseBuffer buf = resBuffer.get(clientId);
 		if (buf != null && buf.isActive() && !buf.isEmpty()) {
-			logger.debug("Write to client #" + clientId);
+			logger.debug("Write to client #" + clientId + " (POST)");
 			writer.write(buf.clear());
 			writer.flush();
 		}
@@ -159,6 +169,28 @@ public class CometFmServlet extends HttpServlet {
 		CometEngine engine = CometEngine.getEngine();
 		CometContext cometContext = engine.register(contextPath);
 		cometContext.setExpirationDelay(120 * 1000);
+		
+		// Check heart beat status
+		timer.scheduleAtFixedRate(new TimerTask() {
+
+			@Override
+			public void run() {
+				Calendar now = Calendar.getInstance();
+				
+				for (Map.Entry<Integer, Calendar> itr: clientHeartbeat.entrySet()) {
+					if (now.getTimeInMillis() - itr.getValue().getTimeInMillis() > MAX_INACTIVE_TIME) {
+						logger.info("Client #" + itr.getKey() + " has disconnected.");
+						try {
+							doDisconnect(itr.getKey());
+						} catch (IOException e) {
+							logger.warn("Disconnect inactive client failed. (Client #" + itr.getKey() + ")", e);
+						}
+					}
+				}
+				
+			}
+			
+		}, 0, MAX_INACTIVE_TIME);
 		
 		logger.info("*** FM Servlet started.");
 	}
@@ -232,20 +264,28 @@ public class CometFmServlet extends HttpServlet {
 				res.getWriter().write("__handshake__" + nextClientId);
 				
 				resBuffer.put(nextClientId, new ResponseBuffer());
+				clientHeartbeat.put(nextClientId, Calendar.getInstance());
 				
 				logger.info("Handshaking with client #" + nextClientId);
 				
 				nextClientId++;
 				return;
-			} else if (mode.equals(MODE_QUIT)) {
+			} else if (mode.equals(MODE_HEARTBEAT)) {
 				if (cId == null) {
 					return;
 				}
-				fmRes = Controller.instance().disconnectUser(Integer.valueOf(cId));
-				ResponseBuffer buf = resBuffer.get(Integer.valueOf(cId));
-				if (buf != null) {
-					buf.setActive(false);
+				
+				// Update latest heart-beat time
+				clientHeartbeat.put(Integer.valueOf(cId), Calendar.getInstance());
+				res.setContentType("text/plain");
+				res.getWriter().write("__heartbeat__");
+				return;
+			} else if (mode.equals(MODE_QUIT)) {
+			
+				if (cId == null) {
+					return;
 				}
+				doDisconnect(Integer.valueOf(cId));
 			}
 		} else {
 			if (cId == null) {
@@ -254,16 +294,30 @@ public class CometFmServlet extends HttpServlet {
 			}
 			String msg = req.getParameter("message");		
 			fmRes = Controller.instance().execute(msg, Integer.valueOf(cId));
+			sendResponseGroup(Integer.valueOf(cId), fmRes, res);
 		}
 		
+	}
+	
+	private void doDisconnect(Integer clientId) throws IOException {
+		ResponseGroup fmRes = Controller.instance().disconnectUser(clientId);
+		ResponseBuffer buf = resBuffer.get(clientId);
+		if (buf != null) {
+			buf.setActive(false);
+		}
+		sendResponseGroup(clientId, fmRes, null);
+	}
+	
+	private void sendResponseGroup(Integer cId, ResponseGroup fmRes, HttpServletResponse res) 
+		throws IOException {
 		logger.debug("Response is: " + fmRes.toString());
 		
 		// Write the response (fmRes) into corresponding buffer(s), there are 2 cases:
 		//   1. The response is sent to its requester. (if fmRes.getBack() != null)
-		if (fmRes.getBack() != null) {
-			ResponseBuffer buf = resBuffer.get(Integer.valueOf(cId));
+		if (fmRes.getBack() != null && res != null) {
+			ResponseBuffer buf = resBuffer.get(cId);
 			buf.appendResponse(fmRes.getJsonBack());
-			responsePost(res.getWriter(), Integer.valueOf(cId));
+			responsePost(res.getWriter(), cId);
 		}
 		//   2. The response is broadcast to all clients EXCEPT its requester. (if fmRes.getBroadcast() != null)
 		if (fmRes.getBroadcast() != null) {
