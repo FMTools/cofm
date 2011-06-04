@@ -179,7 +179,7 @@ public class CometFmServlet extends HttpServlet {
 				
 				for (Map.Entry<Integer, Calendar> itr: clientHeartbeat.entrySet()) {
 					if (now.getTimeInMillis() - itr.getValue().getTimeInMillis() > MAX_INACTIVE_TIME) {
-						logger.info("Client #" + itr.getKey() + " has disconnected.");
+						logger.info("Client #" + itr.getKey() + " has disconnected due to timeout.");
 						try {
 							doDisconnect(itr.getKey());
 						} catch (IOException e) {
