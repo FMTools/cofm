@@ -1,10 +1,17 @@
 package collab.fm.server.bean.protocol;
 
+import java.text.MessageFormat;
+import java.util.Date;
+
+import javax.mail.MessagingException;
+
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.persist.User;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
+import collab.fm.server.util.DataItemUtil;
+import collab.fm.server.util.MailUtil;
 import collab.fm.server.util.Resources;
 import collab.fm.server.util.exception.InvalidOperationException;
 import collab.fm.server.util.exception.ItemPersistenceException;
@@ -15,7 +22,10 @@ public class RegisterRequest extends Request {
 	
 	private String user;
 	private String pwd;
+	private String mail;
 	
+	private static final String SERVER_MAIL = "yili.org";
+	private static final String SERVER_URL = "http://cofm.seforge.org/cofm/p?n=$name&v=$validation";
 	@Override 
 	protected Processor makeDefaultProcessor() {
 		return new RegisterProcessor();
@@ -23,7 +33,7 @@ public class RegisterRequest extends Request {
 	
 	public boolean valid() {
 		if (super.valid()) {
-			return Resources.REQ_REGISTER.equals(name) && user != null && pwd != null;
+			return Resources.REQ_REGISTER.equals(name) && user != null && pwd != null && mail != null;
 		}
 		return false;
 	}
@@ -42,6 +52,14 @@ public class RegisterRequest extends Request {
 
 	public void setPwd(String pwd) {
 		this.pwd = pwd;
+	}
+	
+	public String getMail() {
+		return mail;
+	}
+
+	public void setMail(String mail) {
+		this.mail = mail;
 	}
 	
 	private static class RegisterProcessor implements Processor {
@@ -63,23 +81,50 @@ public class RegisterRequest extends Request {
 			User u = DaoUtil.getUserDao().getByName(r.getUser());
 
 			if (u == null) {
-				u = new User();
-				u.setName(r.getUser());
-				u.setPassword(r.getPwd());
-				u = DaoUtil.getUserDao().save(u);
-
-				rsp.setMessage(Resources.MSG_REGISTER);
-				rsp.setName(Resources.RSP_SUCCESS);
-				rsp.setRequesterId(u.getId());
-				
-				// logger.info(LogUtil.logOp(u.getId(), LogUtil.OP_REGISTER, u.getName()));
-				
-				// Broadcast new user info to each client.
-				Response r2 = (Response) rsp.clone();
-				r2.setMessage(r.getUser());  // use the "message" field to transfer the name of the new user.
-				r2.setName(Resources.RSP_FORWARD);
-				rg.setBroadcast(r2);
-				
+				String nameMd5 = DataItemUtil.generateMD5(r.getUser());
+				String pwdMd5 = DataItemUtil.generateMD5(r.getPwd());
+				String validationMd5 = DataItemUtil.generateMD5(new Date().toString());
+				String validationUrl = SERVER_URL.replace("$name", nameMd5)
+					.replace("$validation", validationMd5);
+				// Send validation email
+				boolean mailSent = false;
+				try {
+					MailUtil.sendFromGmail(SERVER_MAIL, 
+							"FX5Vu6bp8Yk5", 
+							new String[] {r.getMail()},
+							Resources.MSG_REGISTER_MAIL_TITLE, 
+							MessageFormat.format(Resources.MSG_REGISTER_MAIL_TEXT, 
+									r.getUser(), validationUrl));
+					mailSent = true;
+				} catch (MessagingException e) {
+					logger.warn("Sending register mail failed. (User=" + r.getUser() +
+							", Mail=" + r.getMail());
+					rsp.setMessage(Resources.MSG_ERROR_USER_EXISTED);
+					rsp.setName(Resources.RSP_ERROR);
+				}
+				if (mailSent) {
+					u = new User();
+					u.setName(r.getUser());
+					u.setNameInMD5(nameMd5);
+					//u.setPassword(r.getPwd());  // Do not save original password!
+					u.setEmail(r.getMail());
+					u.setPasswordInMD5(pwdMd5);
+					u.setValidated(false);
+					u.setValidationStr(validationMd5);
+					u = DaoUtil.getUserDao().save(u);
+	
+					rsp.setMessage(Resources.MSG_REGISTER);
+					rsp.setName(Resources.RSP_SUCCESS);
+					rsp.setRequesterId(u.getId());
+					
+					// logger.info(LogUtil.logOp(u.getId(), LogUtil.OP_REGISTER, u.getName()));
+					
+					// Broadcast new user info to each client.
+					Response r2 = (Response) rsp.clone();
+					r2.setMessage(r.getUser());  // use the "message" field to transfer the name of the new user.
+					r2.setName(Resources.RSP_FORWARD);
+					rg.setBroadcast(r2);
+				}
 			} else {
 				rsp.setMessage(Resources.MSG_ERROR_USER_EXISTED);
 				rsp.setName(Resources.RSP_ERROR);

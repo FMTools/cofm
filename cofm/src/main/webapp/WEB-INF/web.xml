@@ -10,8 +10,18 @@
   	<servlet-class>collab.fm.server.controller.CometFmServlet</servlet-class>
   </servlet>
   
+  <servlet>
+  	<servlet-name>plainHttp</servlet-name>
+  	<servlet-class>collab.fm.server.controller.PlainHttpServlet</servlet-class>
+  </servlet>
+  
   <servlet-mapping>
   	<servlet-name>core</servlet-name>
   	<url-pattern>/flexrpc</url-pattern>
+  </servlet-mapping>
+  
+  <servlet-mapping>
+  	<servlet-name>plainHttp</servlet-name>
+  	<url-pattern>/p</url-pattern>
   </servlet-mapping>
 </web-app>

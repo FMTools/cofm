@@ -9,6 +9,7 @@ import collab.fm.server.bean.transfer.DataItem2;
 import collab.fm.server.bean.transfer.EntityType2;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.DataItemUtil;
+import collab.fm.server.util.EntityUtil;
 import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
@@ -79,7 +80,7 @@ public class EntityType extends ElementType {
 		}
 		that.setModel(this.getModel().getId());
 		for (AttributeType t: this.getAttrDefs()) {
-			that.getAttrDefs().add(DataItemUtil.transferAttributeType(t));
+			that.getAttrDefs().add(EntityUtil.transferAttributeType(t));
 		}
 	}
 

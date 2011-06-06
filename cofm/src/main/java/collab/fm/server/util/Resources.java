@@ -81,6 +81,8 @@ public class Resources {
 	
 	public static final String MSG_LOGIN = get("msg.login");
 	public static final String MSG_REGISTER = get("msg.register");
+	public static final String MSG_REGISTER_MAIL_TITLE = get("msg.register.mail.title");
+	public static final String MSG_REGISTER_MAIL_TEXT = get("msg.register.mail.content");
 	
 	private static String get(String key) {
 		try {

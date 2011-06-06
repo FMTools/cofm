@@ -14,6 +14,9 @@ public class User extends DataItem {
 	
 	private String name;
 	private String password;
+	private String nameInMD5;
+	private String passwordInMD5;
+	
 	private String email;
 	
 	private Boolean validated;
@@ -109,6 +112,22 @@ public class User extends DataItem {
 
 	public void setValidationStr(String validationStr) {
 		this.validationStr = validationStr;
+	}
+
+	public String getNameInMD5() {
+		return nameInMD5;
+	}
+
+	public void setNameInMD5(String nameInMD5) {
+		this.nameInMD5 = nameInMD5;
+	}
+
+	public String getPasswordInMD5() {
+		return passwordInMD5;
+	}
+
+	public void setPasswordInMD5(String passwordInMD5) {
+		this.passwordInMD5 = passwordInMD5;
 	}
 
 }

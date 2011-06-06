@@ -57,6 +57,12 @@
   		<artifactId>grizzly-comet</artifactId>
   		<version>1.9.34</version>
 	</dependency>
+	 <dependency>
+        <groupId>javax.mail</groupId>
+        <artifactId>mail</artifactId>
+        <version>1.4</version>
+        <scope>provided</scope>
+    </dependency>
 	<dependency>
 		<groupId>javax</groupId>
 		<artifactId>javaee-api</artifactId>

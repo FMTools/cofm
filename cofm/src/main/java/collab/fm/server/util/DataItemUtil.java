@@ -1,5 +1,8 @@
 package collab.fm.server.util;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +15,26 @@ import collab.fm.server.bean.persist.relation.Relation;
 
 public class DataItemUtil {
 
+	public static String generateMD5(String data) {
+		try {
+			MessageDigest md = MessageDigest.getInstance("MD5");
+
+			byte byteData[] = md.digest(data.getBytes("UTF-8"));
+
+			//convert the byte to hex format method 1
+			StringBuffer sb = new StringBuffer();
+			for (int i = 0; i < byteData.length; i++) {
+				sb.append(Integer.toString((byteData[i] & 0xff) + 0x100, 16).substring(1));
+			}
+
+			return sb.toString();
+		} catch (NoSuchAlgorithmException e) {
+			return null;
+		} catch (UnsupportedEncodingException e) {
+			return null;
+		}
+	}
+	
 	public static void setNewDataItemByUserId(DataItem di, Long userid) {
 		di.setCreator(userid);
 		di.setLastModifier(userid);
