@@ -25,7 +25,7 @@ public class RegisterRequest extends Request {
 	private String mail;
 	
 	private static final String SERVER_MAIL = "yili.org";
-	private static final String SERVER_URL = "http://cofm.seforge.org/cofm/p?a=vf?n=$name&v=$validation";
+	private static final String SERVER_URL = "http://cofm.seforge.org/cofm/p?a=vf&n=$name&v=$validation";
 	@Override 
 	protected Processor makeDefaultProcessor() {
 		return new RegisterProcessor();
