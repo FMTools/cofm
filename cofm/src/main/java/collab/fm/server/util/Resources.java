@@ -68,6 +68,7 @@ public class Resources {
 		
 	public static final String MSG_ERROR_USER_DENIED = get("msg.error.user.denied");
 	public static final String MSG_ERROR_USER_LOGIN_FAILED = get("msg.error.user.loginfailed");
+	public static final String MSG_ERROR_USER_NO_VERIFICATION = get("msg.error.user.novalidation");
 	public static final String MSG_ERROR_USER_EXISTED = get("msg.error.user.existed");
 	public static final String MSG_ERROR_USER_LOGIN_REPEAT = get("msg.error.user.login.repeat");
 	

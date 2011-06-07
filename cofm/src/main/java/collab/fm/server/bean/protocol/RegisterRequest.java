@@ -25,7 +25,7 @@ public class RegisterRequest extends Request {
 	private String mail;
 	
 	private static final String SERVER_MAIL = "yili.org";
-	private static final String SERVER_URL = "http://cofm.seforge.org/cofm/p?n=$name&v=$validation";
+	private static final String SERVER_URL = "http://cofm.seforge.org/cofm/p?a=vf?n=$name&v=$validation";
 	@Override 
 	protected Processor makeDefaultProcessor() {
 		return new RegisterProcessor();
@@ -82,7 +82,6 @@ public class RegisterRequest extends Request {
 
 			if (u == null) {
 				String nameMd5 = DataItemUtil.generateMD5(r.getUser());
-				String pwdMd5 = DataItemUtil.generateMD5(r.getPwd());
 				String validationMd5 = DataItemUtil.generateMD5(new Date().toString());
 				String validationUrl = SERVER_URL.replace("$name", nameMd5)
 					.replace("$validation", validationMd5);
@@ -106,9 +105,8 @@ public class RegisterRequest extends Request {
 					u = new User();
 					u.setName(r.getUser());
 					u.setNameInMD5(nameMd5);
-					//u.setPassword(r.getPwd());  // Do not save original password!
 					u.setEmail(r.getMail());
-					u.setPasswordInMD5(pwdMd5);
+					u.setPasswordInMD5(r.getPwd());
 					u.setValidated(false);
 					u.setValidationStr(validationMd5);
 					u = DaoUtil.getUserDao().save(u);

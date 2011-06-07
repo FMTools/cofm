@@ -61,15 +61,14 @@ public class LoginRequest extends Request {
 			}
 			LoginRequest lr = (LoginRequest)req;
 			Response rsp = new Response(req);
-			
-			User example = new User();
-			example.setName(lr.getUser());
-			example.setPassword(lr.getPwd());
 		
-			User user = DaoUtil.getUserDao().checkPasswordThenGet(example);
+			User user = DaoUtil.getUserDao().getByNameAndPwd(lr.getUser(), lr.getPwd());
 			
 			if (user == null) {
 				rsp.setMessage(Resources.MSG_ERROR_USER_LOGIN_FAILED);
+				rsp.setName(Resources.RSP_ERROR);
+			} else if (!user.isValidated()) {
+				rsp.setMessage(Resources.MSG_ERROR_USER_NO_VERIFICATION);
 				rsp.setName(Resources.RSP_ERROR);
 			} else {
 				user.setLastLoginTime(new Date());
