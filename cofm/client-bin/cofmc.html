@@ -75,6 +75,8 @@
 							myId = parseInt(res.substring("__handshake__".length));     
 							sendGet(); 	                
 							getFlexApp("cofmc").notifyConnected();
+      	                } else if (res.indexOf("__heartbeat__") == 0) {
+      	                    // do nothing with heartbeat response
       	                } else {
       	                    onResponseArrived(res);
       	                }
