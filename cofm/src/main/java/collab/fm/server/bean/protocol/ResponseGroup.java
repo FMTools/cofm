@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ResponseGroup {
 	
-	private static final int DEBUG_LENGTH = 5000;
+	private static final int DEBUG_LENGTH = 500;
 	
 	private Response back;
 	private Response peer;
@@ -17,19 +17,17 @@ public class ResponseGroup {
 	private String jsonBroadcast;
 	
 	public String toString() {
-		return "back: " + truncateForDebug(jsonBack) + "\n\t" +
-				"broadcast: " + truncateForDebug(jsonBroadcast) + "\n\t" +
-				"forward: " + truncateForDebug(jsonPeer);
+		return "back: " + truncateForDebug(back) + "\n\t" +
+				"broadcast: " + truncateForDebug(broadcast) + "\n\t" +
+				"forward: " + truncateForDebug(peer);
 	}
 	
-	private String truncateForDebug(String s) {
-		if (s == null) {
+	private String truncateForDebug(Response res) {
+		if (res == null) {
 			return "null";
 		} else {
-			if (s.length() > DEBUG_LENGTH) {
-				return s.substring(0, DEBUG_LENGTH);
-			}
-			return s;
+			return "Name=" + res.getName() + ", SrcClient=" + res.getRequestClientId() + ", Request=" + res.getRequestName() +
+			", Message=" + res.getMessage();
 		}
 	}
 	
