@@ -97,8 +97,12 @@ public class SVM implements Optimizable {
 	public static final String ARG_SCALE_TEST = 
 		"-r " + SCALE_RANGE_FILE + " " + TEST_FILE;
 	
-	// Training: Default gamma = 1 / number of attributes
-	public static final double DEFAULT_GAMMA = (double) 1 / FeaturePair.NUM_ATTRIBUTES;
+	// Parameters for SVM algorithm
+	private int numDataAttr;
+	private double gamma, gammaLo, gammaHi, gammaStep;
+	private int reqWeight, reqLo, reqHi, reqStep;
+	private int excWeight, excLo, excHi, excStep;
+	private int cvFold;
 	
 	// Store the cross-validation result.
 	public SVM.CV cvResult;
@@ -126,27 +130,15 @@ public class SVM implements Optimizable {
 	
 	// ------------ Step 1. Output data -------------
 	private boolean keepPair(FeaturePair pair, int mode) {
-		for (PairFilter filter: filters) {
-			if (!filter.keepPair(pair, mode)) {
+		for (int i = 0; i < filters.size(); i++) {
+			if (!filters.get(i).keepPair(pair, mode)) {
 				return false;
 			}
 		}
 		return true;
 	}
 	
-	private String formatPair(FeaturePair pair) {
-		// Format as LIBSVM required
-		return pair.getLabel()
-			  // + " 1:" + pair.getTotalSim()
-			   + " 2:" + pair.getVerbSim()
-			   + " 3:" + pair.getNounSim()
-			  // + " 4:" + pair.getParental()
-			  // + " 5:" + pair.getSibling() 
-			   + " 6:" + pair.getNumMandatory() 
-			  // + " 7:" + pair.getRequireOut() 
-			  // + " 8:" + pair.getExcludeOut() 
-			   ;
-	}
+
 	
 	private void dumpTrainingSet(List<Model> trainFMs, List<Model> testFMs) {
 		logger.info("*** Dump Training Set.");
@@ -249,7 +241,7 @@ public class SVM implements Optimizable {
 					numSim++;
 				}
 				try {
-					out.write(formatPair(p) + "\n");
+					out.write(SVMDataFormatter.format(p.getLabel(), p) + "\n");
 				} catch (IOException e) {
 					logger.warn("Cannot write pair.", e);
 				}
@@ -359,10 +351,7 @@ public class SVM implements Optimizable {
 		return 100.0 - this.cvResult.accuracy;
 	}
 
-	private double gamma, gammaLo, gammaHi, gammaStep;
-	private int reqWeight, reqLo, reqHi, reqStep;
-	private int excWeight, excLo, excHi, excStep;
-	private int cvFold;
+	
 	
 	// Solution = [gamma, reqWeight, excWeight]
 	public Solution defineSolution() {
@@ -497,6 +486,7 @@ public class SVM implements Optimizable {
 	public static final String KEY_CROSS = "svm.opt.gen.cross";
 	public static final String KEY_TEST_MODE = "svm.test.mode";
 	public static final String KEY_TEST_RESULT = "svm.test.result";
+	public static final String KEY_DATA_ATTR = "svm.data.attr";
 	public static final String KEY_RUN_MODE = "svm.run.mode";
 	public static final String KEY_LIST_NOUN = "svm.list.noun";
 	public static final String KEY_DICT_NOUN = "svm.dict.noun";
@@ -523,12 +513,21 @@ public class SVM implements Optimizable {
 		"\n\nData sets" +
 		"\n    svm.train.fm=Name1;Name2;...;Name_N  (Name of training FMs)" +
 		"\n    svm.test.fm=Name1;Name2;...;Name_N  (Name of test FMs)" +
+		"\n    svm.data.attr=0;1;2;...;N   (Index of attributes, see below)" +
+		"\n        " + SVMDataFormatter.attrInfo() +
 		"\n\nData preprocessing" +
 		"\n    svm.list.noun=FilePath    (Output all nouns in constrained-pairs)" +
 		"\n    svm.dict.noun=FilePath    (Dictionary of noun keywords)";
 	
+	private void updateDataAttrInfo() {
+		String[] attrs = cfg.getProperty(KEY_DATA_ATTR).split(";");
+		SVMDataFormatter.updateAttrList(attrs);
+		this.numDataAttr = attrs.length;
+	}
+	
 	// Run mode #0
 	public void dumpData() {
+		updateDataAttrInfo();
 		List<Model> trainFMs = getFMs(cfg, KEY_TRAIN_FM);
 		List<Model> testFMs = getFMs(cfg, KEY_TEST_FM);
 		
@@ -537,6 +536,7 @@ public class SVM implements Optimizable {
 	
 	// Run mode #1
 	public void optimizeParameters() {
+		updateDataAttrInfo();
 		this.cvResult = new SVM.CV();
 		
 		List<Model> trainFMs = getFMs(cfg, KEY_TRAIN_FM);
@@ -548,8 +548,11 @@ public class SVM implements Optimizable {
 		String[] wreqs = cfg.getProperty(KEY_WREQ).split(";");
 		String[] wexcs = cfg.getProperty(KEY_WEXC).split(";");
 		
-		this.gammaLo = Double.valueOf(gammas[1]);
-		this.gammaHi = Double.valueOf(gammas[2]);
+		//this.gammaLo = Double.valueOf(gammas[1]);
+		//this.gammaHi = Double.valueOf(gammas[2]);
+		double defaultGamma = 1.0 / this.numDataAttr;
+		this.gammaLo = defaultGamma / 2;
+		this.gammaHi = defaultGamma * 2;
 		this.gammaStep = Double.valueOf(gammas[3]);
 		this.reqLo = Integer.valueOf(wreqs[1]);
 		this.reqHi = Integer.valueOf(wreqs[2]);
@@ -609,6 +612,7 @@ public class SVM implements Optimizable {
 	// Run mode #2: train and predict, no optimization (use the parameters
 	// defined in the properties file.)
 	public void trainAndPredict() {
+		updateDataAttrInfo();
 		String[] gammas = cfg.getProperty(KEY_GAMMA).split(";");
 		String[] wreqs = cfg.getProperty(KEY_WREQ).split(";");
 		String[] wexcs = cfg.getProperty(KEY_WEXC).split(";");

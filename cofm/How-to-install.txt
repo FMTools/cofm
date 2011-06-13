@@ -4,20 +4,44 @@
 
 2. Install Maven 2
 
-3. Download the code and confirm the following settings: 
-    a) Set the logging folder in src/main/config/log4j.xml
-    b) Set the properties in pom.xml
-    c) Set the MySQL URL in src/main/config/hibernate.properties 
-        c.1) Create the database in MySQL, with utf8 encoding.
-        c.2) Set the URL.
+3. Install MySQL 5
 
-4. Compile and deploy
+4. Download the code and confirm the following settings: 
+    a) Set the logging folder in src/main/config/log4j.xml
+       (Search for the XML node: <param name="File" value="..."/>)
+       
+    b) Set the properties in the following XML section in pom.xml, the last property "flexBinDir" should
+       always be set to "clientBin". 
+    
+          <properties>  <!-- User-defined properties -->
+		    <!-- Glassfish 3 install directory -->
+		    <glassfishInsDir>D:/Program Files/glassfish3</glassfishInsDir>
+		    <!-- Glassfish server admin info -->
+		    <glassfishAdmin>admin</glassfishAdmin>
+		    <glassfishPass>123</glassfishPass>
+		    <!-- Server port -->
+		    <glassfishAdminPort>4848</glassfishAdminPort>
+		    <glassfishHttpPort>7000</glassfishHttpPort>
+		    <glassfishHttpsPort>8443</glassfishHttpsPort>
+		    
+		    <!-- The client (flash) bin directory (should be set to "clientBin")-->
+		    <flexBinDir>clientBin</flexBinDir>
+		  </properties>
+		  
+    c) Set the MySQL URL in src/main/config/hibernate.properties 
+        c.1) Create your database in MySQL, with utf8 encoding.
+        c.2) Set the URL in: 
+                hibernate.connection.url=jdbc:mysql://<address>/<database>?characterEncoding=utf8
+                hibernate.connection.username=<admin name>
+                hibernate.connection.password=<admin password>
+
+5. Compile and deploy
     a) Run 1-install-local-lib.bat, it will install JAR for Stanford POS Library in Maven local repository.
-    b) (Only for the first time!!) Run clear-and-init-db.bat, it creates the tables in database.
+    b) (Only for the first time!!) Run clear-and-init-db.bat, it clears and creates the tables in database.
     c) (If necessary) Run update-db-schema.bat, it updates the schema in database.
     d) Run 2-compile-and-deploy.bat or 3-compile-and-redeploy.bat
        d.1) On Windows, you should delete all files EXCEPT the *.bat under <glassfish install dir>/bin/.
 
-5. Run in web browser: http://yourserver/cofm
+6. Run in web browser: http://yourserver/cofm
      
     
