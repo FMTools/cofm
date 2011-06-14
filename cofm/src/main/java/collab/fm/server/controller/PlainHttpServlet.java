@@ -8,8 +8,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 
 import collab.fm.server.bean.persist.User;
+import collab.fm.server.persistence.HibernateUtil;
 import collab.fm.server.util.*;
 import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
@@ -46,25 +49,35 @@ public class PlainHttpServlet extends HttpServlet {
 			return;
 		}
 		User user;
+		Session session = HibernateUtil.getSessionFactory().getCurrentSession();
 		try {
+			session.beginTransaction();
 			user = DaoUtil.getUserDao().getByEncryptName(name);
+			
+			if (user == null || !user.getValidationStr().equals(validStr)) {
+				res.getWriter().write("Invalid validation info.");
+			} else {
+				user.setValidated(true);
+				DaoUtil.getUserDao().save(user);
+				res.getWriter().write("Validation OK");
+			}
+			session.getTransaction().commit();
 		} catch (ItemPersistenceException e) {
 			logger.warn("DAO error.", e);
 			res.setStatus(500);  // Internal error
 			res.getWriter().write("Internal server error. Please contact admin.");
-			return;
 		} catch (StaleDataException e) {
 			logger.warn("DAO error.", e);
 			res.setStatus(500);  // Internal error
 			res.getWriter().write("Internal server error. Please contact admin.");
-			return;
+		} catch (HibernateException e) {
+			logger.warn("Hibernate Error.", e);
+			res.setStatus(500);  // Internal error
+			res.getWriter().write("Internal server error. Please contact admin.");
+			session.getTransaction().rollback();
+			session.close();
 		}
-		if (user == null || !user.getValidationStr().equals(validStr)) {
-			res.getWriter().write("Invalid validation info.");
-			return;
-		}
-		user.setValidated(true);
-		res.getWriter().write("Validation OK");
+		
 	}
 
 	
