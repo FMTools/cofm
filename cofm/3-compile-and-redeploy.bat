@@ -1,1 +1,1 @@
-cmd /k mvn clean compile war:war glassfish:redeploy
+mvn clean compile war:war glassfish:redeploy

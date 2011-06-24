@@ -24,6 +24,7 @@ import org.hibernate.Session;
 import libsvm.api.*;
 
 import collab.fm.mining.constraint.filter.*;
+import collab.fm.mining.constraint.stats.*;
 import collab.fm.mining.opt.Domain;
 import collab.fm.mining.opt.GeneticOptimizer;
 import collab.fm.mining.opt.Optimizable;
@@ -80,6 +81,7 @@ public class SVM implements Optimizable {
 	static Logger logger = Logger.getLogger(SVM.class);
 	
 	private List<PairFilter> filters = new ArrayList<PairFilter>();
+	private List<DataStats> stats = new ArrayList<DataStats>();
 	
 	public static final int MAX_PREDICTION_NUM = 20;
 	public static final String TRAINING_FILE = "D:/log/cofm/mining/cons_svm_train";
@@ -114,6 +116,13 @@ public class SVM implements Optimizable {
 	public SVM(Properties cfg) {
 		this.cfg = cfg;
 		buildFilterChain();
+		buildStatsChain();
+	}
+	
+	private void buildStatsChain() {
+		stats.clear();
+		stats.add(new LocalAttributeStats());
+		stats.add(new DFStats());
 	}
 	
 	private void buildFilterChain() {
@@ -121,11 +130,6 @@ public class SVM implements Optimizable {
 		filters.add(new ConstraintsOnlyFilter());
 		filters.add(new SimilarityFilter(0.0));
 		filters.add(new CrossTreeOnlyFilter());
-		
-		String listNounFile = cfg.getProperty(SVM.KEY_LIST_NOUN);
-		if (listNounFile != null && !listNounFile.isEmpty()) {
-			filters.add(new ListNounFilter(listNounFile));
-		}
 	}
 	
 	// ------------ Step 1. Output data -------------
@@ -138,26 +142,49 @@ public class SVM implements Optimizable {
 		return true;
 	}
 	
+	private void updateStats(List<FeaturePair> pairs) {
+		for (DataStats ds: stats) {
+			ds.update(pairs);
+		}
+	}
+	
+	private void showStats() {
+		String file = cfg.getProperty(KEY_STATS_FILE);
+		if (file != null) {
+			try {
+				BufferedWriter out = new BufferedWriter(new FileWriter(file));
+				for (DataStats ds: stats) {
+					ds.report(out);
+					out.write("\n");
+				}
+				out.close();
+			} catch (IOException e) {
+				logger.warn("Cannot write stats.", e);
+			}
+		} else {
+			logger.info("Stats file is unassigned.");
+		}
+	}
 
 	
 	private void dumpTrainingSet(List<Model> trainFMs, List<Model> testFMs) {
 		logger.info("*** Dump Training Set.");
 		try {
 			BufferedWriter tf = new BufferedWriter(new FileWriter(SVM.TRAINING_FILE));
-			PairStats stats = new PairStats();
 			
 			for (Model trainFM: trainFMs) {
-				stats.addPair(dumpModel(tf, trainFM, MODE_TRAIN_ALL));
+				this.updateStats(dumpModel(tf, trainFM, MODE_TRAIN_ALL));
 			}
 			if (testFMs != null) {
 				for (Model testFM: testFMs) {
-					stats.addPair(dumpModel(tf, testFM, MODE_TRAIN_ONLY_CON));
+					this.updateStats(dumpModel(tf, testFM, MODE_TRAIN_ONLY_CON));
 				}
 			}
 			
 			tf.close();
 			logger.info("*** Dump Training Set END.");
-			logger.info(stats.toString());
+			//logger.info(stats.toString());
+			this.showStats();
 			
 			// Do scaling
 			this.scaleTrainingSet();
@@ -488,7 +515,7 @@ public class SVM implements Optimizable {
 	public static final String KEY_TEST_RESULT = "svm.test.result";
 	public static final String KEY_DATA_ATTR = "svm.data.attr";
 	public static final String KEY_RUN_MODE = "svm.run.mode";
-	public static final String KEY_LIST_NOUN = "svm.list.noun";
+	public static final String KEY_STATS_FILE = "svm.stats.file";
 	public static final String KEY_DICT_NOUN = "svm.dict.noun";
 	public static final String CLASSFIER_PROPERTIES_INTRO = 
 		"\nClassifier Options" + 
@@ -515,8 +542,8 @@ public class SVM implements Optimizable {
 		"\n    svm.test.fm=Name1;Name2;...;Name_N  (Name of test FMs)" +
 		"\n    svm.data.attr=0;1;2;...;N   (Index of attributes, see below)" +
 		"\n        " + SVMDataFormatter.attrInfo() +
+		"\n    svm.stats.file=FileName    (The file for data stats report)" +
 		"\n\nData preprocessing" +
-		"\n    svm.list.noun=FilePath    (Output all nouns in constrained-pairs)" +
 		"\n    svm.dict.noun=FilePath    (Dictionary of noun keywords)";
 	
 	private void updateDataAttrInfo() {
@@ -778,80 +805,6 @@ public class SVM implements Optimizable {
 		for (PairFilter filter: filters) {
 			filter.dispose();
 		}
-	}
-	
-	private static class PairStats {
-		
-		private int[] simTotal = new int[33];
-		private int[] simVerb = new int[33];
-		private int[] simNoun = new int[33];
-		
-		private int[] reqOutNo = {0, 0, 0}; // require outsider = NO
-		private int[] reqOutYes = {0, 0, 0}; // require outsider = 1 or 2
-		
-		private int[] excOutNo = {0, 0, 0}; // exclude outsider = NO
-		private int[] excOutYes = {0, 0, 0}; // exclude outsider = 1 or 2
-		
-		public String toString() {
-			String head = String.format("*** Attribute distribution over class.\n"
-					+ "%10s%10s%10s%10s\n"
-					+ "-------------------------------------------------------\n",
-					" ", "NO_CONS", "REQUIRE", "EXCLUDE");
-			String simAttrs = formatSimInfo("Sim_Total", simTotal)
-					+ formatSimInfo("Sim_Verb", simVerb)
-					+ formatSimInfo("Sim_Noun", simNoun);
-			String otherAttrs = String.format(
-					"%10s%10d%10d%10d\n"   // No require out
-					+ "%10s%10d%10d%10d\n"   // Has 
-					+ "%10s%10d%10d%10d\n"   // No exclude out
-					+ "%10s%10d%10d%10d",    // Has
-					"No_Req_Out", reqOutNo[0], reqOutNo[1], reqOutNo[2],
-					"Has", reqOutYes[0], reqOutYes[1], reqOutYes[2],
-					"No_Exc_Out", excOutNo[0], excOutNo[1], excOutNo[2],
-					"Has", excOutYes[0], excOutYes[1], excOutYes[2]
-					);
-			return head + simAttrs + otherAttrs;
-		}
-		
-		private String formatSimInfo(String title, int[] sim) {
-			String s = title + "\n";
-			for (int i = 0; i < 11; i++) {
-				s += String.format("%10s%10d%10d%10d\n", 
-						(i ==10 ? "1.0" : "[0." + i + "~"), 
-						sim[i*3], sim[i*3+1], sim[i*3+2]);
-			}
-			return s;
-		}
-		
-		// show stats about attributes and class correspondence
-		public void addPair(List<FeaturePair> pairs) {
-			for (FeaturePair pair: pairs) {
-				addSimInfo(pair.getTotalSim(), pair.getLabel(), this.simTotal);
-				addSimInfo(pair.getVerbSim(), pair.getLabel(), this.simVerb);
-				addSimInfo(pair.getNounSim(), pair.getLabel(), this.simNoun);
-				
-				int index = (pair.getLabel() == FeaturePair.NO_CONSTRAINT ? 0 : 
-					(pair.getLabel() == FeaturePair.REQUIRE ? 1 : 2));
-				if (pair.getRequireOut() == FeaturePair.NO) {
-					reqOutNo[index]++;
-				} else if (pair.getRequireOut() >= 1) {
-					reqOutYes[index]++;
-				}
-				if (pair.getExcludeOut() == FeaturePair.NO) {
-					excOutNo[index]++;
-				} else if (pair.getExcludeOut() >= 1) {
-					excOutYes[index]++;
-				}
-			}
-		}
-		
-		private void addSimInfo(double sim, int label, int[] a) {
-			int offset = (label == FeaturePair.NO_CONSTRAINT ? 0 :
-				(label == FeaturePair.REQUIRE ? 1 : 2));
-			int base = Double.valueOf(Math.floor(10 * sim)).intValue();
-			a[base + offset]++;
-		}
-		
 	}
 	
 	// result for cross-validation (CV)

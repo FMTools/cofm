@@ -1,4 +1,48 @@
-Top 30 nouns & verbs in pairs:
+*** Attribute distribution over class.
+             NO_CONS   REQUIRE   EXCLUDE
+-------------------------------------------------------
+Sim_Total
+     [0.0~       294        51        13
+     [0.1~         7         6         2
+     [0.2~         1         0         0
+     [0.3~         0         0         0
+     [0.4~         0         0         0
+     [0.5~         0         0         0
+     [0.6~         0         0         0
+     [0.7~         0         0         0
+     [0.8~         0         0         0
+     [0.9~         0         0         0
+       1.0         0         0         0
+Sim_Verb
+     [0.0~       268        66        24
+     [0.1~         4         6         3
+     [0.2~         1         0         0
+     [0.3~         0         2         0
+     [0.4~         0         0         0
+     [0.5~         0         0         0
+     [0.6~         0         0         0
+     [0.7~         0         0         0
+     [0.8~         0         0         0
+     [0.9~         0         0         0
+       1.0         0         0         0
+Sim_Noun
+     [0.0~       279        61        12
+     [0.1~         9         8         4
+     [0.2~         1         0         0
+     [0.3~         0         0         0
+     [0.4~         0         0         0
+     [0.5~         0         0         0
+     [0.6~         0         0         0
+     [0.7~         0         0         0
+     [0.8~         0         0         0
+     [0.9~         0         0         0
+       1.0         0         0         0
+No_Req_Out        72         1         0
+       Has       275        19         7
+No_Exc_Out       158         6         0
+       Has       189        14         7
+
+*** Top 30 nouns & verbs in pairs:
   Non-Constained (Noun)     Constrained (Noun) Non-Constrained (Verb)     Constrained (Verb)
 -------------------------------------------------
         support     182           file      12             be     242             be      15
@@ -31,3 +75,4 @@ Top 30 nouns & verbs in pairs:
     compilation      53         access       4            set      32         finish       2
              cd      51          genre       4           pick      32        operate       2
             tag      49          count       4         detect      32            own       2
+
