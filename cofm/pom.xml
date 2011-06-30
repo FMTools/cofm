@@ -105,9 +105,18 @@
 		<version>3.0.1</version>
 	</dependency>
   </dependencies>
+ 
   <build>
     <finalName>cofm</finalName>
     
+    <pluginManagement>
+    	<plugins>
+    		<plugin>
+    			<artifactId>maven-install-plugin</artifactId>
+    			<version>2.3.1</version>
+    		</plugin>
+    	</plugins>
+    </pluginManagement>
     <resources> 
       <!-- Specify the main/config directory as a source folder -->
       <resource>
