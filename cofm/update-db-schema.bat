@@ -1,1 +1,1 @@
-mvn -Pupdate-prod-db-schema clean process-classes
+cmd /k mvn -Pupdate-prod-db-schema clean process-classes

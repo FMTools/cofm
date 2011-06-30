@@ -20,7 +20,7 @@
     <glassfishHttpsPort>8443</glassfishHttpsPort>
     
     <!-- The client (flash) bin directory -->
-    <flexBinDir>clientBin</flexBinDir>
+    <flexBinDir>client-bin</flexBinDir>
   </properties>
   
 <pluginRepositories>
