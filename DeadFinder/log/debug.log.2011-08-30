@@ -1,0 +1,264 @@
+2011-08-30 20:47:33,785   main.TestFrame INFO      START: (3) Feature Models 
+2011-08-30 20:49:23,368   main.TestFrame INFO      START: (1) Feature Models 
+2011-08-30 20:49:23,797   main.TestFrame INFO  Result:
+
+       Feature Model  Feature# Max Level Path Search Path Select     0D_CC 1D_CC_MIN 1D_CC_MAX 1D_CC_AVG 1D_CC_VAR
+-----------------------------------------------------------------------------
+        Video Player        53         5      Binary     Longest        47         2        47     26.13    200.08
+                                                          Middle        47         2        47     26.81    193.62
+                                                        Shortest        47         2        47     26.81    196.31
+                                          LeafBinary     Longest        33         3        36     24.77    158.14
+                                                          Middle        33         3        35     27.00    116.73
+                                                        Shortest        33         3        35     28.79     76.47
+                                          RootBinary     Longest        51         3        51     27.40    217.24
+                                                          Middle        51         3        51     27.40    218.32
+                                                        Shortest        52         2        52     27.46    223.06
+                                          LeafLinear     Longest        33         2        33     13.56     80.82
+                                                          Middle        33         2        33     16.17     93.53
+                                                        Shortest        33         2        33     18.56     95.67
+                                          RootLinear     Longest        53         2        53     27.50    225.25
+                                                          Middle        53         2        53     27.50    225.25
+                                                        Shortest        53         2        53     27.50    225.25
+
+ 
+2011-08-30 20:51:59,427   main.TestFrame INFO      START: (1) Feature Models 
+2011-08-30 20:52:13,203   main.TestFrame INFO      START: (1) Feature Models 
+2011-08-30 21:22:38,837   main.TestFrame INFO      START: (3) Feature Models 
+2011-08-30 21:23:22,664   main.TestFrame INFO      START: (2) Feature Models 
+2011-08-30 21:23:23,773   main.TestFrame INFO  Result:
+
+       Feature Model  Feature# Max Level Path Search Path Select     0D_CC 1D_CC_MIN 1D_CC_MAX 1D_CC_AVG 1D_CC_VAR
+-----------------------------------------------------------------------------
+        Video Player        53         5      Binary     Longest        47         2        47     26.13    200.08
+                                                          Middle        47         2        47     26.81    193.62
+                                                        Shortest        47         2        47     26.81    196.31
+                                          LeafBinary     Longest        33         3        36     24.77    158.14
+                                                          Middle        33         3        35     27.00    116.73
+                                                        Shortest        33         3        35     28.79     76.47
+                                          RootBinary     Longest        51         3        51     27.40    217.24
+                                                          Middle        51         3        51     27.40    218.32
+                                                        Shortest        52         2        52     27.46    223.06
+                                          LeafLinear     Longest        33         2        33     13.56     80.82
+                                                          Middle        33         2        33     16.17     93.53
+                                                        Shortest        33         2        33     18.56     95.67
+                                          RootLinear     Longest        53         2        53     27.50    225.25
+                                                          Middle        53         2        53     27.50    225.25
+                                                        Shortest        53         2        53     27.50    225.25
+
+     Coche ecologico        94         8      Binary     Longest        84         3        84     45.49    656.01
+                                                          Middle        86         2        86     47.32    663.38
+                                                        Shortest        89         2        89     47.80    701.24
+                                          LeafBinary     Longest        64         3        67     48.69    628.56
+                                                          Middle        64         3        66     51.30    488.10
+                                                        Shortest        64         3        66     55.40    278.30
+                                          RootBinary     Longest        90         3        90     46.86    698.27
+                                                          Middle        93         3        93     47.94    713.29
+                                                        Shortest        94         2        94     48.00    720.67
+                                          LeafLinear     Longest        64         2        64     25.25    356.38
+                                                          Middle        64         2        64     29.13    360.84
+                                                        Shortest        64         2        64     33.72    333.19
+                                          RootLinear     Longest        94         2        94     48.00    720.67
+                                                          Middle        94         2        94     48.00    720.67
+                                                        Shortest        94         2        94     48.00    720.67
+
+ 
+2011-08-30 21:35:00,020   main.TestFrame INFO      START: (2) Feature Models 
+2011-08-30 21:35:01,157   main.TestFrame INFO  Result:
+
+       Feature Model  Feature# Max Level Path Search Path Select     0D_CC 1D_CC_MIN 1D_CC_MAX 1D_CC_AVG 1D_CC_VAR
+-----------------------------------------------------------------------------
+        Video Player        53         5      Binary     Longest        47         2        47     26.13    200.08
+                                                          Middle        47         2        47     26.81    193.62
+                                                        Shortest        47         2        47     26.81    196.31
+                                          LeafBinary     Longest        33         3        36     24.77    158.14
+                                                          Middle        33         3        35     27.00    116.73
+                                                        Shortest        33         3        35     28.79     76.47
+                                          RootBinary     Longest        51         3        51     27.40    217.24
+                                                          Middle        51         3        51     27.40    218.32
+                                                        Shortest        52         2        52     27.46    223.06
+                                          LeafLinear     Longest        33         2        33     13.56     80.82
+                                                          Middle        33         2        33     16.17     93.53
+                                                        Shortest        33         2        33     18.56     95.67
+                                          RootLinear     Longest        53         2        53     27.50    225.25
+                                                          Middle        53         2        53     27.50    225.25
+                                                        Shortest        53         2        53     27.50    225.25
+
+     Coche ecologico        94         8      Binary     Longest        84         3        84     45.49    656.01
+                                                          Middle        86         2        86     47.32    663.38
+                                                        Shortest        89         2        89     47.80    701.24
+                                          LeafBinary     Longest        64         3        67     48.69    628.56
+                                                          Middle        64         3        66     51.30    488.10
+                                                        Shortest        64         3        66     55.40    278.30
+                                          RootBinary     Longest        90         3        90     46.86    698.27
+                                                          Middle        93         3        93     47.94    713.29
+                                                        Shortest        94         2        94     48.00    720.67
+                                          LeafLinear     Longest        64         2        64     25.25    356.38
+                                                          Middle        64         2        64     29.13    360.84
+                                                        Shortest        64         2        64     33.72    333.19
+                                          RootLinear     Longest        94         2        94     48.00    720.67
+                                                          Middle        94         2        94     48.00    720.67
+                                                        Shortest        94         2        94     48.00    720.67
+
+ 
+2011-08-30 21:42:28,902   main.TestFrame INFO      START: (3) Feature Models 
+2011-08-30 21:42:52,658   main.TestFrame INFO  Result:
+
+       Feature Model  Feature# Max Level Path Search Path Select     0D_CC 1D_CC_MIN 1D_CC_MAX 1D_CC_AVG 1D_CC_VAR
+-----------------------------------------------------------------------------
+        Video Player        53         5      Binary     Longest        47         2        47     26.13    200.08
+                                                          Middle        47         2        47     26.81    193.62
+                                                        Shortest        47         2        47     26.81    196.31
+                                          LeafBinary     Longest        33         3        36     24.77    158.14
+                                                          Middle        33         3        35     27.00    116.73
+                                                        Shortest        33         3        35     28.79     76.47
+                                          RootBinary     Longest        51         3        51     27.40    217.24
+                                                          Middle        51         3        51     27.40    218.32
+                                                        Shortest        52         2        52     27.46    223.06
+                                          LeafLinear     Longest        33         2        33     13.56     80.82
+                                                          Middle        33         2        33     16.17     93.53
+                                                        Shortest        33         2        33     18.56     95.67
+                                          RootLinear     Longest        53         2        53     27.50    225.25
+                                                          Middle        53         2        53     27.50    225.25
+                                                        Shortest        53         2        53     27.50    225.25
+
+     Coche ecologico        94         8      Binary     Longest        84         3        84     45.49    656.01
+                                                          Middle        86         2        86     47.32    663.38
+                                                        Shortest        89         2        89     47.80    701.24
+                                          LeafBinary     Longest        64         3        67     48.69    628.56
+                                                          Middle        64         3        66     51.30    488.10
+                                                        Shortest        64         3        66     55.40    278.30
+                                          RootBinary     Longest        90         3        90     46.86    698.27
+                                                          Middle        93         3        93     47.94    713.29
+                                                        Shortest        94         2        94     48.00    720.67
+                                          LeafLinear     Longest        64         2        64     25.25    356.38
+                                                          Middle        64         2        64     29.13    360.84
+                                                        Shortest        64         2        64     33.72    333.19
+                                          RootLinear     Longest        94         2        94     48.00    720.67
+                                                          Middle        94         2        94     48.00    720.67
+                                                        Shortest        94         2        94     48.00    720.67
+
+ Electronic Shopping       290        12      Binary     Longest       259         3       259    137.25   6464.81
+                                                          Middle       267         3       267    143.67   6604.84
+                                                        Shortest       273         2       273    144.53   6681.64
+                                          LeafBinary     Longest       194         4       198    145.88   6050.37
+                                                          Middle       194         3       197    154.10   4721.66
+                                                        Shortest       194         3       196    165.47   2789.71
+                                          RootBinary     Longest       270         4       270    140.39   6686.38
+                                                          Middle       284         3       284    144.81   6897.75
+                                                        Shortest       287         3       287    145.91   6933.23
+                                          LeafLinear     Longest       194         2       194     72.16   3485.10
+                                                          Middle       194         2       194     87.39   3593.48
+                                                        Shortest       194         2       194    100.41   3217.03
+                                          RootLinear     Longest       290         2       290    146.00   6960.00
+                                                          Middle       290         2       290    146.00   6960.00
+                                                        Shortest       290         2       290    146.00   6960.00
+
+ 
+2011-08-30 21:44:04,184   main.TestFrame INFO      START: (3) Feature Models 
+2011-08-30 21:44:27,897   main.TestFrame INFO  Result:
+
+       Feature Model  Feature# Max Level Path Search Path Select     0D_CC 1D_CC_MIN 1D_CC_MAX 1D_CC_AVG 1D_CC_VAR
+-----------------------------------------------------------------------------
+        Video Player        53         5      Binary     Longest        47         2        47     26.13     14.14
+                                                          Middle        47         2        47     26.81     13.91
+                                                        Shortest        47         2        47     26.81     14.01
+                                          LeafBinary     Longest        33         3        36     24.77     12.58
+                                                          Middle        33         3        35     27.00     10.80
+                                                        Shortest        33         3        35     28.79      8.74
+                                          RootBinary     Longest        51         3        51     27.40     14.74
+                                                          Middle        51         3        51     27.40     14.78
+                                                        Shortest        52         2        52     27.46     14.94
+                                          LeafLinear     Longest        33         2        33     13.56      8.99
+                                                          Middle        33         2        33     16.17      9.67
+                                                        Shortest        33         2        33     18.56      9.78
+                                          RootLinear     Longest        53         2        53     27.50     15.01
+                                                          Middle        53         2        53     27.50     15.01
+                                                        Shortest        53         2        53     27.50     15.01
+
+     Coche ecologico        94         8      Binary     Longest        84         3        84     45.49     25.61
+                                                          Middle        86         2        86     47.32     25.76
+                                                        Shortest        89         2        89     47.80     26.48
+                                          LeafBinary     Longest        64         3        67     48.69     25.07
+                                                          Middle        64         3        66     51.30     22.09
+                                                        Shortest        64         3        66     55.40     16.68
+                                          RootBinary     Longest        90         3        90     46.86     26.42
+                                                          Middle        93         3        93     47.94     26.71
+                                                        Shortest        94         2        94     48.00     26.85
+                                          LeafLinear     Longest        64         2        64     25.25     18.88
+                                                          Middle        64         2        64     29.13     19.00
+                                                        Shortest        64         2        64     33.72     18.25
+                                          RootLinear     Longest        94         2        94     48.00     26.85
+                                                          Middle        94         2        94     48.00     26.85
+                                                        Shortest        94         2        94     48.00     26.85
+
+ Electronic Shopping       290        12      Binary     Longest       259         3       259    137.25     80.40
+                                                          Middle       267         3       267    143.67     81.27
+                                                        Shortest       273         2       273    144.53     81.74
+                                          LeafBinary     Longest       194         4       198    145.88     77.78
+                                                          Middle       194         3       197    154.10     68.71
+                                                        Shortest       194         3       196    165.47     52.82
+                                          RootBinary     Longest       270         4       270    140.39     81.77
+                                                          Middle       284         3       284    144.81     83.05
+                                                        Shortest       287         3       287    145.91     83.27
+                                          LeafLinear     Longest       194         2       194     72.16     59.03
+                                                          Middle       194         2       194     87.39     59.95
+                                                        Shortest       194         2       194    100.41     56.72
+                                          RootLinear     Longest       290         2       290    146.00     83.43
+                                                          Middle       290         2       290    146.00     83.43
+                                                        Shortest       290         2       290    146.00     83.43
+
+ 
+2011-08-30 22:14:17,940   main.TestFrame INFO      START: (3) Feature Models 
+2011-08-30 22:14:41,937   main.TestFrame INFO  Result:
+
+       Feature Model  Feature# Max Level Path Search Path Select     0D_CC    1D_CC_MIN    1D_CC_MAX    1D_CC_AVG    1D_CC_VAR
+-----------------------------------------------------------------------------
+        Video Player        53         5      Binary     Longest        47            2           47        26.13        14.14
+                                                          Middle        47            2           47        26.81        13.91
+                                                        Shortest        47            2           47        26.81        14.01
+                                          LeafBinary     Longest        33            3           36        24.77        12.58
+                                                          Middle        33            3           35        27.00        10.80
+                                                        Shortest        33            3           35        28.79         8.74
+                                          RootBinary     Longest        51            3           51        27.40        14.74
+                                                          Middle        51            3           51        27.40        14.78
+                                                        Shortest        52            2           52        27.46        14.94
+                                          LeafLinear     Longest        33            2           33        13.56         8.99
+                                                          Middle        33            2           33        16.17         9.67
+                                                        Shortest        33            2           33        18.56         9.78
+                                          RootLinear     Longest        53            2           53        27.50        15.01
+                                                          Middle        53            2           53        27.50        15.01
+                                                        Shortest        53            2           53        27.50        15.01
+
+     Coche ecologico        94         8      Binary     Longest        84            3           84        45.49        25.61
+                                                          Middle        86            2           86        47.32        25.76
+                                                        Shortest        89            2           89        47.80        26.48
+                                          LeafBinary     Longest        64            3           67        48.69        25.07
+                                                          Middle        64            3           66        51.30        22.09
+                                                        Shortest        64            3           66        55.40        16.68
+                                          RootBinary     Longest        90            3           90        46.86        26.42
+                                                          Middle        93            3           93        47.94        26.71
+                                                        Shortest        94            2           94        48.00        26.85
+                                          LeafLinear     Longest        64            2           64        25.25        18.88
+                                                          Middle        64            2           64        29.13        19.00
+                                                        Shortest        64            2           64        33.72        18.25
+                                          RootLinear     Longest        94            2           94        48.00        26.85
+                                                          Middle        94            2           94        48.00        26.85
+                                                        Shortest        94            2           94        48.00        26.85
+
+ Electronic Shopping       290        12      Binary     Longest       259            3          259       137.25        80.40
+                                                          Middle       267            3          267       143.67        81.27
+                                                        Shortest       273            2          273       144.53        81.74
+                                          LeafBinary     Longest       194            4          198       145.88        77.78
+                                                          Middle       194            3          197       154.10        68.71
+                                                        Shortest       194            3          196       165.47        52.82
+                                          RootBinary     Longest       270            4          270       140.39        81.77
+                                                          Middle       284            3          284       144.81        83.05
+                                                        Shortest       287            3          287       145.91        83.27
+                                          LeafLinear     Longest       194            2          194        72.16        59.03
+                                                          Middle       194            2          194        87.39        59.95
+                                                        Shortest       194            2          194       100.41        56.72
+                                          RootLinear     Longest       290            2          290       146.00        83.43
+                                                          Middle       290            2          290       146.00        83.43
+                                                        Shortest       290            2          290       146.00        83.43
+
+ 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">   
+
+<log4j:configuration xmlns:log4j='http://jakarta.apache.org/log4j/' >
+    <!-- for debug -->
+    <appender name="F" class="org.apache.log4j.DailyRollingFileAppender">
+    		<param name="Encoding" value="UTF-8" />
+    		<param name="Append" value="true"/>
+    		<param name="DatePattern" value=".yyyy-MM-dd"/>
+    		<param name="Threshold" value="INFO"/>
+    		<param name="File" value="log/data.log"/>
+    		<layout class="org.apache.log4j.PatternLayout">
+    			<param name="ConversionPattern" value="%-25d %c %-5p %m %n"/>
+    		</layout>
+    </appender>   
+    
+    <appender name="F2" class="org.apache.log4j.DailyRollingFileAppender">
+    		<param name="Encoding" value="UTF-8" />
+    		<param name="Append" value="true"/>
+    		<param name="DatePattern" value=".yyyy-MM-dd"/>
+    		<param name="Threshold" value="DEBUG"/>
+    		<param name="File" value="log/debug.log"/>
+    		<layout class="org.apache.log4j.PatternLayout">
+    			<param name="ConversionPattern" value="%-25d %c %-5p %m %n"/>
+    		</layout>
+    </appender>  
+    
+    <appender name="STDOUT" class="org.apache.log4j.ConsoleAppender">
+    	<param name="Encoding" value="UTF-8" />
+    	<param name="Threshold" value="INFO"/>
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%m %n"/>
+		</layout>
+	</appender>   
+	           
+    <root>   
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="F"/>   
+        <appender-ref ref="F2"/>   
+    </root>   
+</log4j:configuration>
