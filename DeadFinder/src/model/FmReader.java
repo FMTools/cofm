@@ -111,6 +111,7 @@ public class FmReader {
 			
 			fm.setNumFeatures(nextId);
 			fm.setNumLevels(maxLevel + 1);
+			in.close();
 			return fm;
 			
 		} catch (FileNotFoundException e) {
