@@ -14,6 +14,10 @@ import model.FmReader;
 public class PathSet implements Iterable<Path> {
 	
 	private List<Feature> roots = new ArrayList<Feature>();
+	private List<Path> paths = new ArrayList<Path>();
+
+	private Path shortest;
+	private Path longest;
 
 	public PathSet(FeatureModel fm) {
 		roots.add(fm.getRoot());
@@ -30,7 +34,7 @@ public class PathSet implements Iterable<Path> {
 	public void cutNodesInPath(Path path) {
 		// The children of ALIVE nodes in the path become new roots.
 		for (Feature node: path.getNodes()) {
-			if (!node.isDead()) {
+			if (node.getDead() == Feature.ALIVE) {
 				roots.addAll(node.getChildren());
 			}
 		}
@@ -61,20 +65,33 @@ public class PathSet implements Iterable<Path> {
 		return sb.toString();
 	}
 	
-	public static void main(String[] args) {
-		// Test path iterator
-		FeatureModel fm = new FmReader().readFromSplot("290.xml");
-		fm.initOneDeadStructure();
-		fm.nextOneDeadStructure();
+	public void enumeratePaths() {
+		longest = null;
+		shortest = null;
+		paths.clear();
 		
-		System.out.println(fm.toString());
-		PathSet paths = new PathSet(fm);
-		System.out.println(paths.toString());
-		
-		PathIterator i = (PathIterator) paths.iterator();
-		Path p = i.next();
-		System.out.println("Cut by path: " + p.toString());
-		paths.cutNodesInPath(p);
-		System.out.println(paths.toString());
+		PathIterator i = (PathIterator) this.iterator();
+		while (i.hasNext()) {
+			Path cur = i.next();
+			paths.add(cur);
+			if (longest == null || longest.length() < cur.length()) {
+				longest = cur;
+			}
+			if (shortest == null || shortest.length() > cur.length()) {
+				shortest = cur;
+			}
+		}
+	}
+	
+	public List<Path> getPaths() {
+		return paths;
+	}
+
+	public Path getShortest() {
+		return shortest;
+	}
+
+	public Path getLongest() {
+		return longest;
 	}
 }

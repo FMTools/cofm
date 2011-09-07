@@ -10,8 +10,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -22,6 +24,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import util.InvalidFmFormatException;
 import util.StructureChangedException;
 
 public class FmReader {
@@ -32,9 +35,10 @@ public class FmReader {
 		public int level;
 		public int kind;
 		public String name;
+		public String refName;  // used in constraints definition
 		
 		public String toString() {
-			return level + " " + kind + " " + name;
+			return level + " " + kind + " " + name + " (" + refName + ")";
 		}
 	}
 	
@@ -42,8 +46,14 @@ public class FmReader {
 	private static final int GROUP_INDICATOR = 2;
 	private static final int GROUPED_FEATURE = 3;
 	
-	private int nextId = 0;
+	private int nextId = 1;
 	private List<Integer> groupLevels = new ArrayList<Integer>();
+	private Map<String, Feature> refMap = new HashMap<String, Feature>();
+	
+	public static void main(String[] args) {
+		FeatureModel fm = new FmReader().readFromSplot("290.xml");
+		logger.info(fm.toString());
+	}
 	
 	public FeatureModel readFromSplot(String splotXmlFile) {
 		try {
@@ -53,7 +63,7 @@ public class FmReader {
 			groupLevels.clear();
 			int maxLevel = 0;
 			String s;
-			boolean readingTree = false;
+			boolean readingTree = false, readingConstraints = false;
 			int lastLevel = 0;
 			Feature lastFeature = null;
 			while ((s = in.readLine()) != null) {
@@ -64,54 +74,62 @@ public class FmReader {
 					continue;
 				} else if (s.startsWith("</feature_tree>")) {
 					readingTree = false;
-				}
-				
-				if (!readingTree) {
+				} else if (s.startsWith("<constraints>")) {
+					readingConstraints = true;
 					continue;
+				} else if (s.startsWith("</constraints>")) {
+					readingConstraints = false;
 				}
 				
-				// Parse feature tree node
-				TreeNodeInfo info = parseTreeNode(s);
-				if (info.level > maxLevel) {
-					maxLevel = info.level;
-				}
-				
-				//logger.info(s + " -- " + info.toString());
-				
-				// We skip all group indicator
-				if (info.kind == GROUP_INDICATOR) {
-					continue;
-				}
-				
-				Feature feature = new Feature(nextId++, info.name);
-				
-				if (info.level == 0) { 
-					// Is a root
-					fm.setRoot(feature);
-				} else if (lastLevel < info.level) {
-					// Is a child of last feature
-					lastFeature.addChild(feature);
-				} else if (lastLevel == info.level) {
-					// Is a sibling of last feature
-					lastFeature.getParent().addChild(feature);
-				} else if (lastLevel > info.level) {
-//					System.out.println("Cur = " + feature.getName() + " (" + info.level + "),"
-//							+ " Last = " + lastFeature.getName() + " (" + lastLevel + ")");
-					// Find current feature's parent
-					while (lastLevel-- >= info.level) {
-						lastFeature = lastFeature.getParent();
-//						System.out.println("--> " + (lastFeature == null ? "null" : lastFeature.getName()));
+				if (readingTree) {
+					// Parse feature tree node
+					TreeNodeInfo info = parseTreeNode(s);
+					if (info.level > maxLevel) {
+						maxLevel = info.level;
 					}
 					
-					lastFeature.addChild(feature);
+					//logger.info(s + " -- " + info.toString());
+					
+					// We skip all group indicator
+					if (info.kind == GROUP_INDICATOR) {
+						continue;
+					}
+					
+					Feature feature = new Feature(nextId++, info.name);
+					refMap.put(info.refName, feature);
+					
+					if (info.level == 0) { 
+						// Is a root
+						fm.setRoot(feature);
+					} else if (lastLevel < info.level) {
+						// Is a child of last feature
+						lastFeature.addChild(feature);
+					} else if (lastLevel == info.level) {
+						// Is a sibling of last feature
+						lastFeature.getParent().addChild(feature);
+					} else if (lastLevel > info.level) {
+	//					System.out.println("Cur = " + feature.getName() + " (" + info.level + "),"
+	//							+ " Last = " + lastFeature.getName() + " (" + lastLevel + ")");
+						// Find current feature's parent
+						while (lastLevel-- >= info.level) {
+							lastFeature = lastFeature.getParent();
+	//						System.out.println("--> " + (lastFeature == null ? "null" : lastFeature.getName()));
+						}
+						
+						lastFeature.addChild(feature);
+					}
+					lastLevel = info.level;
+					lastFeature = feature;
+				} else if (readingConstraints) {
+					parseConstraint(fm, s);
 				}
-				lastLevel = info.level;
-				lastFeature = feature;
 			}
+			in.close();
 			
 			fm.setNumFeatures(nextId);
 			fm.setNumLevels(maxLevel + 1);
-			in.close();
+			fm.calcAvgHeight();
+			
 			return fm;
 			
 		} catch (FileNotFoundException e) {
@@ -120,7 +138,25 @@ public class FmReader {
 		} catch (IOException e) {
 			logger.error("Read SPLOT file failed.", e);
 			return null;
-		} 
+		} catch (InvalidFmFormatException e) {
+			logger.error("Invalid FM format.", e);
+			return null;
+		}
+	}
+
+	private void parseConstraint(FeatureModel fm, String s) {
+		// Skip text before first ":"
+		int begin = s.indexOf(":");
+		String[] parts = s.substring(begin+1).split(" or ");
+		Clause c = new Clause();
+		for (String part: parts) {
+			if (part.charAt(0) == '~') {
+				c.addUnit(false, refMap.get(part.substring(1)));
+			} else {
+				c.addUnit(true, refMap.get(part));
+			}
+		}
+		fm.addConstraint(c);
 	}
 
 	private String extractModelName(String s) {
@@ -178,6 +214,12 @@ public class FmReader {
 			info.name = s.substring(begin, end);
 		} else {
 			info.name = s.substring(begin);
+		}
+		
+		// 4. refName = text between last "(" and ")"
+		int right = s.lastIndexOf(")");
+		if (right > end && end >= 0) {
+			info.refName = s.substring(end + 1, right);
 		}
 		
 		return info;

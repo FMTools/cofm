@@ -7,14 +7,45 @@ import util.StructureChangedException;
 
 public class Feature {
 	
+	public static final int DEAD = 0;
+	public static final int ALIVE = 1;
+	public static final int UNKNOWN = -1;
+	
+	private FeatureModel fm;
+	
 	private int id;
-	private boolean dead = false;
+	private int dead = UNKNOWN;
 	private String name;
 	
 	private int state;
 	
+	private int traverseIndex;
+	
 	private Feature parent = null;
 	private List<Feature> children = new ArrayList<Feature>();
+	
+	public Feature(FeatureModel fm) {
+		this.fm = fm;
+	}
+	
+	public boolean isDead() {
+		return this.getFm().getChecker().isDead(this);
+	}
+	
+	@Override
+	public boolean equals(Object that) {
+		if (this == null || that == null) {
+			return false;
+		}
+		if (this == that) {
+			return true;
+		}
+		if (!(that instanceof Feature)) {
+			return false;
+		}
+		Feature f = (Feature) that;
+		return this.getId() == f.getId();
+	}
 	
 	public Feature(int id, String name) {
 		this.id = id;
@@ -30,7 +61,23 @@ public class Feature {
 		child.setParent(this);
 	}
 	
-	public void setDead(boolean dead) {
+	public boolean isDescendantOf(Feature another) {
+		if (this == another) {
+			return true;
+		}
+		for (Feature f = this; f != null; f = f.getParent()) {
+			if (f == another) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public int getDead() {
+		return this.dead;
+	}
+	
+	public void setDead(int dead) {
 		this.dead = dead;
 	}
 	
@@ -39,9 +86,6 @@ public class Feature {
 	}
 	public void setId(int id) {
 		this.id = id;
-	}
-	public boolean isDead() {
-		return dead;
 	}
 	
 	public String getName() {
@@ -69,6 +113,18 @@ public class Feature {
 
 	public int getState() {
 		return state;
+	}
+
+	public void setTraverseIndex(int traverseIndex) {
+		this.traverseIndex = traverseIndex;
+	}
+
+	public int getTraverseIndex() {
+		return traverseIndex;
+	}
+
+	public FeatureModel getFm() {
+		return fm;
 	}
 
 }

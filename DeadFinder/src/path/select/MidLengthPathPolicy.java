@@ -16,17 +16,9 @@ public class MidLengthPathPolicy implements PathSelectPolicy {
 		return "Middle";
 	}
 	
-	private List<Path> paths = new ArrayList<Path>();
-	
 	@Override
 	public Path selectPath(PathSet pathSet) {
-		paths.clear();
-		PathIterator i = (PathIterator) pathSet.iterator();
-		while (i.hasNext()) {
-			paths.add(i.next());
-		}
-		
-		Collections.sort(paths, new Comparator<Path>() {
+		Collections.sort(pathSet.getPaths(), new Comparator<Path>() {
 
 			@Override
 			public int compare(Path arg0, Path arg1) {
@@ -35,7 +27,7 @@ public class MidLengthPathPolicy implements PathSelectPolicy {
 			
 		});
 		
-		return paths.get((paths.size() - 1)/ 2);
+		return pathSet.getPaths().get((pathSet.getPaths().size() - 1)/ 2);
 	}
 
 }

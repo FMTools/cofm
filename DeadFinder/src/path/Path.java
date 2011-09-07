@@ -13,6 +13,23 @@ public class Path {
 		return nodes.size();
 	}
 	
+	public void updateByDead(Feature dead) {
+		boolean deadAppeared = false;
+		for (int i = 0; i < nodes.size(); i++) {
+			Feature f = nodes.get(i);
+			if (deadAppeared) {
+				f.setDead(Feature.DEAD);
+			} else {
+				if (dead != null && f.equals(dead)) {
+					f.setDead(Feature.DEAD);
+					deadAppeared = true;
+				} else {
+					f.setDead(Feature.ALIVE);
+				}
+			}
+		}
+	}
+	
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < nodes.size() - 1; i++) {
@@ -37,5 +54,5 @@ public class Path {
 	public List<Feature> getNodes() {
 		return nodes;
 	}
-	
+
 }
