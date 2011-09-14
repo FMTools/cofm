@@ -8,6 +8,9 @@ import cofm.sim.limiter.Limiter;
 
 public interface Pool {
 	void addAgent(Agent agent);
+	void addToTracker(Agent agent);
+	List<Agent> getTracker();
+	
 	int numAgent();
 	
 	void setLimiter(Limiter limiter);

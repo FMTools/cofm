@@ -1,23 +1,23 @@
 # Limiter: OFF or [Limiter class name], Element Risk Policy to use: [class name] [parameters], Risk Share Policy to use: [class name]
 LIMITER OFF
-#LIMITER cofm.sim.limiter.risk.RiskLimiter 15.0 cofm.sim.limiter.risk.ExpRiskPolicy 0.6 2 cofm.sim.limiter.risk.EqualSharePolicy
+#LIMITER cofm.sim.limiter.risk.RiskLimiter 5.0 cofm.sim.limiter.risk.ExpRiskPolicy 0.6 2 cofm.sim.limiter.risk.EqualSharePolicy
 # LIMITER cofm.sim.limiter.risk.RiskLimiter 5.0 cofm.sim.limiter.risk.RectRiskPolicy 0.6 2 cofm.sim.limiter.risk.EqualDiffSharePolicy
 # LIMITER cofm.sim.limiter.risk.RiskLimiter 5.0 cofm.sim.limiter.risk.LinearRiskPolicy 0.6 2 cofm.sim.limiter.risk.EqualSharePolicy
 
 
-# Agent number & traits
-#[Number] [Morality (min, max)] [Talent (min, max)] [Create] [Select] [SelectionPolicy class name] [parameter]
-# 5 Experts (very high morality and talent, balanced creating and selecting)
-AGENT 5 0.9 1.0 0.9 1.0 0.4 0.6 cofm.sim.agent.behavior.RatingFirstPolicy 0.5
+# Agent name, number & traits
+# [Name] [Number] [Rating (min, max)][Create] [Select] [SelectionPolicy class name] [parameter]
+# 5 Experts (very high rating, balanced creating and selecting)
+AGENT Expert 5 0.9 1.0 0.4 0.6 cofm.sim.agent.behavior.RatingFirstPolicy 0.5
 
-# 5 Bad Guys (very low morality, LOW tend to select, HIGH tend to create)
-AGENT 5 0.0 0.2 0.0 1.0 0.7 0.9 cofm.sim.agent.behavior.BadRatingFirstPolicy 0.2
+# 5 Bad Guys (very low rating, LOW tend to select, HIGH tend to create)
+AGENT Bad_Guy 5 0.0 0.1 0.7 0.9 cofm.sim.agent.behavior.BadRatingFirstPolicy 0.1
 
-# 45 Normal Guys (normal morality and talent, MORE selecting, Rating First)
-AGENT 45 0.5 1.0 0.4 0.8 0.3 0.5 cofm.sim.agent.behavior.RatingFirstPolicy 0.2
+# 45 Normal Guys (normal rating, MORE selecting, Rating First > Bad Guys' best rating)
+AGENT Normal 45 0.11 0.89 0.3 0.5 cofm.sim.agent.behavior.RatingFirstPolicy 0.1
 
-# 45 Normal Guys (the same as above but use Popularity First Policy)
-AGENT 45 0.5 1.0 0.4 0.8 0.3 0.5 cofm.sim.agent.behavior.PopularityFirstPolicy 0.5
+# 45 Normal Guys (the same as above but use Popularity First Policy > Bad Guys' proportion)
+AGENT Normal 45 0.11 0.89 0.3 0.5 cofm.sim.agent.behavior.PopularityFirstPolicy 0.05
 
 # End condition
 # END cofm.sim.pool.EndByPoolSize 1000

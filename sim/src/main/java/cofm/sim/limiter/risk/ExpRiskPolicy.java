@@ -9,7 +9,7 @@ public class ExpRiskPolicy extends ElementRiskPolicy {
 	}
 
 	@Override
-	public double calcRisk(int numSelectors, int totalNumOfAgents) {
+	protected double doCalc(int numSelectors, int totalNumOfAgents) {
 		double p = 1.0 * numSelectors / totalNumOfAgents;
 		if (p == 0.0) {
 			return ElementRiskPolicy.INITIAL_RISK;

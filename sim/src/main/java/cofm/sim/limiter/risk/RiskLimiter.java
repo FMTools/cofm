@@ -1,12 +1,14 @@
 package cofm.sim.limiter.risk;
 
+import java.util.Collection;
+
 import cofm.sim.action.Action;
 import cofm.sim.action.Creation;
 import cofm.sim.action.Selection;
 import cofm.sim.action.Waiting;
 import cofm.sim.agent.Agent;
 import cofm.sim.element.Element;
-import cofm.sim.limiter.AbstractLimiter;
+import cofm.sim.limiter.*;
 import cofm.sim.pool.Pool;
 
 public class RiskLimiter extends AbstractLimiter {
@@ -18,6 +20,9 @@ public class RiskLimiter extends AbstractLimiter {
 		public double value;
 		public Risk(double value) {
 			this.value = value;
+		}
+		public String toString() {
+			return "Risk=" + String.format("%.3f", value);
 		}
 	}
 	
@@ -62,19 +67,32 @@ public class RiskLimiter extends AbstractLimiter {
 			Risk risk = (Risk) li;
 			risk.value += ElementRiskPolicy.INITIAL_RISK;
 		} else if (action instanceof Selection) {
-			int numSelectors = action.target().getSelectors().size();
-			double totalRisk = elemRisk.calcRisk(numSelectors, pool.numAgent());
+			int numSelectorsNow = action.target().getSelectors().size();
+			double totalRiskNow = elemRisk.calcRisk(numSelectorsNow, pool.numAgent());
+			double totalRiskBefore = elemRisk.calcRisk(numSelectorsNow - 1, pool.numAgent());
 			
 			// The creator (the "0th" selector)
 			Risk cr = (Risk) info.get(action.target().getCreator());
-			cr.value += share.calcProportion(0, numSelectors) * totalRisk;
+			cr.value += deltaRiskOfSelector(0, numSelectorsNow, totalRiskNow, totalRiskBefore);
 			
 			// The selectors
 			for (int i = 0; i < action.target().getSelectors().size(); i++) {
 				Risk cs = (Risk) info.get(action.target().getSelectors().get(i));
-				cs.value += share.calcProportion(i+1, numSelectors) * totalRisk; 
+				cs.value += deltaRiskOfSelector(i+1, numSelectorsNow, totalRiskNow, totalRiskBefore); 
 			}
 		}
+	}
+
+	protected double deltaRiskOfSelector(int index, int numSelectorsNow, 
+			double totalRiskNow, double totalRiskBefore) {
+		if (index == numSelectorsNow) {
+			// "Before" == 0, just return "Now"
+			return share.calcProportion(index, numSelectorsNow) * totalRiskNow;
+		}
+		// return "Now" - "Before"
+		int numSelectorsBefore = numSelectorsNow - 1;
+		return share.calcProportion(index, numSelectorsNow) * totalRiskNow -
+			share.calcProportion(index, numSelectorsBefore) * totalRiskBefore;
 	}
 
 }

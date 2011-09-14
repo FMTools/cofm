@@ -15,10 +15,8 @@ import cofm.sim.pool.Pool;
 
 public class CofmAgent extends AbstractAgent {
 
-	protected double minMorality; // 0 to 1
-	protected double minTalent; // 0 to 1
-	protected double maxMorality;
-	protected double maxTalent;
+	protected double minRating; // 0 to 1
+	protected double maxRating;
 	
 	// Action preference: [0, probCreate] = create, [probSelect, 1] = select, other = wait
 	protected double probCreate;
@@ -29,14 +27,12 @@ public class CofmAgent extends AbstractAgent {
 	protected SelectionPolicy selectionPolicy;
 	
 	public CofmAgent(Pool pool, Limiter limiter, Integer id, 
-			Double minMorality, Double maxMorality, Double minTalent, Double maxTalent,
+			Double minRating, Double maxRating,
 			Double probCreate, Double probSelect, SelectionPolicy sp) {
 		super(pool, limiter, id);
 		
-		this.minMorality = minMorality;
-		this.minTalent = minTalent;
-		this.maxMorality = maxMorality;
-		this.maxTalent = maxTalent;
+		this.minRating = minRating;
+		this.maxRating = maxRating;
 		
 		this.probCreate = probCreate;
 		this.probSelect = probSelect;
@@ -69,9 +65,7 @@ public class CofmAgent extends AbstractAgent {
 	}
 	
 	protected Element createElement() {
-		double morality = genRandomIn(minMorality, maxMorality);
-		double talent = genRandomIn(minTalent, maxTalent);
-		return new FmElement(this, morality * talent);
+		return new FmElement(this, genRandomIn(minRating, maxRating));
 	}
 
 	protected Action trySelection() {

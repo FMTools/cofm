@@ -7,7 +7,7 @@ public class RectRiskPolicy extends ElementRiskPolicy {
 	}
 
 	@Override
-	public double calcRisk(int numSelectors, int totalNumOfAgents) {
+	protected double doCalc(int numSelectors, int totalNumOfAgents) {
 		if (numSelectors * 1.0 / totalNumOfAgents < thresh) {
 			return ElementRiskPolicy.INITIAL_RISK;
 		}

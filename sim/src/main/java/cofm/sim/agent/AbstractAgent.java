@@ -12,6 +12,8 @@ public abstract class AbstractAgent implements Agent {
 	protected Action lastAction;
 	protected Action lastFailedAction;
 	
+	protected String name; // optional
+	
 	public AbstractAgent(Pool pool, Limiter limiter, int id) {
 		this.id = id;
 		lastAction = null;
@@ -20,6 +22,18 @@ public abstract class AbstractAgent implements Agent {
 		this.pool = pool;
 		pool.addAgent(this);
 		limiter.addAgent(this);
+	}
+	
+	public Action getLastAction() {
+		return lastAction;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	public void executeAction() {

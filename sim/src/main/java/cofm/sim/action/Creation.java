@@ -10,6 +10,10 @@ public class Creation extends AbstractAction {
 		super(p, e);
 	}
 	
+	public String toString() {
+		return "CREATE";
+	}
+	
 	public void execute() {
 		pool.addElement(element);
 	}

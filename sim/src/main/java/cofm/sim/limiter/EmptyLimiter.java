@@ -17,4 +17,8 @@ public class EmptyLimiter implements Limiter {
 		// do nothing
 	}
 
+	public LimiterInfo getAgentInfo(Agent agent) {
+		return null;
+	}
+
 }

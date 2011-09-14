@@ -8,6 +8,10 @@ public class Waiting implements Action {
 		// Do nothing
 	}
 
+	public String toString() {
+		return "WAIT";
+	}
+	
 	public Element target() {
 		return null;
 	}

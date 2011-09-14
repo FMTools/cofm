@@ -23,10 +23,10 @@ public class RatingFirstPolicy implements SelectionPolicy {
 			return null;
 		}
 		Element e = elements.get(index--);
-		if (e.rating() < lowestRating) {
-			return null;
-		}
-		return e;
+		if (e.rating() > lowestRating) {
+			return e;
+		} 
+		return null;
 	}
 	
 	public void loadElements(List<Element> data) {

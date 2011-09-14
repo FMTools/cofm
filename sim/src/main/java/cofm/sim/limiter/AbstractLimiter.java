@@ -5,14 +5,11 @@ import java.util.Map;
 
 import cofm.sim.action.Action;
 import cofm.sim.agent.Agent;
+import cofm.sim.limiter.Limiter.LimiterInfo;
 import cofm.sim.pool.Pool;
 
 public abstract class AbstractLimiter implements Limiter {
 
-	protected interface LimiterInfo {
-		
-	}
-	
 	protected Pool pool;
 	protected Map<Agent, LimiterInfo> info = new HashMap<Agent, LimiterInfo>();
 	
@@ -23,6 +20,10 @@ public abstract class AbstractLimiter implements Limiter {
 	
 	public void addAgent(Agent agent) {
 		info.put(agent, initLimiterInfo(agent));
+	}
+	
+	public LimiterInfo getAgentInfo(Agent agent) {
+		return info.get(agent);
 	}
 	
 	abstract protected LimiterInfo initLimiterInfo(Agent agent);

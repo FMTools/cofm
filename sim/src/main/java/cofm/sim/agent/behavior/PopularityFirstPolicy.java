@@ -36,10 +36,10 @@ public class PopularityFirstPolicy implements SelectionPolicy {
 			return null;
 		}
 		Element e = elements.get(index--);
-		if (e.getSelectors().size() * 1.0 / pool.numAgent() < leastPopularity) {
-			return null;
+		if (e.getSelectors().size() * 1.0 / pool.numAgent() > leastPopularity) {
+			return e;
 		}
-		return e;
+		return null;
 	}
 
 }

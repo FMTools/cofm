@@ -14,6 +14,10 @@ public class Selection extends AbstractAction {
 		this.agent = agent;
 	}
 
+	public String toString() {
+		return "SELECT";
+	}
+	
 	public void execute() {
 		element.getSelectors().add(agent);
 	}

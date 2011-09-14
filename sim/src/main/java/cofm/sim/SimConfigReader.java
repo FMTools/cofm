@@ -93,12 +93,12 @@ public class SimConfigReader {
 		String[] parts = s.split(" ");
 		int i = 1;
 		
+		String name = parts[i++];
+		
 		int num = Integer.valueOf(parts[i++]);
 		
-		double minMoral = Double.valueOf(parts[i++]);
-		double maxMoral = Double.valueOf(parts[i++]);
-		double minTalent = Double.valueOf(parts[i++]);
-		double maxTalent = Double.valueOf(parts[i++]);
+		double minRating = Double.valueOf(parts[i++]);
+		double maxRating = Double.valueOf(parts[i++]);
 		double probCreate = Double.valueOf(parts[i++]);
 		double probSelect = Double.valueOf(parts[i++]);
 		
@@ -112,9 +112,13 @@ public class SimConfigReader {
 			SelectionPolicy sp = (SelectionPolicy) spctor.newInstance(pool, par);
 			
 			for (int j = 0; j < num; j++) {
-				new CofmAgent(pool, limiter, beginId++, 
-						minMoral, maxMoral, minTalent, maxTalent,
+				Agent agent = new CofmAgent(pool, limiter, beginId++, 
+						minRating, maxRating,
 						probCreate, probSelect, sp);
+				if (j == 0) { // Add an agent to the tracker
+					((CofmAgent) agent).setName(name);
+					pool.addToTracker(agent);
+				}
 			}
 		} catch (Exception e) {
 			logger.warn("Fail to create Selection Policy.", e);

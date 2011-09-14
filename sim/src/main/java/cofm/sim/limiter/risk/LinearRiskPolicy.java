@@ -7,7 +7,7 @@ public class LinearRiskPolicy extends ElementRiskPolicy {
 	}
 
 	@Override
-	public double calcRisk(int numSelectors, int totalNumOfAgents) {
+	protected double doCalc(int numSelectors, int totalNumOfAgents) {
 		double p = numSelectors * 1.0 / totalNumOfAgents;
 		double r = -1 * p / thresh + 1;
 		if (r < 0.0) {
