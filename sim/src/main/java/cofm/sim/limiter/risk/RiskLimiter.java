@@ -1,11 +1,8 @@
 package cofm.sim.limiter.risk;
 
-import java.util.Collection;
+import java.util.Map.Entry;
 
-import cofm.sim.action.Action;
-import cofm.sim.action.Creation;
-import cofm.sim.action.Selection;
-import cofm.sim.action.Waiting;
+import cofm.sim.action.*;
 import cofm.sim.agent.Agent;
 import cofm.sim.element.Element;
 import cofm.sim.limiter.*;
@@ -41,7 +38,7 @@ public class RiskLimiter extends AbstractLimiter {
 	}
 
 	public boolean isValidAction(Agent owner, Action action) {
-		if (action instanceof Waiting) {
+		if (action instanceof Waiting || action instanceof Deselect) {
 			return true;
 		}
 		
@@ -66,33 +63,95 @@ public class RiskLimiter extends AbstractLimiter {
 			LimiterInfo li = info.get(owner);
 			Risk risk = (Risk) li;
 			risk.value += ElementRiskPolicy.INITIAL_RISK;
-		} else if (action instanceof Selection) {
+		} else {
+			int totalNumOfAgents = pool.numAgent();
 			int numSelectorsNow = action.target().getSelectors().size();
-			double totalRiskNow = elemRisk.calcRisk(numSelectorsNow, pool.numAgent());
-			double totalRiskBefore = elemRisk.calcRisk(numSelectorsNow - 1, pool.numAgent());
+			int numSelectorsBefore = 0;
+			
+			if (action instanceof Selection) {
+				numSelectorsBefore = numSelectorsNow - 1;
+				
+				// The selectors
+				for (int i = 0; i < numSelectorsNow; i++) {
+					Risk cs = (Risk) info.get(action.target().getSelectors().get(i));
+					cs.value += deltaRiskOfSelector(i+1, i+1, numSelectorsNow, numSelectorsBefore, totalNumOfAgents); 
+				}
+				
+			} else if (action instanceof Deselect) {
+				numSelectorsBefore = numSelectorsNow + 1;
+				
+				// The de-selector
+				Risk dsr = (Risk) info.get(owner);
+				int index = ((Deselect) action).getSelectorIndex();
+				dsr.value += deltaRiskOfSelector(-1, index, numSelectorsNow, numSelectorsBefore, totalNumOfAgents);
+				
+				// The selectors in front of the de-selector
+				for (int i = 0; i < index; i++) {
+					Risk sr1 = (Risk) info.get(action.target().getSelectors().get(i));
+					sr1.value += deltaRiskOfSelector(i+1, i+1, numSelectorsNow, numSelectorsBefore, totalNumOfAgents);
+				}
+				
+				// The selectors after the de-selector
+				for (int j = index; j < numSelectorsNow; j++) {
+					Risk sr2 = (Risk) info.get(action.target().getSelectors().get(j));
+					sr2.value += deltaRiskOfSelector(j+1, j+2, numSelectorsNow, numSelectorsBefore, totalNumOfAgents);
+				}
+			}
 			
 			// The creator (the "0th" selector)
 			Risk cr = (Risk) info.get(action.target().getCreator());
-			cr.value += deltaRiskOfSelector(0, numSelectorsNow, totalRiskNow, totalRiskBefore);
+			cr.value += deltaRiskOfSelector(0, 0, numSelectorsNow, numSelectorsBefore, totalNumOfAgents);
 			
-			// The selectors
-			for (int i = 0; i < action.target().getSelectors().size(); i++) {
-				Risk cs = (Risk) info.get(action.target().getSelectors().get(i));
-				cs.value += deltaRiskOfSelector(i+1, numSelectorsNow, totalRiskNow, totalRiskBefore); 
+		}
+	}
+
+	protected double deltaRiskOfSelector(int indexNow, int indexBefore, 
+			int numSelectorsNow, int numSelectorsBefore, 
+			int totalNumOfAgents) {
+		double before, now;
+		if (indexBefore < 0 || indexBefore > numSelectorsBefore) {
+			// The selector is not here before
+			before = 0.0;
+		} else {
+			before = share.calcProportion(indexBefore, numSelectorsBefore)
+					* elemRisk.calcRisk(numSelectorsBefore, totalNumOfAgents);
+		}
+		if (indexNow < 0 || indexNow > numSelectorsNow) {
+			// The selector is not here anymore.
+			now = 0.0; 
+		} else {
+			now = share.calcProportion(indexNow, numSelectorsNow)
+					* elemRisk.calcRisk(numSelectorsNow, totalNumOfAgents);
+		}
+		
+		return now - before;
+	}
+
+	@Override
+	protected void updateOnAgentNumChanged() {
+		// Recalculate all limiter info
+		resetLimiterInfo();
+		
+		for (Element elem: pool.listElements()) {
+			if (elem.isPlaceholder()) {
+				continue;
+			}
+			
+			double risk = elemRisk.calcRisk(elem.getSelectors().size(), pool.numAgent());
+			
+			Risk cr = (Risk) info.get(elem.getCreator());
+			cr.value += risk * share.calcProportion(0, elem.getSelectors().size());
+			
+			for (int i = 0; i < elem.getSelectors().size(); i++) {
+				Risk sr = (Risk) info.get(elem.getSelectors().get(i));
+				sr.value += risk * share.calcProportion(i+1, elem.getSelectors().size());
 			}
 		}
 	}
 
-	protected double deltaRiskOfSelector(int index, int numSelectorsNow, 
-			double totalRiskNow, double totalRiskBefore) {
-		if (index == numSelectorsNow) {
-			// "Before" == 0, just return "Now"
-			return share.calcProportion(index, numSelectorsNow) * totalRiskNow;
+	protected void resetLimiterInfo() {
+		for (Entry<Agent, LimiterInfo> entry: info.entrySet()) {
+			entry.setValue(new Risk(0.0));
 		}
-		// return "Now" - "Before"
-		int numSelectorsBefore = numSelectorsNow - 1;
-		return share.calcProportion(index, numSelectorsNow) * totalRiskNow -
-			share.calcProportion(index, numSelectorsBefore) * totalRiskBefore;
 	}
-
 }

@@ -9,19 +9,21 @@ import cofm.sim.pool.Pool;
 
 public class PopularityFirstPolicy implements SelectionPolicy {
 
-	protected double leastPopularity;
+	protected double leastPopularity, keepPopularity;
 	protected Pool pool;
 	protected List<Element> elements;
-	protected int index;
+	protected int indexBest, indexWorst;
 	
-	public PopularityFirstPolicy(Pool pool, Double atLeast) {
+	public PopularityFirstPolicy(Pool pool, Double atLeast, Double mustKeep) {
 		this.leastPopularity = atLeast;
+		this.keepPopularity = mustKeep;
 		this.pool = pool;
 	}
 
 	public void loadElements(List<Element> data) {
 		elements = data;
-		index = elements.size() - 1;
+		indexBest = elements.size() - 1;
+		indexWorst = 0;
 		Collections.sort(elements, new Comparator<Element>(){
 
 			public int compare(Element arg0, Element arg1) {
@@ -31,15 +33,26 @@ public class PopularityFirstPolicy implements SelectionPolicy {
 		});
 	}
 
-	public Element selectNext() {
-		if (index < 0) {
+	public Element selectNextBest() {
+		if (indexBest < 0) {
 			return null;
 		}
-		Element e = elements.get(index--);
+		Element e = elements.get(indexBest--);
 		if (e.getSelectors().size() * 1.0 / pool.numAgent() > leastPopularity) {
 			return e;
 		}
 		return null;
+	}
+	
+	public Element selectNextWorst() {
+		if (indexWorst > elements.size() - 1) {
+			return null;
+		}
+		Element e = elements.get(indexWorst++);
+		if (e.getSelectors().size() * 1.0 / pool.numAgent() > keepPopularity) {
+			return null;
+		}
+		return e;
 	}
 
 }

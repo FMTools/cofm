@@ -5,6 +5,7 @@ import java.util.List;
 import cofm.sim.agent.Agent;
 import cofm.sim.element.Element;
 import cofm.sim.limiter.Limiter;
+import cofm.sim.pool.future.Future;
 
 public interface Pool {
 	void addAgent(Agent agent);
@@ -23,5 +24,7 @@ public interface Pool {
 	boolean endAfterLastEvolve();
 	
 	void evolve();
+	
+	void addFutureEvent(Future future);
 	
 }

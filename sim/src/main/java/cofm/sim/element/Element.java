@@ -28,5 +28,9 @@ public abstract class Element {
 		return creator;
 	}
 	
+	public boolean isPlaceholder() {
+		return creator == null;
+	}
+	
 	abstract public double rating();
 }

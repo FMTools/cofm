@@ -9,21 +9,33 @@ import cofm.sim.pool.Pool;
 
 public class BadRatingFirstPolicy implements SelectionPolicy {
 
-	protected double highestRating;
+	protected double highestRating, keepRating;
 	protected List<Element> elements;
-	protected int index;
+	protected int indexBest, indexWorst;
 	
-	public BadRatingFirstPolicy(Pool pool, Double atMost) {
+	public BadRatingFirstPolicy(Pool pool, Double atMost, Double mustKeep) {
 		// ignore "pool"
 		this.highestRating = atMost;
+		this.keepRating = mustKeep;
 	}
 	
-	public Element selectNext() {
-		if (index >= elements.size()) {
+	public Element selectNextBest() {
+		if (indexBest >= elements.size()) {
 			return null;
 		}
-		Element e = elements.get(index++);
+		Element e = elements.get(indexBest++);
 		if (e.rating() > highestRating) {
+			return null;
+		}
+		return e;
+	}
+	
+	public Element selectNextWorst() {
+		if (indexWorst < 0) {
+			return null;
+		}
+		Element e = elements.get(indexWorst--);
+		if (e.rating() < keepRating) {
 			return null;
 		}
 		return e;
@@ -43,7 +55,8 @@ public class BadRatingFirstPolicy implements SelectionPolicy {
 			}
 			
 		});
-		index = 0;
+		indexBest = 0;
+		indexWorst = elements.size() - 1;
 	}
 
 }

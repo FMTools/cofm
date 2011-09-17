@@ -10,6 +10,7 @@ import cofm.sim.element.Element;
 import cofm.sim.element.FmElement;
 import cofm.sim.limiter.Limiter;
 import cofm.sim.limiter.Limiter.LimiterInfo;
+import cofm.sim.pool.future.Future;
 
 public class CofmPool implements Pool {
 
@@ -18,9 +19,11 @@ public class CofmPool implements Pool {
 	protected Limiter limiter;
 	protected List<Element> elements = new ArrayList<Element>();
 	protected EndCondition endCondition;
+	protected List<Future> futureEvents = new ArrayList<Future>();
 	
 	public void addAgent(Agent agent) {
 		agents.add(agent);
+		limiter.addAgent(agent);
 	}
 	
 	public void setLimiter(Limiter limiter) {
@@ -30,6 +33,9 @@ public class CofmPool implements Pool {
 	public void evolve() {
 		for (Agent agent: agents) {
 			agent.executeAction();
+		}
+		for (Future future: futureEvents) {
+			future.changePool();
 		}
 	}
 	
@@ -99,6 +105,10 @@ public class CofmPool implements Pool {
 
 	public List<Agent> getTracker() {
 		return tracker;
+	}
+
+	public void addFutureEvent(Future future) {
+		futureEvents.add(future);
 	}
 
 }

@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import cofm.sim.agent.Agent;
 import cofm.sim.agent.CofmAgent;
 import cofm.sim.agent.behavior.SelectionPolicy;
+import cofm.sim.element.FmElement;
 import cofm.sim.limiter.EmptyLimiter;
 import cofm.sim.limiter.Limiter;
 import cofm.sim.limiter.risk.AgentRiskSharePolicy;
@@ -18,6 +19,7 @@ import cofm.sim.limiter.risk.ElementRiskPolicy;
 import cofm.sim.pool.CofmPool;
 import cofm.sim.pool.EndCondition;
 import cofm.sim.pool.Pool;
+import cofm.sim.pool.future.Future;
 
 public class SimConfigReader {
 
@@ -30,6 +32,11 @@ public class SimConfigReader {
 	private static final String LIMITER_EXP_RISK_CLASS = "cofm.sim.limiter.risk.ExpRiskPolicy";
 	
 	private static final String END = "END";
+	private static final String START = "START";
+	
+	private static final String FUTURE = "FUTURE";
+	private static final String EACH = "EACH";
+	private static final String ONCE = "ONCE";
 	
 	public Pool initEnvironment(String file) {
 		try {
@@ -49,9 +56,13 @@ public class SimConfigReader {
 					limiter = parseLimiter(s, pool);
 					pool.setLimiter(limiter);
 				} else if (s.startsWith(AGENT)) {
-					id = parseAgents(s, id, pool, limiter);
+					id += parseAgents(s, id, pool, limiter);
 				} else if (s.startsWith(END)) {
 					setEndCondition(s, pool);
+				} else if (s.startsWith(START)) {
+					setStartCondition(s, pool);
+				} else if (s.startsWith(FUTURE)) {
+					parseFuture(s, pool, limiter);
 				}
 				
 			}
@@ -69,6 +80,59 @@ public class SimConfigReader {
 			return null;
 		}
 		
+	}
+
+	private void parseFuture(String s, Pool pool, Limiter limiter) {
+		String[] parts = s.split(" ");
+		int i = 1;
+		
+		String m = parts[i++];
+		int mode = (m == EACH ? Future.MODE_REPEAT : Future.MODE_ONCE);
+		
+		int turn = Integer.valueOf(parts[i++]);
+		
+		try {
+			Class<?> cls = Class.forName(parts[i++]);
+			
+			// Now we handle FutureAgent only.
+			Constructor<?> ctor = cls.getConstructor(Pool.class, Integer.class, Integer.class, Integer.class, Agent.class);
+			
+			String name = parts[i++];
+			
+			int num = Integer.valueOf(parts[i++]);
+			
+			double minRating = Double.valueOf(parts[i++]);
+			double maxRating = Double.valueOf(parts[i++]);
+			double probCreate = Double.valueOf(parts[i++]);
+			double probSelect = Double.valueOf(parts[i++]);
+			double probDeselect = Double.valueOf(parts[i++]);
+
+			String spc = parts[i++];
+			Class<?> selectionPolicyClass = Class.forName(spc);
+			Constructor<?> spctor = selectionPolicyClass.getConstructor(Pool.class, Double.class, Double.class);
+
+			double par1 = Double.valueOf(parts[i++]);
+			double par2 = Double.valueOf(parts[i++]);
+
+			SelectionPolicy sp = (SelectionPolicy) spctor.newInstance(pool, par1, par2);
+
+			Agent agent = new CofmAgent(pool, limiter, 0, name,
+					minRating, maxRating,
+					probCreate, probSelect, probDeselect, 
+					sp);
+			
+			Future future = (Future) ctor.newInstance(pool, mode, turn, num, agent);
+			pool.addFutureEvent(future);
+		} catch (Exception e) {
+			logger.warn("Fail to parse Future.", e);
+		}
+	}
+
+	private void setStartCondition(String s, Pool pool) {
+		String[] parts = s.split(" ");
+		int i = 1;
+		double rating = Double.valueOf(parts[i++]);
+		pool.addElement(new FmElement(null, rating));
 	}
 
 	private void setEndCondition(String s, Pool pool) {
@@ -101,29 +165,31 @@ public class SimConfigReader {
 		double maxRating = Double.valueOf(parts[i++]);
 		double probCreate = Double.valueOf(parts[i++]);
 		double probSelect = Double.valueOf(parts[i++]);
+		double probDeselect = Double.valueOf(parts[i++]);
 		
 		String spc = parts[i++];
 		try {
 			Class<?> selectionPolicyClass = Class.forName(spc);
-			Constructor<?> spctor = selectionPolicyClass.getConstructor(Pool.class, Double.class);
+			Constructor<?> spctor = selectionPolicyClass.getConstructor(Pool.class, Double.class, Double.class);
 			
-			double par = Double.valueOf(parts[i++]);
+			double par1 = Double.valueOf(parts[i++]);
+			double par2 = Double.valueOf(parts[i++]);
 			
-			SelectionPolicy sp = (SelectionPolicy) spctor.newInstance(pool, par);
+			SelectionPolicy sp = (SelectionPolicy) spctor.newInstance(pool, par1, par2);
 			
 			for (int j = 0; j < num; j++) {
-				Agent agent = new CofmAgent(pool, limiter, beginId++, 
+				Agent agent = new CofmAgent(pool, limiter, beginId++, name,
 						minRating, maxRating,
-						probCreate, probSelect, sp);
+						probCreate, probSelect, probDeselect, 
+						sp);
 				if (j == 0) { // Add an agent to the tracker
-					((CofmAgent) agent).setName(name);
 					pool.addToTracker(agent);
 				}
 			}
 		} catch (Exception e) {
 			logger.warn("Fail to create Selection Policy.", e);
 		}
-		return beginId;
+		return num;
 	}
 
 	private Limiter parseLimiter(String s, Pool pool) {

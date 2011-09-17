@@ -12,16 +12,21 @@ public abstract class AbstractAgent implements Agent {
 	protected Action lastAction;
 	protected Action lastFailedAction;
 	
-	protected String name; // optional
+	protected String name; 
 	
-	public AbstractAgent(Pool pool, Limiter limiter, int id) {
+	public AbstractAgent(Pool pool, Limiter limiter, int id, String name) {
 		this.id = id;
+		this.name = name;
 		lastAction = null;
 		lastFailedAction = null;
 		this.limiter = limiter;
 		this.pool = pool;
 		pool.addAgent(this);
-		limiter.addAgent(this);
+	}
+	
+	@Override
+	public Agent clone() {
+		return null;
 	}
 	
 	public Action getLastAction() {
@@ -50,6 +55,10 @@ public abstract class AbstractAgent implements Agent {
 
 	abstract protected Action nextAction();
 
+	public void setId(int id) {
+		this.id = id;
+	}
+	
 	public int getId() {
 		return id;
 	}

@@ -11,7 +11,7 @@ public class Clock {
 
 	Logger logger = Logger.getLogger(Clock.class);
 	
-	public static final int DELAY = 2000;  // 2s
+	public static final int DELAY = 1000; 
 	
 	private Pool pool;
 	private Timer timer;
@@ -39,10 +39,12 @@ public class Clock {
 	}
 	
 	private void tick() {
-		logger.info("=== TURN " + turn + " ===");
-		turn++;
 		pool.evolve();
-		logger.info(pool.toString());
+		if (turn % 10 == 0) {
+			logger.info("=== TURN " + turn + " ===");
+			logger.info(pool.toString());
+		}
+		turn++;
 		if (!pool.endAfterLastEvolve()) {
 			start();
 		} else {

@@ -19,12 +19,18 @@ public abstract class AbstractLimiter implements Limiter {
 	}
 	
 	public void addAgent(Agent agent) {
+		updateOnAgentNumChanged(); 
+		
 		info.put(agent, initLimiterInfo(agent));
+		
 	}
 	
 	public LimiterInfo getAgentInfo(Agent agent) {
 		return info.get(agent);
 	}
+	
+	// delta can be positive or negative
+	abstract protected void updateOnAgentNumChanged();
 	
 	abstract protected LimiterInfo initLimiterInfo(Agent agent);
 

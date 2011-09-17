@@ -6,6 +6,7 @@ import cofm.sim.element.Element;
 
 public interface SelectionPolicy {
 
-	Element selectNext();
+	Element selectNextBest();
+	Element selectNextWorst();
 	void loadElements(List<Element> data);
 }
