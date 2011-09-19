@@ -267,6 +267,7 @@
 						break;
 					case "RelationSelected":
 					case "RelationUnselected":
+						nextBtn.enabled = false;
 						doCreateModel();
 						break;
 				}	
@@ -459,7 +460,7 @@
 	<mx:Canvas height="30" width="100%" bottom="10">
 		<s:HGroup right="10">
 			<s:Button label="&lt; Back" enabled.Basic="false" click="onBack();"/>
-			<s:Button label="Next &gt;" label.Relation="Finish" click="onNext();"/>
+			<s:Button id="nextBtn" label="Next &gt;" label.Relation="Finish" click="onNext();"/>
 			<s:Button label="Cancel" click="onCancel();"/>
 		</s:HGroup>
 	</mx:Canvas>

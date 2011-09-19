@@ -5,6 +5,8 @@ package cofm.util
 	import cofm.model.*;
 	
 	import flash.utils.Dictionary;
+	
+	import mx.controls.Alert;
 
 	/**
 	 * Dispatch server response to proper commands.
@@ -88,7 +90,13 @@ package cofm.util
 							break;
 					}
 				} else if (Cst.RSP_SERVER_ERROR == name) {
-					//TODO: report internal error
+					var msg2: String;
+					if (data[Cst.FIELD_RSP_MESSAGE] == null) {
+						msg2 = "Internal Server Error.";
+					} else {
+						msg2 = String(data[Cst.FIELD_RSP_MESSAGE]);
+					}
+					Alert.show(msg2, "Server Error");
 				}
 			}
 		}

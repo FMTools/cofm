@@ -60,7 +60,9 @@
 	</mx:BarChart>
 	
 	<s:VGroup>
-		<s:Button label="{RS.m_yes_f}" click="doVoteYesOnFeature();"/>
-		<s:Button label="{RS.m_no_f}" click="doVoteNoOnFeature();"/>
+		<s:Button enabled="{CurrentFeature.instance().myVote != CurrentFeature.VOTE_YES}"
+				  label="{RS.m_yes_f}" click="doVoteYesOnFeature();"/>
+		<s:Button enabled="{CurrentFeature.instance().myVote != CurrentFeature.VOTE_NO}"
+				  label="{RS.m_no_f}" click="doVoteNoOnFeature();"/>
 	</s:VGroup>
 </s:SkinnableContainer>

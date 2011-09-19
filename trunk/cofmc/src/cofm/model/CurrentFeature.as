@@ -22,6 +22,13 @@ package cofm.model
 		
 		public var id: int;
 		
+		public static const VOTE_YES: int = 1;
+		public static const VOTE_NO: int = 2;
+		public static const VOTE_NULL: int = 3;
+		
+		[Bindable]
+		public var myVote: int;
+		
 		[Bindable]
 		public var votes: ArrayCollection = new ArrayCollection();
 		
@@ -131,15 +138,23 @@ package cofm.model
 				"label": RS.m_fe_basic_votes_no,
 				"num": noNum,
 				"ratio": ((noRatio > 0) ? noRatio.toPrecision(3) : "0") + "%",
-				"n": toUserArray(XMLList(element.no.user))
+				"user": toUserArray(XMLList(element.no.user))
 			});
 			// yes votes
 			votes.addItem({
 				"label": RS.m_fe_basic_votes_yes,
 				"num": yesNum,
 				"ratio": ((yesRatio > 0) ? yesRatio.toPrecision(3) : "0") + "%",
-				"y": toUserArray(XMLList(element.yes.user))
+				"user": toUserArray(XMLList(element.yes.user))
 			});
+			
+			if (XMLList(element.no.user.(text().toString()==String(UserList.instance().myId))).length() > 0) {
+				myVote = VOTE_NO;
+			} else if (XMLList(element.yes.user.(text().toString()==String(UserList.instance().myId))).length() > 0) {
+				myVote = VOTE_YES; 
+			} else {
+				myVote = VOTE_NULL;
+			}
 		}
 		
 		private function updateAllAttrbutes(): void {

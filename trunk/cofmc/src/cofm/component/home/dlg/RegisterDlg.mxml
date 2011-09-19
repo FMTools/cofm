@@ -7,27 +7,50 @@
 			   xmlns:validator="cofm.component.validator.*">
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
-		<mx:StringValidator id="nameVdt" source="{userName}" property="text" minLength="3" maxLength="20"/>
-		<mx:StringValidator id="pwdVdt" source="{userPwd}" property="text" minLength="1" maxLength="15"/>
+		<mx:StringValidator id="nameVdt" required="true" source="{userName}" property="text" minLength="3" maxLength="20"/>
+		<mx:StringValidator id="pwdVdt" required="true" source="{userPwd}" property="text" minLength="1" maxLength="15"/>
+		<mx:EmailValidator id="mailVdt" required="true" source="{userMail}" property="text"/>
 		<validator:EqualStringValidator id="pwdTwiceVdt" source="{userPwd2}" property="text"
 										checkEquals="true" compareWith="{userPwd.text}"
 										message="{RS.reg_error_pwd_confirm}"/>
 	</fx:Declarations>
 	
+	<s:states>
+		<s:State name="Entering"/>
+		<s:State name="Loading"/>
+	</s:states>
 	<fx:Script>
 		<![CDATA[
 			import cofm.command.*;
 			import cofm.event.*;
 			import cofm.util.*;
 			
-			import mx.managers.PopUpManager;
 			import mx.events.ValidationResultEvent;
+			import mx.managers.PopUpManager;
 			
 			private function initView(): void {
 				userName.setFocus();
+				
+				ClientEvtDispatcher.instance().addEventListener(
+					ClientEvent.REGISTER_FAILED, onFailed);
+				ClientEvtDispatcher.instance().addEventListener(
+					ClientEvent.REGISTER_SUCCESS, onSuccess);
+			}
+			
+			private function onFailed(evt: ClientEvent): void {
+				this.currentState = "Entering";
+			}
+			
+			private function onSuccess(evt: ClientEvent): void {
+				this.currentState = "Entering";
+				doClose();
 			}
 			
 			private function doClose(): void {
+				ClientEvtDispatcher.instance().removeEventListener(
+					ClientEvent.REGISTER_FAILED, onFailed);
+				ClientEvtDispatcher.instance().removeEventListener(
+					ClientEvent.REGISTER_SUCCESS, onSuccess);
 				PopUpManager.removePopUp(this);
 			}
 			
@@ -41,6 +64,7 @@
 				var vre: Array = new Array();
 				vre.push(nameVdt.validate());
 				vre.push(pwdVdt.validate());
+				vre.push(mailVdt.validate());
 				vre.push(pwdTwiceVdt.validate());
 				for each (var evt: Object in vre) {
 					if (ValidationResultEvent(evt).type == ValidationResultEvent.INVALID) {
@@ -52,8 +76,8 @@
 			
 			private function doRegister(): void {
 				if (validateRegisterForm()) {
-					new RegisterCommand(userName.text, userPwd.text).execute();
-					doClose();
+					new RegisterCommand(userName.text, userPwd.text, userMail.text).execute();
+					this.currentState = "Loading";
 				}
 			}
 		]]>
@@ -63,6 +87,9 @@
 		<mx:FormItem label="{RS.reg_name}">
 			<s:TextInput id="userName"/>
 		</mx:FormItem>
+		<mx:FormItem label="Email">
+			<s:TextInput id="userMail"/>
+		</mx:FormItem>
 		<mx:FormItem label="{RS.reg_pwd}">
 			<s:TextInput id="userPwd" displayAsPassword="true"/>
 		</mx:FormItem>
@@ -70,8 +97,9 @@
 			<s:TextInput id="userPwd2" displayAsPassword="true" keyDown="checkEnter(event);"/>
 		</mx:FormItem>
 		<mx:FormItem direction="horizontal">
-			<s:Button label="{RS.ok}" click="doRegister();"/>
-			<s:Button label="{RS.cancel}" click="doClose();"/>
+			<s:Button label.Entering="{RS.ok}" label.Loading="Waiting..." 
+					  enabled.Entering="true" enabled.Loading="false" click="doRegister();"/>
+			<s:Button label="{RS.cancel}" enabled.Loading="false" click="doClose();"/>
 		</mx:FormItem>
 	</mx:Form>
 	

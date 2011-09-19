@@ -20,14 +20,15 @@ package cofm.util
 
 		// Feature Editor
 		public static const EDITOR_W: int = 660;
-		public static const EDITOR_H: int = 365;
+		public static const EDITOR_H: int = 400;
+		public static const MAX_ATTR_GRID_HEIGHT: Number = EDITOR_H - 50;
 
 		// Misc Tabs
-		public static const MISC_W: int = 675;
-		public static const MISC_H: int = 147;
+		public static const MISC_W: int = 660;
+		public static const MISC_H: int = 210;
 		
 		public static const COMMENT_W: int = 420;
-		public static const COMMENT_EDITOR_W: int = 230;
+		public static const COMMENT_EDITOR_W: int = 220;
 		public static const COMMENT_EDITOR_H: int = 80;
 	}
 }

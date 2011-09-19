@@ -35,7 +35,11 @@
 				if (itemCount > maxGridRows) {
 					itemCount = maxGridRows;
 				}
-				grid.height = grid.measureHeightOfItems(-1, itemCount);
+				var h: Number = grid.measureHeightOfItems(-1, itemCount);
+				if (h > Size.MAX_ATTR_GRID_HEIGHT) {
+					h = Size.MAX_ATTR_GRID_HEIGHT;
+				}
+				grid.height = h;
 			}
 		]]>
 	</fx:Script>
@@ -68,7 +72,7 @@
 							<fx:Script>
 								<![CDATA[
 									import cofm.command.*;
-									import cofm.model.CurrentFeature;
+									import cofm.model.*;
 									import cofm.util.*;
 									
 									private function doVoteYes(): void {
@@ -92,8 +96,10 @@
 							</fx:Script>
 							
 							<s:HGroup>
-								<s:Button label="{RS.m_yes}" click="doVoteYes();"/>
-								<s:Button label="{RS.m_no}" click="doVoteNo();"/>
+								<s:Button enabled="{(data.y as Array).indexOf(String(UserList.instance().myId)) == -1}" 
+										  label="{RS.m_yes}" click="doVoteYes();"/>
+								<s:Button enabled="{(data.n as Array).indexOf(String(UserList.instance().myId)) == -1}"
+										  label="{RS.m_no}" click="doVoteNo();"/>
 							</s:HGroup>
 						</s:MXAdvancedDataGridItemRenderer>
 					</fx:Component>

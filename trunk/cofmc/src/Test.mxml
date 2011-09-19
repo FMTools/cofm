@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace mx "library://ns.adobe.com/flex/mx";
+		.hd {
+			borderThicknessLeft: 0; 
+			borderThicknessTop: 0; 
+			borderThicknessBottom: 0; 
+			borderThicknessRight: 0; 
+			headerHeight: 0; 
+
+		}
+	</fx:Style>
+	<s:Panel height="100" width="100" styleName="hd"/>
+</s:Application>

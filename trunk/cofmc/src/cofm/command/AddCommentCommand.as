@@ -21,15 +21,15 @@ package cofm.command
 			if (_feature <= 0) {
 				return;
 			}
-			_cmdId = CommandBuffer.instance.addCommand(this);
+			_cmdId = CommandBuffer.instance().addCommand(this);
 			var r: Object = {
 				"id": _cmdId,
 				"name": Cst.REQ_COMMENT,
-				"requesterId": UserList.instance.myId,
-				"featureId": _feature,
+				"requesterId": UserList.instance().myId,
+				"entityId": _feature,
 				"content": _content
 			};
-			Connector.instance.send(r);
+			Connector.instance().send(r);
 		}
 		
 		public function redo():void
@@ -49,13 +49,13 @@ package cofm.command
 			if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME] &&
 				Cst.REQ_COMMENT == data[Cst.FIELD_RSP_SOURCE_NAME]) {
 
-				CommandBuffer.instance.removeCommand(_cmdId);
+				CommandBuffer.instance().removeCommand(_cmdId);
 				
 
 				ClientEvtDispatcher.instance().dispatchEvent(
 					new AddCommentEvent(AddCommentEvent.SUCCESS,
 					int(data[Cst.FIELD_RSP_SOURCE_USER_ID]),
-					int(data["featureId"]),
+					int(data["entityId"]),
 					String(data["content"]),
 					String(data["execTime"])));
 			}

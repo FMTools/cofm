@@ -17,6 +17,7 @@
   </compiler>
   <applications>
     <application path="cofmc.mxml"/>
+    <application path="Test.mxml"/>
   </applications>
   <modules/>
   <buildCSSFiles/>
