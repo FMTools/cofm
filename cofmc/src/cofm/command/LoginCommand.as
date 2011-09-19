@@ -1,8 +1,10 @@
 package cofm.command 
 {
-	import cofm.model.*;
 	import cofm.event.*;
+	import cofm.model.*;
 	import cofm.util.*;
+	
+	import com.adobe.crypto.MD5;
 
 	public class LoginCommand implements IDurableCommand {
 		private var _name: String;
@@ -11,7 +13,7 @@ package cofm.command
 
 		public function LoginCommand(name: String, pwd: String) {
 			_name = name;
-			_pwd = pwd;
+			_pwd = MD5.hash(pwd);
 		}
 
 		/** Request format (see server.LoginRequest)

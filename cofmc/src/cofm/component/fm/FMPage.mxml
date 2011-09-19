@@ -76,9 +76,20 @@
 		</s:Panel>
 		
 		<s:VGroup>
-			<s:Panel id="featureEditor" title="{RS.m_fe_title}">
+			<s:Panel id="featureEditor" title="{RS.m_fe_title}" width="{Size.EDITOR_W}" height="{Size.EDITOR_H}">
 				<fm:FeatureEditor/>
 			</s:Panel>
+			
+			<mx:Spacer/>
+				
+			<s:Panel id="rightBottom" title="Extra Views" width="{Size.MISC_W}" height="{Size.MISC_H}">
+				<mx:TabNavigator paddingTop="0">
+					<s:NavigatorContent label="{RS.m_comment_title}" >
+						<fm:CommentSheet width="100%" height="100%"/>
+					</s:NavigatorContent>
+				</mx:TabNavigator>
+			</s:Panel>
+			
 		</s:VGroup>
 		
 	</s:HGroup>

@@ -54,6 +54,13 @@
 					item.numSupporters = XMLList(obj.yes.user).length();
 					item.numOpponents = XMLList(obj.no.user).length();
 					
+					if (XMLList(obj.yes.user.(text().toString()==String(UserList.instance().myId))).length() > 0) {
+						item.myVote = AttributeValueInfo.VOTE_YES;
+					} else if (XMLList(obj.no.user.(text().toString()==String(UserList.instance().myId))).length() > 0) {
+						item.myVote = AttributeValueInfo.VOTE_NO;
+					} else {
+						item.myVote = AttributeValueInfo.VOTE_NULL;
+					}
 					values.addItem(item);
 				}
 			}
@@ -79,7 +86,11 @@
 				if (itemCount > maxGridRows) {
 					itemCount = maxGridRows;
 				}
-				grid.height = grid.measureHeightOfItems(-1, itemCount);
+				var h: Number = grid.measureHeightOfItems(-1, itemCount);
+				if (h > Size.MAX_ATTR_GRID_HEIGHT) {
+					h = Size.MAX_ATTR_GRID_HEIGHT;
+				}
+				grid.height = h;
 			}
 			
 			private function doAddValue(): void {
@@ -100,7 +111,41 @@
 		<mx:columns>
 			<mx:AdvancedDataGridColumn visible="{showValueIndex}" dataField="valueIndex"
 									   headerText="{RS.m_fe_grid_index}"/>
-			<mx:AdvancedDataGridColumn dataField="value" headerText="{RS.m_fe_grid_value}"/>
+			
+			<mx:AdvancedDataGridColumn headerText="{RS.m_fe_grid_value}">
+				<mx:itemRenderer>
+					<fx:Component>
+						<s:MXAdvancedDataGridItemRenderer dataChange="initView();">
+							<fx:Script>
+								<![CDATA[
+									import cofm.util.*;
+									import cofm.command.*;
+									
+									[Bindable] public var displayHeight: int;
+									
+									private static const DEFAULT_HEIGHT: int = 30;
+									private function initView(): void {
+										if (data == null) {
+											return;
+										}
+										if (data.attributeType == Cst.ATTR_TYPE_TEXT) {
+											displayHeight = 2.5 * DEFAULT_HEIGHT;
+										} else {
+											displayHeight = DEFAULT_HEIGHT;
+										}
+									}
+									
+								]]>
+							</fx:Script>
+							<s:TextArea id="valCell" editable="false" text="{data.value}"
+									    borderVisible="false"
+									    width="100%" height="{displayHeight}"
+									    minHeight="30"/> 
+						</s:MXAdvancedDataGridItemRenderer>
+					</fx:Component>
+				</mx:itemRenderer>
+			</mx:AdvancedDataGridColumn>
+			
 			<mx:AdvancedDataGridColumn dataField="numSupporters" headerText="{RS.m_fe_grid_yes}"
 									   width="95"/>
 			<mx:AdvancedDataGridColumn dataField="numOpponents" headerText="{RS.m_fe_grid_no}"
@@ -135,8 +180,10 @@
 							</fx:Script>
 							
 							<s:HGroup>
-								<s:Button label="{RS.m_yes}" click="doVoteYes();"/>
-								<s:Button label="{RS.m_no}" click="doVoteNo();"/>
+								<s:Button enabled="{data.myVote != AttributeValueInfo.VOTE_YES}" 
+										  label="{RS.m_yes}" click="doVoteYes();"/>
+								<s:Button enabled="{data.myVote != AttributeValueInfo.VOTE_NO}"
+										  label="{RS.m_no}" click="doVoteNo();"/>
 							</s:HGroup>
 						</s:MXAdvancedDataGridItemRenderer>
 					</fx:Component>

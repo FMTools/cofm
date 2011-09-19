@@ -6,8 +6,10 @@ package cofm.util
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.events.SecurityErrorEvent;
+	import flash.events.TimerEvent;
 	import flash.external.ExternalInterface;
 	import flash.net.XMLSocket;
+	import flash.utils.Timer;
 	
 	import mx.controls.Alert;
 	
@@ -19,6 +21,9 @@ package cofm.util
 		private static var con: Connector = new Connector();
 		
 		private var clientId: int;
+		private var hbTimer: Timer;  // Heart-beat timer
+		
+		private const HEART_BEAT_INTERVAL: Number = 1000 * 30; // 30 seconds
 		
 		public static function instance(): Connector {
 			return con;
@@ -34,6 +39,14 @@ package cofm.util
 				ExternalInterface.addCallback("notifyConnected", notifyConnected);
 				ExternalInterface.call("postData", "", "handshake");  // send a handshake message when init
 			}
+			hbTimer = new Timer(HEART_BEAT_INTERVAL);
+			hbTimer.addEventListener(TimerEvent.TIMER, onHeartBeat);
+		}
+		
+		private function onHeartBeat(evt: TimerEvent): void {
+			if (ExternalInterface.available) {
+				ExternalInterface.call("postData", "", "heartbeat");
+			}
 		}
 		
 		public function disconnect(): void {
@@ -46,17 +59,21 @@ package cofm.util
 			if (ExternalInterface.available) {
 				var json: String = JsonUtil.objectToJson(encodeQuotes(data));
 				ExternalInterface.call("postData", json);
-				//trace("<<<--- Data sent: " + json + "\n");
+				trace("<<<--- Data sent: " + json + "\n");
 			}
 		}
 		
 		public function notifyConnected(): void {
 			ClientEvtDispatcher.instance().dispatchEvent(
 				new ClientEvent(ClientEvent.CONNECT_SUCCESS));
+			hbTimer.start();
 		}
 		
 		public function handleResponse(res: Object): void {
-			//trace("--->>> Data received: " + String(res));
+			trace("--->>> Data received: " + String(res));
+			if (res == null || String(res).length <= 0) {
+				return;
+			}
 			var sdata: Object = decodeQuotes(JsonUtil.jsonToObject(String(res)));
 			trace ("Received " + (sdata as Array).length + " response(s).");
 			ServerDataDispatcher.dispatchData(sdata);

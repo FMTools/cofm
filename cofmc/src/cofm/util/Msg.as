@@ -1,9 +1,11 @@
 package cofm.util
 {
 	import cofm.event.*;
+	
+	import mx.controls.Alert;
+
 	/**
-	 * The API for showing messages for users.
-	 * The MsgEvent dispatched by this class is listened by the MessageBar component.
+	 * The Entry for showing messages for users.
 	 */  
 	public class Msg {
 		public static function info(m: String): void {
@@ -15,6 +17,7 @@ package cofm.util
 		}
 		
 		public static function error(m: String): void {
+			Alert.show(m, "Error");
 			ClientEvtDispatcher.instance().dispatchEvent(new MsgEvent(MsgEvent.ERROR, m));
 		}
 		

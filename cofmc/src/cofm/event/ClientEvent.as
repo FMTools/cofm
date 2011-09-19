@@ -6,6 +6,7 @@ package cofm.event
 		
 		public static const CONNECT_SUCCESS: String = "connectSuccess";
 		public static const REGISTER_SUCCESS: String = "registerSuccess";
+		public static const REGISTER_FAILED: String = "registerFailed";
 		public static const CURRENT_FEATURE_DELETED: String = "currentFeatureDeleted";
 		public static const BASIC_INFO_UPDATED: String = "basicInfoUpdated";
 		public static const BACK_TO_HOME: String = "backToHome";
