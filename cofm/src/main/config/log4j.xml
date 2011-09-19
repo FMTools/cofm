@@ -8,7 +8,7 @@
     		<param name="Append" value="true"/>
     		<param name="DatePattern" value=".yyyy-MM-dd"/>
     		<param name="Threshold" value="DEBUG"/>
-    		<param name="File" value="d:/log/cofm/debug/server.log"/>
+    		<param name="File" value="c:/log/cofm/debug/server.log"/>
     		<layout class="org.apache.log4j.PatternLayout">
     			<param name="ConversionPattern" value="%-25d %c %-5p %m %n"/>
     		</layout>
@@ -20,7 +20,7 @@
     		<param name="Append" value="true"/>
     		<param name="DatePattern" value=".yyyy-MM-dd"/>
     		<param name="Threshold" value="DEBUG"/>
-    		<param name="File" value="d:/log/cofm/mining/log/debug.log"/>
+    		<param name="File" value="c:/log/cofm/mining/log/debug.log"/>
     		<layout class="org.apache.log4j.PatternLayout">
     			<param name="ConversionPattern" value="%-25d %c [%-5p] %m %n"/>
     		</layout>
@@ -32,7 +32,7 @@
     		<param name="Append" value="true"/>
     		<param name="DatePattern" value=".yyyy-MM-dd"/>
     		<param name="Threshold" value="DEBUG"/>
-    		<param name="File" value="d:/log/cofm/mining/log/opt.log"/>
+    		<param name="File" value="c:/log/cofm/mining/log/opt.log"/>
     		<layout class="org.apache.log4j.PatternLayout">
     			<param name="ConversionPattern" value="%-25d %c [%-5p] %m %n"/>
     		</layout>
@@ -48,7 +48,7 @@
     		<param name="Append" value="true"/>
     		<param name="DatePattern" value=".yyyy-MM-dd"/>
     		<param name="Threshold" value="INFO"/>
-    		<param name="File" value="d:/log/cofm/activity/activity.log"/>
+    		<param name="File" value="c:/log/cofm/activity/activity.log"/>
     		<layout class="org.apache.log4j.PatternLayout">
     			<param name="ConversionPattern" value="%-25d %-5p %m %n"/>
     		</layout>
@@ -64,7 +64,7 @@
     		<param name="Append" value="true"/>
     		<param name="DatePattern" value=".yyyy-MM-dd"/>
     		<param name="Threshold" value="INFO"/>
-    		<param name="File" value="d:/log/cofm/fm/progress.log"/>
+    		<param name="File" value="c:/log/cofm/fm/progress.log"/>
     		<layout class="org.apache.log4j.PatternLayout">
     			<param name="ConversionPattern" value="%m %n"/>
     		</layout>
