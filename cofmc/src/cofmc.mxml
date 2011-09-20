@@ -5,6 +5,7 @@
 			   xmlns:fm="cofm.component.fm.*"
 			   xmlns:home="cofm.component.home.*"
 			   minWidth="1024" minHeight="680"
+			   verticalCenter="middle" horizontalCenter="center"
 			   creationComplete="initView();">
 	<s:states>
 		<s:State name="Init"/>
@@ -111,7 +112,7 @@
 	</fx:Script>
 	
 	
-	
+
 	<!-- The application control bar. -->
 	<s:controlBarContent>
 		<mx:LinkButton label="{RS.go_feedback}" click="goFeedback();"/>
@@ -137,6 +138,5 @@
 	
 	<!-- The Modeling view -->
 	<fm:FMPage id="fmpage" includeIn="Modeling"/>
-	
 	
 </s:Application>
