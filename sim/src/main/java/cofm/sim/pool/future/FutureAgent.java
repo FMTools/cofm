@@ -22,9 +22,6 @@ public class FutureAgent extends AbstractFuture {
 			CofmAgent agent = (CofmAgent) template.clone();
 			agent.setId(nextId + i);
 			pool.addAgent(agent);
-			if (i == 0) {
-				pool.addToTracker(agent);
-			}
 		}
 	}
 

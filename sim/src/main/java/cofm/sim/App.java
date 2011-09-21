@@ -17,6 +17,7 @@ public class App
         Pool pool = reader.initEnvironment(CFG_FILE);
         
         Clock clock = new Clock(pool);
-        clock.start();
+//        clock.start();
+        clock.startWithoutDelay();
     }
 }

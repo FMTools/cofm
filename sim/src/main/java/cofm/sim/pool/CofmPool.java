@@ -46,14 +46,15 @@ public class CofmPool implements Pool {
 	}
 
 	private String trackerToString() {
-		StringBuilder sb = new StringBuilder("Tracker: [ ");
+		StringBuilder sb = new StringBuilder("Tracker: [ \n");
 		for (int i = 0; i < tracker.size(); i++) {
 			CofmAgent agent = (CofmAgent) tracker.get(i);
 			LimiterInfo info = limiter.getAgentInfo(agent);
-			Action last = agent.getLastAction();
-			sb.append((i == 0 ? "" : ", ") + agent.toString() + 
-					"(" + (last == null ? "" : last.toString()) +
-					(info == null ? "" : ((last == null ? "" : ", " ) + info.toString())) + ")");
+			sb.append(agent.toString() + 
+					"(CREATE=" + agent.getNumCreate() + ", SELECT=" + agent.getNumSelect() +
+					(info == null ? "" : ", " + info.toString()) + ")" +
+					(i == 0 ? "" : ","));
+			sb.append("\n");
 		}
 		sb.append(" ]");
 		return sb.toString();

@@ -26,6 +26,8 @@ public class CofmAgent extends AbstractAgent {
 	protected double probDeselect;
 	
 	protected boolean creationFailed;
+	protected int numCreate = 0;
+	protected int numSelect = 0;
 	
 	// Selection policy
 	protected SelectionPolicy selectionPolicy;
@@ -151,12 +153,25 @@ public class CofmAgent extends AbstractAgent {
 
 	@Override
 	protected void finishExecution() {
-		// do nothing now
-		
+		if (lastAction instanceof Creation) {
+			numCreate++;
+		} else if (lastAction instanceof Selection) {
+			numSelect++;
+		} else if (lastAction instanceof Deselect) {
+			numSelect--;
+		}
 	}
 
 	@Override
 	protected void prepareExecution() {
 		creationFailed = false;
+	}
+	
+	public int getNumCreate() {
+		return numCreate;
+	}
+	
+	public int getNumSelect() {
+		return numSelect;
 	}
 }

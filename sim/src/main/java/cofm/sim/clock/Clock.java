@@ -34,6 +34,19 @@ public class Clock {
 		}, DELAY);
 	}
 	
+	public void startWithoutDelay() {
+		do {
+			pool.evolve();
+			if (turn % 50 == 0) {
+				logger.info("=== TURN " + turn + " ===");
+				logger.info(pool.toString());
+			}
+			turn++;
+		} while (!pool.endAfterLastEvolve());
+		logger.info("=== " + pool.getEndCondition().toString() + " ===");
+		stop();
+	}
+	
 	public void stop() {
 		timer.cancel();
 	}
