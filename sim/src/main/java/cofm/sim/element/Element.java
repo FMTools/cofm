@@ -7,17 +7,22 @@ import cofm.sim.agent.Agent;
 
 public abstract class Element {
 
-	protected long id;
+	protected int id;
 
 	protected List<Agent> selectors = new ArrayList<Agent>();
 	protected Agent creator;
 	
-	public Element(Agent creator) {
+	public Element(Agent creator, int id) {
 		this.creator = creator;
+		setId(id);
 	}
 	
-	public void setId(long id) {
+	public void setId(int id) {
 		this.id = id;
+	}
+	
+	public int getId() {
+		return this.id;
 	}
 	
 	public List<Agent> getSelectors() {

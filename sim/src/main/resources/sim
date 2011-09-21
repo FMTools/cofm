@@ -1,8 +1,8 @@
 # (MUST appears at the TOP of this file!) Limiter: OFF or [Limiter class name], Element Risk Policy to use: [class name] [parameters], Risk Share Policy to use: [class name]
 #LIMITER OFF
-LIMITER cofm.sim.limiter.risk.RiskLimiter 5.0 cofm.sim.limiter.risk.ExpRiskPolicy 0.6 2 cofm.sim.limiter.risk.EqualSharePolicy
-# LIMITER cofm.sim.limiter.risk.RiskLimiter 5.0 cofm.sim.limiter.risk.RectRiskPolicy 0.6 2 cofm.sim.limiter.risk.EqualDiffSharePolicy
-# LIMITER cofm.sim.limiter.risk.RiskLimiter 5.0 cofm.sim.limiter.risk.LinearRiskPolicy 0.6 2 cofm.sim.limiter.risk.EqualSharePolicy
+LIMITER cofm.sim.limiter.risk.RiskLimiter 5.0 0.6 cofm.sim.limiter.risk.ExpRiskPolicy 0.6 2 cofm.sim.limiter.risk.EqualSharePolicy
+# LIMITER cofm.sim.limiter.risk.RiskLimiter 5.0 0.6 cofm.sim.limiter.risk.RectRiskPolicy 0.6 2 cofm.sim.limiter.risk.EqualDiffSharePolicy
+# LIMITER cofm.sim.limiter.risk.RiskLimiter 5.0 0.6 cofm.sim.limiter.risk.LinearRiskPolicy 0.6 2 cofm.sim.limiter.risk.EqualSharePolicy
 
 
 # Agent name, number & traits

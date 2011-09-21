@@ -6,8 +6,8 @@ public class FmElement extends Element {
 
 	protected double rating;  
 	
-	public FmElement(Agent creator, double rating) {
-		super(creator);
+	public FmElement(Agent creator, int id, double rating) {
+		super(creator, id);
 		this.rating = rating;
 	}
 	

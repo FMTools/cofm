@@ -95,7 +95,8 @@ public class CofmAgent extends AbstractAgent {
 	}
 	
 	protected Element createElement() {
-		return new FmElement(this, genRandomIn(minRating, maxRating));
+		// New ID = pool.number_of_elements
+		return new FmElement(this, pool.listElements().size(), genRandomIn(minRating, maxRating));
 	}
 
 	protected Action tryDeselect() {

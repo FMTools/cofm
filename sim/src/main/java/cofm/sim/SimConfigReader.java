@@ -132,7 +132,7 @@ public class SimConfigReader {
 		String[] parts = s.split(" ");
 		int i = 1;
 		double rating = Double.valueOf(parts[i++]);
-		pool.addElement(new FmElement(null, rating));
+		pool.addElement(new FmElement(null, 0, rating));
 	}
 
 	private void setEndCondition(String s, Pool pool) {
@@ -209,9 +209,10 @@ public class SimConfigReader {
 		try {
 			int i = 1;
 			Class<?> limiterClass = Class.forName(parts[i++]);
-			Constructor<?> limiterCtor = limiterClass.getConstructor(Pool.class, Double.class, ElementRiskPolicy.class, AgentRiskSharePolicy.class);
+			Constructor<?> limiterCtor = limiterClass.getConstructor(Pool.class, Double.class, Double.class, ElementRiskPolicy.class, AgentRiskSharePolicy.class);
 			
 			double maxRisk = Double.valueOf(parts[i++]);
+			double rateThresh = Double.valueOf(parts[i++]);
 			
 			ElementRiskPolicy riskPolicy = null;
 			String rpc = parts[i++]; 
@@ -232,7 +233,7 @@ public class SimConfigReader {
 			Class<?> sharePolicyClass = Class.forName(parts[i++]);
 			AgentRiskSharePolicy sharePolicy = (AgentRiskSharePolicy) sharePolicyClass.newInstance();
 			
-			return (Limiter) limiterCtor.newInstance(pool, maxRisk, riskPolicy, sharePolicy);
+			return (Limiter) limiterCtor.newInstance(pool, maxRisk, rateThresh, riskPolicy, sharePolicy);
 			
 		} catch (Exception e) {
 			logger.warn("Fail to create Limiter.", e);
