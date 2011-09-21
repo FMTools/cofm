@@ -24,9 +24,11 @@ START 0.5
 
 # End condition
 # END cofm.sim.pool.EndByPoolSize 1000
-END cofm.sim.pool.EndByTurnCount 100
+END cofm.sim.pool.EndByTurnCount 1000
 
 # Agent increasement: [EACH/ONCE] [how_many_turns] AGENT(see above)
-FUTURE EACH 50 cofm.sim.pool.future.FutureAgent New_Bad_Buy 2 0.0 0.2 0.7 0.7 0.5 cofm.sim.agent.behavior.BadRatingFirstPolicy 0.2 0.05
+FUTURE EACH 50 cofm.sim.pool.future.FutureAgent Bad_Buy 2 0.0 0.2 0.7 0.7 0.5 cofm.sim.agent.behavior.BadRatingFirstPolicy 0.2 0.05
+FUTURE EACH 100 cofm.sim.pool.future.FutureAgent Normal 1 0.15 0.8 0.35 0.55 0.5 cofm.sim.agent.behavior.RatingFirstPolicy 0.15 0.2
+FUTURE EACH 100 cofm.sim.pool.future.FutureAgent Normal 1 0.15 0.8 0.35 0.55 0.5 cofm.sim.agent.behavior.PopularityFirstPolicy 0.05 0.2
 
 # Other changes should also start with: FUTURE EACH/ONCE [turns] [class] ...

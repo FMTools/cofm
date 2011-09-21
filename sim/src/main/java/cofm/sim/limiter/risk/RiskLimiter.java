@@ -79,7 +79,7 @@ public class RiskLimiter extends AbstractLimiter {
 			LimiterInfo li = info.get(owner);
 			Risk risk = (Risk) li;
 			risk.value += ElementRiskPolicy.INITIAL_RISK;
-		} else {
+		} else if (!(action instanceof Waiting)) {
 			int numSelectorsNow = action.target().getSelectors().size();
 			int numSelectorsBefore = 0;
 			
@@ -98,7 +98,7 @@ public class RiskLimiter extends AbstractLimiter {
 				// The de-selector
 				Risk dsr = (Risk) info.get(owner);
 				int index = ((Deselect) action).getSelectorIndex();
-				dsr.add(deltaRiskOfSelector(action.target(), -1, index, numSelectorsNow, numSelectorsBefore));
+				dsr.add(deltaRiskOfSelector(action.target(), -1, index+1, numSelectorsNow, numSelectorsBefore));
 				
 				// The selectors in front of the de-selector
 				for (int i = 0; i < index; i++) {

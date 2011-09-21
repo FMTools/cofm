@@ -18,8 +18,8 @@ public abstract class AbstractFuture implements Future {
 
 	public void changePool() {
 		++curTurn;
-		if ((mode == MODE_REPEAT && curTurn % turn == 0) 
-				|| (mode == MODE_ONCE && curTurn == turn)) {
+		if ((mode == MODE_REPEAT && (curTurn % turn == 0)) 
+				|| (mode == MODE_ONCE && (curTurn == turn))) {
 			makeChange();
 		}
 	}

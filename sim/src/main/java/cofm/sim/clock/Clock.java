@@ -40,7 +40,7 @@ public class Clock {
 	
 	private void tick() {
 		pool.evolve();
-		if (turn % 10 == 0) {
+		if (turn % 50 == 0) {
 			logger.info("=== TURN " + turn + " ===");
 			logger.info(pool.toString());
 		}

@@ -87,7 +87,7 @@ public class SimConfigReader {
 		int i = 1;
 		
 		String m = parts[i++];
-		int mode = (m == EACH ? Future.MODE_REPEAT : Future.MODE_ONCE);
+		int mode = (m.equals(EACH) ? Future.MODE_REPEAT : Future.MODE_ONCE);
 		
 		int turn = Integer.valueOf(parts[i++]);
 		
@@ -182,6 +182,7 @@ public class SimConfigReader {
 						minRating, maxRating,
 						probCreate, probSelect, probDeselect, 
 						sp);
+				pool.addAgent(agent);
 				if (j == 0) { // Add an agent to the tracker
 					pool.addToTracker(agent);
 				}

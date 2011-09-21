@@ -25,6 +25,8 @@ public class CofmAgent extends AbstractAgent {
 	
 	protected double probDeselect;
 	
+	protected boolean creationFailed;
+	
 	// Selection policy
 	protected SelectionPolicy selectionPolicy;
 	
@@ -50,19 +52,23 @@ public class CofmAgent extends AbstractAgent {
 				minRating, maxRating, probCreate, probSelect, probDeselect, selectionPolicy);
 	}
 	
+	public String toString() {
+		return this.getName() + "_" + this.getId();
+	}
+	
 	@Override
 	protected Action nextAction() {
-		boolean canCreate = true, canCreateOrSelect = true;
+		boolean canCreateOrSelect = true;
 		if (lastFailedAction != null && lastFailedAction instanceof Creation) {
 			// If Creation failed once, it will always fail in this turn.
-			canCreate = false;
+			creationFailed = true;
 		}
 		if (lastFailedAction != null && lastFailedAction instanceof Deselect) {
 			canCreateOrSelect = false;
 		}
 		
 		if (canCreateOrSelect) {
-			double r = (canCreate ? Math.random() : genRandomIn(probCreate, 1.0));
+			double r = (creationFailed ? genRandomIn(probCreate, 1.0) : Math.random());
 			
 			if (r < probCreate) {
 				return new Creation(pool, createElement());
@@ -141,5 +147,16 @@ public class CofmAgent extends AbstractAgent {
 			return null;
 		}
 		return new Selection(pool, elem, this);
+	}
+
+	@Override
+	protected void finishExecution() {
+		// do nothing now
+		
+	}
+
+	@Override
+	protected void prepareExecution() {
+		creationFailed = false;
 	}
 }

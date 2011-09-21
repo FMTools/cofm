@@ -51,7 +51,7 @@ public class CofmPool implements Pool {
 			CofmAgent agent = (CofmAgent) tracker.get(i);
 			LimiterInfo info = limiter.getAgentInfo(agent);
 			Action last = agent.getLastAction();
-			sb.append((i == 0 ? "" : ", ") + agent.getName() + 
+			sb.append((i == 0 ? "" : ", ") + agent.toString() + 
 					"(" + (last == null ? "" : last.toString()) +
 					(info == null ? "" : ((last == null ? "" : ", " ) + info.toString())) + ")");
 		}

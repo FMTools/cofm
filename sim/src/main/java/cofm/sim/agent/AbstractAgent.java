@@ -1,11 +1,15 @@
 package cofm.sim.agent;
 
+import org.apache.log4j.Logger;
+
 import cofm.sim.action.Action;
 import cofm.sim.limiter.Limiter;
 import cofm.sim.pool.Pool;
 
 public abstract class AbstractAgent implements Agent {
 
+	static Logger logger = Logger.getLogger(AbstractAgent.class);
+	
 	protected int id;
 	protected Limiter limiter;
 	protected Pool pool;
@@ -21,7 +25,6 @@ public abstract class AbstractAgent implements Agent {
 		lastFailedAction = null;
 		this.limiter = limiter;
 		this.pool = pool;
-		pool.addAgent(this);
 	}
 	
 	@Override
@@ -42,18 +45,23 @@ public abstract class AbstractAgent implements Agent {
 	}
 	
 	public void executeAction() {
+		prepareExecution();
 		do {
 			lastAction = nextAction(); 
 			lastFailedAction = lastAction;
+			
 		} while (!limiter.isValidAction(this, lastAction));
 
 		lastAction.execute();
 		lastFailedAction = null;
 		
 		limiter.update(this, lastAction);
+		finishExecution();
 	}
 
+	abstract protected void prepareExecution();
 	abstract protected Action nextAction();
+	abstract protected void finishExecution();
 
 	public void setId(int id) {
 		this.id = id;

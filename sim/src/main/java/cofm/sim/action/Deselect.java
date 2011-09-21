@@ -21,7 +21,7 @@ public class Deselect extends AbstractAction {
 	public void execute() {
 		for (int i = 0; i < element.getSelectors().size(); i++) {
 			if (this.agent.equals(element.getSelectors().get(i))) {
-				selectorIndex = i + 1;
+				selectorIndex = i;
 				element.getSelectors().remove(i);
 				return;
 			}
