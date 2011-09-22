@@ -23,6 +23,7 @@
 			private var createFeatureDlg: CreateFeatureDlg;
 			private var createRelationDlg: CreateBinRelationDlg;
 			private var editTypeDlg: EditEntityTypeDlg;
+			private var editBinRelDlg: EditBinRelationDlg;
 			//private var addAttributeDlg: AddAttributeDlg;
 			
 			public function retrieveFeatureModel(modelId: int, modelName: String): void {
@@ -44,12 +45,18 @@
 				editTypeDlg = EditEntityTypeDlg(PopUpManager.createPopUp(this, EditEntityTypeDlg, true));
 				PopUpManager.centerPopUp(editTypeDlg);
 			}
+			
+			private function doEditRelation(): void {
+				editBinRelDlg = EditBinRelationDlg(PopUpManager.createPopUp(this, EditBinRelationDlg, true));
+				PopUpManager.centerPopUp(editBinRelDlg);
+			}
 		]]>
 	</fx:Script>
 	<s:HGroup id="fmToolBar">
 		<s:Button label="{RS.m_new_f}" click="doCreateFeature();"/>
 		<s:Button label="{RS.m_new_r}" click="doCreateRelation();"/>
 		<s:Button label="Edit Type Definitions" click="doAddAttribute();"/>
+		<s:Button label="Edit Relationship Definitions" click="doEditRelation();"/>
 	</s:HGroup>
 	<s:HGroup>
 		
