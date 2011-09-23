@@ -5,44 +5,28 @@ package cofm.command
 	import cofm.util.*;
 
 	import mx.utils.StringUtil;
-	public class CreateModelCommand implements IDurableCommand {
-		private var _cmdId: int;
+	public class CreateModelCommand extends AbstractDurableCommand {
 		private var _name: String;
 		private var _des: String;
 
 		public function CreateModelCommand(name: String, des: String) {
+			super();
 			_name = mx.utils.StringUtil.trim(name);
 			_des = mx.utils.StringUtil.trim(des);
 		}
 
-		/** See server.CreateModelRequest
-		 */
-		public function execute(): void {
-			_cmdId = CommandBuffer.instance().addCommand(this);
-			var request: Object = {
-					"name": Cst.REQ_CREATE_MODEL,
-					"id": _cmdId,
+		override protected function createRequest():Object {
+			return {
+				"name": Cst.REQ_CREATE_MODEL,
 					"requesterId": UserList.instance().myId,
 					"modelName": _name,
 					"description": _des
-				};
-			Connector.instance().send(request);
+			};
 		}
-
-		public function redo(): void {
-		}
-
-		public function undo(): void {
-		}
-
-		public function setDurable(val:Boolean): void {
-		}
-
-		public function handleResponse(data:Object): void {
-			if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME] &&
-				Cst.REQ_CREATE_MODEL == data[Cst.FIELD_RSP_SOURCE_NAME]) {
-
-				CommandBuffer.instance().removeCommand(_cmdId);
+		
+		override protected function handleSuccess(data:Object):void {
+			if (Cst.REQ_CREATE_MODEL == data[Cst.FIELD_RSP_SOURCE_NAME]) {
+				
 				var theModel: XML = 
 					<model isMine="true" id={data.modelId} name={_name} userNum="1">
 						<des>{_des}</des>

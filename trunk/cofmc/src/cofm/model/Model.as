@@ -671,7 +671,8 @@ package cofm.model
 				
 				if (op["local"] != null) {
 					ClientEvtDispatcher.instance().dispatchEvent(
-						new ModelMinorChangeEvent(ModelMinorChangeEvent.FEATURE_CREATED_LOCALLY, op["entityId"]));
+						new ModelMinorChangeEvent(ModelMinorChangeEvent.FEATURE_CREATED_LOCALLY, op["entityId"], 
+							int(op[Cst.FIELD_RSP_SOURCE_ID])));
 				}
 			}
 			

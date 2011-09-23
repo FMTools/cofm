@@ -10,6 +10,7 @@ package cofm.event
 		public static const CURRENT_FEATURE_DELETED: String = "currentFeatureDeleted";
 		public static const BASIC_INFO_UPDATED: String = "basicInfoUpdated";
 		public static const BACK_TO_HOME: String = "backToHome";
+		public static const COMMAND_EXECUTED: String = "commandExecuted";
 		
 		public var data: Object;
 		

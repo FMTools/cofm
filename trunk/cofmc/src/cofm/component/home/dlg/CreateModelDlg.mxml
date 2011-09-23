@@ -20,6 +20,7 @@
 	<fx:Script>
 		<![CDATA[
 			import cofm.command.*;
+			import cofm.command.composite.*;
 			import cofm.event.*;
 			import cofm.model.*;
 			import cofm.util.*;

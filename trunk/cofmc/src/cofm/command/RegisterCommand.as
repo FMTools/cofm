@@ -10,51 +10,30 @@ package cofm.command
 	
 	import mx.controls.Alert;
 
-	public class RegisterCommand implements IDurableCommand {
+	public class RegisterCommand extends AbstractDurableCommand {
 
 		private var _name:String;
 		private var _pwd: String;
 		private var _mail: String;
-		private var _cmdId: int;
 
 		public function RegisterCommand(name: String, pwd: String, mail: String) {
+			super();
 			_name = name;
 			_pwd = MD5.hash(pwd);
 			_mail = mail;
 		}
-
-		/** Register format see Server.RegisterRequest
-		 */
-		public function execute(): void {
-			_cmdId = CommandBuffer.instance().addCommand(this);
-			var request: Object = {
-					"id": _cmdId,
-					"name": Cst.REQ_REGISTER,
+		
+		override protected function createRequest():Object {
+			return {
+				"name": Cst.REQ_REGISTER,
 					"user": _name,
 					"pwd": _pwd,
 					"mail": _mail
-				};
-			Connector.instance().send(request);
+			};
 		}
-
-		public function redo(): void {
-		}
-
-		public function undo(): void {
-		}
-
-		public function setDurable(val:Boolean): void {
-			throw new Error("Unsupported Operation Error.");
-		}
-
-		/** Response format: (see server.ListModelResponse for details)
-		 *      models: array of models.
-		 */
-		public function handleResponse(data:Object): void {
+		
+		override protected function handleSuccess(data:Object):void {
 			if (Cst.REQ_REGISTER == data[Cst.FIELD_RSP_SOURCE_NAME]) {
-				if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME]) {
-	
-					CommandBuffer.instance().removeCommand(_cmdId);
 					ClientEvtDispatcher.instance().dispatchEvent(
 						new ClientEvent(ClientEvent.REGISTER_SUCCESS));
 					
@@ -65,11 +44,13 @@ package cofm.command
 					d[key] = _name;
 					ClientEvtDispatcher.instance().dispatchEvent(
 						new ListUserEvent(ListUserEvent.APPEND, d));
-				} else if (Cst.RSP_ERROR == data[Cst.FIELD_RSP_NAME]) {
-					CommandBuffer.instance().removeCommand(_cmdId);
-					ClientEvtDispatcher.instance().dispatchEvent(
-						new ClientEvent(ClientEvent.REGISTER_FAILED));
-				}
+				} 
+		}
+
+		override protected function handleError(data: Object): void {
+			if (Cst.REQ_REGISTER == data[Cst.FIELD_RSP_SOURCE_NAME]) {
+				ClientEvtDispatcher.instance().dispatchEvent(
+							new ClientEvent(ClientEvent.REGISTER_FAILED));
 			}
 		}
 
