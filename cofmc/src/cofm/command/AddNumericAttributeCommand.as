@@ -21,11 +21,9 @@ package cofm.command
 			_unit = unit;
 		}
 
-		override public function execute(): void {
-			_id = CommandBuffer.instance().addCommand(this);
+		override protected function createRequest():Object {
 			var request: Object = {
-					id: _id,
-					name: Cst.REQ_VA_ATTR_NUMBER,
+				name: Cst.REQ_VA_ATTR_NUMBER,
 					requesterId: UserList.instance().myId,
 					modelId: (_modelId < 0) ? ModelCollection.instance().currentModelId : _modelId,
 					attr: _name,
@@ -36,22 +34,21 @@ package cofm.command
 					min: _min,
 					max: _max,
 					unit: _unit
-				};
+			};
 			if (_attrId > 0) {
 				request.attrId = _attrId;
 			}
-			Connector.instance().send(request);
+			return request;
 		}
-
-		override public function handleResponse(data:Object): void {
-			if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME] &&
-				Cst.REQ_VA_ATTR_NUMBER == data[Cst.FIELD_RSP_SOURCE_NAME]) {
-
-				CommandBuffer.instance().removeCommand(_id);
-
+		
+		override protected function handleSuccess(data:Object):void {
+			if (Cst.REQ_VA_ATTR_NUMBER == data[Cst.FIELD_RSP_SOURCE_NAME]) {
+				
 				ClientEvtDispatcher.instance().dispatchEvent(
 					new OperationCommitEvent(OperationCommitEvent.COMMIT_SUCCESS, data));
 			}
+			
 		}
+
 	}
 }

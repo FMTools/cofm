@@ -6,49 +6,34 @@ package cofm.command
 
 	import flash.events.IEventDispatcher;
 
-	public class DatalessCommand implements IDurableCommand {
+	public class DatalessCommand extends AbstractDurableCommand {
 		protected var _name: String;
-		protected var _cmdId: int;
 		private var _needMyId: Boolean;
 		private var _needModelId: Boolean;
 
 		public function DatalessCommand(name: String, needMyId: Boolean=true, needModelId: Boolean=true) {
+			super();
 			_name = name;
 			_needMyId = needMyId;
 			_needModelId = needModelId;
 		}
 
-		public function execute(): void {
-			_cmdId = CommandBuffer.instance().addCommand(this);
+		override protected function createRequest():Object {
 			var request: Object = {
-					"id": _cmdId,
-					"name": _name
-				};
+				"name": _name
+			};
 			if (_needMyId) {
 				request.requesterId = UserList.instance().myId;
 			}
 			if (_needModelId) {
 				request.modelId = ModelCollection.instance().currentModelId;
 			}
-			Connector.instance().send(request);
+			return request;
 		}
-
-		public function redo(): void {
-		}
-
-		public function undo(): void {
-		}
-
-		public function setDurable(val:Boolean): void {
-			throw new Error("Unsupported Operation Error.");
-		}
-
-		public function handleResponse(data:Object): void {
-			if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME]
-				&& _name == data[Cst.FIELD_RSP_SOURCE_NAME]) {
-
-				CommandBuffer.instance().removeCommand(_cmdId);
-
+		
+		override protected function handleSuccess(data:Object):void {
+			if (_name == data[Cst.FIELD_RSP_SOURCE_NAME]) {
+				
 				refreshDataAndViews(data);
 			}
 		}

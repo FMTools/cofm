@@ -4,9 +4,7 @@ package cofm.command
 	import cofm.event.*;
 	import cofm.util.*;
 
-	public class AddAttributeCommand implements IDurableCommand {
-		protected var _id: int;
-		
+	public class AddAttributeCommand extends AbstractDurableCommand {
 		protected var _name: String;
 		protected var _type: String;
 		protected var _multi: Boolean;
@@ -20,6 +18,7 @@ package cofm.command
 			entypeId: int,
 			multi: Boolean=true, dup: Boolean=true,
 			modelId: int = -1, attrId: int = -1) {
+			super();
 			_name = name;
 			_type = type;
 			_multi = multi;
@@ -28,11 +27,9 @@ package cofm.command
 			_modelId = modelId;
 			_entypeId = entypeId;
 		}
-
-		public function execute(): void {
-			_id = CommandBuffer.instance().addCommand(this);
+		 
+		override protected function createRequest(): Object {
 			var request: Object = {
-					id: _id,
 					name: Cst.REQ_VA_ATTR,
 					requesterId: UserList.instance().myId,
 					modelId: (_modelId < 0) ? ModelCollection.instance().currentModelId : _modelId,
@@ -45,23 +42,11 @@ package cofm.command
 			if (_attrId > 0) {
 				request.attrId = _attrId;
 			}
-			Connector.instance().send(request);
+			return request;
 		}
 
-		public function redo(): void {
-		}
-
-		public function undo(): void {
-		}
-
-		public function setDurable(val:Boolean): void {
-		}
-
-		public function handleResponse(data:Object): void {
-			if (Cst.RSP_SUCCESS == data[Cst.FIELD_RSP_NAME] &&
-				Cst.REQ_VA_ATTR == data[Cst.FIELD_RSP_SOURCE_NAME]) {
-
-				CommandBuffer.instance().removeCommand(_id);
+		override protected function handleSuccess(data:Object): void {
+			if (Cst.REQ_VA_ATTR == data[Cst.FIELD_RSP_SOURCE_NAME]) {
 
 				ClientEvtDispatcher.instance().dispatchEvent(
 					new OperationCommitEvent(OperationCommitEvent.COMMIT_SUCCESS, data));
