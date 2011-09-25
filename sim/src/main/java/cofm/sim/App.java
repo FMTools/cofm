@@ -11,6 +11,7 @@ public class App
 {
 	private static final String CFG_FILE = "./target/classes/sim";
 	
+	//action point allpws multiaction in one turn
     public static void main( String[] args )
     {
         SimConfigReader reader = new SimConfigReader();      
