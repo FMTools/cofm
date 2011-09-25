@@ -1,5 +1,4 @@
-Stop Embedded Glassfish Server: 
-mvn embedded-glassfish:stop
+
 
 
 ==================
