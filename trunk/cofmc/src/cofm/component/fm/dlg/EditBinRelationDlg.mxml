@@ -27,7 +27,7 @@
 			import mx.managers.PopUpManager;
 			
 			[Bindable]
-			private var binrels: XMLListCollection;
+			public var binrels: XMLListCollection = new XMLListCollection();
 			
 			private function initView(): void {
 				for each (var br: Object in Model.instance().bintypes) {
