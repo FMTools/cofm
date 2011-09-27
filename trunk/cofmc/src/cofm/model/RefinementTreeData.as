@@ -7,6 +7,7 @@ package cofm.model
 	import flash.utils.Dictionary;
 	
 	import mx.collections.XMLListCollection;
+	import mx.controls.Alert;
 	
 	public class RefinementTreeData implements IOperationListener {
 		

@@ -2,6 +2,9 @@
 <s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
 			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600">
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
@@ -17,5 +20,27 @@
 
 		}
 	</fx:Style>
+	<fx:Script>
+		<![CDATA[
+			import cofm.model.ModelUtil;
+			
+			import mx.controls.Alert;
+			private function doClick(evt: Event): void {
+				var list: XMLList = new XMLList(<node/>);
+			//	Alert.show("Len = " + String(list.length()), "");
+				list.appendChild(<node id="1"/>);
+				list.appendChild(<node id="2"/>);
+				list.appendChild(<node id="3"/>);
+				list.appendChild(<node id="4"/>);
+				list.appendChild(<node id="5"/>);
+				
+			   ModelUtil.clearXMLList(list);
+				Alert.show("Len = " + String(list.node.length()), "");
+				
+				
+			}
+		]]>
+	</fx:Script>
 	<s:Panel height="100" width="100" styleName="hd"/>
+	<s:Button click="doClick(event);" />
 </s:Application>

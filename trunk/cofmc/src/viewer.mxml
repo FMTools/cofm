@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   minWidth="1024" minHeight="680"
+			   creationComplete="initApp();" xmlns:fm="cofm.component.fm.*">
+	
+	<!-- Usage: http://<server>/cofm/viewer.html?u=<UserName>&m=<ModelIdToView> -->
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:states>
+		<s:State name="INIT"/>
+		<s:State name="MAIN"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.event.*;
+			import cofm.util.*;
+			import cofm.model.*;
+			
+			import mx.controls.Alert;
+			
+			private static const PARAM_USERNAME: String = "u";
+			private static const PARAM_MODEL_ID: String = "m";
+			
+			private var username: String;
+			private var modelId: int;
+			
+			private function initApp(): void {
+				// Get the "?..." string in the url 
+				var searchStr: String = ExternalInterface.call("document.location.search.toString");
+				if (searchStr == null) {
+					return;
+				}
+				// Skip the "?"
+				searchStr = searchStr.substring(1, searchStr.length);
+				// Get parameters
+				var params: Array = searchStr.split("&");
+				
+				for each (var param: Object in params) {
+					var parts: Array = String(param).split("=");
+					if (String(parts[0]) == PARAM_USERNAME) {
+						username = String(parts[1]); 
+					} else if (String(parts[0]) == PARAM_MODEL_ID) {
+						modelId = int(parts[1]);
+					}
+				}
+				
+				//Alert.show("User=" + username + ", ID=" + modelId, "");
+				ClientEvtDispatcher.instance().addEventListener(ClientEvent.CONNECT_SUCCESS, onConnected);
+				ClientEvtDispatcher.instance().addEventListener(LoginEvent.SUCCESS, onLoginSuccess);
+				ClientEvtDispatcher.instance().addEventListener(ModelUpdateEvent.SUCCESS, onModelUpdated);
+				
+				initDataModels();
+				
+				Connector.instance().init();
+			}
+			
+			private function initDataModels() {
+				ModelCollection.instance().currentModelId = modelId;
+				UserList.instance();
+				Model.instance();
+				FeatureNameList.instance();
+				CurrentFeature.instance();
+				GlobalTreeData.instance();
+				WorkingTreeData.instance();
+				PersonalTreeData.instance();
+			}
+			
+			private function onConnected(evt: ClientEvent): void {
+				// Automatically log in
+				new LoginCommand(username, "null", true).execute();
+			}
+			
+			private function onLoginSuccess(evt: LoginEvent): void {
+				// Automatically select model
+				this.currentState = "MAIN";
+				fmPage.retrieveFeatureModel(modelId, "");
+			}
+			
+			private function onModelUpdated(evt: ModelUpdateEvent): void {
+				// Set fmPage title
+				fmPage.setTitle(String(evt.model["modelName"]));
+			}
+			
+			
+		]]>
+	</fx:Script>
+	
+	<fm:FMPage id="fmPage" includeIn="MAIN" />
+</s:Application>

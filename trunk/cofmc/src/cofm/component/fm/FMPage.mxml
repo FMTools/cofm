@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <s:SkinnableContainer xmlns:fx="http://ns.adobe.com/mxml/2009" 
 					  xmlns:s="library://ns.adobe.com/flex/spark" 
-					  xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:fm="cofm.component.fm.*">
+					  xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:fm="cofm.component.fm.*"
+					  >
 	<s:layout>
 		<s:VerticalLayout/>
 	</s:layout>
@@ -25,6 +26,10 @@
 			private var editTypeDlg: EditEntityTypeDlg;
 			private var editBinRelDlg: EditBinRelationDlg;
 			//private var addAttributeDlg: AddAttributeDlg;
+			
+			public function setTitle(title: String): void {
+				featureBrowser.title = RS.m_tree_title + ":  " + title;
+			}
 			
 			public function retrieveFeatureModel(modelId: int, modelName: String): void {
 				new UpdateCommand(modelId).execute();
