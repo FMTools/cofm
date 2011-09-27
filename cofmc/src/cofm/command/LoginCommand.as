@@ -9,18 +9,21 @@ package cofm.command
 	public class LoginCommand extends AbstractDurableCommand {
 		private var _name: String;
 		private var _pwd: String;
+		private var _force: Boolean;
 
-		public function LoginCommand(name: String, pwd: String) {
+		public function LoginCommand(name: String, pwd: String, force: Boolean = false) {
 			super();
 			_name = name;
 			_pwd = MD5.hash(pwd);
+			_force = force;
 		}
 
 		override protected function createRequest():Object {
 			return {
 					"name": Cst.REQ_LOGIN,
 					"user": _name,
-					"pwd": _pwd
+					"pwd": _pwd,
+					"forceLogin": _force
 				};
 		}
 		

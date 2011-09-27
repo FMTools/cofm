@@ -16,9 +16,9 @@
     <sourceAttachmentPath/>
   </compiler>
   <applications>
-    <application path="cofmc.mxml"/>
     <application path="Test.mxml"/>
-    <application path="fmpage.mxml"/>
+    <application path="cofmc.mxml"/>
+    <application path="viewer.mxml"/>
   </applications>
   <modules/>
   <buildCSSFiles/>
