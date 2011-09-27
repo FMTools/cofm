@@ -18,6 +18,7 @@
   <applications>
     <application path="cofmc.mxml"/>
     <application path="Test.mxml"/>
+    <application path="fmpage.mxml"/>
   </applications>
   <modules/>
   <buildCSSFiles/>
