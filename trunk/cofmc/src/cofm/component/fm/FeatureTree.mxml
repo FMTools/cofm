@@ -5,7 +5,11 @@
 		 labelField="@name"
 		 showRoot="false"
 		 itemClick="onItemClicked(event);"
-		 itemRenderer="cofm.component.fm.FeatureTreeItemRenderer">
+		 itemOpen="onItemOpened(event);"
+		 itemClose="onItemClosed(event);"
+		 render="onRendering(event);"
+		 itemRenderer="cofm.component.fm.FeatureTreeItemRenderer"
+		 creationComplete="initView();">
 	
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
@@ -14,12 +18,26 @@
 		<![CDATA[
 			import cofm.command.*;
 			import cofm.event.*;
-			import cofm.util.*;
 			import cofm.model.RefinementTreeData;
+			import cofm.util.*;
 			
+			import mx.controls.Alert;
 			import mx.events.ListEvent;
+			import mx.events.TreeEvent;
 			
 			private var lastSelectedFeatureId: int = -1;
+			
+			private var lastOpenedItems: Object = new Object();
+			
+			private var forceReopen: Boolean = false;
+			
+			public var rootNode: Object;
+			
+			public var treeName: String;
+			
+			private function initView(): void {
+				ClientEvtDispatcher.instance().addEventListener(OperationCommitEvent.BEFORE_MODEL_UPDATE, onDataChanged);
+			}
 			
 			private function onItemClicked(evt: ListEvent): void {
 				
@@ -40,6 +58,29 @@
 					}
 				}
 				lastSelectedFeatureId = curId;
+			}
+			
+			private function onItemOpened(evt: TreeEvent): void {
+				this.lastOpenedItems = this.openItems;
+			}
+			
+			private function onItemClosed(evt: TreeEvent): void {
+				this.lastOpenedItems = this.openItems;
+			}
+			
+			private function onRendering(evt: Event): void {
+				if (forceReopen) {
+//					Alert.show("reopen " + treeName, "");
+//					for each (var i: Object in this.lastOpenedItems) {
+//						Alert.show("node", "");
+//						this.expandItem(i, true);
+//					}
+					forceReopen = false;
+				}	
+			}
+			
+			private function onDataChanged(evt: OperationCommitEvent): void {
+				forceReopen = true;
 			}
 		]]>
 	</fx:Script>

@@ -69,19 +69,27 @@
 			<mx:TabNavigator paddingTop="0">
 				<s:NavigatorContent label="Type View">
 					<fm:FeatureTree dataProvider="{ClassificationTreeData.instance().xml}"
+								    rootNode="{ClassificationTreeData.instance().root}"
+									treeName="classify"
 									width="{Size.TREE_W}" height="{Size.TREE_H}"/>
 				</s:NavigatorContent>
 				<s:NavigatorContent label="Global View">
 					<fm:FeatureTree dataProvider="{GlobalTreeData.instance().xml}"
+									rootNode="{GlobalTreeData.instance().root}"
+									treeName="global"
 									width="{Size.TREE_W}" height="{Size.TREE_H}"
 								    />
 				</s:NavigatorContent>
 				<s:NavigatorContent label="Working View">
 					<fm:FeatureTree dataProvider="{WorkingTreeData.instance().xml}"
+									rootNode="{WorkingTreeData.instance().root}"
+									treeName="working"
 									width="{Size.TREE_W}" height="{Size.TREE_H}"/>
 				</s:NavigatorContent>
 				<s:NavigatorContent label="Personal View">
 					<fm:FeatureTree dataProvider="{PersonalTreeData.instance().xml}"
+									rootNode="{PersonalTreeData.instance().root}"
+									treeName="personal"
 									width="{Size.TREE_W}" height="{Size.TREE_H}"/>
 				</s:NavigatorContent>
 			</mx:TabNavigator>
