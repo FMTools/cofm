@@ -47,7 +47,7 @@ package cofm.model
 		//--------------------------------------------------
 		//   Tree Manipulation
 		//--------------------------------------------------
-		protected function get root(): XML {
+		public function get root(): XML {
 			return XML(this.xml.getItemAt(0));
 		}
 		

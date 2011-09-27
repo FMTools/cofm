@@ -51,6 +51,10 @@
 					}
 				}
 				
+				if (username == null) {
+					return;
+				}
+				
 				//Alert.show("User=" + username + ", ID=" + modelId, "");
 				ClientEvtDispatcher.instance().addEventListener(ClientEvent.CONNECT_SUCCESS, onConnected);
 				ClientEvtDispatcher.instance().addEventListener(LoginEvent.SUCCESS, onLoginSuccess);

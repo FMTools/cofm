@@ -362,6 +362,9 @@ package cofm.model
 		
 		// For details about operations, see server.bean.operation package.
 		private function onOperationCommit(evt: OperationCommitEvent): void {
+			ClientEvtDispatcher.instance().dispatchEvent(new OperationCommitEvent(
+				OperationCommitEvent.BEFORE_MODEL_UPDATE, null));
+			
 			var op: Object = evt.response;
 			var opModel: String = op["modelId"];
 			if (ModelCollection.instance().currentModelId != int(opModel)) {
