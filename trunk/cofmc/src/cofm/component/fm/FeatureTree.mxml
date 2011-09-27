@@ -70,11 +70,8 @@
 			
 			private function onRendering(evt: Event): void {
 				if (forceReopen) {
-//					Alert.show("reopen " + treeName, "");
-//					for each (var i: Object in this.lastOpenedItems) {
-//						Alert.show("node", "");
-//						this.expandItem(i, true);
-//					}
+					this.validateNow();
+					this.expandChildrenOf(this.dataProvider, true);
 					forceReopen = false;
 				}	
 			}
