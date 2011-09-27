@@ -18,6 +18,7 @@ public class LoginRequest extends Request {
 	
 	private String user;
 	private String pwd;
+	private Boolean forceLogin;
 	
 	@Override
 	protected Processor makeDefaultProcessor() {
@@ -47,6 +48,14 @@ public class LoginRequest extends Request {
 		this.pwd = pwd;
 	}
 	
+	public void setForceLogin(Boolean forceLogin) {
+		this.forceLogin = forceLogin;
+	}
+
+	public Boolean getForceLogin() {
+		return forceLogin;
+	}
+
 	private static class LoginProcessor implements Processor {
 
 		public boolean checkRequest(Request req) {
@@ -62,7 +71,12 @@ public class LoginRequest extends Request {
 			LoginRequest lr = (LoginRequest)req;
 			Response rsp = new Response(req);
 		
-			User user = DaoUtil.getUserDao().getByNameAndPwd(lr.getUser(), lr.getPwd());
+			User user = null;
+			if (lr.getForceLogin()) {
+				user = DaoUtil.getUserDao().getByName(lr.getUser());
+			} else {
+				user = DaoUtil.getUserDao().getByNameAndPwd(lr.getUser(), lr.getPwd());
+			}
 			
 			if (user == null) {
 				rsp.setMessage(Resources.MSG_ERROR_USER_LOGIN_FAILED);

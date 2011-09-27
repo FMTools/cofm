@@ -97,6 +97,7 @@ public class UpdateRequest extends Request {
 			response.setBinaries(list2);
 			response.setEntypes(list3);
 			response.setBintypes(list4);
+			response.setModelName(m.getName());
 			response.setName(Resources.RSP_SUCCESS);
 			
 			rg.setBack(response);
@@ -112,6 +113,7 @@ public class UpdateRequest extends Request {
 		private List<BinRelation2> binaries;
 		private List<EntityType2> entypes;
 		private List<BinRelationType2> bintypes;
+		private String modelName;
 		
 		public UpdateResponse(Request r) {
 			super(r);
@@ -147,6 +149,14 @@ public class UpdateRequest extends Request {
 
 		public void setBintypes(List<BinRelationType2> bintypes) {
 			this.bintypes = bintypes;
+		}
+
+		public void setModelName(String modelName) {
+			this.modelName = modelName;
+		}
+
+		public String getModelName() {
+			return modelName;
 		}
 		
 	}
