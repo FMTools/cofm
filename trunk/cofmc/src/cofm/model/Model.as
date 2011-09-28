@@ -362,8 +362,6 @@ package cofm.model
 		
 		// For details about operations, see server.bean.operation package.
 		private function onOperationCommit(evt: OperationCommitEvent): void {
-			ClientEvtDispatcher.instance().dispatchEvent(new OperationCommitEvent(
-				OperationCommitEvent.BEFORE_MODEL_UPDATE, null));
 			
 			var op: Object = evt.response;
 			var opModel: String = op["modelId"];
@@ -451,7 +449,7 @@ package cofm.model
 			}
 			
 			ClientEvtDispatcher.instance().dispatchEvent(
-				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
+				new OperationCommitEvent(OperationCommitEvent.EXECUTED_ON_LOCAL, op));
 		}
 		
 		public function handleEditAddBinRelType(op: Object): void {
@@ -475,7 +473,7 @@ package cofm.model
 				);
 			}
 			ClientEvtDispatcher.instance().dispatchEvent(
-				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
+				new OperationCommitEvent(OperationCommitEvent.EXECUTED_ON_LOCAL, op));
 		}
 		
 		/**
@@ -490,7 +488,7 @@ package cofm.model
 			}
 			
 			ClientEvtDispatcher.instance().dispatchEvent(
-				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
+				new OperationCommitEvent(OperationCommitEvent.EXECUTED_ON_LOCAL, op));
 		}
 		
 		/**
@@ -515,7 +513,7 @@ package cofm.model
 			}
 			
 			ClientEvtDispatcher.instance().dispatchEvent(
-				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
+				new OperationCommitEvent(OperationCommitEvent.EXECUTED_ON_LOCAL, op));
 		}
 		
 		/**
@@ -534,7 +532,7 @@ package cofm.model
 			editOrAddAttributeDef(op, def);
 			
 			ClientEvtDispatcher.instance().dispatchEvent(
-				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
+				new OperationCommitEvent(OperationCommitEvent.EXECUTED_ON_LOCAL, op));
 		}
 		
 		public function handleEditAddEnumAttributeDef(op: Object): void {
@@ -556,7 +554,7 @@ package cofm.model
 			editOrAddAttributeDef(op, def);
 			
 			ClientEvtDispatcher.instance().dispatchEvent(
-				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
+				new OperationCommitEvent(OperationCommitEvent.EXECUTED_ON_LOCAL, op));
 		}
 		
 		public function handleEditAddNumericAttributeDef(op: Object): void {
@@ -575,7 +573,7 @@ package cofm.model
 			editOrAddAttributeDef(op, def);
 			
 			ClientEvtDispatcher.instance().dispatchEvent(
-				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
+				new OperationCommitEvent(OperationCommitEvent.EXECUTED_ON_LOCAL, op));
 		}
 		
 		private function editOrAddAttributeDef(op: Object, attrDef: XML): void {
@@ -595,7 +593,7 @@ package cofm.model
 			}
 			
 			ClientEvtDispatcher.instance().dispatchEvent(
-				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
+				new OperationCommitEvent(OperationCommitEvent.EXECUTED_ON_LOCAL, op));
 		}
 		
 		public function handleVoteAddValue(op: Object): void {
@@ -642,7 +640,7 @@ package cofm.model
 			}
 			
 			ClientEvtDispatcher.instance().dispatchEvent(
-				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
+				new OperationCommitEvent(OperationCommitEvent.EXECUTED_ON_LOCAL, op));
 		}
 		
 		public function handleVoteAddEntity(op:Object): void {
@@ -680,7 +678,7 @@ package cofm.model
 			}
 			
 			ClientEvtDispatcher.instance().dispatchEvent(
-				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
+				new OperationCommitEvent(OperationCommitEvent.EXECUTED_ON_LOCAL, op));
 		}
 		
 		public function handleVoteAddBinRel(op:Object): void {
@@ -720,7 +718,7 @@ package cofm.model
 			op[Model.IS_A_REFINEMENT] = this.isInstanceOfRefinementByTypeId(op["typeId"]);
 			
 			ClientEvtDispatcher.instance().dispatchEvent(
-				new ModelUpdateEvent(ModelUpdateEvent.LOCAL_MODEL_UPDATED, op));
+				new OperationCommitEvent(OperationCommitEvent.EXECUTED_ON_LOCAL, op));
 		}
 		
 		private function onModelUpdate(evt: ModelUpdateEvent): void {

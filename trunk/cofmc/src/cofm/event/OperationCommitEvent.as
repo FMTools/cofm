@@ -5,7 +5,7 @@ package cofm.event
 	public class OperationCommitEvent extends Event {
 		public static const COMMIT_SUCCESS: String = "OperationCommitSuccess";
 		public static const FORWARDED: String = "OperationForwarded";
-		public static const BEFORE_MODEL_UPDATE: String = "BeforeModelUpdate";
+		public static const EXECUTED_ON_LOCAL: String = "OperationExecutedLocally";
 
 		public var response: Object;
 
