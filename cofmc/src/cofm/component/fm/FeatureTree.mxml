@@ -5,9 +5,6 @@
 		 labelField="@name"
 		 showRoot="false"
 		 itemClick="onItemClicked(event);"
-		 itemOpen="onItemOpened(event);"
-		 itemClose="onItemClosed(event);"
-		 render="onRendering(event);"
 		 itemRenderer="cofm.component.fm.FeatureTreeItemRenderer"
 		 creationComplete="initView();">
 	
@@ -36,7 +33,6 @@
 			public var treeName: String;
 			
 			private function initView(): void {
-				ClientEvtDispatcher.instance().addEventListener(OperationCommitEvent.BEFORE_MODEL_UPDATE, onDataChanged);
 			}
 			
 			private function onItemClicked(evt: ListEvent): void {
@@ -60,25 +56,6 @@
 				lastSelectedFeatureId = curId;
 			}
 			
-			private function onItemOpened(evt: TreeEvent): void {
-				this.lastOpenedItems = this.openItems;
-			}
-			
-			private function onItemClosed(evt: TreeEvent): void {
-				this.lastOpenedItems = this.openItems;
-			}
-			
-			private function onRendering(evt: Event): void {
-				if (forceReopen) {
-					this.validateNow();
-					this.expandChildrenOf(this.dataProvider, true);
-					forceReopen = false;
-				}	
-			}
-			
-			private function onDataChanged(evt: OperationCommitEvent): void {
-				forceReopen = true;
-			}
 		]]>
 	</fx:Script>
 </mx:Tree>

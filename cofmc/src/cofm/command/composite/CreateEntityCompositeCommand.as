@@ -1,12 +1,12 @@
 package cofm.command.composite
 {
 	import cofm.command.IDurableCommand;
+	import cofm.command.VoteAddBinRelationCommand;
 	import cofm.command.VoteAddFeatureCommand;
 	import cofm.command.VoteAddValueCommand;
-	import cofm.command.VoteAddBinRelationCommand;
 	import cofm.event.ClientEvent;
 	import cofm.event.ModelMinorChangeEvent;
-	import cofm.event.ModelUpdateEvent;
+	import cofm.event.OperationCommitEvent;
 	import cofm.model.Model;
 	import cofm.util.ClientEvtDispatcher;
 	import cofm.util.Cst;
@@ -34,7 +34,7 @@ package cofm.command.composite
 			_parentId = parentId;
 			
 			ClientEvtDispatcher.instance().addEventListener(ModelMinorChangeEvent.FEATURE_CREATED_LOCALLY, onFeatureCreatedLocally);
-			ClientEvtDispatcher.instance().addEventListener(ModelUpdateEvent.LOCAL_MODEL_UPDATED, onLocalModelUpdated);
+			ClientEvtDispatcher.instance().addEventListener(OperationCommitEvent.EXECUTED_ON_LOCAL, onOperationExecuted);
 		}
 		
 		public function execute():void
@@ -65,8 +65,8 @@ package cofm.command.composite
 			}
 		}
 		
-		private function onLocalModelUpdated(evt: ModelUpdateEvent): void {
-			if (this._lastCommand.getId() == int(evt.model[Cst.FIELD_RSP_SOURCE_ID])) {
+		private function onOperationExecuted(evt: OperationCommitEvent): void {
+			if (this._lastCommand.getId() == int(evt.response[Cst.FIELD_RSP_SOURCE_ID])) {
 				
 				if (this._lastAttrName == Cst.ATTR_FEATURE_NAME) {
 					this._lastAttrName = Cst.ATTR_FEATURE_DES;
@@ -109,7 +109,7 @@ package cofm.command.composite
 			}
 			
 			// Remove event listeners
-			ClientEvtDispatcher.instance().removeEventListener(ModelUpdateEvent.LOCAL_MODEL_UPDATED, onLocalModelUpdated);
+			ClientEvtDispatcher.instance().removeEventListener(OperationCommitEvent.EXECUTED_ON_LOCAL, onOperationExecuted);
 		}
 		
 		public function redo():void

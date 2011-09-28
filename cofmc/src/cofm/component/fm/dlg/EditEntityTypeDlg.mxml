@@ -70,7 +70,7 @@
 				}
 				
 				ClientEvtDispatcher.instance().addEventListener(
-					ModelUpdateEvent.LOCAL_MODEL_UPDATED, onLocalModelUpdated);
+					OperationCommitEvent.EXECUTED_ON_LOCAL, onOperationExecuted);
 			}
 			
 			private function rootNode(): XML {
@@ -85,18 +85,18 @@
 				return null;
 			}
 			
-			private function onLocalModelUpdated(evt: ModelUpdateEvent): void {
+			private function onOperationExecuted(evt: OperationCommitEvent): void {
 				// Update selectedTypeId, entityTypes, typeTreeData, attrId
 				// Create default attrs if new type has been created (use evt.model.handle to locate
 				// the original ID of the entity type).
 				// Handles changing on type only.
-				if (evt.model == null) {
+				if (evt.response == null) {
 					return;
 				}
 				
-				if (evt.model[Cst.FIELD_RSP_SOURCE_NAME] == Cst.REQ_EA_ENTITY_TYPE) {
+				if (evt.response[Cst.FIELD_RSP_SOURCE_NAME] == Cst.REQ_EA_ENTITY_TYPE) {
 					// Handle adding or editing entity type
-					var handle: int = int(evt.model[Cst.FIELD_CMD_HANDLE]);
+					var handle: int = int(evt.response[Cst.FIELD_CMD_HANDLE]);
 					var typeXMLs: XMLList;
 					var treeXML: XML;
 					if (handle < -1) {
@@ -104,27 +104,27 @@
 						// and add default attributes
 						typeXMLs = entityTypes.source.(@id==handle);
 						if (typeXMLs.length() > 0) {
-							typeXMLs[0].@id = evt.model["typeId"];
+							typeXMLs[0].@id = evt.response["typeId"];
 						}
 						treeXML = getNodeById(String(handle));
 						if (treeXML != null) {
-							treeXML.@id = evt.model["typeId"];
+							treeXML.@id = evt.response["typeId"];
 						}
 						new AddAttributeCommand(Cst.ATTR_FEATURE_NAME,
-							Cst.ATTR_TYPE_STRING, int(evt.model["typeId"]),
+							Cst.ATTR_TYPE_STRING, int(evt.response["typeId"]),
 							true, false, ModelCollection.instance().currentModelId).execute();
 						new AddAttributeCommand(Cst.ATTR_FEATURE_DES,
-							Cst.ATTR_TYPE_TEXT, int(evt.model["typeId"]),
+							Cst.ATTR_TYPE_TEXT, int(evt.response["typeId"]),
 							true, true, ModelCollection.instance().currentModelId).execute();
 					} else {
 						// An editing operation, get type XML by ID, and set new name
-						typeXMLs = entityTypes.source.(@id==String(evt.model["typeId"]));
+						typeXMLs = entityTypes.source.(@id==String(evt.response["typeId"]));
 						if (typeXMLs.length() > 0) {
-							typeXMLs[0].@name = evt.model["typeName"];
+							typeXMLs[0].@name = evt.response["typeName"];
 						}
-						treeXML = getNodeById(String(evt.model["typeId"]));
+						treeXML = getNodeById(String(evt.response["typeId"]));
 						if (treeXML != null) {
-							treeXML.@name = evt.model["typeName"];
+							treeXML.@name = evt.response["typeName"];
 						}
 					}
 					
@@ -282,7 +282,7 @@
 		
 			private function onCancel(): void {
 				ClientEvtDispatcher.instance().removeEventListener(
-					ModelUpdateEvent.LOCAL_MODEL_UPDATED, onLocalModelUpdated);
+					OperationCommitEvent.EXECUTED_ON_LOCAL, onOperationExecuted);
 				PopUpManager.removePopUp(this);
 			}
 			
