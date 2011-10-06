@@ -9,6 +9,8 @@ import java.util.TreeSet;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 
+import collab.fm.mining.GrammaticalParser.ParsedWord;
+
 import edu.stanford.nlp.ling.WordTag;
 import edu.stanford.nlp.process.Morphology;
 import edu.stanford.nlp.tagger.maxent.MaxentTagger;
@@ -18,164 +20,52 @@ public class TextData {
 
 	static Logger logger = Logger.getLogger(TextData.class);
 	
-	// The word tags assigned by Stanfod POS Tagger, the tags are defined in
-	//        http://www.computing.dcu.ie/~acahill/tagset.html
-	public static final String TAG_VERB = "VB";  // The verb-tags contain the substring "VB"
-	public static final String TAG_NOUN = "NN";  // The noun-tags contain the substring "NN"
-	public static final String TAG_OTHER = "OTHER";
-	// Tags for stop words
-	public static final String[] TAG_STOPWORDS = {
-		"CC",  // Coordinating conjunction, e.g. and,but,or...
-		"DT",  // Determiner, e.g. "the, those...", see "English Determiners" here: 
-		       //    http://en.wikipedia.org/wiki/Determiner_%28linguistics%29#English_determiners
-		"EX",  // Existential there, i.e. the "There" in the sentence "There is a book on the desk."
-		"IN",  // Preposition or subordinating conjunction, e.g. "in", "of", "after"...
-		"TO",  // "to"
-		"PRP", // Personal Pronoun, i.e. "I", "you", "he"...
-		"PRP$", // Possessive PRP, i.e. "my", "your", "his"...
-		"WDT", // Wh-Determiner, i.e. "which", "that"
-		"WP",  // Wh-Pronoun, i.e. "who", "whom", "what"...
-		"WP$", // Possessive WP, i.e. "whose" ...
-		"WRB", // Wh-adverb, i.e. "why", "where", "how"
-		"UH"   // Interjection, e.g. "uh", "well", "yes"...
-	};
+	private static GrammaticalParser parser = new GrammaticalParser();
 	
-	private Map<String, Integer> taggedTermVector = new HashMap<String, Integer>();
+	// Term Vector of stemmed words
+	private Map<String, Integer> termVector = new HashMap<String, Integer>();
+	private Map<String, Integer> objectTermVector = new HashMap<String, Integer>();
 	
-	private static Map<String, Integer> documentVector = new HashMap<String, Integer>();
+	// Document Vector (a TextData is a Document)
+	private static Map<String, Integer> documentVector = new HashMap<String, Integer>();	
 	private static int numDocument = 0;
 	
-	private static MaxentTagger tagger;
-	static {
-		try {
-			tagger = new MaxentTagger("left3words-wsj-0-18.tagger");
-		} catch (IOException e) {
-			logger.warn("Cannot create tagger.", e);
-		} catch (ClassNotFoundException e) {
-			logger.warn("Cannot create tagger.", e);
-		}
-		
-	}
-	
-	public static void resetDfVector() {
+	public static void resetDocumentVector() {
 		setNumDocument(0);
 		documentVector.clear();
 	}
 	
-	public TextData(String text) {
-		calcTermVector(text);
+	public TextData(String text, boolean needGrammarParse) {
+		calcTermVector(text, needGrammarParse);
 	}
 	
 	public static Map<String, Integer> getDocumentVector() {
 		return documentVector;
 	}
 	
-	// Get the term vectors for calculating text similarity (See TextSimilarity class)
-	
-	public Map<String, Integer> getUntaggedTermVector() {
-		return this.getFilteredTermVector(new TermPolicy() {
-
-			public boolean keepTaggedWord(String term) {
-				// Keep all words
-				return true;
-			}
-			
-		});
-	}
-	
-	public Map<String, Integer> getVerbVector() {
-		return this.getFilteredTermVector(new TermPolicy() {
-
-			public boolean keepTaggedWord(String word) {
-				// Keep all verbs (starts with "VB")
-				return word.startsWith(TAG_VERB);
-			}
-			
-		});
-	}
-	
-	public Map<String, Integer> getNounVector() {
-		return this.getFilteredTermVector(new TermPolicy() {
-
-			public boolean keepTaggedWord(String word) {
-				// Keep all nouns
-				return word.startsWith(TAG_NOUN);
-			}
-			
-		});
-	}
-	
-	// A misc term is a word other than Verb or Noun.
-	public Map<String, Integer> getMiscTermVector() {
-		return this.getFilteredTermVector(new TermPolicy() {
-
-			public boolean keepTaggedWord(String word) {
-				return !word.startsWith(TAG_NOUN) && !word.startsWith(TAG_VERB);
-			}
-			
-		});
-	}
-	
-	// Term vector without tag
-	private Map<String, Integer> getFilteredTermVector(TermPolicy policy) {
-		Map<String, Integer> result = new HashMap<String, Integer>();
-		for (String key: taggedTermVector.keySet()) {
-			if (!policy.keepTaggedWord(key)) {
-				continue;
-			}
-			// Extract the word
-			String s = key.substring(key.indexOf("_") + 1);
-			
-			// Compute the term-frequency (tf)
-			int curTf = taggedTermVector.get(key);
-			Integer val = result.get(s);
-			if (val == null) {
-				val = curTf;
-			} else {
-				val += curTf;
-			}
-			result.put(s, val);
-		}
-		return result;
-	}
-	
-	private String convertTag(String t) {
-		if (t.startsWith(TextData.TAG_NOUN)) {
-			return TextData.TAG_NOUN;
-		} else if (t.startsWith(TextData.TAG_VERB)) {
-			return TextData.TAG_VERB;
-		}
-		return t;
-	}
-	
-	private void calcTermVector(String text) {
+	private void calcTermVector(String text, boolean needGrammarParse) {
 		TextData.setNumDocument(TextData.getNumDocument() + 1);
-		// Tag the words with the Stanford POS Tagger API
-		String tagText = tagger.tagString(text);
 		
+		parser.parse(text, needGrammarParse);
+		
+		// All Words
 		Set<String> termEncountered = new TreeSet<String>();
-
-		// Stem and store each word (term) and its info
-		for (String word: tagText.split("\\s")) {
-			WordTag wt = Morphology.stemStatic(WordTag.valueOf(word));
-
-			// Skip the stop words and punctuation. 
-			if (ArrayUtils.contains(TAG_STOPWORDS, wt.tag()) 
-					|| wt.word().length() < 2) {
-				continue;
-			}
-
-			String myTag = this.convertTag(wt.tag());
-			String myWord = wt.word().toLowerCase();
-			this.checkAndInc(this.taggedTermVector, myTag + "_" + myWord);
+		for (ParsedWord word: parser.getWords()) {
+			String stemmed = word.stem;
 			
-			// If the term appears in current document (the "text") for the 
-			// first time, we increase the document-frequency (df).
-			// The df doesn't count different tags.
-			if (!termEncountered.contains(myWord)) {
-				this.checkAndInc(TextData.documentVector, myWord);
-				termEncountered.add(myWord);
+			this.checkAndInc(this.termVector, stemmed);
+			
+			// If the term appears in current document for the 
+			// first time, we increase the document-frequency (df) vector.
+			if (!termEncountered.contains(stemmed)) {
+				this.checkAndInc(TextData.documentVector, stemmed);
+				termEncountered.add(stemmed);
 			}
+		}
+		
+		// Only the objects
+		for (ParsedWord word: parser.getObjects()) {
+			this.checkAndInc(this.objectTermVector, word.stem);
 		}
 	}
 	
@@ -189,19 +79,13 @@ public class TextData {
 		vector.put(key, val);
 	}
 	
-	private static interface TermPolicy {
-		public boolean keepTaggedWord(String term);
-	}
-	
 	public static void main(String[] argv) {
-		TextData.resetDfVector();
-		TextData td = new TextData("You can search in the search result. Do some search.");
-		TextData td2 = new TextData("I can know you know I Know.");
+		TextData.resetDocumentVector();
+		TextData td = new TextData("You can search in the search result. Do some search.", true);
+		TextData td2 = new TextData("I can know you know I Know.", true);
 		System.out.println("df: " + TextData.getDocumentVector().toString());
-		System.out.println("tw: " + td.getUntaggedTermVector().toString());
-		System.out.println("vw: " + td.getVerbVector().toString());
-		System.out.println("nw: " + td.getNounVector().toString());
-		System.out.println("mw: " + td.getMiscTermVector().toString());
+		System.out.println("td terms: " + td.getTermVector().toString());
+		System.out.println("td objects: " + td.getObjectTermVector().toString());
 	}
 
 	public static void setNumDocument(int numDocument) {
@@ -210,5 +94,21 @@ public class TextData {
 
 	public static int getNumDocument() {
 		return numDocument;
+	}
+
+	public void setTermVector(Map<String, Integer> termVector) {
+		this.termVector = termVector;
+	}
+
+	public Map<String, Integer> getTermVector() {
+		return termVector;
+	}
+
+	public void setObjectTermVector(Map<String, Integer> objectTermVector) {
+		this.objectTermVector = objectTermVector;
+	}
+
+	public Map<String, Integer> getObjectTermVector() {
+		return objectTermVector;
 	}
 }

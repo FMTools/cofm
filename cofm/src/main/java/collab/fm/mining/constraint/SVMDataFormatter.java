@@ -10,12 +10,12 @@ public class SVMDataFormatter {
 	static Logger logger = Logger.getLogger(SVMDataFormatter.class);
 	
 	private static final String[] dataAttributes = {
-		"totalSim", "verbSim", "nounSim", "parental", "sibling", "numMandatory",
-		"requireOut", "excludeOut"
+		"totalSim", "objectSim", "firstAsObject", "secondAsObject"
 	};
 	
 
 	private static int[] attrIndex;
+	
 	public static String attrInfo() {
 		StringBuffer sb = new StringBuffer();
 		for (int i = 0; i < dataAttributes.length; i++) {

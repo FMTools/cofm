@@ -9,14 +9,9 @@ import collab.fm.mining.constraint.FeaturePair;
 public class LocalAttributeStats implements DataStats {
 
 	private int[] simTotal = new int[33];
-	private int[] simVerb = new int[33];
-	private int[] simNoun = new int[33];
-	
-	private int[] reqOutNo = {0, 0, 0}; // require outsider = NO
-	private int[] reqOutYes = {0, 0, 0}; // require outsider = 1 or 2
-	
-	private int[] excOutNo = {0, 0, 0}; // exclude outsider = NO
-	private int[] excOutYes = {0, 0, 0}; // exclude outsider = 1 or 2
+	private int[] simObject = new int[33];
+	private int[] sim1asObj = new int[33];
+	private int[] sim2asObj = new int[33];
 	
 	public void report(BufferedWriter out) throws IOException {
 		String head = String.format("*** Attribute distribution over class.\n"
@@ -24,39 +19,19 @@ public class LocalAttributeStats implements DataStats {
 				+ "-------------------------------------------------------\n",
 				" ", "NO_CONS", "REQUIRE", "EXCLUDE");
 		String simAttrs = formatSimInfo("Sim_Total", simTotal)
-				+ formatSimInfo("Sim_Verb", simVerb)
-				+ formatSimInfo("Sim_Noun", simNoun);
-		String otherAttrs = String.format(
-				"%10s%10d%10d%10d\n"   // No require out
-				+ "%10s%10d%10d%10d\n"   // Has 
-				+ "%10s%10d%10d%10d\n"   // No exclude out
-				+ "%10s%10d%10d%10d",    // Has
-				"No_Req_Out", reqOutNo[0], reqOutNo[1], reqOutNo[2],
-				"Has", reqOutYes[0], reqOutYes[1], reqOutYes[2],
-				"No_Exc_Out", excOutNo[0], excOutNo[1], excOutNo[2],
-				"Has", excOutYes[0], excOutYes[1], excOutYes[2]
-				);
-		out.write(head + simAttrs + otherAttrs + "\n");
+				+ formatSimInfo("Sim_Object", simObject)
+				+ formatSimInfo("1_as_Obj", sim1asObj)
+				+ formatSimInfo("2_as_Obj", sim2asObj);
+		out.write(head + simAttrs + "\n");
 	}
 
 	public void update(List<FeaturePair> pairs) {
 		for (FeaturePair pair: pairs) {
 			addSimInfo(pair.getTotalSim(), pair.getLabel(), this.simTotal);
-			addSimInfo(pair.getVerbSim(), pair.getLabel(), this.simVerb);
-			addSimInfo(pair.getNounSim(), pair.getLabel(), this.simNoun);
+			addSimInfo(pair.getObjectSim(), pair.getLabel(), this.simObject);
+			addSimInfo(pair.getFirstAsObject(), pair.getLabel(), this.sim1asObj);
+			addSimInfo(pair.getSecondAsObject(), pair.getLabel(), this.sim2asObj);
 			
-			int index = (pair.getLabel() == FeaturePair.NO_CONSTRAINT ? 0 : 
-				(pair.getLabel() == FeaturePair.REQUIRE ? 1 : 2));
-			if (pair.getRequireOut() == FeaturePair.NO) {
-				reqOutNo[index]++;
-			} else if (pair.getRequireOut() >= 1) {
-				reqOutYes[index]++;
-			}
-			if (pair.getExcludeOut() == FeaturePair.NO) {
-				excOutNo[index]++;
-			} else if (pair.getExcludeOut() >= 1) {
-				excOutYes[index]++;
-			}
 		}
 
 	}

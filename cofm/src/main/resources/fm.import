@@ -1,0 +1,30 @@
+# Define FMs to be imported 
+# Lines starting with a '#' are comments
+
+# Feature Model 1: begin
+# MODEL <model name>
+MODEL Word Processor
+# SKIP MODEL: use this keyword to skip the whole model
+
+# Feature definition section, use SKIP FEATURES to skip all features
+FEATURES 
+
+# FEATURE <feature name>
+# <feature descriptions>
+# use SKIP FEATURE to skip specific features
+FEATURE
+
+# REFINEMENTS: use indents to show the tree structure, "SKIP" to skip this
+REFINEMENTS
+feature_1
+	feature_2
+		feature_3
+		feature_3_1
+	feature_4
+feature_5
+
+# CONSTRAINTS: use "->", "<->", and "-><-" for requires, mutual-requires, and excludes, "SKIP" to skip this
+CONSTRAINTS
+feature_1 -> feature_2
+feature_3 <-> feature_4
+feature_5 -><- feature_6

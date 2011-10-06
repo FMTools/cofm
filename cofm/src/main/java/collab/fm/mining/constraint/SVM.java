@@ -84,12 +84,12 @@ public class SVM implements Optimizable {
 	private List<DataStats> stats = new ArrayList<DataStats>();
 	
 	public static final int MAX_PREDICTION_NUM = 20;
-	public static final String TRAINING_FILE = "D:/log/cofm/mining/cons_svm_train";
+	public static final String TRAINING_FILE = "log/cofm/mining/cons_svm_train";
 	public static final String SCALED_FILE_SUFFIX = ".scale";
-	public static final String SCALE_RANGE_FILE = "D:/log/cofm/mining/cons_svm_scale_range";
-	public static final String MODEL_FILE = "D:/log/cofm/mining/cons_svm_model";
-	public static final String TEST_FILE = "D:/log/cofm/mining/cons_svm_test";
-	public static final String PREDICT_RESULT_FILE = "D:/log/cofm/mining/cons_svm_predict";
+	public static final String SCALE_RANGE_FILE = "log/cofm/mining/cons_svm_scale_range";
+	public static final String MODEL_FILE = "log/cofm/mining/cons_svm_model";
+	public static final String TEST_FILE = "log/cofm/mining/cons_svm_test";
+	public static final String PREDICT_RESULT_FILE = "log/cofm/mining/cons_svm_predict";
 	
 	// ----------- Arguments for calling LIBSVM ------------
 	// Scale the data to [-1, 1]
@@ -122,13 +122,12 @@ public class SVM implements Optimizable {
 	private void buildStatsChain() {
 		stats.clear();
 		stats.add(new LocalAttributeStats());
-		stats.add(new DFStats());
 	}
 	
 	private void buildFilterChain() {
 		filters.clear();
 		filters.add(new ConstraintsOnlyFilter());
-		filters.add(new SimilarityFilter(0.0));
+		//filters.add(new SimilarityFilter(0.0));
 		filters.add(new CrossTreeOnlyFilter());
 	}
 	
@@ -235,19 +234,8 @@ public class SVM implements Optimizable {
 			for (int j = i + 1; j < features.length; j++) {
 				FeaturePair pair = new FeaturePair(features[i], features[j]);
 				if (mode == MODE_TEST_BLANK) {
-					// Set all pair to Non-constraint, and set all constraint-related
-					// attributes to UNKNOWN
+					// Set all pair to Non-constraint
 					pair.setLabel(FeaturePair.NO_CONSTRAINT);
-					pair.setRequireOut(FeaturePair.UNKNOWN);
-					pair.setExcludeOut(FeaturePair.UNKNOWN);
-				} else if (mode == MODE_TEST_ALL) {
-					// Set "No" to "Unknown" in test set
-					if (pair.getRequireOut() == FeaturePair.NO){
-						pair.setRequireOut(FeaturePair.UNKNOWN);
-					}
-					if (pair.getExcludeOut() == FeaturePair.NO) {
-						pair.setExcludeOut(FeaturePair.UNKNOWN);
-					}
 				}
 				pairs.add(pair);
 			}
@@ -413,6 +401,7 @@ public class SVM implements Optimizable {
 	public static final int REQUIRED_BY = 2;
 	public static final int MUTUAL_REQUIRE = 3;
 	public static final int EXCLUDE = 4;
+	
 	
 	private void removeConstraint(FeaturePair pair) {
 		// Set the pair to "Non-Constrained"
@@ -669,19 +658,31 @@ public class SVM implements Optimizable {
 				BufferedReader result = new BufferedReader(new FileReader(SVM.PREDICT_RESULT_FILE));
 					
 				String s;
-				int numCorrect = 0, numPrediction = 0;
-				while (numPrediction < numDisplayResult && (s = result.readLine()) != null) {
+				while ((s = result.readLine()) != null) {
 					int label = Float.valueOf(s).intValue();
+					testPairs.get(pairIndex).setPredictedClass(label);
+					pairIndex++;
+				}
+				result.close();
+				
+				// Up-merge the constraints
+				Prediction prediction = new Prediction();
+				prediction.upmergeConstraints(testPairs);
+				
+				pairIndex = 0;
+				int numCorrect = 0, numPrediction = 0;
+				
+				while (numPrediction < numDisplayResult && pairIndex < testPairs.size()) {
+					
 					FeaturePair cur = testPairs.get(pairIndex++);
-					if (label != cur.getLabel()) {
-						// If this label is different from the original one, it is 
-						// a prediction needed checking.
+					if (cur.getPredictedClass() != cur.getLabel() &&
+							cur.getPredictedClass() != FeaturePair.NO_CONSTRAINT) {
+						// If the prediction is different from the original one, it needs checking.
 						numPrediction++;
 						// Print the prediction to user
 						System.out.print("\n" + cur.getPairInfo());
 						System.out.println("\n-->Prediction is: " +
-								(label == FeaturePair.EXCLUDE ? "EXCLUDE" : 
-									(label == FeaturePair.REQUIRE ? "REQUIRE" : "NOT_CONSTRAINED")));
+								(cur.getPredictedClass() == FeaturePair.EXCLUDE ? "EXCLUDE" : "REQUIRE"));
 						System.out.print("Input your answer ("
 								+ NO_CONSTRAINT + " = Not-constrained, "
 								+ REQUIRES + " = Requires, "
@@ -700,11 +701,11 @@ public class SVM implements Optimizable {
 							type = FeaturePair.REQUIRE;
 						}
 						cur.setLabel(type);
-						if (type == label) {
+						if (type == cur.getPredictedClass()) {
 							numCorrect++;
 						}
 						
-						// if the answer type is different from cur pair (i.e. the test FM), 
+						// if the answer type is different from original pair (i.e. the test FM), 
 						// we need to apply the answer to the test FM
 						if (type != cur.getLabel()) {
 							if (type == FeaturePair.EXCLUDE || type == FeaturePair.REQUIRE) {
@@ -721,7 +722,7 @@ public class SVM implements Optimizable {
 				logger.info("\nPrediction checking end." +
 						"\nAccuracy = " + (100.0f * numCorrect / numPrediction) + "% (" +
 						numCorrect + "/" + numPrediction + ")");
-				result.close();
+				
 				
 			} catch (FileNotFoundException e) {
 				logger.warn("Cannot open prediction file.", e);

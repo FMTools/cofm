@@ -116,6 +116,11 @@
 		<artifactId>stanford-pos-tagger</artifactId>
 		<version>3.0.2</version>
 	</dependency>
+	<dependency>
+		<groupId>edu.stanford.nlp</groupId>
+		<artifactId>stanford-parser</artifactId>
+		<version>1.6.9</version>
+	</dependency>
   </dependencies>
  
   <build>

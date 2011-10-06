@@ -83,11 +83,13 @@ public class TextSimilarity {
 	
 	public static void main(String[] argv) throws IOException, ClassNotFoundException {
 
-		TextData.resetDfVector();
-		TextData td = new TextData("You can search in the search result. Do some search.");
-		TextData td2 = new TextData("I can know you know I Know.");
+		TextData.resetDocumentVector();
+		TextData td = new TextData("You can search in the search result. Do some search.", true);
+		TextData td2 = new TextData("I can know you know I Know.", false);
+		System.out.println("td1 = " + td.getTermVector());
+		System.out.println("td2 = " + td2.getTermVector());
 		System.out.println("all: " + TextSimilarity.byTfIdf(
-				td.getUntaggedTermVector(), td2.getUntaggedTermVector(), 
+				td.getTermVector(), td2.getTermVector(), 
 				TextData.getDocumentVector(), TextData.getNumDocument()));
 		
 	}

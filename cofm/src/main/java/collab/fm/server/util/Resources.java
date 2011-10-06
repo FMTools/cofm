@@ -8,6 +8,9 @@ public class Resources {
 	private static ResourceBundle protocolRes = ResourceBundle.getBundle("protocol");
 	private static ResourceBundle msgRes = ResourceBundle.getBundle("locale.message");
 	
+	public static final String SERVER_ADDRESS = get("server.addr");
+	public static final String SERVER_MAIL_NAME = get("server.mail.name");
+	
 	// Default entity type
 	public static final String ENTITY_FEATURE = get("entity.feature");
 	// Attribute Keys

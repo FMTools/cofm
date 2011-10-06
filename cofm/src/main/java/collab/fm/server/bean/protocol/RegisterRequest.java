@@ -24,8 +24,8 @@ public class RegisterRequest extends Request {
 	private String pwd;
 	private String mail;
 	
-	private static final String SERVER_MAIL = "yili.org";
-	private static final String SERVER_URL = "http://159.226.47.103:8080/cofm/p?a=vf&n=$name&v=$validation";
+	private static final String SERVER_URL = "http://" +
+		Resources.SERVER_ADDRESS + "/cofm/p?a=vf&n=$name&v=$validation";
 	@Override 
 	protected Processor makeDefaultProcessor() {
 		return new RegisterProcessor();
@@ -88,7 +88,7 @@ public class RegisterRequest extends Request {
 				// Send validation email
 				boolean mailSent = false;
 				try {
-					MailUtil.sendFromGmail(SERVER_MAIL, 
+					MailUtil.sendFromGmail(Resources.SERVER_MAIL_NAME, 
 							"FX5Vu6bp8Yk5", 
 							new String[] {r.getMail()},
 							Resources.MSG_REGISTER_MAIL_TITLE, 
