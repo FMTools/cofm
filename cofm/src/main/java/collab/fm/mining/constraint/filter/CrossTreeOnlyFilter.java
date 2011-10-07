@@ -14,7 +14,7 @@ import collab.fm.server.util.exception.StaleDataException;
 
 public class CrossTreeOnlyFilter implements PairFilter {
 
-	public boolean keepPair(FeaturePair pair, int mode) {
+	public boolean keepPair(FeaturePair pair) {
 		// Keep cross-tree pair only (i.e. the two features has no ancestor-descendant relation
 		
 		List<Long> treeOfFirst = new ArrayList<Long>();

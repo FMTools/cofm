@@ -21,6 +21,87 @@ public class Prediction {
 	private Map<Long, FeaturePair> firstMap = new HashMap<Long, FeaturePair>();
 	private Map<Long, FeaturePair> secondMap = new HashMap<Long, FeaturePair>();
 	
+	public static class Metric {
+		private double precision = 0;
+		private double recall = 0;
+		private int time = 0;
+		
+		public void push(double precision, double recall) {
+			time++;
+			this.precision += precision;
+			this.recall += recall;
+		}
+		
+		public double avgPrecision() {
+			return time == 0 ? 0 : precision / time;
+		}
+		
+		public double avgRecall() {
+			return time == 0 ? 0 : recall / time;
+		}
+		
+		public String toString() {
+			return "Precision = " + String.format("%.3f", avgPrecision()) +
+				", Recall = " + String.format("%.3f", avgRecall());
+		}
+	}
+	
+	private Map<Integer, Metric> metrics = new HashMap<Integer, Metric>();
+	private double accuracy = 0;
+	private double time = 0;
+	
+	public Prediction() {
+		metrics.put(FeaturePair.REQUIRE, new Metric());
+		metrics.put(FeaturePair.EXCLUDE, new Metric());
+	}
+	
+	public double avgAccuracy() {
+		return time == 0 ? 0 : accuracy / time;
+	}
+	
+	public Metric getClassMetric(int classId) {
+		return metrics.get(classId);
+	}
+	
+	public void push(List<FeaturePair> pairs) {
+		int correct = 0;
+		int reqPositive = 0, reqTrue = 0, reqFalse = 0;
+		int excPositive = 0, excTrue = 0, excFalse = 0;
+		
+		for (FeaturePair pair: pairs) {
+			if (pair.getLabel() == FeaturePair.REQUIRE) {
+				reqPositive++;
+			}
+			if (pair.getLabel() == FeaturePair.EXCLUDE) {
+				excPositive++;
+			}
+			if (pair.getPredictedClass() == pair.getLabel()) {
+				correct++;
+				if (pair.getLabel() == FeaturePair.REQUIRE) {
+					reqTrue++;
+				}
+				if (pair.getLabel() == FeaturePair.EXCLUDE) {
+					excTrue++;
+				}
+			} else {
+				if (pair.getPredictedClass() == FeaturePair.REQUIRE) {
+					reqFalse++;
+				}
+				if (pair.getPredictedClass() == FeaturePair.EXCLUDE) {
+					excFalse++;
+				}
+			}
+		}
+		
+		this.time++;
+		this.accuracy += 1.0 * correct / pairs.size();
+		
+		this.metrics.get(FeaturePair.REQUIRE).push(1.0 * reqTrue / (reqTrue + reqFalse), 
+				1.0 * reqTrue / reqPositive);
+		this.metrics.get(FeaturePair.EXCLUDE).push(1.0 * excTrue / (excTrue + excFalse),
+				1.0 * excTrue / excPositive);
+	}
+	
 	public void upmergeConstraints(List<FeaturePair> pairs) {
 		firstMap.clear();
 		secondMap.clear();

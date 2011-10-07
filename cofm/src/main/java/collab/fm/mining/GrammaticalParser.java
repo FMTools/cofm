@@ -78,6 +78,7 @@ public class GrammaticalParser {
 	private static final String TYPE_DEPEND = "dep";
 	private static final String TYPE_COMPOUND_NOUN = "nn";
 	private static final String TYPE_CONJ = "conj";
+	private static final String TYPE_AMOD = "amod";
 	
 	// Stop words
 	private static final Set<String> STOPWORDS = 
@@ -121,6 +122,10 @@ public class GrammaticalParser {
 		this.text = text;
 		this.sentences.clear();
 		this.grammaticalParsing = needGrammar;
+		
+		if (this.text.trim().length() < 1) {
+			return;
+		}
 		
 		textToSentences();
 		
@@ -220,10 +225,21 @@ public class GrammaticalParser {
 				} 
 			}
 			
-			// Implicit objects include "nn" and "conj" dependent of explicit objects.
+			// Object modifiers include "nn" and "amod" dependent of explicit objects.
 			for (TypedDependency td: ps.tdl) {
 				if ((td.reln().getShortName().equals(TYPE_COMPOUND_NOUN) ||
-						td.reln().getShortName().contains(TYPE_CONJ)) && 
+						td.reln().getShortName().contains(TYPE_AMOD)) && 
+						objIndex.contains(td.gov().index())) {
+					int i = td.dep().index() - 1;
+					ParsedWord pw = new ParsedWord(ps.taggedWords.get(i), i+1);
+					result.add(pw);
+					objIndex.add(i+1);
+				}
+			}
+			
+			// Finally, we need to add all "conj" parts of objects/modifiers
+			for (TypedDependency td: ps.tdl) {
+				if (td.reln().getShortName().contains(TYPE_CONJ) && 
 						objIndex.contains(td.gov().index())) {
 					int i = td.dep().index() - 1;
 					ParsedWord pw = new ParsedWord(ps.taggedWords.get(i), i+1);
@@ -242,7 +258,7 @@ public class GrammaticalParser {
 	
 	public static void main(String[] args) {
 		GrammaticalParser gp = new GrammaticalParser();
-		gp.parse("I've create and share your people, events and data.", true);
+		gp.parse("I've created connected weighted graph", true);
 		System.out.println(gp.getObjects());
 		System.out.println(gp.getWords());
 	}

@@ -23,6 +23,7 @@ import org.hibernate.Session;
 
 import libsvm.api.*;
 
+import collab.fm.mining.constraint.Prediction.Metric;
 import collab.fm.mining.constraint.filter.*;
 import collab.fm.mining.constraint.stats.*;
 import collab.fm.mining.opt.Domain;
@@ -101,10 +102,20 @@ public class SVM implements Optimizable {
 	
 	// Parameters for SVM algorithm
 	private int numDataAttr;
-	private double gamma, gammaLo, gammaHi, gammaStep;
+	private double defaultGamma, gamma, gammaLo, gammaHi, gammaStep;
 	private int reqWeight, reqLo, reqHi, reqStep;
 	private int excWeight, excLo, excHi, excStep;
 	private int cvFold;
+	
+	private int trainSource;
+	private int testPass;
+	private static final int FROM_TRAIN_MODEL = 0;
+	private static final int FROM_TRAIN_AND_TEST_MODEL = 1;
+	private static final int FROM_TEST_MODEL = 2;
+	
+	private List<FeaturePair> trainPool = new ArrayList<FeaturePair>();
+	private List<FeaturePair> testPool = new ArrayList<FeaturePair>();
+	private int currentTestPass;
 	
 	// Store the cross-validation result.
 	public SVM.CV cvResult;
@@ -126,15 +137,14 @@ public class SVM implements Optimizable {
 	
 	private void buildFilterChain() {
 		filters.clear();
-		filters.add(new ConstraintsOnlyFilter());
 		//filters.add(new SimilarityFilter(0.0));
 		filters.add(new CrossTreeOnlyFilter());
 	}
 	
 	// ------------ Step 1. Output data -------------
-	private boolean keepPair(FeaturePair pair, int mode) {
+	private boolean keepPair(FeaturePair pair) {
 		for (int i = 0; i < filters.size(); i++) {
-			if (!filters.get(i).keepPair(pair, mode)) {
+			if (!filters.get(i).keepPair(pair)) {
 				return false;
 			}
 		}
@@ -164,53 +174,6 @@ public class SVM implements Optimizable {
 			logger.info("Stats file is unassigned.");
 		}
 	}
-
-	
-	private void dumpTrainingSet(List<Model> trainFMs, List<Model> testFMs) {
-		logger.info("*** Dump Training Set.");
-		try {
-			BufferedWriter tf = new BufferedWriter(new FileWriter(SVM.TRAINING_FILE));
-			
-			for (Model trainFM: trainFMs) {
-				this.updateStats(dumpModel(tf, trainFM, MODE_TRAIN_ALL));
-			}
-			if (testFMs != null) {
-				for (Model testFM: testFMs) {
-					this.updateStats(dumpModel(tf, testFM, MODE_TRAIN_ONLY_CON));
-				}
-			}
-			
-			tf.close();
-			logger.info("*** Dump Training Set END.");
-			//logger.info(stats.toString());
-			this.showStats();
-			
-			// Do scaling
-			this.scaleTrainingSet();
-			
-		} catch (IOException e) {
-			logger.error("Cannot open data file", e);
-		}
-	}
-	
-	private List<FeaturePair> dumpTestSet(List<Model> testFMs, int mode) {
-		List<FeaturePair> testPairs = new ArrayList<FeaturePair>();
-		BufferedWriter out;
-		try {
-			out = new BufferedWriter(new FileWriter(SVM.TEST_FILE));
-			logger.info("*** Dump Test Set.");
-			for (Model tfm: testFMs) {
-				testPairs.addAll(this.dumpModel(out, tfm, mode));
-			}
-			out.close();
-			logger.info("*** Dump Test Set END.");
-			this.scaleTestSet();
-		} catch (IOException e) {
-			logger.warn("Cannot dump test set.", e);
-		}
-		
-		return testPairs;
-	}
 	
 	
 	public static final int MODE_TEST_ALL = 0;
@@ -221,32 +184,121 @@ public class SVM implements Optimizable {
 		"Test_All", "Test_Blank", "Train_All", "Train_Only_Con"
 	};
 	
-	private List<FeaturePair> dumpModel(BufferedWriter out, Model model, int mode) {
+	private List<FeaturePair> refreshDataFiles() {
+		List<FeaturePair> train = new ArrayList<FeaturePair>();
+		List<FeaturePair> test = new ArrayList<FeaturePair>();
+		
+		if (this.trainSource == FROM_TRAIN_MODEL) {
+			train = trainPool;
+			test = testPool;
+		} else if (this.trainSource == FROM_TRAIN_AND_TEST_MODEL) {
+			train.addAll(trainPool);
+			train.addAll(getCurrentPartOfTestPool());
+			test.addAll(getRestPartOfTestPool());
+		} else if (this.trainSource == FROM_TEST_MODEL) {
+			train.addAll(getCurrentPartOfTestPool());
+			test.addAll(getRestPartOfTestPool());
+		}
+		
+		writeDataToFile(train, test);
+		
+		return test;
+	}
+	
+	private List<FeaturePair> getCurrentPartOfTestPool() {
+		int subSize = testPool.size() / this.testPass;
+		int begin = this.currentTestPass * subSize;
+		int end = begin + subSize;
+		if (end > testPool.size()) end = testPool.size();
+		return testPool.subList(begin, end);
+	}
+	
+	private List<FeaturePair> getRestPartOfTestPool() {
+		int subSize = testPool.size() / this.testPass;
+		int begin = this.currentTestPass * subSize;
+		int end = begin + subSize;
+		if (end > testPool.size()) end = testPool.size();
+		
+		if (end - begin >= testPool.size()) {
+			return new ArrayList<FeaturePair>();  // empty
+		}
+		
+		if (begin == 0) {
+			return testPool.subList(end, testPool.size());
+		}
+		
+		if (end == testPool.size()) {
+			return testPool.subList(0, begin);
+		}
+		
+		List<FeaturePair> result = testPool.subList(0, begin);
+		result.addAll(testPool.subList(end, testPool.size()));
+		return result;
+	}
+	
+	private void writeDataToFile(List<FeaturePair> train, List<FeaturePair> test) {
+		writeToFile(train, SVM.TRAINING_FILE);
+		this.scaleTrainingSet();
+		
+		writeToFile(test, SVM.TEST_FILE);
+		this.scaleTestSet();
+		
+		this.showStats();
+	}
+	
+	private void dumpModelsIntoPool(List<Model> train, List<Model> test) {
+		trainPool.clear();
+		testPool.clear();
+		
+		for (Model m: train) {
+			dumpToPool(m, trainPool);
+		}
+		
+		for (Model m: test) {
+			dumpToPool(m, testPool);
+		}
+		
+		this.updateStats(trainPool);
+		
+		// Shuffle test pool in specific modes
+		if (this.trainSource != FROM_TRAIN_MODEL) {
+			Collections.shuffle(this.testPool);
+		}
+	}
+	
+	private void writeToFile(List<FeaturePair> list, String file) {
+		try {
+			BufferedWriter out = new BufferedWriter(new FileWriter(file));
+			for (FeaturePair p: list) {
+				out.write(SVMDataFormatter.format(p.getLabel(), p) + "\n");
+			}
+			out.close();
+		} catch (IOException e) {
+			logger.warn("Cannot write pair.", e);
+		}
+	}
+	
+	private void dumpToPool(Model model, List<FeaturePair> pool) {
 		FeaturePair.clearFeatureSet();
 		Entity[] features = model.getEntities().toArray(new Entity[0]);
 		// Random shuffle the features.
 		Collections.shuffle(Arrays.asList(features));
 
-		int numSim = 0, numRequire = 0, numExclude = 0;
 		List<FeaturePair> pairs = new ArrayList<FeaturePair>();
 		
 		for (int i = 0; i < features.length; i++) {
 			for (int j = i + 1; j < features.length; j++) {
-				FeaturePair pair = new FeaturePair(features[i], features[j]);
-				if (mode == MODE_TEST_BLANK) {
-					// Set all pair to Non-constraint
-					pair.setLabel(FeaturePair.NO_CONSTRAINT);
-				}
-				pairs.add(pair);
+				pairs.add(new FeaturePair(features[i], features[j]));
 			}
 		}
 
-		// Complete the pair similarity and output them.
-		List<FeaturePair> kept = new ArrayList<FeaturePair>();
+		int total = 0, numSim = 0, numRequire = 0, numExclude = 0;
+		// Complete the pair similarity calculation and output them.
 		for (FeaturePair p: pairs) {
 			p.updateTextSimilarity();
-			if (this.keepPair(p, mode)) {
-				kept.add(p);
+			if (this.keepPair(p)) {
+				total++;
+				pool.add(p);
 				if (p.getLabel() == FeaturePair.REQUIRE) {
 					numRequire++;
 				} else if (p.getLabel() == FeaturePair.EXCLUDE) {
@@ -255,20 +307,13 @@ public class SVM implements Optimizable {
 				if (p.getTotalSim() > 0.0) {
 					numSim++;
 				}
-				try {
-					out.write(SVMDataFormatter.format(p.getLabel(), p) + "\n");
-				} catch (IOException e) {
-					logger.warn("Cannot write pair.", e);
-				}
 			}
 		}
 		logger.info("Feature Model: '" + model.getName() + "': " 
-				+ modeName[mode] + ", "
 				+ features.length + " features, " 
-				+ kept.size() + " valid pairs, including "
+				+ total + " valid pairs, including "
 				+ numRequire + " require-pairs, " + numExclude
 				+ " exclude-pairs, and " + numSim + " pairs of similar features.");
-		return kept;
 	}
 	
 	// ------------ Step 2. Scale data ------------
@@ -321,6 +366,7 @@ public class SVM implements Optimizable {
 		try {
 			String arg_training = 
 				"-q -g " + gamma
+				+ " -w-1 1"
 				+ " -w1 " + reqWeight 
 				+ " -w2 " + excWeight 
 				+ " -v " + cvFold + " " + TRAINING_FILE + SCALED_FILE_SUFFIX;
@@ -340,6 +386,7 @@ public class SVM implements Optimizable {
 		try {
 			String arg_training = 
 				"-q -g " + gamma
+				+ " -w-1 1"
 				+ " -w1 " + reqWeight 
 				+ " -w2 " + excWeight 
 				+ " " + TRAINING_FILE + SCALED_FILE_SUFFIX
@@ -371,7 +418,7 @@ public class SVM implements Optimizable {
 	// Solution = [gamma, reqWeight, excWeight]
 	public Solution defineSolution() {
 		Domain[] parts = new Domain[] {
-			new Domain(false, gammaLo, gammaHi, gammaStep, Double.NaN),
+			new Domain(false, gammaLo, gammaHi, gammaStep, defaultGamma),
 			new Domain(true, reqLo, reqHi, reqStep, Double.NaN),
 			new Domain(true, excLo, excHi, excStep, Double.NaN) 
 		};
@@ -489,8 +536,12 @@ public class SVM implements Optimizable {
 	}
 	
 	// ------------ Main --------------
+	private static final int DO_UPMERGE = 1;
 	public static final String KEY_TRAIN_FM = "svm.train.fm";
 	public static final String KEY_TEST_FM = "svm.test.fm";
+	public static final String KEY_TRAIN_SOURCE = "svm.train.source";
+	public static final String KEY_TEST_PASS = "svm.test.pass";
+	public static final String KEY_TEST_UPMERGE = "svm.test.upmerge";
 	public static final String KEY_GAMMA = "svm.gamma";
 	public static final String KEY_WREQ = "svm.wreq";
 	public static final String KEY_WEXC = "svm.wexc";
@@ -500,7 +551,6 @@ public class SVM implements Optimizable {
 	public static final String KEY_ITER = "svm.opt.gen.iter";
 	public static final String KEY_TOP = "svm.opt.gen.top";
 	public static final String KEY_CROSS = "svm.opt.gen.cross";
-	public static final String KEY_TEST_MODE = "svm.test.mode";
 	public static final String KEY_TEST_RESULT = "svm.test.result";
 	public static final String KEY_DATA_ATTR = "svm.data.attr";
 	public static final String KEY_RUN_MODE = "svm.run.mode";
@@ -508,7 +558,7 @@ public class SVM implements Optimizable {
 	public static final String KEY_DICT_NOUN = "svm.dict.noun";
 	public static final String CLASSFIER_PROPERTIES_INTRO = 
 		"\nClassifier Options" + 
-		"\nRun mode: 0 = Dump Data, 1 = Optimize, 2 = Train and Predict, 3 = Optimize, Train and Predict" +
+		"\nRun mode: 0 = Dump Data, 1 = Optimize, 2 = Train and Test" +
 		"\n    svm.run.mode=0/1/2/3" +
 		"\n\nSVM parameters: default; lowest; highest; change_step" +
 		"\n    svm.gamma=d;l;h;step" +
@@ -523,42 +573,55 @@ public class SVM implements Optimizable {
 		"\n    svm.opt.gen.iter=int  (Number of generations)" +
 		"\n    svm.opt.gen.top=0 to 1  (Proportion of top elites)" +
 		"\n    svm.opt.gen.cross=0 to 1  (Probability of Crossover)" +
-		"\n\nPrediction options" +
-		"\n    svm.test.mode=0/1  (Mode: 0 = ALL, 1 = BLANK)" +
+		"\n\nTest options" +
 		"\n    svm.test.result=int  (Number of displayed results)" +
+		"\n    svm.test.pass=int  (Test how many passes)" +
+		"\n    svm.test.upmerge=0/1 (Upmerge the constraints?)" +
 		"\n\nData sets" +
 		"\n    svm.train.fm=Name1;Name2;...;Name_N  (Name of training FMs)" +
 		"\n    svm.test.fm=Name1;Name2;...;Name_N  (Name of test FMs)" +
+		"\n    svm.train.source=0/1/2 (0 = Use Train FM, 1 = Use Train FM and part of Test FM, " +
+		"2 = Use part of Test FM)" +
 		"\n    svm.data.attr=0;1;2;...;N   (Index of attributes, see below)" +
 		"\n        " + SVMDataFormatter.attrInfo() +
 		"\n    svm.stats.file=FileName    (The file for data stats report)" +
 		"\n\nData preprocessing" +
 		"\n    svm.dict.noun=FilePath    (Dictionary of noun keywords)";
 	
-	private void updateDataAttrInfo() {
+	private void updateGeneralInfo() {
+		// Data attributes info
 		String[] attrs = cfg.getProperty(KEY_DATA_ATTR).split(";");
 		SVMDataFormatter.updateAttrList(attrs);
 		this.numDataAttr = attrs.length;
+		
+		// Train and test model info
+		this.trainSource = Integer.valueOf(cfg.getProperty(KEY_TRAIN_SOURCE));
+		this.testPass = Integer.valueOf(cfg.getProperty(KEY_TEST_PASS));
+		
+		if (this.trainSource == FROM_TRAIN_MODEL) {
+			this.testPass = 1;  // force test pass to 1
+		}
 	}
 	
 	// Run mode #0
 	public void dumpData() {
-		updateDataAttrInfo();
+		updateGeneralInfo();
 		List<Model> trainFMs = getFMs(cfg, KEY_TRAIN_FM);
 		List<Model> testFMs = getFMs(cfg, KEY_TEST_FM);
 		
-		this.dumpTrainingSet(trainFMs, testFMs);
+		this.dumpModelsIntoPool(trainFMs, testFMs);
+		this.refreshDataFiles();
 	}
 	
 	// Run mode #1
 	public void optimizeParameters() {
-		updateDataAttrInfo();
+		updateGeneralInfo();
 		this.cvResult = new SVM.CV();
 		
 		List<Model> trainFMs = getFMs(cfg, KEY_TRAIN_FM);
 		List<Model> testFMs = getFMs(cfg, KEY_TEST_FM);
 		
-		this.dumpTrainingSet(trainFMs, testFMs);
+		this.dumpModelsIntoPool(trainFMs, testFMs);
 		
 		String[] gammas = cfg.getProperty(KEY_GAMMA).split(";");
 		String[] wreqs = cfg.getProperty(KEY_WREQ).split(";");
@@ -566,7 +629,7 @@ public class SVM implements Optimizable {
 		
 		//this.gammaLo = Double.valueOf(gammas[1]);
 		//this.gammaHi = Double.valueOf(gammas[2]);
-		double defaultGamma = 1.0 / this.numDataAttr;
+		this.defaultGamma = 1.0 / this.numDataAttr;
 		this.gammaLo = defaultGamma / 2;
 		this.gammaHi = defaultGamma * 2;
 		this.gammaStep = Double.valueOf(gammas[3]);
@@ -587,24 +650,26 @@ public class SVM implements Optimizable {
 		o.elite = Float.valueOf(cfg.getProperty(KEY_TOP));
 		
 		Solution best = null;
-		for (int i = 0; i < pass; i++) {
-			long startTime = System.currentTimeMillis();
-			logger.info("[opt] *** Optimizing Parameters (Pass " + (i+1) + " of " + pass + ')');
-			Solution localBest = o.optimize(this);
-			if (best == null || best.cost > localBest.cost) {
-				best = localBest;
+		this.currentTestPass = 0;
+		while (this.currentTestPass < this.testPass) {
+			this.refreshDataFiles();
+			
+			for (int i = 0; i < pass; i++) {
+				logger.info("[opt] *** Optimizing Parameters (Pass " + (i+1) + " of " + pass + ')');
+				Solution localBest = o.optimize(this);
+				if (best == null || best.cost > localBest.cost) {
+					best = localBest;
+				}
+				logger.info("[opt] *** Local Optimized Parameter:" + "\n\tgamma = "
+						+ localBest.parts[0].value + "\n\tweight of require class = "
+						+ localBest.parts[1].value + "\n\tweight of exclude class = "
+						+ localBest.parts[2].value + "\nAccuracy = " + (100 - localBest.cost)
+						+ "%");
 			}
-			long elapsedTime = System.currentTimeMillis() - startTime;
-			logger.info("[opt] *** Optimizing over, time elapsed: "
-					+ (elapsedTime / 1000.0f) + " seconds.");
-			logger.debug("[opt] *** Local Optimized Parameter:" + "\n\tgamma = "
-					+ localBest.parts[0].value + "\n\tweight of require class = "
-					+ localBest.parts[1].value + "\n\tweight of exclude class = "
-					+ localBest.parts[2].value + "\nAccuracy = " + (100 - localBest.cost)
-					+ "%");
+			
+			this.currentTestPass++;
 		}
-		
-		logger.info("[opt] *** Optimized Parameter:" + "\n\tgamma = "
+		logger.info("[opt] *** Global Optimized Parameter:" + "\n\tgamma = "
 				+ best.parts[0].value + "\n\tweight of require class = "
 				+ best.parts[1].value + "\n\tweight of exclude class = "
 				+ best.parts[2].value + "\nAccuracy = " + (100 - best.cost)
@@ -625,10 +690,125 @@ public class SVM implements Optimizable {
 		}
 	}
 	
-	// Run mode #2: train and predict, no optimization (use the parameters
+	// Run mode #2: Optimize, Train and test
+	public void trainAndTest() {
+		updateGeneralInfo();
+		this.cvResult = new SVM.CV();
+		
+		List<Model> trainFMs = getFMs(cfg, KEY_TRAIN_FM);
+		List<Model> testFMs = getFMs(cfg, KEY_TEST_FM);
+		
+		this.dumpModelsIntoPool(trainFMs, testFMs);
+		
+		String[] gammas = cfg.getProperty(KEY_GAMMA).split(";");
+		String[] wreqs = cfg.getProperty(KEY_WREQ).split(";");
+		String[] wexcs = cfg.getProperty(KEY_WEXC).split(";");
+		
+		//this.gammaLo = Double.valueOf(gammas[1]);
+		//this.gammaHi = Double.valueOf(gammas[2]);
+		this.defaultGamma = 1.0 / this.numDataAttr;
+		this.gammaLo = defaultGamma / 2;
+		this.gammaHi = defaultGamma * 2;
+		this.gammaStep = Double.valueOf(gammas[3]);
+		this.reqLo = Integer.valueOf(wreqs[1]);
+		this.reqHi = Integer.valueOf(wreqs[2]);
+		this.reqStep = Integer.valueOf(wreqs[3]);
+		this.excLo = Integer.valueOf(wexcs[1]);
+		this.excHi = Integer.valueOf(wexcs[2]);
+		this.excStep = Integer.valueOf(wexcs[3]);
+		this.cvFold = Integer.valueOf(cfg.getProperty(KEY_CV));
+		
+		int pass = Integer.valueOf(cfg.getProperty(KEY_OPT_PASS));
+		int upmerge = Integer.valueOf(cfg.getProperty(KEY_TEST_UPMERGE));
+		
+		GeneticOptimizer o = new GeneticOptimizer();
+		o.population = Integer.valueOf(cfg.getProperty(KEY_POPSIZE));
+		o.generation = Integer.valueOf(cfg.getProperty(KEY_ITER));
+		o.breedProb = Double.valueOf(cfg.getProperty(KEY_CROSS));
+		o.elite = Float.valueOf(cfg.getProperty(KEY_TOP));
+		
+		Prediction prediction = new Prediction();
+		this.currentTestPass = 0;
+		while (this.currentTestPass < this.testPass) {
+			// Update data files
+			logger.info("*** Refresh Data Sets.");
+			List<FeaturePair> testPairs = this.refreshDataFiles();
+			
+			// Find best parameter
+			Solution best = null;
+			for (int i = 0; i < pass; i++) {
+				logger.debug("[opt] *** Optimizing Parameters (Pass " + (i+1) + " of " + pass + ')');
+				Solution localBest = o.optimize(this);
+				if (best == null || best.cost > localBest.cost) {
+					best = localBest;
+				}
+				logger.debug("[opt] *** Local Optimized Parameter:" + "\n\tgamma = "
+						+ localBest.parts[0].value + "\n\tweight of require class = "
+						+ localBest.parts[1].value + "\n\tweight of exclude class = "
+						+ localBest.parts[2].value + "\nAccuracy = " + (100 - localBest.cost)
+						+ "%");
+			}
+			logger.info("[opt] *** Global Optimized Parameter:" + "\n\tgamma = "
+					+ best.parts[0].value + "\n\tweight of require class = "
+					+ best.parts[1].value + "\n\tweight of exclude class = "
+					+ best.parts[2].value + "\nAccuracy = " + (100 - best.cost)
+					+ "%");
+			
+			// Use the best parameter
+			this.gamma = best.parts[0].value;
+			this.reqWeight = Double.valueOf(best.parts[1].value).intValue();
+			this.excWeight = Double.valueOf(best.parts[2].value).intValue();
+			
+			// ...and then re-train the classifier
+			logger.info("*** Re-train the classifier.");
+			this.trainWithoutCV();
+			
+			// Then do the test
+			logger.info("*** Predicting...");
+			this.predict();
+			
+			int pairIndex = 0;
+			
+			// Read the test result
+			BufferedReader result;
+			try {
+				result = new BufferedReader(new FileReader(SVM.PREDICT_RESULT_FILE));
+			
+				String s;
+				while ((s = result.readLine()) != null) {
+					int label = Float.valueOf(s).intValue();
+					testPairs.get(pairIndex).setPredictedClass(label);
+					pairIndex++;
+				}
+				result.close();
+				if (upmerge == DO_UPMERGE) {
+					logger.info("*** Upmerge the Constraints...");
+					prediction.upmergeConstraints(testPairs);
+				}
+					
+				// Calculate the metrics (precision, recall, accuracy)
+				logger.info("*** Update Accuracy/Precision/Recall");
+				prediction.push(testPairs);
+				
+			} catch (IOException e) {
+				logger.warn("Fail to read results.", e);
+			}
+			
+			this.currentTestPass++;
+		}		
+		
+		Metric m1 = prediction.getClassMetric(FeaturePair.REQUIRE);
+		Metric m2 = prediction.getClassMetric(FeaturePair.EXCLUDE);
+		logger.info("*** RESULT ***");
+		logger.info("Avg accuracy = " + prediction.avgAccuracy() + 
+				"\nREQUIRES: avg precision = " + m1.avgPrecision() + ", avg recall = " + m1.avgRecall() +
+				"\nEXCLUDES: avg precision = " + m2.avgPrecision() + ", avg recall = " + m2.avgRecall());
+	}
+	
+	// Run mode #3: train and predict, no optimization (use the parameters
 	// defined in the properties file.)
 	public void trainAndPredict() {
-		updateDataAttrInfo();
+		updateGeneralInfo();
 		String[] gammas = cfg.getProperty(KEY_GAMMA).split(";");
 		String[] wreqs = cfg.getProperty(KEY_WREQ).split(";");
 		String[] wexcs = cfg.getProperty(KEY_WEXC).split(";");
@@ -637,16 +817,17 @@ public class SVM implements Optimizable {
 		this.excWeight = Double.valueOf(wexcs[0]).intValue();
 		
 		int numDisplayResult = Integer.valueOf(cfg.getProperty(KEY_TEST_RESULT));
-		int testMode = Integer.valueOf(cfg.getProperty(KEY_TEST_MODE));
 		int again = 0;
 		do {
 			List<Model> trainFMs = getFMs(cfg, KEY_TRAIN_FM);
 			List<Model> testFMs = getFMs(cfg, KEY_TEST_FM);
 			
-			this.dumpTrainingSet(trainFMs, testFMs);
+			// TODO: Refactor this as trainAndTest()
+			this.dumpModelsIntoPool(trainFMs, testFMs);
+
+			List<FeaturePair> testPairs = this.refreshDataFiles();
+
 			this.trainWithoutCV();
-			
-			List<FeaturePair> testPairs = this.dumpTestSet(testFMs, testMode);
 			
 			this.predict();
 			
@@ -737,12 +918,11 @@ public class SVM implements Optimizable {
 		
 	}
 	
-	// Run mode #3 (Do not support now)
 	
 	public static final int RUN_DUMP_DATA = 0; 
 	public static final int RUN_OPT = 1;
-	public static final int RUN_PREDICT = 2;
-	public static final int RUN_OPT_AND_PREDICT = 3;
+	public static final int RUN_TEST = 2;
+	public static final int RUN_PREDICT = 3;
 	public static final String CFG_FILE = "classifier.properties";
 	
 	// The main method checks the run mode
@@ -767,11 +947,11 @@ public class SVM implements Optimizable {
 			case RUN_OPT:
 				svm.optimizeParameters();
 				break;
+			case RUN_TEST:
+				svm.trainAndTest();
+				break;
 			case RUN_PREDICT:
 				svm.trainAndPredict();
-				break;
-			case RUN_OPT_AND_PREDICT:
-				//TODO: add run mode support. 
 				break;
 			}
 		

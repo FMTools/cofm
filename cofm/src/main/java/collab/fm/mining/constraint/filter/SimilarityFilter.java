@@ -7,7 +7,7 @@ public class SimilarityFilter implements PairFilter {
 
 	private double thresh;
 	
-	public boolean keepPair(FeaturePair pair, int mode) {
+	public boolean keepPair(FeaturePair pair) {
 		return pair.getTotalSim() > thresh;
 	}
 	

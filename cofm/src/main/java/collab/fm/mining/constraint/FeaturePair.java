@@ -32,6 +32,8 @@ public class FeaturePair {
 	
 	static Logger logger = Logger.getLogger(FeaturePair.class);
 	
+	private static final String[] sentenceEnds = {".", "!", "?"};
+	
 	// The aliases of "require" relation used in the model. For example,
 	// the "implemented-by" relation is a kind of "require" relation.
 	// Client code can change this if needed.
@@ -192,7 +194,11 @@ public class FeaturePair {
 		List<Value> values = en.getValuesByAttrName(Resources.ATTR_ENTITY_DES);
 		if (values != null) {
 			for (Value v: values) {
-				des.append(v.decodeQuotes() + " ");
+				String s = v.decodeQuotes().trim();
+				if (!ArrayUtils.contains(sentenceEnds, s.charAt(s.length()-1))) {
+					s += sentenceEnds[0];
+				}
+				des.append(s + " ");
 			}
 		}
 		return des.toString().trim();
