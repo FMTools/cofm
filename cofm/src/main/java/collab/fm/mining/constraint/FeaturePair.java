@@ -95,6 +95,20 @@ public class FeaturePair {
 		// Leave it for Hibernate framework.
 	}
 	
+	public FeaturePair(FeaturePair other) {
+		this.setId(other.getId());
+		this.setModel(other.getModel());
+		this.setFirst(other.getFirst());
+		this.setSecond(other.getSecond());
+		this.setConstraint(other.getConstraint());
+		this.setLabel(other.getLabel());
+		this.setPredictedClass(other.getPredictedClass());
+		this.setFirstAsObject(other.getFirstAsObject());
+		this.setSecondAsObject(other.getSecondAsObject());
+		this.setObjectSim(other.getObjectSim());
+		this.setTotalSim(other.getTotalSim());
+	}
+	
 	// The pair always assumes the Entity is a Feature.
 	public FeaturePair(Entity first, Entity second) {
 		this.setFirst(first);
@@ -105,6 +119,19 @@ public class FeaturePair {
 		
 		checkAndAddText(first);
 		checkAndAddText(second);
+	}
+	
+	public boolean equals(Object o) {
+		if (this == null || o == null) return false;
+		if (this == o) return true;
+		if (!(o instanceof FeaturePair)) return false;
+		FeaturePair that = (FeaturePair) o;
+		return this.getFirst().getId() == that.getFirst().getId() &&
+				this.getSecond().getId() == that.getSecond().getId();
+	}
+	
+	public int hashCode() {
+		return (int) ((this.getFirst().getId() << 4 - 1) ^ this.getSecond().getId());
 	}
 	
 	public Pair<TextData, TextData> getPairText() {

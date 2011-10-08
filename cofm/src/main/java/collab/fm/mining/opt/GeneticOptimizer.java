@@ -29,7 +29,7 @@ public class GeneticOptimizer implements Optimizer {
 	private Optimizable target;
 	
 	public Solution optimize(Optimizable o) {
-		logger.info("[opt] Genetic algorithm.");
+		logger.debug("[opt] Genetic algorithm.");
 		target = o;
 		Solution solutionDef = o.defineSolution();
 		

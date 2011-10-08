@@ -1,6 +1,8 @@
 package collab.fm.mining.constraint;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,50 @@ public class Prediction {
 	private Map<Integer, Metric> metrics = new HashMap<Integer, Metric>();
 	private double accuracy = 0;
 	private double time = 0;
+	
+	public static double diff(List<FeaturePair> predict1, List<FeaturePair> predict2) {
+		if (predict1.size() != predict2.size()) {
+			return 1.0;  // Totally different
+		}
+		int diffnum = 0;
+		for (int i = 0; i < predict1.size(); i++) {
+			if (predict1.get(i).getPredictedClass() != predict2.get(i).getPredictedClass()) {
+				diffnum++;
+			}
+		}
+		return 1.0 * diffnum / predict1.size();
+	}
+	
+	public static List<FeaturePair> selectFeedback(List<FeaturePair> predict, int num) {
+		// Select according to highest similarity and constraints-first.
+		List<FeaturePair> copy = new ArrayList<FeaturePair>(predict.size());
+		for (FeaturePair p: predict) {
+			copy.add(new FeaturePair(p));
+		}
+		
+		Collections.sort(copy, new Comparator<FeaturePair>() {
+
+			public int compare(FeaturePair p1, FeaturePair p2) {
+				if (p1.getPredictedClass() != p2.getPredictedClass()) {
+					if (p1.getPredictedClass() == FeaturePair.NO_CONSTRAINT) {
+						return -1;
+					}
+					if (p2.getPredictedClass() == FeaturePair.NO_CONSTRAINT) {
+						return 1;
+					}
+				}
+				return p1.getTotalSim() > p2.getTotalSim() ? 1 : (
+						p1.getTotalSim() == p2.getTotalSim() ? 0 : -1);
+			}
+			
+		});
+		
+		if (num > copy.size()) {
+			num = copy.size();
+		}
+		
+		return copy.subList(copy.size() - num, num);
+	}
 	
 	public Prediction() {
 		metrics.put(FeaturePair.REQUIRE, new Metric());

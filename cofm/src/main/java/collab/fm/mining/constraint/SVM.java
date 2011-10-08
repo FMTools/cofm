@@ -108,12 +108,17 @@ public class SVM implements Optimizable {
 	private int cvFold;
 	
 	private int trainSource;
+	private int feedback;
 	private int testPass;
 	private static final int FROM_TRAIN_MODEL = 0;
 	private static final int FROM_TRAIN_AND_TEST_MODEL = 1;
 	private static final int FROM_TEST_MODEL = 2;
+	private static final int FROM_TEST_MODEL_ITERATED = 3;
+	
+	private double minIterateDiff;
 	
 	private List<FeaturePair> trainPool = new ArrayList<FeaturePair>();
+	private List<FeaturePair> trainData, testData;
 	private List<FeaturePair> testPool = new ArrayList<FeaturePair>();
 	private int currentTestPass;
 	
@@ -184,25 +189,25 @@ public class SVM implements Optimizable {
 		"Test_All", "Test_Blank", "Train_All", "Train_Only_Con"
 	};
 	
-	private List<FeaturePair> refreshDataFiles() {
-		List<FeaturePair> train = new ArrayList<FeaturePair>();
-		List<FeaturePair> test = new ArrayList<FeaturePair>();
+	private void refreshDataFiles() {
+		trainData = new ArrayList<FeaturePair>();
+		testData = new ArrayList<FeaturePair>();
 		
 		if (this.trainSource == FROM_TRAIN_MODEL) {
-			train = trainPool;
-			test = testPool;
+			trainData = trainPool;
+			testData = testPool;
 		} else if (this.trainSource == FROM_TRAIN_AND_TEST_MODEL) {
-			train.addAll(trainPool);
-			train.addAll(getCurrentPartOfTestPool());
-			test.addAll(getRestPartOfTestPool());
-		} else if (this.trainSource == FROM_TEST_MODEL) {
-			train.addAll(getCurrentPartOfTestPool());
-			test.addAll(getRestPartOfTestPool());
+			trainData.addAll(trainPool);
+			trainData.addAll(getCurrentPartOfTestPool());
+			testData.addAll(getRestPartOfTestPool());
+		} else {
+			trainData.addAll(getCurrentPartOfTestPool());
+			testData.addAll(getRestPartOfTestPool());
 		}
 		
-		writeDataToFile(train, test);
 		
-		return test;
+		writeDataToFile(trainData, testData);
+		
 	}
 	
 	private List<FeaturePair> getCurrentPartOfTestPool() {
@@ -537,9 +542,13 @@ public class SVM implements Optimizable {
 	
 	// ------------ Main --------------
 	private static final int DO_UPMERGE = 1;
+	private static final int DO_HUMAN_FEEDBACK = 1;
+	private static final int DO_SIMULATED_FEEDBACK = 2;
+	
 	public static final String KEY_TRAIN_FM = "svm.train.fm";
 	public static final String KEY_TEST_FM = "svm.test.fm";
 	public static final String KEY_TRAIN_SOURCE = "svm.train.source";
+	private static final String KEY_MIN_ITERATE_DIFF = "svm.train.iterate.diff";
 	public static final String KEY_TEST_PASS = "svm.test.pass";
 	public static final String KEY_TEST_UPMERGE = "svm.test.upmerge";
 	public static final String KEY_GAMMA = "svm.gamma";
@@ -552,6 +561,7 @@ public class SVM implements Optimizable {
 	public static final String KEY_TOP = "svm.opt.gen.top";
 	public static final String KEY_CROSS = "svm.opt.gen.cross";
 	public static final String KEY_TEST_RESULT = "svm.test.result";
+	public static final String KEY_TEST_FEEDBACK = "svm.test.feedback";
 	public static final String KEY_DATA_ATTR = "svm.data.attr";
 	public static final String KEY_RUN_MODE = "svm.run.mode";
 	public static final String KEY_STATS_FILE = "svm.stats.file";
@@ -574,14 +584,16 @@ public class SVM implements Optimizable {
 		"\n    svm.opt.gen.top=0 to 1  (Proportion of top elites)" +
 		"\n    svm.opt.gen.cross=0 to 1  (Probability of Crossover)" +
 		"\n\nTest options" +
-		"\n    svm.test.result=int  (Number of displayed results)" +
+		"\n    svm.test.result=int  (Number of feedback results)" +
 		"\n    svm.test.pass=int  (Test how many passes)" +
 		"\n    svm.test.upmerge=0/1 (Upmerge the constraints?)" +
+		"\n    svm.test.feedback=0/1/2 (1 = Human feedback; 2 = Sim feedback)" +
 		"\n\nData sets" +
 		"\n    svm.train.fm=Name1;Name2;...;Name_N  (Name of training FMs)" +
 		"\n    svm.test.fm=Name1;Name2;...;Name_N  (Name of test FMs)" +
-		"\n    svm.train.source=0/1/2 (0 = Use Train FM, 1 = Use Train FM and part of Test FM, " +
-		"2 = Use part of Test FM)" +
+		"\n    svm.train.source=0/1/2/3 (0 = Use Train FM, 1 = Use Train FM and part of Test FM, " +
+		"2 = Use part of Test FM, 3 = Iterated use part of Test FM (EM Algorithm))" +
+		"\n    svm.train.iterate.diff=double (0 to 1, the iterate end condition)" +
 		"\n    svm.data.attr=0;1;2;...;N   (Index of attributes, see below)" +
 		"\n        " + SVMDataFormatter.attrInfo() +
 		"\n    svm.stats.file=FileName    (The file for data stats report)" +
@@ -601,6 +613,9 @@ public class SVM implements Optimizable {
 		if (this.trainSource == FROM_TRAIN_MODEL) {
 			this.testPass = 1;  // force test pass to 1
 		}
+		
+		this.feedback = Integer.valueOf(cfg.getProperty(KEY_TEST_FEEDBACK));
+		this.minIterateDiff = Double.valueOf(cfg.getProperty(KEY_MIN_ITERATE_DIFF));
 	}
 	
 	// Run mode #0
@@ -720,6 +735,7 @@ public class SVM implements Optimizable {
 		
 		int pass = Integer.valueOf(cfg.getProperty(KEY_OPT_PASS));
 		int upmerge = Integer.valueOf(cfg.getProperty(KEY_TEST_UPMERGE));
+		int numDisplayResult = Integer.valueOf(cfg.getProperty(KEY_TEST_RESULT));
 		
 		GeneticOptimizer o = new GeneticOptimizer();
 		o.population = Integer.valueOf(cfg.getProperty(KEY_POPSIZE));
@@ -732,197 +748,202 @@ public class SVM implements Optimizable {
 		while (this.currentTestPass < this.testPass) {
 			// Update data files
 			logger.info("*** Refresh Data Sets.");
-			List<FeaturePair> testPairs = this.refreshDataFiles();
+			this.refreshDataFiles();
 			
-			// Find best parameter
-			Solution best = null;
-			for (int i = 0; i < pass; i++) {
-				logger.debug("[opt] *** Optimizing Parameters (Pass " + (i+1) + " of " + pass + ')');
-				Solution localBest = o.optimize(this);
-				if (best == null || best.cost > localBest.cost) {
-					best = localBest;
-				}
-				logger.debug("[opt] *** Local Optimized Parameter:" + "\n\tgamma = "
-						+ localBest.parts[0].value + "\n\tweight of require class = "
-						+ localBest.parts[1].value + "\n\tweight of exclude class = "
-						+ localBest.parts[2].value + "\nAccuracy = " + (100 - localBest.cost)
-						+ "%");
-			}
-			logger.info("[opt] *** Global Optimized Parameter:" + "\n\tgamma = "
-					+ best.parts[0].value + "\n\tweight of require class = "
-					+ best.parts[1].value + "\n\tweight of exclude class = "
-					+ best.parts[2].value + "\nAccuracy = " + (100 - best.cost)
-					+ "%");
+			int doNextFeedback = 0;
 			
-			// Use the best parameter
-			this.gamma = best.parts[0].value;
-			this.reqWeight = Double.valueOf(best.parts[1].value).intValue();
-			this.excWeight = Double.valueOf(best.parts[2].value).intValue();
-			
-			// ...and then re-train the classifier
-			logger.info("*** Re-train the classifier.");
-			this.trainWithoutCV();
-			
-			// Then do the test
-			logger.info("*** Predicting...");
-			this.predict();
-			
-			int pairIndex = 0;
-			
-			// Read the test result
-			BufferedReader result;
-			try {
-				result = new BufferedReader(new FileReader(SVM.PREDICT_RESULT_FILE));
-			
-				String s;
-				while ((s = result.readLine()) != null) {
-					int label = Float.valueOf(s).intValue();
-					testPairs.get(pairIndex).setPredictedClass(label);
-					pairIndex++;
-				}
-				result.close();
+			do {
+				boolean trainAgain = false;
+				List<FeaturePair> lastPrediction = null;
+				
+				do {
+					// Find best parameter
+					Solution best = null;
+					for (int i = 0; i < pass; i++) {
+						logger.debug("[opt] *** Optimizing Parameters (Pass " + (i+1) + " of " + pass + ')');
+						Solution localBest = o.optimize(this);
+						if (best == null || best.cost > localBest.cost) {
+							best = localBest;
+						}
+						logger.debug("[opt] *** Local Optimized Parameter:" + "\n\tgamma = "
+								+ localBest.parts[0].value + "\n\tweight of require class = "
+								+ localBest.parts[1].value + "\n\tweight of exclude class = "
+								+ localBest.parts[2].value + "\nAccuracy = " + (100 - localBest.cost)
+								+ "%");
+					}
+					logger.info("[opt] *** Global Optimized Parameter:" + "\n\tgamma = "
+							+ best.parts[0].value + "\n\tweight of require class = "
+							+ best.parts[1].value + "\n\tweight of exclude class = "
+							+ best.parts[2].value + "\nAccuracy = " + (100 - best.cost)
+							+ "%");
+					
+					// Use the best parameter
+					this.gamma = best.parts[0].value;
+					this.reqWeight = Double.valueOf(best.parts[1].value).intValue();
+					this.excWeight = Double.valueOf(best.parts[2].value).intValue();
+					
+					// ...and then re-train the classifier
+					logger.info("*** Re-train the classifier.");
+					this.trainWithoutCV();
+					
+					// Then do the test
+					logger.info("*** Predicting...");
+					this.predict();
+					
+					int pairIndex = 0;
+					
+					// Read the test result
+					BufferedReader result;
+					try {
+						result = new BufferedReader(new FileReader(SVM.PREDICT_RESULT_FILE));
+					
+						String s;
+						while ((s = result.readLine()) != null) {
+							int label = Float.valueOf(s).intValue();
+							testData.get(pairIndex).setPredictedClass(label);
+							pairIndex++;
+						}
+						result.close();
+					} catch (IOException e) {
+						logger.warn("Fail to read results.", e);
+					}
+					
+					if (this.trainSource == FROM_TEST_MODEL_ITERATED) {
+						if (lastPrediction == null || 
+								Prediction.diff(lastPrediction, testData) > this.minIterateDiff) {
+							trainAgain = true;
+							
+							// Clone the current prediction (the "testData")
+							lastPrediction = new ArrayList<FeaturePair>(testData.size());
+							for (FeaturePair p: testData) {
+								lastPrediction.add(new FeaturePair(p));
+							}
+							
+							// Updated Training Set = Real Training Set + Predicted Test Set 
+							List<FeaturePair> newTrainData = new ArrayList<FeaturePair>();
+							newTrainData.addAll(this.trainData);
+							for (FeaturePair p: lastPrediction) {
+								p.setLabel(p.getPredictedClass());   // Must setLabel for training
+							}
+							newTrainData.addAll(lastPrediction);
+							
+							this.writeDataToFile(newTrainData, testData);
+							
+							logger.info("*** Do Next Iterated Training.");
+						} else {
+							trainAgain = false;
+						}
+					}
+					
+				} while (trainAgain);
+				
 				if (upmerge == DO_UPMERGE) {
 					logger.info("*** Upmerge the Constraints...");
-					prediction.upmergeConstraints(testPairs);
+					prediction.upmergeConstraints(testData);
 				}
 					
 				// Calculate the metrics (precision, recall, accuracy)
 				logger.info("*** Update Accuracy/Precision/Recall");
-				prediction.push(testPairs);
+				prediction.push(testData);
 				
-			} catch (IOException e) {
-				logger.warn("Fail to read results.", e);
-			}
-			
-			this.currentTestPass++;
-		}		
-		
-		Metric m1 = prediction.getClassMetric(FeaturePair.REQUIRE);
-		Metric m2 = prediction.getClassMetric(FeaturePair.EXCLUDE);
-		logger.info("*** RESULT ***");
-		logger.info("Avg accuracy = " + prediction.avgAccuracy() + 
-				"\nREQUIRES: avg precision = " + m1.avgPrecision() + ", avg recall = " + m1.avgRecall() +
-				"\nEXCLUDES: avg precision = " + m2.avgPrecision() + ", avg recall = " + m2.avgRecall());
-	}
-	
-	// Run mode #3: train and predict, no optimization (use the parameters
-	// defined in the properties file.)
-	public void trainAndPredict() {
-		updateGeneralInfo();
-		String[] gammas = cfg.getProperty(KEY_GAMMA).split(";");
-		String[] wreqs = cfg.getProperty(KEY_WREQ).split(";");
-		String[] wexcs = cfg.getProperty(KEY_WEXC).split(";");
-		this.gamma = Double.valueOf(gammas[0]);
-		this.reqWeight = Double.valueOf(wreqs[0]).intValue();
-		this.excWeight = Double.valueOf(wexcs[0]).intValue();
-		
-		int numDisplayResult = Integer.valueOf(cfg.getProperty(KEY_TEST_RESULT));
-		int again = 0;
-		do {
-			List<Model> trainFMs = getFMs(cfg, KEY_TRAIN_FM);
-			List<Model> testFMs = getFMs(cfg, KEY_TEST_FM);
-			
-			// TODO: Refactor this as trainAndTest()
-			this.dumpModelsIntoPool(trainFMs, testFMs);
-
-			List<FeaturePair> testPairs = this.refreshDataFiles();
-
-			this.trainWithoutCV();
-			
-			this.predict();
-			
-			int pairIndex = 0;
-			
-			try {
-				logger.info("\nPrediction checking begin.");
-				// Open the prediction result file and display results.
-				BufferedReader result = new BufferedReader(new FileReader(SVM.PREDICT_RESULT_FILE));
+				Metric m1 = prediction.getClassMetric(FeaturePair.REQUIRE);
+				Metric m2 = prediction.getClassMetric(FeaturePair.EXCLUDE);
+				logger.info("*** RESULT ***");
+				logger.info("Avg accuracy = " + prediction.avgAccuracy() + 
+						"\nREQUIRES: avg precision = " + m1.avgPrecision() + ", avg recall = " + m1.avgRecall() +
+						"\nEXCLUDES: avg precision = " + m2.avgPrecision() + ", avg recall = " + m2.avgRecall());
+				
+				if (this.feedback == DO_HUMAN_FEEDBACK || this.feedback == DO_SIMULATED_FEEDBACK) {
+					logger.info("*** Feedback...");
 					
-				String s;
-				while ((s = result.readLine()) != null) {
-					int label = Float.valueOf(s).intValue();
-					testPairs.get(pairIndex).setPredictedClass(label);
-					pairIndex++;
-				}
-				result.close();
-				
-				// Up-merge the constraints
-				Prediction prediction = new Prediction();
-				prediction.upmergeConstraints(testPairs);
-				
-				pairIndex = 0;
-				int numCorrect = 0, numPrediction = 0;
-				
-				while (numPrediction < numDisplayResult && pairIndex < testPairs.size()) {
+					// 1. Choose feedback pairs
+					List<FeaturePair> show = Prediction.selectFeedback(testData, numDisplayResult);
 					
-					FeaturePair cur = testPairs.get(pairIndex++);
-					if (cur.getPredictedClass() != cur.getLabel() &&
-							cur.getPredictedClass() != FeaturePair.NO_CONSTRAINT) {
-						// If the prediction is different from the original one, it needs checking.
-						numPrediction++;
-						// Print the prediction to user
-						System.out.print("\n" + cur.getPairInfo());
-						System.out.println("\n-->Prediction is: " +
-								(cur.getPredictedClass() == FeaturePair.EXCLUDE ? "EXCLUDE" : "REQUIRE"));
-						System.out.print("Input your answer ("
-								+ NO_CONSTRAINT + " = Not-constrained, "
-								+ REQUIRES + " = Requires, "
-								+ REQUIRED_BY + " = Required_by, "
-								+ MUTUAL_REQUIRE + " = Mutual_require, "
-								+ EXCLUDE + " = Exclude): ");
-						// Get answer from user
-						Scanner scanner = new Scanner(System.in);
-						int answer = scanner.nextInt();
-						int type = 0;
-						if (answer == NO_CONSTRAINT) {
-							type = FeaturePair.NO_CONSTRAINT;
-						} else if (answer == EXCLUDE) {
-							type = FeaturePair.EXCLUDE;
-						} else {
-							type = FeaturePair.REQUIRE;
-						}
-						cur.setLabel(type);
-						if (type == cur.getPredictedClass()) {
-							numCorrect++;
-						}
-						
-						// if the answer type is different from original pair (i.e. the test FM), 
-						// we need to apply the answer to the test FM
-						if (type != cur.getLabel()) {
-							if (type == FeaturePair.EXCLUDE || type == FeaturePair.REQUIRE) {
-								persistConstraint(cur, answer);
-								System.out.println("The constraint has been added to the test FM.");
-							} else if (type == FeaturePair.NO_CONSTRAINT) {
-								removeConstraint(cur);
-								System.out.println("The constraint has been removed from the test FM.");
+					int numCorrect = 0;
+					// 2. Do real (on an unknown model) or simulated (on a known model) feedback
+					if (this.feedback == DO_SIMULATED_FEEDBACK) {
+						// In fact, there's nothing to do because the test data is already classified.
+						for (FeaturePair cur: show) {
+							if (cur.getLabel() == cur.getPredictedClass()) {
+								numCorrect++;
 							}
+						}
+					} else {
+						// Ask human to check and classify the shown pairs.
+						for (FeaturePair cur: show) {
+							// Print the prediction to user
+							System.out.print("\n" + cur.getPairInfo());
+							System.out.println("\n-->Prediction is: " +
+									(cur.getPredictedClass() == FeaturePair.EXCLUDE ? "EXCLUDE" : (
+											cur.getPredictedClass() == FeaturePair.REQUIRE ? "REQUIRE"
+													: "NO_CONSTRAINT")));
+							System.out.print("Input your answer ("
+									+ NO_CONSTRAINT + " = Not-constrained, "
+									+ REQUIRES + " = Requires, "
+									+ REQUIRED_BY + " = Required_by, "
+									+ MUTUAL_REQUIRE + " = Mutual_require, "
+									+ EXCLUDE + " = Exclude): ");
+							
+							// Get answer from user
+							Scanner scanner = new Scanner(System.in);
+							int answer = scanner.nextInt();
+							int type = 0;
+							if (answer == NO_CONSTRAINT) {
+								type = FeaturePair.NO_CONSTRAINT;
+							} else if (answer == EXCLUDE) {
+								type = FeaturePair.EXCLUDE;
+							} else {
+								type = FeaturePair.REQUIRE;
+							}
+							
+							if (type == cur.getPredictedClass()) {
+								numCorrect++;
+							}
+							
+							// if the answer type is different from the original pair, 
+							// we need to apply the answer to the FM (i.e. add the constraint actually)
+							if (type != cur.getLabel()) {
+								if (type == FeaturePair.EXCLUDE || type == FeaturePair.REQUIRE) {
+									persistConstraint(cur, answer);
+									System.out.println("The constraint has been added to the test FM.");
+								} else if (type == FeaturePair.NO_CONSTRAINT) {
+									removeConstraint(cur);
+									System.out.println("The constraint has been removed from the test FM.");
+								}
+							}
+							
+							cur.setLabel(type);  // setLabel <-> Do the classification manually
+						}
+					}
+					
+					logger.info("Score: " + numCorrect + " / " + show.size());
+					System.out.print("\nFeedback end. Train and test again? (0 = NO, 1 = YES):");
+					Scanner scanner = new Scanner(System.in);
+					doNextFeedback = scanner.nextInt();
+					
+					if (doNextFeedback == 1) {
+						testData.removeAll(show);
+						if (testData.size() <= 0) {
+							doNextFeedback = 0;
+						} else {
+							trainData.addAll(show);
+							this.writeDataToFile(trainData, testData);
+							
+							logger.info("*** Do Next Opt-Train-Predict-Feedback Process.");
 						}
 					}
 				}
 				
-				logger.info("\nPrediction checking end." +
-						"\nAccuracy = " + (100.0f * numCorrect / numPrediction) + "% (" +
-						numCorrect + "/" + numPrediction + ")");
-				
-				
-			} catch (FileNotFoundException e) {
-				logger.warn("Cannot open prediction file.", e);
-			} catch (IOException e) {
-				logger.warn("Cannot read prediction file.", e);
-			}
+			} while (doNextFeedback == 1);
 			
-			System.out.print("\nPrediction end. Do it again? (0 = NO, 1 = YES):");
-			Scanner scanner = new Scanner(System.in);
-			again = scanner.nextInt();
-		} while (again == 1);
-		
+			this.currentTestPass++;
+		}		
 	}
 	
 	
 	public static final int RUN_DUMP_DATA = 0; 
 	public static final int RUN_OPT = 1;
 	public static final int RUN_TEST = 2;
-	public static final int RUN_PREDICT = 3;
 	public static final String CFG_FILE = "classifier.properties";
 	
 	// The main method checks the run mode
@@ -949,9 +970,6 @@ public class SVM implements Optimizable {
 				break;
 			case RUN_TEST:
 				svm.trainAndTest();
-				break;
-			case RUN_PREDICT:
-				svm.trainAndPredict();
 				break;
 			}
 		
