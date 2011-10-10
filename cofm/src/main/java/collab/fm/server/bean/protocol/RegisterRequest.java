@@ -26,6 +26,7 @@ public class RegisterRequest extends Request {
 	
 	private static final String SERVER_URL = "http://" +
 		Resources.SERVER_ADDRESS + "/cofm/p?a=vf&n=$name&v=$validation";
+
 	@Override 
 	protected Processor makeDefaultProcessor() {
 		return new RegisterProcessor();

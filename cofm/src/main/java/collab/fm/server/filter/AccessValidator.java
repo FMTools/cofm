@@ -54,7 +54,8 @@ public class AccessValidator extends Filter {
 			if (Resources.RSP_SUCCESS.equals(rsp.getName()) &&
 					Resources.REQ_LOGIN.equals(req.getName())) {
 				Integer client = loginClients.get(req.getRequesterId());
-				// Prevent repeated login from different clients
+				// Refresh map when repeated login from different clients
+				/*
 				if (client != null && !client.equals(req.getClientId())) {
 					req.setLastError(MessageFormat.format(
 							Resources.MSG_ERROR_USER_LOGIN_REPEAT, 
@@ -63,6 +64,7 @@ public class AccessValidator extends Filter {
 							((LoginRequest)req).getUser() + ")");
 					return false;
 				}
+				*/
 				loginClients.put(req.getRequesterId(), req.getClientId());
 				logger.info("User login succeed.");
 			}

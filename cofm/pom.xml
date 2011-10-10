@@ -20,7 +20,10 @@
     <glassfishHttpsPort>8181</glassfishHttpsPort>
      
     <!-- The client (flash) bin directory -->
+    <!-- 
     <flexBinDir>/Users/mark/Documents/flex4/cofmc/cofmc/bin-debug</flexBinDir>
+    -->
+    <flexBinDir>client-bin</flexBinDir>
   </properties>
   
   <pluginRepositories>
