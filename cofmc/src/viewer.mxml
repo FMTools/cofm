@@ -83,6 +83,9 @@
 			
 			private function onLoginSuccess(evt: LoginEvent): void {
 				// Automatically select model
+				UserList.instance().isLogin = true;
+				UserList.instance().myId = evt.myId;
+				UserList.instance().myName = evt.myName;
 				this.currentState = "MAIN";
 				fmPage.retrieveFeatureModel(modelId, "");
 			}
