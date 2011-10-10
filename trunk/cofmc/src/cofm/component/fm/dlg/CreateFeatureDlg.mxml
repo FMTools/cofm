@@ -4,7 +4,8 @@
 			   xmlns:mx="library://ns.adobe.com/flex/mx" 
 			   width="510" height="420"
 			   creationComplete="initView();" 
-			   xmlns:validator="cofm.component.validator.*">
+			   xmlns:validator="cofm.component.validator.*" 
+			   xmlns:a="com.hillelcoren.components.*">
 	
 	<s:states>
 		<s:State name="Unselected" />
@@ -37,6 +38,7 @@
 			import cofm.model.*;
 			import cofm.util.*;
 			
+			import mx.controls.Alert;
 			import mx.events.ValidationResultEvent;
 			import mx.managers.PopUpManager;
 			import mx.utils.StringUtil;
@@ -51,6 +53,7 @@
 			private function initView(): void {
 				resetForm();
 				nameInput.setFocus();
+				
 			}
 			
 			public function resetForm(): void {
@@ -127,7 +130,12 @@
 		
 		<mx:FormItem label="{RS.m_cf_name}">
 			<!--<s:ComboBox id="nameInput" dataProvider="{FeatureNameList.instance().names}"/>-->
-			<s:TextInput id="nameInput" widthInChars="30" />
+			<a:AutoComplete id="nameInput" dataProvider="{FeatureNameList.instance().names}"
+						    width="300"
+						    allowDuplicates="false" allowEditingNewValues="true"
+						    allowNewValues="true" allowMultipleSelection="false"
+						    matchType="anyPart" selectedItemStyleName="macMail" 
+						    autoSelectEnabled="false"/>
 		</mx:FormItem>
 		
 		<mx:FormItem label="{RS.m_cf_parent}" includeIn="EntitySelected">

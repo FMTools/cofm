@@ -124,6 +124,8 @@
 						addTab(CurrentFeature.instance().element, def);
 					}
 				}
+				
+				tabNav.selectedIndex = 0;
 			}
 			
 			// 
