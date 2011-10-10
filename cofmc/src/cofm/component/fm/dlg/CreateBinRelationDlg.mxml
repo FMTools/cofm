@@ -2,6 +2,7 @@
 <s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
 			   xmlns:s="library://ns.adobe.com/flex/spark" 
 			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   xmlns:a="com.hillelcoren.components.*"
 			   width="400" height="350"
 			   title="{RS.m_cr_title}"
 			   close="doClose();"
@@ -118,18 +119,21 @@
 		
 		<mx:FormItem label.Refinement="{RS.m_cr_parent}" 
 					 label.Constraint="{RS.m_cr_left}">
-			<s:ComboBox id="leftSelect" 
-						width="200"
-						requireSelection="true" 
-						dataProvider="{sourceEntities.entities}"
-					    labelFunction="entitySelectLabelFunc"/>
+			<a:AutoComplete id="leftSelect" dataProvider="{sourceEntities.entities}"
+							width="200" labelFunction="entitySelectLabelFunc"
+							allowDuplicates="false" allowEditingNewValues="false"
+							allowNewValues="false" allowMultipleSelection="false"
+							matchType="anyPart" selectedItemStyleName="macMail" 
+							autoSelectEnabled="true"/>
 		</mx:FormItem>
 		<mx:FormItem label.Refinement="{RS.m_cr_child}" 
 					 label.Constraint="{RS.m_cr_right}">
-			<s:ComboBox id="rightSelect" width="200"
-						requireSelection="true" 
-						dataProvider="{targetEntities.entities}"
-					    labelFunction="entitySelectLabelFunc"/>
+			<a:AutoComplete id="rightSelect" dataProvider="{targetEntities.entities}"
+							width="200" labelFunction="entitySelectLabelFunc"
+							allowDuplicates="false" allowEditingNewValues="false"
+							allowNewValues="false" allowMultipleSelection="false"
+							matchType="anyPart" selectedItemStyleName="macMail" 
+							autoSelectEnabled="true"/>
 		</mx:FormItem>
 		
 		<mx:FormItem direction="horizontal">
