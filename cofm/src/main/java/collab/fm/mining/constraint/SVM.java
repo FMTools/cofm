@@ -242,6 +242,8 @@ public class SVM implements Optimizable {
 	}
 	
 	private void writeDataToFile(List<FeaturePair> train, List<FeaturePair> test) {
+		logger.info("Training Set: " + train.size() + " pairs; Test Set:: " + test.size() + " pairs.");
+		
 		writeToFile(train, SVM.TRAINING_FILE);
 		this.scaleTrainingSet();
 		
@@ -844,7 +846,8 @@ public class SVM implements Optimizable {
 					
 				// Calculate the metrics (precision, recall, accuracy)
 				logger.info("*** Update Accuracy/Precision/Recall");
-				prediction.push(testData);
+				//prediction.push(testData);
+				prediction.set(testData);
 				
 				Metric m1 = prediction.getClassMetric(FeaturePair.REQUIRE);
 				Metric m2 = prediction.getClassMetric(FeaturePair.EXCLUDE);

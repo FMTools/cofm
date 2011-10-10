@@ -139,7 +139,6 @@ public class GrammaticalParser {
 				
 				ps.tdl = (List<TypedDependency>) gs.typedDependenciesCollapsed();
 				
-				//System.out.println(ps);
 			}
 		}
 		
@@ -213,6 +212,7 @@ public class GrammaticalParser {
 		
 		for (ParsedSentence ps: this.sentences) {
 			// Explicit object-relation are marked with "*obj" or "dep"
+			// TODO: also marked with prep_*(*, noun), where the "noun" is also an object
 			for (TypedDependency td: ps.tdl) {
 				int i = td.dep().index() - 1;  // Type Dependency Index starts from 1
 				WordTag wt = ps.taggedWords.get(i);
@@ -258,7 +258,7 @@ public class GrammaticalParser {
 	
 	public static void main(String[] args) {
 		GrammaticalParser gp = new GrammaticalParser();
-		gp.parse("I've created connected weighted graph", true);
+		gp.parse("I give you a book in my room", true);
 		System.out.println(gp.getObjects());
 		System.out.println(gp.getWords());
 	}

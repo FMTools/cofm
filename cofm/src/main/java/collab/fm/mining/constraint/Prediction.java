@@ -34,6 +34,12 @@ public class Prediction {
 			this.recall += recall;
 		}
 		
+		public void set(double precision, double recall) {
+			time = 1;
+			this.precision = precision;
+			this.recall = recall;
+		}
+		
 		public double avgPrecision() {
 			return time == 0 ? 0 : precision / time;
 		}
@@ -93,7 +99,7 @@ public class Prediction {
 			num = copy.size();
 		}
 		
-		return copy.subList(copy.size() - num, num);
+		return copy.subList(copy.size() - num, copy.size());
 	}
 	
 	public Prediction() {
@@ -107,6 +113,45 @@ public class Prediction {
 	
 	public Metric getClassMetric(int classId) {
 		return metrics.get(classId);
+	}
+	
+	public void set(List<FeaturePair> pairs) {
+		int correct = 0;
+		int reqPositive = 0, reqTrue = 0, reqFalse = 0;
+		int excPositive = 0, excTrue = 0, excFalse = 0;
+		
+		for (FeaturePair pair: pairs) {
+			if (pair.getLabel() == FeaturePair.REQUIRE) {
+				reqPositive++;
+			}
+			if (pair.getLabel() == FeaturePair.EXCLUDE) {
+				excPositive++;
+			}
+			if (pair.getPredictedClass() == pair.getLabel()) {
+				correct++;
+				if (pair.getLabel() == FeaturePair.REQUIRE) {
+					reqTrue++;
+				}
+				if (pair.getLabel() == FeaturePair.EXCLUDE) {
+					excTrue++;
+				}
+			} else {
+				if (pair.getPredictedClass() == FeaturePair.REQUIRE) {
+					reqFalse++;
+				}
+				if (pair.getPredictedClass() == FeaturePair.EXCLUDE) {
+					excFalse++;
+				}
+			}
+		}
+		
+		this.time = 1;
+		this.accuracy = 1.0 * correct / pairs.size();
+		
+		this.metrics.get(FeaturePair.REQUIRE).set(1.0 * reqTrue / (reqTrue + reqFalse), 
+				1.0 * reqTrue / reqPositive);
+		this.metrics.get(FeaturePair.EXCLUDE).set(1.0 * excTrue / (excTrue + excFalse),
+				1.0 * excTrue / excPositive);
 	}
 	
 	public void push(List<FeaturePair> pairs) {
