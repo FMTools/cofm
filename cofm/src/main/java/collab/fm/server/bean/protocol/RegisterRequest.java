@@ -27,6 +27,12 @@ public class RegisterRequest extends Request {
 	private static final String SERVER_URL = "http://" +
 		Resources.SERVER_ADDRESS + "/cofm/p?a=vf&n=$name&v=$validation";
 
+	private static final String DO_VALIDATION = "1";
+	
+	private static boolean doValidation() {
+		return Resources.MAIL_VALIDATION.equals(DO_VALIDATION); 
+	}
+	
 	@Override 
 	protected Processor makeDefaultProcessor() {
 		return new RegisterProcessor();
@@ -88,31 +94,35 @@ public class RegisterRequest extends Request {
 					.replace("$validation", validationMd5);
 				// Send validation email
 				boolean mailSent = false;
-				try {
-					MailUtil.sendFromGmail(Resources.SERVER_MAIL_NAME, 
-							"FX5Vu6bp8Yk5", 
-							new String[] {r.getMail()},
-							Resources.MSG_REGISTER_MAIL_TITLE, 
-							MessageFormat.format(Resources.MSG_REGISTER_MAIL_TEXT, 
-									r.getUser(), validationUrl));
-					mailSent = true;
-				} catch (MessagingException e) {
-					logger.warn("Sending register mail failed. (User=" + r.getUser() +
-							", Mail=" + r.getMail());
-					rsp.setMessage(Resources.MSG_ERROR_USER_EXISTED);
-					rsp.setName(Resources.RSP_ERROR);
+				if (doValidation()) {
+					try {
+						MailUtil.sendFromGmail(Resources.SERVER_MAIL_NAME, 
+								"FX5Vu6bp8Yk5", 
+								new String[] {r.getMail()},
+								Resources.MSG_REGISTER_MAIL_TITLE, 
+								MessageFormat.format(Resources.MSG_REGISTER_MAIL_TEXT, 
+										r.getUser(), validationUrl));
+						mailSent = true;
+					} catch (MessagingException e) {
+						logger.warn("Sending register mail failed. (User=" + r.getUser() +
+								", Mail=" + r.getMail());
+						rsp.setMessage(Resources.MSG_ERROR_USER_EXISTED);
+						rsp.setName(Resources.RSP_ERROR);
+					}
 				}
-				if (mailSent) {
+				if (!doValidation() || mailSent) {
 					u = new User();
 					u.setName(r.getUser());
 					u.setNameInMD5(nameMd5);
 					u.setEmail(r.getMail());
 					u.setPasswordInMD5(r.getPwd());
-					u.setValidated(false);
+					u.setValidated(!doValidation());
 					u.setValidationStr(validationMd5);
 					u = DaoUtil.getUserDao().save(u);
 	
-					rsp.setMessage(Resources.MSG_REGISTER);
+					if (doValidation()) {
+						rsp.setMessage(Resources.MSG_REGISTER);
+					}
 					rsp.setName(Resources.RSP_SUCCESS);
 					rsp.setRequesterId(u.getId());
 					

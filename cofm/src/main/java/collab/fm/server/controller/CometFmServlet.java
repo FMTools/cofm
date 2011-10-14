@@ -231,7 +231,7 @@ public class CometFmServlet extends HttpServlet {
 			handler.attach(res);
 			handler.forClient(Integer.valueOf(cId));
 	
-			logger.debug("GET from client #" + cId + ", waiting for data...");
+			logger.debug("GET from client #" + cId + " (" + req.getRemoteAddr() + ")" + ", waiting for data...");
 			
 			CometEngine engine = CometEngine.getEngine();
 			CometContext context = engine.getCometContext(contextPath);
@@ -239,7 +239,7 @@ public class CometFmServlet extends HttpServlet {
 			context.addCometHandler(handler);
 		} else {
 			// Write buffered data immediately
-			logger.debug("GET from client #" + cId + ", " + buf.size() + " buffered responses.");
+			logger.debug("GET from client #" + cId + " (" + req.getRemoteAddr() + ")" + ", " + buf.size() + " buffered responses.");
 			responseGet(res.getWriter(), Integer.valueOf(cId));
 		}
 		
@@ -269,7 +269,7 @@ public class CometFmServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse res)
 	throws ServletException, IOException {
 
-		logger.debug("POST param: " + paramsToString(req));
+		logger.debug(" (" + req.getRemoteAddr() + ")" + "POST param: " + paramsToString(req));
 		ResponseGroup fmRes = null;
 		String cId = req.getParameter("clientId");
 		String mode = req.getParameter("mode");
