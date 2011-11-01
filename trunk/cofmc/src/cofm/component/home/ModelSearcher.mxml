@@ -61,6 +61,8 @@
 			private function doCreate(): void {
 				createModelDlg = CreateModelDlg(PopUpManager.createPopUp(this, CreateModelDlg, true));
 				createModelDlg.modelName = searchWord;
+				createModelDlg.allowClose = true;
+				createModelDlg.autoClose = true;
 				PopUpManager.centerPopUp(createModelDlg);
 				currentState = "NoCreate";
 			}
