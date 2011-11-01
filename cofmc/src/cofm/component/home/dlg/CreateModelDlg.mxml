@@ -34,6 +34,10 @@
 			
 			private var selectedTypeId: int;
 			
+			[Bindable] public var allowClose: Boolean;
+			
+			public var autoClose: Boolean;
+			
 			[Bindable] public var modelName: String;
 			
 			[Bindable]
@@ -77,10 +81,16 @@
 					ModelSelectEvent.SELECTED, onModelSelected);
 			}
 			
-			private function onModelSelected(evt: ModelSelectEvent): void {
+			public function closeDlg(): void {
 				ClientEvtDispatcher.instance().removeEventListener(
 					ModelSelectEvent.SELECTED, onModelSelected);
 				onCancel();
+			}
+			
+			private function onModelSelected(evt: ModelSelectEvent): void {
+				if (autoClose) {
+					closeDlg();
+				}
 			}
 			
 			// return the root of entityTypes
@@ -268,7 +278,9 @@
 						break;
 					case "RelationSelected":
 					case "RelationUnselected":
-						nextBtn.enabled = false;
+						if (this.autoClose) {
+							nextBtn.enabled = false;
+						}
 						doCreateModel();
 						break;
 				}	
@@ -462,7 +474,7 @@
 		<s:HGroup right="10">
 			<s:Button label="&lt; Back" enabled.Basic="false" click="onBack();"/>
 			<s:Button id="nextBtn" label="Next &gt;" label.Relation="Finish" click="onNext();"/>
-			<s:Button label="Cancel" click="onCancel();"/>
+			<s:Button label="Cancel" click="onCancel();" visible="{allowClose}"/>
 		</s:HGroup>
 	</mx:Canvas>
 	

@@ -19,6 +19,7 @@
     <application path="Test.mxml"/>
     <application path="cofmc.mxml"/>
     <application path="viewer.mxml"/>
+    <application path="create.mxml"/>
   </applications>
   <modules/>
   <buildCSSFiles/>

@@ -72,6 +72,7 @@
 					parentId = CurrentFeature.instance().id;
 					typeId = CurrentFeature.instance().typeId;
 				}
+				nameInput.dataProvider = FeatureNameList.instance().names;
 //				nameInput.textInput.text = "";
 //				
 //				// If user is editing a feature(the feature is highlighted in feature tree), 
@@ -131,7 +132,7 @@
 		<mx:FormItem label="{RS.m_cf_name}">
 			<!--<s:ComboBox id="nameInput" dataProvider="{FeatureNameList.instance().names}"/>-->
 			<a:AutoComplete id="nameInput" dataProvider="{FeatureNameList.instance().names}"
-						    width="300"
+						    width="300" 
 						    allowDuplicates="false" allowEditingNewValues="true"
 						    allowNewValues="true" allowMultipleSelection="false"
 						    matchType="anyPart" selectedItemStyleName="macMail" 
