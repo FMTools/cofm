@@ -80,17 +80,16 @@
 									width="{Size.TREE_W}" height="{Size.TREE_H}"
 								    />
 				</s:NavigatorContent>
+				<!--
 				<s:NavigatorContent label="Working View">
 					<fm:FeatureTree dataProvider="{WorkingTreeData.instance().xml}"
 									rootNode="{WorkingTreeData.instance().root}"
 									treeName="working"
 									width="{Size.TREE_W}" height="{Size.TREE_H}"/>
 				</s:NavigatorContent>
+				-->
 				<s:NavigatorContent label="Personal View">
-					<fm:FeatureTree dataProvider="{PersonalTreeData.instance().xml}"
-									rootNode="{PersonalTreeData.instance().root}"
-									treeName="personal"
-									width="{Size.TREE_W}" height="{Size.TREE_H}"/>
+					<fm:PersonalView width="{Size.TREE_W}" height="{Size.TREE_H}" />
 				</s:NavigatorContent>
 			</mx:TabNavigator>
 		</s:Panel>

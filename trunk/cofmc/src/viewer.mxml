@@ -74,7 +74,7 @@
 				CurrentFeature.instance();
 				GlobalTreeData.instance();
 				WorkingTreeData.instance();
-				PersonalTreeData.instance();
+			//	PersonalTreeData.instance();
 			}
 			
 			private function onConnected(evt: ClientEvent): void {

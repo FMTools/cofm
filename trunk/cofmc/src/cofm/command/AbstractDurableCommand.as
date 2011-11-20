@@ -2,6 +2,7 @@ package cofm.command
 {
 	import cofm.util.*;
 	import cofm.event.ClientEvent;
+	import cofm.model.*;
 	
 	public class AbstractDurableCommand implements IDurableCommand
 	{
@@ -45,6 +46,7 @@ package cofm.command
 			if (request != null) {
 				cmdId = CommandBuffer.instance().addCommand(this);
 				request.id = cmdId;
+				request.requesterId = UserList.instance().myId;
 				Connector.instance().send(request);
 			}
 			

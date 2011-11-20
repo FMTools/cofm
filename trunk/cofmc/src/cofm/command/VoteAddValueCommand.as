@@ -25,6 +25,7 @@ package cofm.command
 				name: Cst.REQ_VA_VALUE,
 					requesterId: UserList.instance().myId,
 					modelId: ModelCollection.instance().currentModelId,
+					activePvId: PersonalViewManager.instance().active,
 					yes: _vote,
 					val: _val,
 					attrId: _attrId,

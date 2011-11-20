@@ -213,7 +213,7 @@ package cofm.model
 			}
 		}
 		
-		private function addToRootOfClass(node: XML): void {
+		protected function addToRootOfClass(node: XML): void {
 			// Actually, move node to the root of its Class-Node
 			var entype: XML = Model.instance().getRootTypeById(node.@typeId);
 			if (entype != null) {
