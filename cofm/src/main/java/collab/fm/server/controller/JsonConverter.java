@@ -6,7 +6,9 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.protocol.AddCommentRequest;
+import collab.fm.server.bean.protocol.ChangePersonalViewRequest;
 import collab.fm.server.bean.protocol.CreateModelRequest;
+import collab.fm.server.bean.protocol.CreatePersonalViewRequest;
 import collab.fm.server.bean.protocol.ExitModelRequest;
 import collab.fm.server.bean.protocol.FocusOnEntityRequest;
 import collab.fm.server.bean.protocol.ListModelRequest;
@@ -53,6 +55,9 @@ public class JsonConverter {
 		requestClassMap.put(Resources.REQ_VA_ENTITY, VoteAddEntityRequest.class);
 		requestClassMap.put(Resources.REQ_VA_RELATION_BIN, VoteAddBinRelationRequest.class);
 		requestClassMap.put(Resources.REQ_VA_VALUE, VoteAddValueRequest.class);
+		
+		requestClassMap.put(Resources.REQ_PV_CHANGE, ChangePersonalViewRequest.class);
+		requestClassMap.put(Resources.REQ_PV_CREATE, CreatePersonalViewRequest.class);
 		
 	}
 	

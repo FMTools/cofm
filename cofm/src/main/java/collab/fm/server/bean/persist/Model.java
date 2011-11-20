@@ -1,6 +1,8 @@
 package collab.fm.server.bean.persist;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -28,7 +30,9 @@ public class Model extends DataItem {
 	
 	// Contributors of this model (many to many)
 	private Set<User> users = new HashSet<User>();
-
+	
+	private Set<PersonalView> views = new HashSet<PersonalView>();
+	
 	@Override
 	public void transfer(DataItem2 m) {
 		Model2 m2 = (Model2) m;
@@ -46,6 +50,11 @@ public class Model extends DataItem {
 			return this.getId().toString();
 		}
 		return this.getName();
+	}
+	
+	public void addPersonalView(PersonalView pv) {
+		this.getViews().add(pv);
+		pv.setModel(this);
 	}
 	
 	public void addEntity(Entity e) {
@@ -126,6 +135,14 @@ public class Model extends DataItem {
 
 	public void setUsers(Set<User> users) {
 		this.users = users;
+	}
+
+	public Set<PersonalView> getViews() {
+		return views;
+	}
+
+	public void setViews(Set<PersonalView> views) {
+		this.views = views;
 	}
 	
 }

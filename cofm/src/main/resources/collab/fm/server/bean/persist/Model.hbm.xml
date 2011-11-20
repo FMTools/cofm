@@ -48,5 +48,11 @@
   		<many-to-many column="USER_ID" class="User"></many-to-many>
   	</set>
   	
+  	<!-- One-to-many association to Personal Views -->
+  	<set name="views" inverse="true">
+  	    <key column="MODEL_ID"></key>
+  	    <one-to-many class="collab.fm.server.bean.persist.PersonalView"/>
+  	</set>
+    				 
   </class>
 </hibernate-mapping>

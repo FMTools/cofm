@@ -2,9 +2,11 @@ package collab.fm.server.bean.persist.entity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -12,6 +14,7 @@ import collab.fm.server.bean.persist.Comment;
 import collab.fm.server.bean.persist.DataItem;
 import collab.fm.server.bean.persist.Element;
 import collab.fm.server.bean.persist.Model;
+import collab.fm.server.bean.persist.PersonalView;
 import collab.fm.server.bean.persist.relation.Relation;
 import collab.fm.server.bean.transfer.Comment2;
 import collab.fm.server.bean.transfer.DataItem2;
@@ -31,6 +34,8 @@ public class Entity extends Element {
 	protected Map<Long, ValueList> attrs = new HashMap<Long, ValueList>();
 	
 	protected Model model;
+	
+	protected Set<PersonalView> views = new HashSet<PersonalView>();  // Selected in many personal views.
 	
 	protected List<Comment> comments = new ArrayList<Comment>();
 
@@ -78,7 +83,7 @@ public class Entity extends Element {
 	}
 	
 	// Return Votable.CREATION_EXECUTED (if added new value) or VOTE_EXECUTED (if voted on existing value).
-	public int voteOrAddValue(Long attrId, String value, boolean yes, Long userId) {
+	public int voteOrAddValue(Long attrId, String value, boolean yes, Long userId, PersonalView activePv) {
 		// Check the validity of the value.
 		EntityType entp;
 		try {
@@ -110,12 +115,18 @@ public class Entity extends Element {
 			if (v.toValueString().equals(value)) {
 				isVoting = true;
 				execOp = v.vote(yes, userId);
+				if (yes) {
+					activePv.addValue(v);
+				} else {
+					activePv.removeValue(v);
+				}
 			} else if (!atype.isMultipleSupport() && yes) {
 				// If multipleSupport is disabled and this vote is YES, then we auto vote NO to other values
 				// (NOTE: if this vote is NO, we do nothing.)
 				execOp = v.vote(false, userId);
+				activePv.removeValue(v);
 			}
-			if (execOp == DataItem.REMOVAL_EXECUTED) {
+			if (execOp == DataItem.REMOVAL_EXECUTED && v.getViews().size() <= 0) {
 				// If there's no supporters after the vote, then remove this value.
 				it.remove();
 			}
@@ -128,6 +139,7 @@ public class Entity extends Element {
 			theVal.setVal(value);
 			theVal.vote(true, userId);
 			list.getValues().add(theVal);
+			activePv.addValue(theVal);
 			return DataItem.CREATION_EXECUTED;
 		}
 		return DataItem.VOTE_EXECUTED;
@@ -187,6 +199,14 @@ public class Entity extends Element {
 
 	public void setComments(List<Comment> comments) {
 		this.comments = comments;
+	}
+
+	public Set<PersonalView> getViews() {
+		return views;
+	}
+
+	public void setViews(Set<PersonalView> views) {
+		this.views = views;
 	}
 
 }

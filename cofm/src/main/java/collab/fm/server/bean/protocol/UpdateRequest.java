@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import collab.fm.server.bean.persist.Model;
+import collab.fm.server.bean.persist.PersonalView;
 import collab.fm.server.bean.persist.entity.Entity;
 import collab.fm.server.bean.persist.entity.EntityType;
 import collab.fm.server.bean.persist.relation.BinRelation;
@@ -12,8 +13,10 @@ import collab.fm.server.bean.persist.relation.Relation;
 import collab.fm.server.bean.persist.relation.RelationType;
 import collab.fm.server.bean.transfer.BinRelation2;
 import collab.fm.server.bean.transfer.BinRelationType2;
+import collab.fm.server.bean.transfer.DataItem2;
 import collab.fm.server.bean.transfer.Entity2;
 import collab.fm.server.bean.transfer.EntityType2;
+import collab.fm.server.bean.transfer.PersonalView2;
 import collab.fm.server.processor.Processor;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.Resources;
@@ -92,11 +95,19 @@ public class UpdateRequest extends Request {
 				}
 			}
 			
+			List<PersonalView2> list5 = new ArrayList<PersonalView2>();
+			for (PersonalView pv: m.getViews()) {
+				PersonalView2 basicInfo = new PersonalView2();
+				pv.transfer(basicInfo);
+				list5.add(basicInfo);
+			}
+			
 			UpdateResponse response = new UpdateResponse(r);
 			response.setEntities(list1);
 			response.setBinaries(list2);
 			response.setEntypes(list3);
 			response.setBintypes(list4);
+			response.setPvs(list5);
 			response.setModelName(m.getName());
 			response.setName(Resources.RSP_SUCCESS);
 			
@@ -113,6 +124,7 @@ public class UpdateRequest extends Request {
 		private List<BinRelation2> binaries;
 		private List<EntityType2> entypes;
 		private List<BinRelationType2> bintypes;
+		private List<PersonalView2> pvs;  // Basic info of personal views (PVs) 
 		private String modelName;
 		
 		public UpdateResponse(Request r) {
@@ -157,6 +169,14 @@ public class UpdateRequest extends Request {
 
 		public String getModelName() {
 			return modelName;
+		}
+
+		public void setPvs(List<PersonalView2> pvs) {
+			this.pvs = pvs;
+		}
+
+		public List<PersonalView2> getPvs() {
+			return pvs;
 		}
 		
 	}

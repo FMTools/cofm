@@ -1,0 +1,1 @@
+cmd /k mvn install:install-file -Dfile=json-lib-2.3-jdk15.jar -DgroupId=net.sf.json-lib -DartifactId=json-lib -Dversion=2.3 -Dpackaging=jar

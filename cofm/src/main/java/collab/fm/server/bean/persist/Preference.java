@@ -7,14 +7,10 @@ public class Preference extends DataItem {
 	
 	@Override
 	public String toValueString() {
-		if (this.getId() != null) {
-			return this.getId().toString();
-		}
-		String m = "";
 		if (this.getModel() != null) {
-			m = this.getModel().toValueString();
+			return this.getModel().toValueString();
 		}
-		return m + content;
+		return content;
 	}
 
 	public Model getModel() {

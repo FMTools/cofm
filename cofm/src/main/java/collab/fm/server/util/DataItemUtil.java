@@ -62,11 +62,13 @@ public class DataItemUtil {
 		|| (br.getSourceId().equals(e2.getId()) && br.getTargetId().equals(e1.getId()));
 	}
 	
-	public static void generateInferVotes(Relation relation, List<Long> votes) {
+	public static void generateInferVotes(Relation relation, List<Long> votesOnEntity, List<Long> votesOnRelation) {
 		for (Element e: relation.getElements()) {
-			votes.add(e.getId());
 			if (e instanceof Relation) {
-				generateInferVotes((Relation) e, votes);
+				votesOnRelation.add(e.getId());
+				generateInferVotes((Relation) e, votesOnEntity, votesOnRelation);
+			} else if (e instanceof Entity) {
+				votesOnEntity.add(e.getId());
 			}
 		}
 	}

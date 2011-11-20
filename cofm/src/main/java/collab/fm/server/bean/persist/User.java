@@ -22,9 +22,14 @@ public class User extends DataItem {
 	private Boolean validated;
 	private String validationStr;
 	
+	// A user creates / contributes to a set of models.
 	private Set<Model> models = new HashSet<Model>();
 
 	private Set<Preference> preferences = new HashSet<Preference>();
+	
+	public void addPreference(Preference p) {
+		preferences.add(p);
+	}
 	
 	@Override
 	public void transfer(DataItem2 u) {

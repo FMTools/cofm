@@ -1,5 +1,9 @@
 package collab.fm.server.bean.protocol;
 
+import java.util.Date;
+
+import collab.fm.server.util.DataItemUtil;
+
 
 public class Response implements Cloneable {
 	public static final String TERMINATOR = "\0";
@@ -27,6 +31,7 @@ public class Response implements Cloneable {
 		this.setRequestId(r.getId());
 		this.setRequestName(r.getName());
 		this.setRequestClientId(r.getClientId());
+		this.setExecTime(DataItemUtil.formatDate(new Date()));
 	}
 	
 	@Override

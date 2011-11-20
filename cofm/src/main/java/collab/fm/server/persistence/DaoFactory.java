@@ -2,6 +2,7 @@ package collab.fm.server.persistence;
 
 import collab.fm.server.bean.persist.Element;
 import collab.fm.server.bean.persist.ElementType;
+import collab.fm.server.bean.persist.PersonalView;
 import collab.fm.server.bean.persist.entity.EntityType;
 import collab.fm.server.bean.persist.relation.RelationType;
 
@@ -24,6 +25,7 @@ public abstract class DaoFactory {
 	abstract public AttributeDefDao getAttributeDefDao();
 	abstract public ElementTypeDao getElementTypeDao();
 	abstract public ElementDao getElementDao();
+	abstract public PersonalViewDao getPersonalViewDao();
 	
 	// TODO: move the inner class to a separated file.
 	public static class HibernateDaoFactory extends DaoFactory {
@@ -39,6 +41,13 @@ public abstract class DaoFactory {
 		private static final ElementTypeDao elemt = new ElementTypeDaoImpl();
 		private static final ElementDao elem = new ElementDaoImpl();
 		
+		private static final PersonalViewDao pv = new PersonalViewDaoImpl();
+		
+		public static class PersonalViewDaoImpl extends GenericDaoImpl<PersonalView, Long> 
+			implements PersonalViewDao {
+			
+		
+		}
 		public static class RelationTypeDaoImpl extends GenericDaoImpl<RelationType, Long>
 			implements RelationTypeDao {
 			
@@ -97,6 +106,11 @@ public abstract class DaoFactory {
 		@Override
 		public ElementDao getElementDao() {
 			return elem;
+		}
+
+		@Override
+		public PersonalViewDao getPersonalViewDao() {
+			return pv;
 		}	
 	}
 }

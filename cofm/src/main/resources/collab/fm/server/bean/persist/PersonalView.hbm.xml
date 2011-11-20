@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="collab.fm.server.bean.persist">
+  <class name="PersonalView">
+  
+  <!--+++++++++++++++++
+	  DataItem properties 
+	 ++++++++++++++++++++-->
+    <id name="id" type="long" column="PV_ID">
+	  <generator class="native"></generator>
+	</id>
+	<timestamp name="lastModifyTime" column="LAST_MODIFIED" />
+	<property name="createTime" type="timestamp" column="CREATED" />
+	<property name="creator" type="long" column="CREATOR_ID" />
+	<property name="lastModifier" type="long" column="LAST_MODIFIER_ID" />
+  	
+  	<property name="name" type="string" column="PV_NAME" />
+  	<property name="description" type="string" column="PV_DESCRIPTION" />
+  	<property name="visibleToOthers" type="boolean" column="IS_PUBLIC" />
+  	
+  	<!-- Many-to-many association to Entity -->
+  	<set name="entities" table="ENTITY_PV_ASSOC">
+  	    <key column="PV_ID"></key>
+  	    <many-to-many column="ENTITY_ID" class="collab.fm.server.bean.persist.entity.Entity" />
+  	</set>
+  	
+  	<!-- Many-to-many association to Relation -->
+  	<set name="relations" table="RELATION_PV_ASSOC">
+  	    <key column="PV_ID"></key>
+  	    <many-to-many column="RELATION_ID" class="collab.fm.server.bean.persist.relation.Relation"/>
+  	</set>
+  	
+    <!-- Many-to-many association to Value -->
+    <set name="values" table="VALUE_PV_ASSOC">
+        <key column="PV_ID"></key>
+        <many-to-many column="VALUE_ID" class="collab.fm.server.bean.persist.entity.Value" />
+    </set>
+  	
+  	<!-- Many-to-one association to Model -->
+  	<many-to-one name="model" class="collab.fm.server.bean.persist.Model" 
+				 column="MODEL_ID" not-null="true" />
+  </class>
+</hibernate-mapping>

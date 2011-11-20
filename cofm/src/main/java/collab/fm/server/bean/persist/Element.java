@@ -18,7 +18,7 @@ public abstract class Element extends DataItem implements Votable {
 	protected Vote vote = new Vote();
 	protected ElementType type;
 	protected Set<Relation> rels = new HashSet<Relation>();
-	
+		
 	public Element() {
 		super();
 	}

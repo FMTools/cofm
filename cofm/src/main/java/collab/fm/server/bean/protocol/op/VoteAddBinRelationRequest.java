@@ -6,6 +6,8 @@ import java.util.List;
 import collab.fm.server.bean.persist.DataItem;
 import collab.fm.server.bean.persist.Element;
 import collab.fm.server.bean.persist.Model;
+import collab.fm.server.bean.persist.PersonalView;
+import collab.fm.server.bean.persist.entity.Entity;
 import collab.fm.server.bean.persist.relation.BinRelation;
 import collab.fm.server.bean.persist.relation.BinRelationType;
 import collab.fm.server.bean.persist.relation.Relation;
@@ -23,6 +25,7 @@ import collab.fm.server.util.exception.StaleDataException;
 public class VoteAddBinRelationRequest extends Request {
 	
 	private Long modelId;
+	private Long activePvId;
 	
 	private Long relationId;
 	
@@ -85,6 +88,14 @@ public class VoteAddBinRelationRequest extends Request {
 		this.targetId = targetId;
 	}
 
+	public void setActivePvId(Long activePvId) {
+		this.activePvId = activePvId;
+	}
+
+	public Long getActivePvId() {
+		return activePvId;
+	}
+
 	private static class VoteAddBinRelationProcessor implements Processor {
 
 		public boolean checkRequest(Request req) {
@@ -113,6 +124,11 @@ public class VoteAddBinRelationRequest extends Request {
 				throw new InvalidOperationException("Invalid model ID: " + r.getModelId());
 			}
 			
+			PersonalView pv = DaoUtil.getPersonalViewDao().getById(r.getActivePvId(), true);
+			if (pv == null) {
+				throw new InvalidOperationException("Invalid personal view ID: " + r.getActivePvId());
+			}
+			
 			DefaultResponse rsp = new DefaultResponse(r);
 			BinRelation br = null;
 			if (r.getRelationId() != null && 
@@ -123,11 +139,15 @@ public class VoteAddBinRelationRequest extends Request {
 				
 				// Set the inferred votes
 				if (r.getYes().booleanValue() == true) {
-					rsp.setInferVotes(computeInferVotes(br));
+					pv.addRelation(br);
+					rsp.setInferVotes(computeInferVotes(br, pv));
+				} else {
+					pv.removeRelation(br);
 				}
 				
 				// Handle the vote and possible removals.
-				if (br.vote(r.getYes(), r.getRequesterId()) == DataItem.REMOVAL_EXECUTED) {
+				if (br.vote(r.getYes(), r.getRequesterId()) == DataItem.REMOVAL_EXECUTED &&
+						br.getViews().size() <= 0) {
 					DaoUtil.getRelationDao().delete(br);
 				} else {
 					br = (BinRelation) DaoUtil.getRelationDao().save(br);
@@ -175,14 +195,17 @@ public class VoteAddBinRelationRequest extends Request {
 				// Creation always leads to a YES vote.
 				br.vote(true, r.getRequesterId());
 				br.setLastModifier(r.getRequesterId());
+				pv.addRelation(br);
 				
 				br = (BinRelation) DaoUtil.getRelationDao().save(br);
 				rsp.setRelationId(br.getId());
 				
 				// Set the inferred votes (because the "vote" always is "YES" here.)
-				rsp.setInferVotes(computeInferVotes(br));
+				rsp.setInferVotes(computeInferVotes(br, pv));
 				rsp.setExecTime(DataItemUtil.formatDate(br.getLastModifyTime()));
 			}
+			
+			DaoUtil.getPersonalViewDao().save(pv);
 			
 			// Add "back" and "broadcast" responses to the response group
 			rsp.setName(Resources.RSP_SUCCESS);
@@ -195,10 +218,27 @@ public class VoteAddBinRelationRequest extends Request {
 			return true;
 		}
 
-		private List<Long> computeInferVotes(Relation r) {
-			List<Long> rslt = new ArrayList<Long>();
-			DataItemUtil.generateInferVotes(r, rslt);
-			return rslt.size() <= 0 ? null : rslt;
+		private List<Long> computeInferVotes(Relation r, PersonalView pv) 
+			throws ItemPersistenceException, StaleDataException {
+			List<Long> onEntity = new ArrayList<Long>();
+			List<Long> onRelation = new ArrayList<Long>();
+			
+			DataItemUtil.generateInferVotes(r, onEntity, onRelation);
+			
+			for (Long id: onEntity) {
+				Entity en = DaoUtil.getEntityDao().getById(id, false);
+				pv.addEntity(en);
+				DaoUtil.getEntityDao().save(en);
+			}
+			
+			for (Long id: onRelation) {
+				Relation rel = DaoUtil.getRelationDao().getById(id, false);
+				pv.addRelation(rel);
+				DaoUtil.getRelationDao().save(rel);
+			}
+			
+			onEntity.addAll(onRelation);
+			return onEntity.size() <= 0 ? null : onEntity;
 		}
 		
 	}
@@ -207,6 +247,8 @@ public class VoteAddBinRelationRequest extends Request {
 		private Boolean exist;
 		
 		private Long modelId;
+		
+		private Long activePvId;
 		
 		private Long relationId;
 		
@@ -223,6 +265,7 @@ public class VoteAddBinRelationRequest extends Request {
 		public DefaultResponse(VoteAddBinRelationRequest r) {
 			super(r);
 			this.setModelId(r.getModelId());
+			this.setActivePvId(r.getActivePvId());
 			this.setYes(r.getYes());
 			this.setRelationId(r.getRelationId());
 			this.setTargetId(r.getTargetId());
@@ -292,6 +335,14 @@ public class VoteAddBinRelationRequest extends Request {
 
 		public void setTargetId(Long targetId) {
 			this.targetId = targetId;
+		}
+
+		public void setActivePvId(Long activePvId) {
+			this.activePvId = activePvId;
+		}
+
+		public Long getActivePvId() {
+			return activePvId;
 		}
 		
 	}

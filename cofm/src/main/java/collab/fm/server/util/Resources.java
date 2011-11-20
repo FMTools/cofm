@@ -50,6 +50,9 @@ public class Resources {
 	public static final String REQ_EA_ENTITY_TYPE = get("req.ea.entitytype");
 	public static final String REQ_EA_BIN_RELAION_TYPE = get("req.ea.reltype.bin");
 	
+	public static final String REQ_PV_CHANGE = get("req.pv.change");
+	public static final String REQ_PV_CREATE = get("req.pv.create");
+	
 	public static final String RSP_ERROR_FORMAT = get("rsp.error.format");
 	
 	public static final String RSP_SUCCESS = get("rsp.success");

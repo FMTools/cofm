@@ -8,5 +8,11 @@
     
     <property name="val" type="text" column="VALUE_STRING" />
     
+    <!-- Many-to-many association with Personal View -->
+  	<set inverse="true" name="views" table="VALUE_PV_ASSOC">
+  	     <key column="VALUE_ID" />
+  	     <many-to-many column="PV_ID" class="collab.fm.server.bean.persist.PersonalView" />
+  	</set>
+  	
   </joined-subclass>
 </hibernate-mapping>

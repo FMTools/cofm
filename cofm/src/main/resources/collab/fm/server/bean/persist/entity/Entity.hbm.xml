@@ -24,5 +24,11 @@
 	  <many-to-many class="collab.fm.server.bean.persist.Comment" column="COMMENT_ID" unique="true" />
 	</list>
 	
+	<!-- Many-to-many association with Personal View -->
+  	<set inverse="true" name="views" table="ENTITY_PV_ASSOC">
+  	     <key column="ENTITY_ID" />
+  	     <many-to-many column="PV_ID" class="collab.fm.server.bean.persist.PersonalView" />
+  	</set>
+  	
   </joined-subclass>
 </hibernate-mapping>

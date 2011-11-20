@@ -42,7 +42,7 @@
   	       2) the association is managed by Relation classes. (See BinRelation.resetElements()
   	          for an example.) -->
   	<set inverse="true" name="rels" table="ENTITY_RELATION_ASSOC">
-	<key column="ENTITY_ID" />
+		<key column="ENTITY_ID" />
 		<many-to-many column="RELATION_ID"
 			class="collab.fm.server.bean.persist.relation.Relation" />
 	</set>

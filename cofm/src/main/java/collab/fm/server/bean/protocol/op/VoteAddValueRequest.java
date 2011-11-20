@@ -4,6 +4,7 @@ import java.util.List;
 
 import collab.fm.server.bean.persist.DataItem;
 import collab.fm.server.bean.persist.Model;
+import collab.fm.server.bean.persist.PersonalView;
 import collab.fm.server.bean.persist.entity.AttributeType;
 import collab.fm.server.bean.persist.entity.Entity;
 import collab.fm.server.bean.persist.entity.EntityType;
@@ -21,6 +22,7 @@ import collab.fm.server.util.exception.StaleDataException;
 public class VoteAddValueRequest extends Request {
 
 	private Long modelId;
+	private Long activePvId;
 	private Long entityId;
 	private Long attrId;
 	private String val;
@@ -67,6 +69,14 @@ public class VoteAddValueRequest extends Request {
 		this.yes = yes;
 	}
 	
+	public void setActivePvId(Long activePvId) {
+		this.activePvId = activePvId;
+	}
+
+	public Long getActivePvId() {
+		return activePvId;
+	}
+
 	private static class VoteAddValueProcessor implements Processor {
 
 		public boolean checkRequest(Request req) {
@@ -88,6 +98,11 @@ public class VoteAddValueRequest extends Request {
 			Model m = DaoUtil.getModelDao().getById(r.getModelId(), false);
 			if (m == null) {
 				throw new InvalidOperationException("Invalid model ID: " + r.getModelId());
+			}
+			
+			PersonalView pv = DaoUtil.getPersonalViewDao().getById(r.getActivePvId(), false);
+			if (pv == null) {
+				throw new InvalidOperationException("Invalid personal view ID: " + r.getActivePvId());
 			}
 			
 			Entity en = DaoUtil.getEntityDao().getById(r.getEntityId(), false);
@@ -114,13 +129,15 @@ public class VoteAddValueRequest extends Request {
 			}
 
 			if (en.voteOrAddValue(r.getAttrId(), 
-					r.getVal(), r.getYes(), r.getRequesterId()) == DataItem.INVALID_OPERATION) {
+					r.getVal(), r.getYes(), r.getRequesterId(), pv) == DataItem.INVALID_OPERATION) {
 				req.setLastError("Invalid value: " + r.getVal());
 				return false;
 			}
 			
 			en.setLastModifier(r.getRequesterId());
 			en = DaoUtil.getEntityDao().save(en);
+			
+			DaoUtil.getPersonalViewDao().save(pv);
 			
 			rsp.setExecTime(DataItemUtil.formatDate(en.getLastModifyTime()));
 			rsp.setEntityId(en.getId());

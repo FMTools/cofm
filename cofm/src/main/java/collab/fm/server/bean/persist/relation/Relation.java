@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.persist.Element;
 import collab.fm.server.bean.persist.Model;
+import collab.fm.server.bean.persist.PersonalView;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
@@ -16,6 +17,8 @@ public abstract class Relation extends Element {
 	private static Logger logger = Logger.getLogger(Relation.class);
 	
 	protected Model model;
+	
+	protected Set<PersonalView> views = new HashSet<PersonalView>();  // Selected in many personal views.
 	
 	// Involved entities
 	protected Set<Element> elements = new HashSet<Element>();
@@ -61,6 +64,14 @@ public abstract class Relation extends Element {
 
 	public void setElements(Set<Element> elements) {
 		this.elements = elements;
+	}
+
+	public Set<PersonalView> getViews() {
+		return views;
+	}
+
+	public void setViews(Set<PersonalView> views) {
+		this.views = views;
 	}
 
 }

@@ -10,7 +10,7 @@
   
   <properties>  <!-- User-defined properties -->
     <!-- Glassfish 3 install directory -->
-    <glassfishInsDir>/Users/mark/glassfish3</glassfishInsDir>
+    <glassfishInsDir>c:/glassfish3</glassfishInsDir>
     <!-- Glassfish server admin info -->
     <glassfishAdmin>admin</glassfishAdmin>
     <glassfishPass>123</glassfishPass>

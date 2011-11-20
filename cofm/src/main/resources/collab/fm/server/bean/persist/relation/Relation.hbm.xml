@@ -19,6 +19,12 @@
 	<!-- Many-to-one association to Model -->
 	<many-to-one name="model" column="MODEL_ID" class="collab.fm.server.bean.persist.Model" not-null="true" />
 	
+	<!-- Many-to-many association with Personal View -->
+  	<set inverse="true" name="views" table="RELATION_PV_ASSOC">
+  	     <key column="RELATION_ID" />
+  	     <many-to-many column="PV_ID" class="collab.fm.server.bean.persist.PersonalView" />
+  	</set>
+  	
 	<!-- Subclasses -->
 	<joined-subclass name="BinRelation" table="BINARY_RELATION">
 	  <key column="BIN_RELATION_ID" />
