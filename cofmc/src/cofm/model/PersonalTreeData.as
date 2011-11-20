@@ -1,18 +1,78 @@
 package cofm.model
 {
+	import cofm.command.*;
+	import cofm.event.*;
 	import cofm.util.*;
+	
+	import flash.utils.Dictionary;
+	
+	import mx.collections.XMLListCollection;
+	import mx.controls.Alert;
 
 	public class PersonalTreeData extends RefinementTreeData
 	{
-		private static var _instance: PersonalTreeData = new PersonalTreeData();
 		
-		public static function instance(): PersonalTreeData {
-			return _instance;
-		}
+		public var pvId: int;
+		
 		
 		public function PersonalTreeData()
 		{
-			super();
+			this.xml = new XMLListCollection(new XMLList(<node/>));
+			this.pvId = -1;
+			ClientEvtDispatcher.instance().addEventListener(
+				FeatureSelectEvent.OTHER_PEOPLE_SELECT_ON_TREE, onOtherPeopleSelect);
+			ClientEvtDispatcher.instance().addEventListener(
+				LogoutEvent.LOGGED_OUT, onPeopleLogout);
+			ClientEvtDispatcher.instance().addEventListener(
+				PageSwitchEvent.OTHERS_EXIT_WORK_PAGE, onPeopleExitModel);
+			ClientEvtDispatcher.instance().addEventListener(
+				PersonalViewUpdateEvent.SUCCESS, onPersonalViewUpdated);
+		}
+		
+		public function resetToEmpty(): void {
+			this.refinements = new Dictionary();
+			
+			this.xml = new XMLListCollection(new XMLList(<node/>));
+			
+			// Create the Class Nodes
+			for each (var c: Object in Model.instance().entypes.source) {
+				this.createRootClassNode(XML(c));
+			}
+		}
+		
+		private function onPersonalViewUpdated(evt: PersonalViewUpdateEvent): void {
+			if (this.pvId >= 0 && this.pvId != int(evt.pv["pvId"])) {
+				return;  // Not this personal view
+			}
+			
+			if (this.pvId < 0) {
+				this.pvId = int(evt.pv["pvId"]);
+			}
+			
+			beforeDataUpdating();
+			
+			resetToEmpty();
+			
+			// Create the Object Nodes in this Personal View
+			for each (var enId: Object in (evt.pv["entities"] as Array)) {
+				var f: XML = Model.instance().getEntityById(String(enId));
+				if (f != null) {
+					var node: XML = this.createEntity(f.@id);
+					if (node != null) {
+						addToRootOfClass(node);
+					}
+				}
+			}
+			
+			// Create Refinements between Objects in this Personal View
+			for each (var rId: Object in (evt.pv["binrels"] as Array)) {
+				var r: XML = Model.instance().getBinRelationById(String(rId));
+				if (r != null && Model.instance().isInstanceOfRefinement(XML(r))) {
+					addRefinement(r.@id);
+				}
+			}
+			
+			afterDataUpdated();
 		}
 		
 		override protected function getEntityDisplayName(feature: Object): String {

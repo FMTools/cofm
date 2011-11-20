@@ -35,6 +35,9 @@ package cofm.util
 		public static const REQ_REGISTER: String = "register";
 		public static const REQ_CREATE_MODEL: String = "createModel";
 		
+		public static const REQ_CHANGE_PV: String = "changePv";
+		public static const REQ_CREATE_PV: String = "createPv";
+		
 		public static const RSP_SUCCESS: String = "success";
 		public static const RSP_ERROR: String = "error";
 		public static const RSP_STALE: String = "stale";

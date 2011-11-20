@@ -24,6 +24,7 @@ package cofm.command
 				name: Cst.REQ_VA_ENTITY,
 					requesterId: UserList.instance().myId,
 					modelId: ModelCollection.instance().currentModelId,
+					activePvId: PersonalViewManager.instance().active,
 					yes: _vote,
 					typeId: _typeId
 			};

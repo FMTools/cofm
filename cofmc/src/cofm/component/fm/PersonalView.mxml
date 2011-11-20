@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:fm="cofm.component.fm.*"
+		 creationComplete="initView();">
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import cofm.component.fm.dlg.CreatePVDlg;
+			import cofm.model.*;
+			import cofm.util.*;
+			
+			import mx.managers.PopUpManager;
+			
+			private var createDlg: CreatePVDlg;
+			
+			private function initView(): void {
+				
+				
+				// TODO: select last opened personal view
+			}
+			
+			private function onCreatePV(): void {
+				createDlg = CreatePVDlg(PopUpManager.createPopUp(this, CreatePVDlg, true));
+				PopUpManager.centerPopUp(createDlg);
+			}
+			
+			private function onChangePV(): void {
+				PersonalViewManager.instance().changePV(
+					int(pvList.selectedItem.@name), true);
+			}
+		]]>
+	</fx:Script>
+	
+	<s:HGroup>
+		<s:Button label="+" click="onCreatePV();" />
+		<s:ComboBox id="pvList" width="100%" 
+					dataProvider="{PersonalViewManager.instance().all}"
+				    labelField="@name" change="onChangePV();"/>
+	</s:HGroup>
+	
+	<fm:FeatureTree dataProvider="{PersonalViewManager.instance().activeData.xml}"
+					rootNode="{PersonalViewManager.instance().activeData.root}"
+					treeName="personal"
+					width="{Size.TREE_W}" height="{Size.TREE_H}"/>
+</s:Group>

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="400" height="300"
+			   title="Create a New Personal View">
+	<s:layout>
+		<s:VerticalLayout/>
+	</s:layout>
+	<fx:Declarations>
+		<!-- 将非可视元素（例如服务、值对象）放在此处 -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.CreatePersonalViewCommand;
+			import cofm.model.ModelCollection;
+			
+			import mx.managers.PopUpManager;
+			
+			private function onClose(): void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function onCreate(): void {
+				new CreatePersonalViewCommand(
+					ModelCollection.instance().currentModelId, 
+					pvName.text, pvDes.text).execute();
+				onClose();
+			}
+		]]>
+	</fx:Script>
+	
+	<mx:Form>
+		<mx:FormItem label="Name">
+			<s:TextInput id="pvName" />
+		</mx:FormItem>
+		<mx:FormItem label="Description">
+			<s:TextArea id="pvDes" />
+		</mx:FormItem>
+		<mx:FormItem direction="horizontal">
+			<s:Button label="OK" click="onCreate();" />
+			<s:Button label="Close" click="onClose();" />
+		</mx:FormItem>
+	</mx:Form>
+</s:TitleWindow>

@@ -62,6 +62,10 @@ package cofm.model
 			_subViews.push(view);
 		}
 		
+		public function getSubViews(): Array {
+			return _subViews;
+		}
+		
 		// Utility methods
 		public function isSubType(subTypeId: String, baseTypeId: String): Boolean {
 			do {
@@ -226,6 +230,14 @@ package cofm.model
 						return r.@id;
 					}
 				}
+			}
+			return null;
+		}
+		
+		public function getBinRelationById(id: String): XML {
+			var es: XMLList = this.binaries.source.(@id==id);
+			if (es.length() > 0) {
+				return es[0];
 			}
 			return null;
 		}
