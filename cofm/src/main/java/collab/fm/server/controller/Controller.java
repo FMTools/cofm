@@ -32,7 +32,9 @@ public class Controller {
 		Resources.REQ_EA_ATTR_STR,
 		Resources.REQ_VA_ENTITY,
 		Resources.REQ_VA_RELATION_BIN,
-		Resources.REQ_VA_VALUE
+		Resources.REQ_VA_VALUE,
+		Resources.REQ_PV_CHANGE,
+		Resources.REQ_PV_CREATE
 	};
 	
 	private static Controller controller = new Controller();
