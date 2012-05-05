@@ -34,9 +34,7 @@ import collab.fm.mining.opt.Solution;
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.entity.Entity;
 import collab.fm.server.bean.persist.entity.Value;
-import collab.fm.server.bean.persist.relation.BinRelation;
 import collab.fm.server.bean.persist.relation.Relation;
-import collab.fm.server.bean.persist.relation.RelationType;
 import collab.fm.server.bean.protocol.ResponseGroup;
 import collab.fm.server.bean.protocol.op.VoteAddBinRelationRequest;
 import collab.fm.server.persistence.HibernateUtil;
@@ -488,30 +486,21 @@ public class SVM implements Optimizable {
 		VoteAddBinRelationRequest req = new VoteAddBinRelationRequest();
 		req.setModelId(pair.getModel().getId());
 		req.setName(Resources.REQ_VA_RELATION_BIN);
+		req.setRefine(false);
+		int predicate = (type == EXCLUDE ? Relation.EXCLUDE : Relation.REQUIRE);
 		if (type == REQUIRED_BY) {
-			req.setSourceId(pair.getSecond().getId());
-			req.setTargetId(pair.getFirst().getId());
+			req.setSignature(predicate + "(" + pair.getSecond().getId() + "," + pair.getFirst().getId() + ')');
 		} else {
-			req.setSourceId(pair.getFirst().getId());
-			req.setTargetId(pair.getSecond().getId());
+			req.setSignature(predicate + "(" + pair.getFirst().getId() + "," + pair.getSecond().getId() + ')');
 		}
 		req.setYes(true);
-		// Get constraint type
-		String typeName = (type == EXCLUDE ? Resources.BIN_REL_EXCLUDES : Resources.BIN_REL_REQUIRES);
-		for (RelationType rt: pair.getModel().getRelationTypes()) {
-			if (rt.getTypeName().equals(typeName)) {
-				req.setTypeId(rt.getId());
-				break;
-			}
-		}
 		try {
 			req.setRequesterId(DaoUtil.getUserDao().getByName("admin").getId());
 		
 			req.process(new ResponseGroup());
 			
 			if (type == MUTUAL_REQUIRE) {
-				req.setSourceId(pair.getSecond().getId());
-				req.setTargetId(pair.getFirst().getId());
+				req.setSignature(predicate + "(" + pair.getSecond().getId() + "," + pair.getFirst().getId() + ')');
 				req.process(new ResponseGroup());
 			}
 			

@@ -33,7 +33,7 @@ public class Request {
 	}
 	
 	public boolean process(ResponseGroup rg) 
-	throws ItemPersistenceException, StaleDataException, InvalidOperationException {
+		throws ItemPersistenceException, StaleDataException, InvalidOperationException {
 		for (Processor p: processors) {
 			if (p.process(this, rg) == false) {
 				return false;
@@ -106,10 +106,14 @@ public class Request {
 		 * the requester.)
 		 * @throws InvalidOperationException 
 		 */
-		public boolean process(Request req, ResponseGroup rg) throws InvalidOperationException {
+		public boolean process(Request req, ResponseGroup rg) 
+		throws ItemPersistenceException, StaleDataException, InvalidOperationException {
 			if (!checkRequest(req)) {
 				throw new InvalidOperationException("Invalid operation.");
 			}
+			
+			recordRequest(req);
+			
 			Response r = fillResponse(req);
 			r.setName(Resources.RSP_FORWARD);
 			rg.setBroadcast(r);
@@ -126,6 +130,10 @@ public class Request {
 		 */
 		protected Response fillResponse(Request req) {
 			return new Response(req);
+		}
+		
+		protected void recordRequest(Request req) throws ItemPersistenceException, StaleDataException, InvalidOperationException {
+			
 		}
 		
 		public boolean checkRequest(Request req) {

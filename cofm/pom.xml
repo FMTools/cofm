@@ -16,14 +16,17 @@
     <glassfishPass>123</glassfishPass>
     <!-- Server port -->
     <glassfishAdminPort>4848</glassfishAdminPort>
-    <glassfishHttpPort>9090</glassfishHttpPort>
+    <glassfishHttpPort>8080</glassfishHttpPort>
     <glassfishHttpsPort>8181</glassfishHttpsPort>
      
     <!-- The client (flash) bin directory -->
     <!-- 
     <flexBinDir>/Users/mark/Documents/flex4/cofmc/cofmc/bin-debug</flexBinDir>
     -->
+    <flexBinDir>F:/Code/flex4/cofmc/bin-debug</flexBinDir>
+    <!-- 
     <flexBinDir>client-bin</flexBinDir>
+    -->
   </properties>
   
   <pluginRepositories>

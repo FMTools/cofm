@@ -59,6 +59,7 @@ public class AddCommentRequest extends Request {
 			DataItemUtil.setNewDataItemByUserId(c, acr.getRequesterId());
 			c.setContent(acr.getContent());
 			f.addComment(c);
+			f.getVote().view(acr.getEntityId());
 			DaoUtil.getEntityDao().save(f);
 			
 			// Set the date/time in response

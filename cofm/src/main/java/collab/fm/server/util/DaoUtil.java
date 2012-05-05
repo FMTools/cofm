@@ -7,9 +7,7 @@ import collab.fm.server.persistence.ElementTypeDao;
 import collab.fm.server.persistence.EntityDao;
 import collab.fm.server.persistence.EntityTypeDao;
 import collab.fm.server.persistence.ModelDao;
-import collab.fm.server.persistence.PersonalViewDao;
 import collab.fm.server.persistence.RelationDao;
-import collab.fm.server.persistence.RelationTypeDao;
 import collab.fm.server.persistence.UserDao;
 
 public class DaoUtil {
@@ -30,10 +28,6 @@ public class DaoUtil {
 		return DaoFactory.getFactory().getModelDao();
 	}
 	
-	public static RelationTypeDao getRelationTypeDao() {
-		return DaoFactory.getFactory().getRelationTypeDao();
-	}
-	
 	public static EntityTypeDao getEntityTypeDao() {
 		return DaoFactory.getFactory().getEntityTypeDao();
 	}
@@ -48,9 +42,5 @@ public class DaoUtil {
 	
 	public static ElementDao getElementDao() {
 		return DaoFactory.getFactory().getElementDao();
-	}
-	
-	public static PersonalViewDao getPersonalViewDao() {
-		return DaoFactory.getFactory().getPersonalViewDao();
 	}
 }

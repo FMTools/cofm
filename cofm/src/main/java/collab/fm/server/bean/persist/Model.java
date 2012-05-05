@@ -10,7 +10,6 @@ import org.apache.log4j.Logger;
 import collab.fm.server.bean.persist.entity.Entity;
 import collab.fm.server.bean.persist.entity.EntityType;
 import collab.fm.server.bean.persist.relation.Relation;
-import collab.fm.server.bean.persist.relation.RelationType;
 import collab.fm.server.bean.transfer.DataItem2;
 import collab.fm.server.bean.transfer.Model2;
 
@@ -22,7 +21,6 @@ public class Model extends DataItem {
 	
 	// model-to-type: one to many association
 	private Set<EntityType> entityTypes = new HashSet<EntityType>();
-	private Set<RelationType> relationTypes = new HashSet<RelationType>();
 	
 	// model-to-element: one to many association
 	private Set<Entity> entities = new HashSet<Entity>();
@@ -30,8 +28,6 @@ public class Model extends DataItem {
 	
 	// Contributors of this model (many to many)
 	private Set<User> users = new HashSet<User>();
-	
-	private Set<PersonalView> views = new HashSet<PersonalView>();
 	
 	@Override
 	public void transfer(DataItem2 m) {
@@ -52,11 +48,6 @@ public class Model extends DataItem {
 		return this.getName();
 	}
 	
-	public void addPersonalView(PersonalView pv) {
-		this.getViews().add(pv);
-		pv.setModel(this);
-	}
-	
 	public void addEntity(Entity e) {
 		this.getEntities().add(e);
 		e.setModel(this);
@@ -69,11 +60,6 @@ public class Model extends DataItem {
 	
 	public void addEntityType(EntityType t) {
 		this.getEntityTypes().add(t);
-		t.setModel(this);
-	}
-	
-	public void addRelationType(RelationType t) {
-		this.getRelationTypes().add(t);
 		t.setModel(this);
 	}
 	
@@ -105,14 +91,6 @@ public class Model extends DataItem {
 		this.entityTypes = entityTypes;
 	}
 
-	public Set<RelationType> getRelationTypes() {
-		return relationTypes;
-	}
-
-	public void setRelationTypes(Set<RelationType> relationTypes) {
-		this.relationTypes = relationTypes;
-	}
-
 	public Set<Entity> getEntities() {
 		return entities;
 	}
@@ -137,12 +115,4 @@ public class Model extends DataItem {
 		this.users = users;
 	}
 
-	public Set<PersonalView> getViews() {
-		return views;
-	}
-
-	public void setViews(Set<PersonalView> views) {
-		this.views = views;
-	}
-	
 }

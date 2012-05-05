@@ -5,7 +5,6 @@ import java.util.List;
 
 import collab.fm.server.bean.persist.DataItem;
 import collab.fm.server.bean.persist.Model;
-import collab.fm.server.bean.persist.PersonalView;
 import collab.fm.server.bean.persist.entity.Entity;
 import collab.fm.server.bean.persist.entity.EntityType;
 import collab.fm.server.bean.persist.relation.Relation;
@@ -23,7 +22,6 @@ import collab.fm.server.util.exception.StaleDataException;
 public class VoteAddEntityRequest extends Request {
 
 	private Long modelId;
-	private Long activePvId;
 	private Long entityId;
 	private Long typeId;
 	private Boolean yes;
@@ -65,14 +63,6 @@ public class VoteAddEntityRequest extends Request {
 		this.yes = yes;
 	}
 
-	public void setActivePvId(Long activePvId) {
-		this.activePvId = activePvId;
-	}
-
-	public Long getActivePvId() {
-		return activePvId;
-	}
-
 	private static class VoteAddFeatureProcessor implements Processor {
 
 		public boolean process(Request req, ResponseGroup rg) 
@@ -88,11 +78,6 @@ public class VoteAddEntityRequest extends Request {
 				throw new InvalidOperationException("Invalid model ID: " + r.getModelId());
 			}
 			
-			PersonalView pv = DaoUtil.getPersonalViewDao().getById(r.getActivePvId(), false);
-			if (pv == null) {
-				throw new InvalidOperationException("Invalid personal view ID: " + r.getActivePvId());
-			}
-			
 			Entity en = null;
 			if (r.getEntityId() != null &&
 					(en = DaoUtil.getEntityDao().getById(r.getEntityId(), false)) != null) {
@@ -100,23 +85,18 @@ public class VoteAddEntityRequest extends Request {
 				rsp.setExist(new Boolean(true));
 				
 				if (r.getYes().booleanValue() == false) {
-					pv.removeEntity(en);
 					// Set the inferred vote in response
 					List<Long> targets = new ArrayList<Long>();
 					for (Relation rel: en.getRels()) {
 						targets.add(rel.getId());
-						pv.removeRelation(rel);
 						DaoUtil.getRelationDao().save(rel);
 					}
 					if (targets.size() > 0) {
 						rsp.setInferVotes(targets);
 					}
-				} else {
-					pv.addEntity(en);
-				}
+				} 
 				
-				if (en.vote(r.getYes().booleanValue(), r.getRequesterId()) == DataItem.REMOVAL_EXECUTED
-						&& en.getViews().size() <= 0) {
+				if (en.vote(r.getYes().booleanValue(), r.getRequesterId()) == DataItem.REMOVAL_EXECUTED) {
 					DaoUtil.getEntityDao().delete(en);
 				} else {
 					en = DaoUtil.getEntityDao().save(en);
@@ -138,7 +118,6 @@ public class VoteAddEntityRequest extends Request {
 				
 				// Creation always leads to a YES vote.
 				en.vote(true, r.getRequesterId());
-				pv.addEntity(en);
 				m.addEntity(en);
 				
 				en = DaoUtil.getEntityDao().save(en);
@@ -146,8 +125,6 @@ public class VoteAddEntityRequest extends Request {
 				
 				rsp.setExecTime(DataItemUtil.formatDate(en.getLastModifyTime()));
 			}
-			
-			DaoUtil.getPersonalViewDao().save(pv);
 			
 			rsp.setEntityId(en.getId());
 			
@@ -179,7 +156,6 @@ public class VoteAddEntityRequest extends Request {
 		private Boolean exist;
 		
 		private Long modelId;
-		private Long activePvId;
 		private Long entityId;
 		private Long typeId;
 		private Boolean yes;
@@ -191,7 +167,6 @@ public class VoteAddEntityRequest extends Request {
 		public DefaultResponse(VoteAddEntityRequest r) {
 			super(r);
 			this.setModelId(r.getModelId());
-			this.setActivePvId(r.getActivePvId());
 			this.setEntityId(r.getEntityId());
 			this.setTypeId(r.getTypeId());
 			this.setYes(r.getYes());
@@ -245,13 +220,5 @@ public class VoteAddEntityRequest extends Request {
 			this.inferVotes = inferVotes;
 		}
 
-		public void setActivePvId(Long activePvId) {
-			this.activePvId = activePvId;
-		}
-
-		public Long getActivePvId() {
-			return activePvId;
-		}
-		
 	}
 }

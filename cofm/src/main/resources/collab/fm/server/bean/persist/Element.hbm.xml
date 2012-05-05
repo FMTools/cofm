@@ -28,24 +28,12 @@
   		<key column="ELEMENT_ID"></key>
   		<element type="long" column="OPPONENT_ID" not-null="true"></element>
   	</set>
+  	<set name="viewers" table="ELEMENT_VIEWER">
+  		<key column="ELEMENT_ID"></key>
+  		<element type="long" column="VIEWER_ID" not-null="true"></element>
+  	</set>
+  	<property name="viewCount" type="long" column="VIEW_COUNT" />
   </component>
-  
-  <!-- many-to-one association with ElementType, no cascading is needed. -->
-  <many-to-one name="type" class="ElementType" 
-               column="ELEMENT_TYPE_ID"  />
-  
-  <!-- Many-to-many association with Relation 
-		The statement "inverse=true" tells Hibernate that 
-  	       1) the two statements in class Element and Relation
-  	          (namely "anElement.addRelation(aRel)" and "aRel.addElement(anElement)")  
-  	          happens on the same row in the table which persists the association.
-  	       2) the association is managed by Relation classes. (See BinRelation.resetElements()
-  	          for an example.) -->
-  	<set inverse="true" name="rels" table="ENTITY_RELATION_ASSOC">
-		<key column="ENTITY_ID" />
-		<many-to-many column="RELATION_ID"
-			class="collab.fm.server.bean.persist.relation.Relation" />
-	</set>
-  	
+ 
   </class>
 </hibernate-mapping>

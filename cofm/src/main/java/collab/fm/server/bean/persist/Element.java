@@ -16,9 +16,7 @@ import collab.fm.server.bean.transfer.VotableElement2;
 public abstract class Element extends DataItem implements Votable {
 
 	protected Vote vote = new Vote();
-	protected ElementType type;
-	protected Set<Relation> rels = new HashSet<Relation>();
-		
+	
 	public Element() {
 		super();
 	}
@@ -32,13 +30,7 @@ public abstract class Element extends DataItem implements Votable {
 	}
 	
 	public float getSupportRate() {
-		if (this.getSupporterNum() <= 0) {
-			return 0.0f;
-		}
-		if (this.getOpponentNum() <= 0) {
-			return 1.0f;
-		}
-		return ((float) this.getSupporterNum()) / (this.getOpponentNum() + this.getSupporterNum());
+		return vote.getSupportRate();
 	}
 
 	public int vote(boolean yes, Long userid) {
@@ -60,9 +52,10 @@ public abstract class Element extends DataItem implements Votable {
 		for (Long n: vote.getOpponents()) {
 			ve2.addV0(n);
 		}
-		if (this.getType() != null) {
-			ve2.setTypeId(this.getType().getId());
+		for (Long v: vote.getViewers()) {
+			ve2.addViewer(v);
 		}
+		ve2.setViewCount(vote.getViewCount());
 	}
 	
 	public Vote getVote() {
@@ -72,20 +65,5 @@ public abstract class Element extends DataItem implements Votable {
 	public void setVote(Vote vote) {
 		this.vote = vote;
 	}
-
-	public ElementType getType() {
-		return type;
-	}
-
-	public void setType(ElementType type) {
-		this.type = type;
-	}
 	
-	public Set<Relation> getRels() {
-		return rels;
-	}
-
-	public void setRels(Set<Relation> rels) {
-		this.rels = rels;
-	}
 }

@@ -3,10 +3,25 @@
 	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
 	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 <hibernate-mapping package="collab.fm.server.bean.persist.entity">
-  <joined-subclass name="EntityType" extends="collab.fm.server.bean.persist.ElementType" 
-  				   table="ENTITY_TYPE">
-  	<key column="ENTITY_TYPE_ID"></key>
-  	
+  <class name="EntityType" table="ENTITY_TYPE">
+  	  	
+  	<!--+++++++++++++++++
+	  DataItem properties 
+	  +++++++++++++++++-->
+    <id name="id" type="long" column="TYPE_ID">
+	  <generator class="native"></generator>
+	</id>
+	<timestamp name="lastModifyTime" column="LAST_MODIFIED" />
+	<property name="createTime" type="timestamp" column="CREATED" />
+	<property name="creator" type="long" column="CREATOR_ID" />
+	<property name="lastModifier" type="long" column="LAST_MODIFIER_ID" />
+  
+    <!-- ElementType properties -->
+    <property name="typeName" type="string" column="TYPE_NAME"></property>
+    
+    <!-- The super type of this type -->
+    <many-to-one name="superType" class="EntityType" column="SUPER_TYPE_ID" unique="false"/>
+    
   	<!-- One-to-many association with AttributeDef -->
   	<list name="attrDefs" table="ENTITY_ATTRDEF_ASSOC" cascade="all, delete-orphan">
       <key column="ENTITY_TYPE_ID" />
@@ -17,5 +32,5 @@
   	<many-to-one name="model" class="collab.fm.server.bean.persist.Model" 
 				 column="MODEL_ID" not-null="true" />
   	
-  </joined-subclass>
+  </class>
 </hibernate-mapping>

@@ -6,7 +6,6 @@ import java.util.List;
 import collab.fm.mining.constraint.FeaturePair;
 import collab.fm.mining.constraint.PairFilter;
 import collab.fm.server.bean.persist.entity.Entity;
-import collab.fm.server.bean.persist.relation.BinRelation;
 import collab.fm.server.bean.persist.relation.Relation;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.exception.ItemPersistenceException;
@@ -29,13 +28,15 @@ public class CrossTreeOnlyFilter implements PairFilter {
 		List<Long> des = new ArrayList<Long>();
 		
 		for (Relation r: feature.getRels()) {
-			if (r instanceof BinRelation) {
-				BinRelation br = (BinRelation) r;
-				if (br.getSourceId().equals(feature.getId()) && FeaturePair.isRefine(br)) {
-					des.add(br.getTargetId());
+			if (r.isRefine()) {
+				if (r.containsParent(feature)) {
+					List<Long> children = r.getChildrenId();
+					des.addAll(children);
 					try {
-						Entity child = DaoUtil.getEntityDao().getById(br.getTargetId(), false);
-						des.addAll(getDescendant(child));
+						for (Long c: children) {
+							Entity child = DaoUtil.getEntityDao().getById(c, false);
+							des.addAll(getDescendant(child));
+						}
 					} catch (ItemPersistenceException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -53,13 +54,13 @@ public class CrossTreeOnlyFilter implements PairFilter {
 		List<Long> anc = new ArrayList<Long>();
 		
 		for (Relation r: feature.getRels()) {
-			if (r instanceof BinRelation) {
-				BinRelation br = (BinRelation) r;
-				if (br.getTargetId().equals(feature.getId()) && FeaturePair.isRefine(br)) {
-					anc.add(br.getSourceId());
+			if (r.isRefine()) {
+				if (r.containsChild(feature)) {
+					long parent = r.getParentId();
+					anc.add(parent);
 					try {
-						Entity parent = DaoUtil.getEntityDao().getById(br.getSourceId(), false);
-						anc.addAll(getAncestor(parent));
+						Entity p = DaoUtil.getEntityDao().getById(parent, false);
+						anc.addAll(getAncestor(p));
 					} catch (ItemPersistenceException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

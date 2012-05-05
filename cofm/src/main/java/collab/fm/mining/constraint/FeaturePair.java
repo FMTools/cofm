@@ -14,7 +14,6 @@ import collab.fm.mining.TextSimilarity;
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.persist.entity.Entity;
 import collab.fm.server.bean.persist.entity.Value;
-import collab.fm.server.bean.persist.relation.BinRelation;
 import collab.fm.server.bean.persist.relation.Relation;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.DataItemUtil;
@@ -182,17 +181,16 @@ public class FeaturePair {
 		this.setConstraint(null);
 
 		for (Relation rel: first.getRels()) {
-			if (!(rel instanceof BinRelation)) {
+			if (!rel.isBinary()) {
 				continue;
 			}
-			BinRelation r = (BinRelation) rel;
-			if (DataItemUtil.isBinRelationBetween(r, first, second)) {
-				if (isRequire(r)) {
+			if (DataItemUtil.isBinRelationBetween(rel, first, second)) {
+				if (rel.getPredicate() == Relation.REQUIRE) {
 					if (this.getLabel() == NO_CONSTRAINT) {
 						this.setLabel(REQUIRE);
 						this.setConstraint(rel);
 					}
-				} else if (isExclude(r)) {
+				} else if (rel.getPredicate() == Relation.EXCLUDE) {
 					if (this.getLabel() == NO_CONSTRAINT) {
 						this.setLabel(EXCLUDE);
 						this.setConstraint(rel);
@@ -229,18 +227,6 @@ public class FeaturePair {
 			}
 		}
 		return des.toString().trim();
-	}
-	
-	public static boolean isRequire(Relation rel) {
-		return ArrayUtils.contains(requireAlias, rel.getType().getTypeName());
-	}
-	
-	public static boolean isExclude(Relation rel) {
-		return ArrayUtils.contains(excludeAlias, rel.getType().getTypeName());
-	}
-	
-	public static boolean isRefine(Relation rel) {
-		return !isRequire(rel) && !isExclude(rel);
 	}
 	
 	public String getPairInfo() {

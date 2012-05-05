@@ -6,10 +6,7 @@ import java.util.List;
 import collab.fm.server.bean.persist.DataItem;
 import collab.fm.server.bean.persist.Element;
 import collab.fm.server.bean.persist.Model;
-import collab.fm.server.bean.persist.PersonalView;
 import collab.fm.server.bean.persist.entity.Entity;
-import collab.fm.server.bean.persist.relation.BinRelation;
-import collab.fm.server.bean.persist.relation.BinRelationType;
 import collab.fm.server.bean.persist.relation.Relation;
 import collab.fm.server.bean.protocol.Request;
 import collab.fm.server.bean.protocol.Response;
@@ -25,17 +22,14 @@ import collab.fm.server.util.exception.StaleDataException;
 public class VoteAddBinRelationRequest extends Request {
 	
 	private Long modelId;
-	private Long activePvId;
 	
 	private Long relationId;
 	
 	private Boolean yes;
 	
-	// relationship type
-	private Long typeId;
-	
-	private Long sourceId;
-	private Long targetId;
+	private String signature;
+	private Boolean refine;
+	private String relName;
 	
 	@Override
 	protected Processor makeDefaultProcessor() {
@@ -56,14 +50,6 @@ public class VoteAddBinRelationRequest extends Request {
 		this.yes = yes;
 	}
 
-	public Long getTypeId() {
-		return typeId;
-	}
-
-	public void setTypeId(Long typeId) {
-		this.typeId = typeId;
-	}
-	
 	public Long getRelationId() {
 		return relationId;
 	}
@@ -72,28 +58,28 @@ public class VoteAddBinRelationRequest extends Request {
 		this.relationId = relationId;
 	}
 
-	public Long getSourceId() {
-		return sourceId;
+	public String getSignature() {
+		return signature;
 	}
 
-	public void setSourceId(Long sourceId) {
-		this.sourceId = sourceId;
+	public void setSignature(String signature) {
+		this.signature = signature;
 	}
 
-	public Long getTargetId() {
-		return targetId;
+	public Boolean getRefine() {
+		return refine;
 	}
 
-	public void setTargetId(Long targetId) {
-		this.targetId = targetId;
+	public void setRefine(Boolean refine) {
+		this.refine = refine;
 	}
 
-	public void setActivePvId(Long activePvId) {
-		this.activePvId = activePvId;
+	public void setRelName(String relName) {
+		this.relName = relName;
 	}
 
-	public Long getActivePvId() {
-		return activePvId;
+	public String getRelName() {
+		return relName;
 	}
 
 	private static class VoteAddBinRelationProcessor implements Processor {
@@ -104,7 +90,7 @@ public class VoteAddBinRelationRequest extends Request {
 			if (r.getModelId() == null || r.getRequesterId() == null) return false;
 			if (r.getRelationId() == null) {
 				// A creating operation
-				return r.getTypeId() != null && r.getSourceId() != null && r.getTargetId() != null;
+				return r.getSignature() != null;
 			} else {
 				// A voting operation
 				return r.getYes() != null;
@@ -124,70 +110,48 @@ public class VoteAddBinRelationRequest extends Request {
 				throw new InvalidOperationException("Invalid model ID: " + r.getModelId());
 			}
 			
-			PersonalView pv = DaoUtil.getPersonalViewDao().getById(r.getActivePvId(), true);
-			if (pv == null) {
-				throw new InvalidOperationException("Invalid personal view ID: " + r.getActivePvId());
-			}
-			
 			DefaultResponse rsp = new DefaultResponse(r);
-			BinRelation br = null;
+			Relation br = null;
 			if (r.getRelationId() != null && 
-					(br = (BinRelation) DaoUtil.getRelationDao().getById(r.getRelationId(), false)) != null) {
+					(br = (Relation) DaoUtil.getRelationDao().getById(r.getRelationId(), false)) != null) {
 				// voting 
 				rsp.setExist(true);
 				br.setLastModifier(r.getRequesterId());
 				
 				// Set the inferred votes
 				if (r.getYes().booleanValue() == true) {
-					pv.addRelation(br);
-					rsp.setInferVotes(computeInferVotes(br, pv));
-				} else {
-					pv.removeRelation(br);
-				}
+					rsp.setInferVotes(computeInferVotes(br));
+				} 
 				
 				// Handle the vote and possible removals.
-				if (br.vote(r.getYes(), r.getRequesterId()) == DataItem.REMOVAL_EXECUTED &&
-						br.getViews().size() <= 0) {
+				if (br.vote(r.getYes(), r.getRequesterId()) == DataItem.REMOVAL_EXECUTED) {
 					DaoUtil.getRelationDao().delete(br);
 				} else {
-					br = (BinRelation) DaoUtil.getRelationDao().save(br);
+					br = DaoUtil.getRelationDao().save(br);
 					rsp.setExecTime(DataItemUtil.formatDate(br.getLastModifyTime()));
 				}
 				
 			} else {
 				// creating
-				BinRelationType myType = 
-					(BinRelationType) DaoUtil.getRelationTypeDao().getById(r.getTypeId(), false);
-				if (myType == null) {
-					throw new InvalidOperationException("Invalid relation type.");
-				}
-				
 				rsp.setExist(false);
 				
-				br = new BinRelation();
-				DataItemUtil.setNewDataItemByUserId(br, r.getRequesterId());
-				br.setType(myType);
-				br.setSourceId(r.getSourceId());
-				br.setTargetId(r.getTargetId());
+				br = new Relation();
+				br.setSignature(r.getSignature());
 				
-				// See if the same relation has already existed.
+				// See if the same relation has already existed. (Use signature)
 				List sameRelations = DaoUtil.getRelationDao().getByExample(
 						r.getModelId(), br);
 				if (sameRelations != null) {
-					br = (BinRelation) sameRelations.get(0);
+					br = (Relation) sameRelations.get(0);
 					rsp.setExist(true);
 				} else {
-					Element src = DaoUtil.getElementDao().getById(r.getSourceId(), false);
-					if (src == null) {
-						throw new InvalidOperationException("Invalid source ID: " + r.getSourceId());
-					}
+					br = sigToRelation(r.getSignature(), 0, r.getSignature().length());
+					DataItemUtil.setNewDataItemByUserId(br, r.getRequesterId());
+					br.setName(r.getRelName());
+					br.setRefine(r.getRefine());
 					
-					Element target = DaoUtil.getElementDao().getById(r.getTargetId(), false);
-					if (target == null) {
-						throw new InvalidOperationException("Invalid target ID: " + r.getTargetId());
-					}
+					br.computeSignature();
 					
-					br.resetElements(src, target);
 					m.addRelation(br);
 					DaoUtil.getModelDao().save(m);
 				}
@@ -195,17 +159,14 @@ public class VoteAddBinRelationRequest extends Request {
 				// Creation always leads to a YES vote.
 				br.vote(true, r.getRequesterId());
 				br.setLastModifier(r.getRequesterId());
-				pv.addRelation(br);
 				
-				br = (BinRelation) DaoUtil.getRelationDao().save(br);
+				br = DaoUtil.getRelationDao().save(br);
 				rsp.setRelationId(br.getId());
 				
 				// Set the inferred votes (because the "vote" always is "YES" here.)
-				rsp.setInferVotes(computeInferVotes(br, pv));
+				rsp.setInferVotes(computeInferVotes(br));
 				rsp.setExecTime(DataItemUtil.formatDate(br.getLastModifyTime()));
 			}
-			
-			DaoUtil.getPersonalViewDao().save(pv);
 			
 			// Add "back" and "broadcast" responses to the response group
 			rsp.setName(Resources.RSP_SUCCESS);
@@ -218,29 +179,70 @@ public class VoteAddBinRelationRequest extends Request {
 			return true;
 		}
 
-		private List<Long> computeInferVotes(Relation r, PersonalView pv) 
+		private List<Long> computeInferVotes(Relation r) 
 			throws ItemPersistenceException, StaleDataException {
 			List<Long> onEntity = new ArrayList<Long>();
-			List<Long> onRelation = new ArrayList<Long>();
 			
-			DataItemUtil.generateInferVotes(r, onEntity, onRelation);
-			
-			for (Long id: onEntity) {
-				Entity en = DaoUtil.getEntityDao().getById(id, false);
-				pv.addEntity(en);
-				DaoUtil.getEntityDao().save(en);
+			for (Entity e: r.getEntities()) {
+				onEntity.add(e.getId());
 			}
-			
-			for (Long id: onRelation) {
-				Relation rel = DaoUtil.getRelationDao().getById(id, false);
-				pv.addRelation(rel);
-				DaoUtil.getRelationDao().save(rel);
-			}
-			
-			onEntity.addAll(onRelation);
 			return onEntity.size() <= 0 ? null : onEntity;
 		}
 		
+		private Relation sigToRelation(String sig, int pos, int last) throws ItemPersistenceException, StaleDataException {
+			Relation cur = new Relation();
+			
+			int begin = pos, end;
+			
+			// Relation type
+			for (end = pos; end < last && isDigit(sig.charAt(end)); end++) {
+				// empty loop
+			}
+			int curNum = Integer.valueOf(sig.substring(begin, end));
+			cur.setPredicate(curNum);
+			
+			long id = 0;
+			begin = end + 1;  // Skip '('
+			end = begin;
+			while (end < last) {
+				// Find a number
+				while (end < last && isDigit(sig.charAt(end))) {
+					end++;
+				}
+				if (begin < end) {
+					id = Long.valueOf(sig.substring(begin, end));
+				}
+				
+				if (end < last) {
+					if (sig.charAt(end) == '(') {
+						int nest = 1;
+						while (nest > 0 && ++end < last) {
+							if (sig.charAt(end) == '(') {
+								nest++;
+							} else if (sig.charAt(end) == ')') {
+								nest--;
+							}
+						}
+						if (end < last) {
+							++end;
+						}
+						cur.addElement(sigToRelation(sig, begin, end));
+					} else if (id > 0) {
+						Entity en = DaoUtil.getEntityDao().getById(id, false);
+						cur.addElement(en);
+					}
+					end++;
+				}
+				// Next number position
+				begin = end;
+			}
+			
+			return cur;
+		}
+		
+		private boolean isDigit(char c) {
+			return c >= '0' && c <= '9';
+		}
 	}
 	
 	public static class DefaultResponse extends Response {
@@ -248,29 +250,24 @@ public class VoteAddBinRelationRequest extends Request {
 		
 		private Long modelId;
 		
-		private Long activePvId;
-		
 		private Long relationId;
 		
 		private Boolean yes;
 		
-		// relationship type
-		private Long typeId;
-		
-		private Long sourceId;
-		private Long targetId;
+		private String signature;
+		private Boolean refine;
+		private String relName;
 		
 		private List<Long> inferVotes;
 		
 		public DefaultResponse(VoteAddBinRelationRequest r) {
 			super(r);
 			this.setModelId(r.getModelId());
-			this.setActivePvId(r.getActivePvId());
 			this.setYes(r.getYes());
 			this.setRelationId(r.getRelationId());
-			this.setTargetId(r.getTargetId());
-			this.setTypeId(r.getTypeId());
-			this.setSourceId(r.getSourceId());
+			this.setSignature(r.getSignature());
+			this.setRefine(r.getRefine());
+			this.setRelName(r.getRelName());
 		}
 		
 		public Boolean getExist() {
@@ -313,38 +310,30 @@ public class VoteAddBinRelationRequest extends Request {
 			this.relationId = relationId;
 		}
 
-		public Long getTypeId() {
-			return typeId;
+		public String getSignature() {
+			return signature;
 		}
 
-		public void setTypeId(Long typeId) {
-			this.typeId = typeId;
+		public void setSignature(String signature) {
+			this.signature = signature;
 		}
 
-		public Long getSourceId() {
-			return sourceId;
+		public Boolean getRefine() {
+			return refine;
 		}
 
-		public void setSourceId(Long sourceId) {
-			this.sourceId = sourceId;
+		public void setRefine(Boolean refine) {
+			this.refine = refine;
 		}
 
-		public Long getTargetId() {
-			return targetId;
+		public void setRelName(String relName) {
+			this.relName = relName;
 		}
 
-		public void setTargetId(Long targetId) {
-			this.targetId = targetId;
+		public String getRelName() {
+			return relName;
 		}
 
-		public void setActivePvId(Long activePvId) {
-			this.activePvId = activePvId;
-		}
-
-		public Long getActivePvId() {
-			return activePvId;
-		}
-		
 	}
 	
 }

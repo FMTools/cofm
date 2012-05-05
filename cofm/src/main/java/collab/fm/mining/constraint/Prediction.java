@@ -10,7 +10,6 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import collab.fm.server.bean.persist.entity.Entity;
-import collab.fm.server.bean.persist.relation.BinRelation;
 import collab.fm.server.bean.persist.relation.Relation;
 import collab.fm.server.util.DaoUtil;
 import collab.fm.server.util.exception.ItemPersistenceException;
@@ -238,17 +237,16 @@ public class Prediction {
 	
 	private void getAncestorId(Entity entity, List<Long> result) {
 		for (Relation r: entity.getRels()) {
-			if (!(r instanceof BinRelation)) {
+			if (!r.isRefine()) {
 				continue;
 			}
 			// Find en's parents
-			BinRelation br = (BinRelation) r;
-			if (br.getTargetId().equals(entity.getId())
-					&& FeaturePair.isRefine(br)) {
-				result.add(br.getSourceId());
+			if (r.containsChild(entity)) {
+				long parentId = r.getParentId();
+				result.add(parentId);
 				
 				try {
-					Entity parent = DaoUtil.getEntityDao().getById(br.getSourceId(), true);
+					Entity parent = DaoUtil.getEntityDao().getById(parentId, true);
 					getAncestorId(parent, result);
 				} catch (ItemPersistenceException e) {
 					logger.warn("Fail to get ancestor.", e);

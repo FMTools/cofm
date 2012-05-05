@@ -5,7 +5,6 @@ import java.util.List;
 import collab.fm.server.bean.persist.entity.Entity;
 import collab.fm.server.bean.persist.entity.EntityType;
 import collab.fm.server.bean.persist.entity.ValueList;
-import collab.fm.server.bean.persist.relation.RelationType;
 
 /**
  * The difference between the Query and the DAO (Data Access Object, see server.persistence package)
@@ -23,10 +22,6 @@ public interface IQuery {
 	public List<Entity> getEntityByName(Long modelId, Long entityTypeId, String name);
 	
 	public EntityType getEntityTypeByName(Long modelId, String name);
-	
-	public RelationType getRelationTypeByName(Long modelId, String name);
-	
-	public List<RelationType> getInvolvedRelationTypeByEntityType(Long entityTypeId);
 	
 	public List<Entity> getParents(Long entityId);
 	public List<Entity> getChildren(Long entityId);

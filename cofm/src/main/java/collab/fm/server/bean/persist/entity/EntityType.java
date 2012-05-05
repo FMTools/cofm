@@ -3,7 +3,7 @@ package collab.fm.server.bean.persist.entity;
 import java.util.ArrayList;
 import java.util.List;
 
-import collab.fm.server.bean.persist.ElementType;
+import collab.fm.server.bean.persist.DataItem;
 import collab.fm.server.bean.persist.Model;
 import collab.fm.server.bean.transfer.DataItem2;
 import collab.fm.server.bean.transfer.EntityType2;
@@ -13,12 +13,14 @@ import collab.fm.server.util.EntityUtil;
 import collab.fm.server.util.exception.ItemPersistenceException;
 import collab.fm.server.util.exception.StaleDataException;
 
-public class EntityType extends ElementType {
+public class EntityType extends DataItem {
 
+	protected String typeName;
+	
+	protected EntityType superType;
 	protected List<AttributeType> attrDefs = new ArrayList<AttributeType>();
 	protected Model model;
 	
-	@Override
 	public AttributeType findAttributeTypeDef(Long attrId, boolean immediate) {
 		for (EntityType et = this; 
 			et != null; ) {
@@ -43,7 +45,6 @@ public class EntityType extends ElementType {
 		return null;
 	}
 	
-	@Override
 	public AttributeType findAttributeTypeDef(String attrName, boolean immediate) {
 		for (EntityType et = this; 
 			et != null;) {
@@ -84,6 +85,22 @@ public class EntityType extends ElementType {
 		}
 	}
 
+	public String getTypeName() {
+		return typeName;
+	}
+
+	public void setTypeName(String typeName) {
+		this.typeName = typeName;
+	}
+
+	public EntityType getSuperType() {
+		return superType;
+	}
+
+	public void setSuperType(EntityType superType) {
+		this.superType = superType;
+	}
+
 	public List<AttributeType> getAttrDefs() {
 		return attrDefs;
 	}
@@ -98,5 +115,10 @@ public class EntityType extends ElementType {
 
 	public void setModel(Model model) {
 		this.model = model;
+	}
+
+	@Override
+	public String toValueString() {
+		return typeName;
 	}
 }

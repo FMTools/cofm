@@ -16,11 +16,9 @@
         
         <mapping resource="collab/fm/server/bean/persist/Comment.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/persist/Element.hbm.xml"/>
-        <mapping resource="collab/fm/server/bean/persist/ElementType.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/persist/Model.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/persist/User.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/persist/Preference.hbm.xml"/>
-        <mapping resource="collab/fm/server/bean/persist/PersonalView.hbm.xml"/>
         
         <mapping resource="collab/fm/server/bean/persist/entity/Entity.hbm.xml"/>
         <mapping resource="collab/fm/server/bean/persist/entity/EntityType.hbm.xml"/>
@@ -29,7 +27,6 @@
         <mapping resource="collab/fm/server/bean/persist/entity/Value.hbm.xml"/>
         
         <mapping resource="collab/fm/server/bean/persist/relation/Relation.hbm.xml"/>
-        <mapping resource="collab/fm/server/bean/persist/relation/RelationType.hbm.xml"/>
         
     </session-factory>
 </hibernate-configuration>

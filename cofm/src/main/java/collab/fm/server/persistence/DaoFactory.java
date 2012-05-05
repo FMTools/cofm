@@ -1,10 +1,7 @@
 package collab.fm.server.persistence;
 
 import collab.fm.server.bean.persist.Element;
-import collab.fm.server.bean.persist.ElementType;
-import collab.fm.server.bean.persist.PersonalView;
 import collab.fm.server.bean.persist.entity.EntityType;
-import collab.fm.server.bean.persist.relation.RelationType;
 
 
 public abstract class DaoFactory {
@@ -21,11 +18,9 @@ public abstract class DaoFactory {
 	abstract public UserDao getUserDao();
 	abstract public ModelDao getModelDao();
 	abstract public EntityTypeDao getEntityTypeDao();
-	abstract public RelationTypeDao getRelationTypeDao();
 	abstract public AttributeDefDao getAttributeDefDao();
 	abstract public ElementTypeDao getElementTypeDao();
 	abstract public ElementDao getElementDao();
-	abstract public PersonalViewDao getPersonalViewDao();
 	
 	// TODO: move the inner class to a separated file.
 	public static class HibernateDaoFactory extends DaoFactory {
@@ -34,24 +29,11 @@ public abstract class DaoFactory {
 		private static final RelationDao r = new RelationDaoImpl();
 		private static final UserDao u = new UserDaoImpl();
 		private static final ModelDao m = new ModelDaoImpl();
-		
-		private static final RelationTypeDao brt = new RelationTypeDaoImpl();
 		private static final EntityTypeDao et = new EntityTypeDaoImpl();
 		private static final AttributeDefDao ad = new AttributeDefDaoImpl();
 		private static final ElementTypeDao elemt = new ElementTypeDaoImpl();
 		private static final ElementDao elem = new ElementDaoImpl();
 		
-		private static final PersonalViewDao pv = new PersonalViewDaoImpl();
-		
-		public static class PersonalViewDaoImpl extends GenericDaoImpl<PersonalView, Long> 
-			implements PersonalViewDao {
-			
-		
-		}
-		public static class RelationTypeDaoImpl extends GenericDaoImpl<RelationType, Long>
-			implements RelationTypeDao {
-			
-		}
 		
 		public static class EntityTypeDaoImpl extends GenericDaoImpl<EntityType, Long>
 			implements EntityTypeDao {
@@ -84,11 +66,6 @@ public abstract class DaoFactory {
 		}
 
 		@Override
-		public RelationTypeDao getRelationTypeDao() {
-			return brt;
-		}
-
-		@Override
 		public EntityTypeDao getEntityTypeDao() {
 			return et;
 		}
@@ -108,9 +85,5 @@ public abstract class DaoFactory {
 			return elem;
 		}
 
-		@Override
-		public PersonalViewDao getPersonalViewDao() {
-			return pv;
-		}	
 	}
 }

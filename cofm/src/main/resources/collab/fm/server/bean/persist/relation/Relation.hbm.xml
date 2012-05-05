@@ -10,27 +10,21 @@
       Relation properties
       +++++++++++++++++-->
     
-	<!-- Many-to-many association to Element (in fact, only Entity)-->
-	<set name="elements" table="ENTITY_RELATION_ASSOC">
-	  <key column="RELATION_ID" />
-	  <many-to-many column="ENTITY_ID" class="collab.fm.server.bean.persist.Element" />
+    <property name="signature" type="string" column="SIGNATURE"></property>
+    <property name="name" type="string" column="NAME"></property>
+    <property name="refine" type="boolean" column="IS_REFINEMENT"></property>
+    <property name="predicate" type="integer" column="PREDICATE"></property>
+	<!-- Many-to-many association with Entity -->
+	<set name="entities" table="ENTITY_RELATION_ASSOC">
+		<key column="RELATION_ID" />
+		<many-to-many column="ENTITY"
+			class="collab.fm.server.bean.persist.entity.Entity" />
 	</set>
 	
 	<!-- Many-to-one association to Model -->
 	<many-to-one name="model" column="MODEL_ID" class="collab.fm.server.bean.persist.Model" not-null="true" />
 	
-	<!-- Many-to-many association with Personal View -->
-  	<set inverse="true" name="views" table="RELATION_PV_ASSOC">
-  	     <key column="RELATION_ID" />
-  	     <many-to-many column="PV_ID" class="collab.fm.server.bean.persist.PersonalView" />
-  	</set>
   	
-	<!-- Subclasses -->
-	<joined-subclass name="BinRelation" table="BINARY_RELATION">
-	  <key column="BIN_RELATION_ID" />
-	  <property name="sourceId" type="long" column="SOURCE_ID"></property>
-	  <property name="targetId" type="long" column="TARGET_ID"></property>
-	</joined-subclass>
-	
+		
   </joined-subclass>
 </hibernate-mapping>

@@ -35,6 +35,22 @@
     <key column="USER_ID"></key>
     <one-to-many class="Preference"></one-to-many>
   </set>
+  
+  <list name="history" table="USER_HISTORY">
+  	<key column="USER_ID"></key>
+  	<list-index column="HISTORY_INDEX"></list-index>
+  	<composite-element class="History">
+  		<property name="time" type="timestamp" column="TIME"></property>
+  		<property name="op" type="integer" column="OP_TYPE"></property>
+  		<property name="item" type="integer" column="ITEM_TYPE"></property>
+  		
+		<many-to-one name="model" class="collab.fm.server.bean.persist.Model" 
+				 column="MODEL_ID" not-null="true" />
+		<many-to-one name="element" class="collab.fm.server.bean.persist.Element" column="ELEMENT_ID"></many-to-one>
+		<many-to-one name="attrType" class="collab.fm.server.bean.persist.entity.AttributeType" column="ATTR_TYPE_ID"></many-to-one>
+		<many-to-one name="enType" class="collab.fm.server.bean.persist.entity.EntityType" column="ENTITY_TYPE_ID"></many-to-one>
+  	</composite-element>
+  </list>
 </class>
 
 </hibernate-mapping>

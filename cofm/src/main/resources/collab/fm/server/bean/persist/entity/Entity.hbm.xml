@@ -6,6 +6,22 @@
   <joined-subclass name="Entity" extends="collab.fm.server.bean.persist.Element" table="ENTITY">
   	<key column="ENTITY_ID" />
   	
+  	 <!-- many-to-one association with ElementType, no cascading is needed. -->
+ 	 <many-to-one name="type" class="EntityType" 
+               column="ENTITY_TYPE_ID"  />
+  
+  	<!-- Many-to-many association with Relation 
+		The statement "inverse=true" tells Hibernate that 
+  	       1) the two statements in class Entity and Relation
+  	          (namely "anElement.addRelation(aRel)" and "aRel.addElement(anElement)")  
+  	          happens on the same row in the table which persists the association.
+  	       2) the association is managed by Relation classes. (See Relation.computeSignature) -->
+  	<set inverse="true" name="rels" table="ENTITY_RELATION_ASSOC">
+		<key column="ENTITY_ID" />
+		<many-to-many column="RELATION_ID"
+			class="collab.fm.server.bean.persist.relation.Relation" />
+	</set>
+	
   	<!-- One-to-many association with ValueList -->
   	<map name="attrs" table="ENTITY_ATTRVALUES_ASSOC" cascade="all, delete-orphan">
   	  <key column="ENTITY_ID" />
@@ -23,12 +39,6 @@
 	  <list-index column="COMMENT_INDEX" />
 	  <many-to-many class="collab.fm.server.bean.persist.Comment" column="COMMENT_ID" unique="true" />
 	</list>
-	
-	<!-- Many-to-many association with Personal View -->
-  	<set inverse="true" name="views" table="ENTITY_PV_ASSOC">
-  	     <key column="ENTITY_ID" />
-  	     <many-to-many column="PV_ID" class="collab.fm.server.bean.persist.PersonalView" />
-  	</set>
   	
   </joined-subclass>
 </hibernate-mapping>

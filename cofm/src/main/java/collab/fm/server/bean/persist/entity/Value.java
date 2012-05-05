@@ -1,10 +1,7 @@
 package collab.fm.server.bean.persist.entity;
 
-import java.util.HashSet;
-import java.util.Set;
 
 import collab.fm.server.bean.persist.Element;
-import collab.fm.server.bean.persist.PersonalView;
 import collab.fm.server.bean.transfer.DataItem2;
 import collab.fm.server.bean.transfer.Value2;
 
@@ -17,8 +14,6 @@ import collab.fm.server.bean.transfer.Value2;
 public class Value extends Element implements Comparable<Value> {
 
 	private String val;
-	
-	protected Set<PersonalView> views = new HashSet<PersonalView>();  // Selected in many personal views.
 	
 	public static final String SINGLE_QUOTE = "_squote_";
 	public static final String DOUBLE_QUOTE = "_dquote_";
@@ -56,14 +51,6 @@ public class Value extends Element implements Comparable<Value> {
 
 	public int compareTo(Value o) {
 		return new Float(this.getSupportRate()).compareTo(new Float(o.getSupportRate()));
-	}
-
-	public Set<PersonalView> getViews() {
-		return views;
-	}
-
-	public void setViews(Set<PersonalView> views) {
-		this.views = views;
 	}
 
 }

@@ -4,13 +4,13 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import collab.fm.server.bean.persist.DataItem;
 import collab.fm.server.bean.persist.Element;
 import collab.fm.server.bean.persist.entity.Entity;
-import collab.fm.server.bean.persist.relation.BinRelation;
 import collab.fm.server.bean.persist.relation.Relation;
 
 public class DataItemUtil {
@@ -41,36 +41,30 @@ public class DataItemUtil {
 		di.setCreateTime(new Date());
 	}
 	
-	public static void addRelationForElement(Element e, Relation r) {
+	public static List<Entity> linkRelationToEntity(Element e, Relation r) {
+		List<Entity> ens = new ArrayList<Entity>();
 		if (e instanceof Entity) {
 			((Entity) e).addRelationship(r);
+			ens.add((Entity)e);
 		} else if (e instanceof Relation) {
 			Relation rel = (Relation) e;
 			for (Element elem: rel.getElements()) {
-				addRelationForElement(elem, r);
+				ens.addAll(linkRelationToEntity(elem, r));
 			}
 		}
+		return ens;
 	}
-	
+
 	// Is "r" a binary relation between "e1" and "e2" ?
 	public static boolean isBinRelationBetween(Relation r, Entity e1, Entity e2) {
-		if (!(r instanceof BinRelation)) {
-			return false;
+		if (r.isBinary() && 
+				(r.getPredicate() == Relation.REQUIRE || r.getPredicate() == Relation.EXCLUDE)) {
+			Element first = r.getElements().get(0);
+			Element second = r.getElements().get(1);
+			return (first.getId().equals(e1.getId()) && second.getId().equals(e2.getId())) ||
+				(first.getId().equals(e2.getId()) && second.getId().equals(e1.getId()));
 		}
-		BinRelation br = (BinRelation) r;
-		return (br.getSourceId().equals(e1.getId()) && br.getTargetId().equals(e2.getId()))
-		|| (br.getSourceId().equals(e2.getId()) && br.getTargetId().equals(e1.getId()));
-	}
-	
-	public static void generateInferVotes(Relation relation, List<Long> votesOnEntity, List<Long> votesOnRelation) {
-		for (Element e: relation.getElements()) {
-			if (e instanceof Relation) {
-				votesOnRelation.add(e.getId());
-				generateInferVotes((Relation) e, votesOnEntity, votesOnRelation);
-			} else if (e instanceof Entity) {
-				votesOnEntity.add(e.getId());
-			}
-		}
+		return false;
 	}
 	
 	public static String formatDate(Date d) {

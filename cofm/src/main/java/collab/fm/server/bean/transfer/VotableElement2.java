@@ -8,6 +8,10 @@ public class VotableElement2 extends DataItem2 {
 	protected Set<Long> v1 = new HashSet<Long>();
 	// Voters of the NO vote (0-vote)
 	protected Set<Long> v0 = new HashSet<Long>();
+	// Viewers
+	protected Set<Long> viewer = new HashSet<Long>();
+	// View counts
+	protected Long viewCount;
 	
 	protected Long typeId;
 	
@@ -29,11 +33,26 @@ public class VotableElement2 extends DataItem2 {
 	public void addV0(Long id) {
 		v0.add(id);
 	}
+	public void addViewer(Long id) {
+		viewer.add(id);
+	}
 	public Long getTypeId() {
 		return typeId;
 	}
 	public void setTypeId(Long typeId) {
 		this.typeId = typeId;
+	}
+	public Set<Long> getViewer() {
+		return viewer;
+	}
+	public void setViewer(Set<Long> viewer) {
+		this.viewer = viewer;
+	}
+	public Long getViewCount() {
+		return viewCount;
+	}
+	public void setViewCount(Long viewCount) {
+		this.viewCount = viewCount;
 	}
 	
 }

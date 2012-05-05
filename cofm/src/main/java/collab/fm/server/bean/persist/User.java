@@ -1,7 +1,9 @@
 package collab.fm.server.bean.persist;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import collab.fm.server.bean.transfer.DataItem2;
@@ -26,6 +28,8 @@ public class User extends DataItem {
 	private Set<Model> models = new HashSet<Model>();
 
 	private Set<Preference> preferences = new HashSet<Preference>();
+	
+	private List<History> history = new ArrayList<History>();
 	
 	public void addPreference(Preference p) {
 		preferences.add(p);
@@ -133,6 +137,14 @@ public class User extends DataItem {
 
 	public void setPasswordInMD5(String passwordInMD5) {
 		this.passwordInMD5 = passwordInMD5;
+	}
+
+	public void setHistory(List<History> history) {
+		this.history = history;
+	}
+
+	public List<History> getHistory() {
+		return history;
 	}
 
 }
