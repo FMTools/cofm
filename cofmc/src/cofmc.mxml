@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   xmlns:fm="cofm.component.fm.*"
+			   xmlns:home="cofm.component.home.*"
+			   minWidth="1024" minHeight="680"
+			   verticalCenter="middle" horizontalCenter="center"
+			   creationComplete="initView();">
+	<s:states>
+		<s:State name="Init"/>
+		<s:State name="GuestHome"/>
+		<s:State name="UserHome"/>
+		<s:State name="Modeling"/>
+	</s:states>
+	
+	<s:layout>
+		<s:VerticalLayout/> 
+	</s:layout>
+	
+	<fx:Style>
+		@namespace s "library://ns.adobe.com/flex/spark";
+		@namespace mx "library://ns.adobe.com/flex/mx";
+		@namespace fm "cofm.component.fm.*";
+		@namespace home "cofm.component.home.*";
+		
+		s|Application {
+			font-family: "宋体";
+			font-size: 12;
+		}
+	</fx:Style>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.component.home.dlg.*;
+			import cofm.component.home.*;
+			import cofm.event.*;
+			import cofm.model.*;
+			import cofm.util.*;
+			
+			import mx.managers.PopUpManager;
+			
+			private var registerDlg: RegisterDlg;
+			private var loginDlg: LoginDlg;
+			
+			private function initView(): void {
+				ClientEvtDispatcher.instance().addEventListener(ClientEvent.CONNECT_SUCCESS, onConnected);
+				ClientEvtDispatcher.instance().addEventListener(LoginEvent.SUCCESS, onLogin);
+				ClientEvtDispatcher.instance().addEventListener(ModelSelectEvent.SELECTED, onModelSelected);
+				// Force the model.* classes to call their constructors, so that
+				// they can register event listeners.
+				forceModelsToInit();
+				
+				Connector.instance().init();
+			}
+			
+			private function forceModelsToInit(): void {
+				PersonalViewManager.instance();
+				ModelCollection.instance();
+				UserList.instance();
+				Model.instance();
+				FeatureNameList.instance();
+				CurrentFeature.instance();
+				GlobalTreeData.instance();
+				WorkingTreeData.instance();
+			//	PersonalTreeData.instance();
+			}
+			
+			private function onConnected(evt: ClientEvent): void {
+				currentState = "GuestHome";
+			}
+			
+			private function onLogin(evt: LoginEvent): void {
+				currentState = "UserHome";
+				userName.text = evt.myName;
+			}
+			
+			private function onModelSelected(evt: ModelSelectEvent): void {
+				currentState = "Modeling";
+				fmpage.retrieveFeatureModel(evt.modelId, evt.modelName);
+			}
+			
+			private function goFeedback(): void {
+				navigateToURL(new URLRequest(
+					"http://code.google.com/p/cofm/issues/list"), "_blank");
+			}
+			
+			private function goHomepage(): void {
+				currentState = "UserHome";
+				// Refresh the model browser
+				ModelCollectionUpdater.instance().update();
+			}
+			
+			private function goLogin(): void {
+				loginDlg = LoginDlg(PopUpManager.createPopUp(this, LoginDlg, true));
+				PopUpManager.centerPopUp(loginDlg);
+			}
+			
+			private function goRegister(): void {
+				registerDlg = RegisterDlg(PopUpManager.createPopUp(this, RegisterDlg, true));
+				PopUpManager.centerPopUp(registerDlg);
+			}
+			
+			private function goLogout(): void {
+				new LogoutCommand().execute();
+				currentState = "GuestHome";
+			}
+		]]>
+	</fx:Script>
+	
+	
+
+	<!-- The application control bar. -->
+	<s:controlBarContent>
+		<mx:LinkButton label="{RS.go_feedback}" click="goFeedback();"/>
+		<mx:LinkButton label="{RS.go_home}" click="goHomepage();" includeIn="Modeling"/>
+		<!-- TODO: Insert a message bar here -->
+		<s:HGroup right="4">
+			<!-- The name of the logged-on user -->
+			<s:Label id="userName" paddingTop="7" paddingRight="10" includeIn="UserHome, Modeling"/>
+			<!-- Login/register/logout buttons -->
+			<mx:LinkButton label="{RS.go_login}" click="goLogin();" includeIn="GuestHome"/>
+			<mx:LinkButton label="{RS.go_register}" click="goRegister();" includeIn="GuestHome"/>
+			<mx:LinkButton label="{RS.go_logout}" click="goLogout();" includeIn="UserHome"/>
+		</s:HGroup>
+	</s:controlBarContent>
+	
+	<s:controlBarLayout>
+		<s:HorizontalLayout />
+	</s:controlBarLayout>
+	
+	
+	<!-- The Home Page view -->
+	<home:Homepage id="homepage" excludeFrom="Modeling"/>
+	
+	<!-- The Modeling view -->
+	<fm:FMPage id="fmpage" includeIn="Modeling"/>
+	
+</s:Application>

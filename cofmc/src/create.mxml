@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" 
+			   minWidth="1024" minHeight="680"
+			   creationComplete="initApp();" xmlns:fm="cofm.component.fm.*">
+	
+	<!-- Usage: http://<server>/cofm/viewer.html?u=<UserName>&m=<ModelIdToView> -->
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:states>
+		<s:State name="INIT"/>
+		<s:State name="MAIN"/>
+	</s:states>
+	
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.component.home.dlg.CreateModelDlg;
+			import cofm.event.*;
+			import cofm.model.*;
+			import cofm.util.*;
+			
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.rpc.http.HTTPService;
+			
+			private static const PARAM_USERNAME: String = "u";
+			private static const PARAM_PORT: String = "p";
+			private static const PARAM_MODEL_NAME: String = "ModelName";
+			private static const PARAM_USER_ID: String = "UserID";
+			private static const PARAM_TASK_ID: String = "TaskID";
+			private static const PARAM_MODEL_ID: String = "ModelID";
+			
+			private static const CALLBACK_PATH: String = "/test/createArtifactServlet";
+			
+			private var username: String;
+			private var cbModelName: String;
+			private var cbUserId: int;
+			private var cbTaskId: int;
+			private var cbModelId: int;
+			
+			private var dlg: CreateModelDlg;
+			
+			private var cbHttp: HTTPService;
+			
+			private function goCallbackUrl(): void {
+				var param: Object = new Object();
+				param[PARAM_USERNAME] = username;
+				param[PARAM_MODEL_NAME] = cbModelName;
+				param[PARAM_USER_ID] = cbUserId;
+				param[PARAM_TASK_ID] = cbTaskId;
+				param[PARAM_MODEL_ID] = cbModelId;
+				
+				cbHttp.send(param);	
+			}
+			
+			private function initApp(): void {
+				var host: String = ExternalInterface.call("window.location.host.toString");
+				var end: int = host.lastIndexOf(":");
+				if (end > 0) {
+					host = host.substring(0, end);
+				}
+				
+				cbHttp = new HTTPService();
+				cbHttp.method = "GET";
+				
+				cbHttp.addEventListener(ResultEvent.RESULT, onCallbackOk);
+				cbHttp.addEventListener(FaultEvent.FAULT, onCallbackFailed);
+				
+				// Get the "?..." string in the url 
+				var searchStr: String = ExternalInterface.call("document.location.search.toString");
+				if (searchStr == null) {
+					return;
+				}
+				// Skip the "?"
+				searchStr = searchStr.substring(1, searchStr.length);
+				// Get parameters
+				var params: Array = searchStr.split("&");
+				var port: int = 0;
+				for each (var param: Object in params) {
+					var parts: Array = String(param).split("=");
+					if (String(parts[0]) == PARAM_USERNAME) {
+						username = String(parts[1]); 
+					} else if (String(parts[0]) == PARAM_USER_ID) {
+						cbUserId = int(parts[1]);
+					} else if (String(parts[0]) == PARAM_TASK_ID) {
+						cbTaskId = int(parts[1]);
+					} else if (String(parts[0]) == PARAM_PORT) {
+						port = int(parts[1]);
+					}
+				}
+				
+				cbHttp.url = "http://" + host + ":" + port + CALLBACK_PATH;
+				
+				if (username == null) {
+					return;
+				}
+				
+				//Alert.show("User=" + username + ", ID=" + modelId, "");
+				ClientEvtDispatcher.instance().addEventListener(ClientEvent.CONNECT_SUCCESS, onConnected);
+				ClientEvtDispatcher.instance().addEventListener(LoginEvent.SUCCESS, onLoginSuccess);
+				ClientEvtDispatcher.instance().addEventListener(ModelSelectEvent.SELECTED, onModelSelected);
+				ClientEvtDispatcher.instance().addEventListener(ListUserEvent.SUCCESS, onUserListed);
+				
+				initDataModels();
+				
+				Connector.instance().init();
+			}
+			
+			private function initDataModels(): void {
+				PersonalViewManager.instance();
+				ModelCollection.instance();
+				UserList.instance();
+				Model.instance();
+				FeatureNameList.instance();
+				CurrentFeature.instance();
+				GlobalTreeData.instance();
+				WorkingTreeData.instance();
+			//	PersonalTreeData.instance();
+			}
+			
+			private function onConnected(evt: ClientEvent): void {
+				new ListUserCommand().execute();
+			}
+			
+			private function onUserListed(evt: ListUserEvent): void {
+				// Automatically log in
+				new LoginCommand(username, "null", true).execute();
+			}
+			
+			private function onLoginSuccess(evt: LoginEvent): void {
+				// Automatically select model
+				UserList.instance().isLogin = true;
+				UserList.instance().myId = evt.myId;
+				UserList.instance().myName = evt.myName;
+				this.currentState = "MAIN";
+				
+				dlg = CreateModelDlg(PopUpManager.createPopUp(this, CreateModelDlg, true));
+				dlg.allowClose = false;
+				dlg.autoClose = false;
+				PopUpManager.centerPopUp(dlg);
+			}
+			
+			private function onModelSelected(evt: ModelSelectEvent): void {
+				cbModelId = evt.modelId;
+				cbModelName = evt.modelName;
+				
+				ModelCollection.instance().currentModelId = evt.modelId;
+				goCallbackUrl();
+			}
+			
+			private function onCallbackOk(evt: ResultEvent): void {
+				dlg.closeDlg();
+				fmPage.retrieveFeatureModel(cbModelId, cbModelName);
+				
+				ClientEvtDispatcher.instance().removeEventListener(ClientEvent.CONNECT_SUCCESS, onConnected);
+				ClientEvtDispatcher.instance().removeEventListener(LoginEvent.SUCCESS, onLoginSuccess);
+				ClientEvtDispatcher.instance().removeEventListener(ModelSelectEvent.SELECTED, onModelSelected);
+				ClientEvtDispatcher.instance().removeEventListener(ListUserEvent.SUCCESS, onUserListed);			
+			}
+			
+			private function onCallbackFailed(evt: FaultEvent): void {
+				Alert.show(evt.fault.toString(), "Error when sending data to portal");
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<fm:FMPage id="fmPage" includeIn="MAIN" />
+</s:Application>
