@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Form xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" 
+		 xmlns:mx="library://ns.adobe.com/flex/mx"
+		 creationComplete="reset();">
+	<mx:states>
+		<s:State name="StringLike"/>
+		<s:State name="Enum"/>
+		<s:State name="Number"/>
+	</mx:states>
+	
+	<fx:Metadata>
+		[Event(name="submit", type="flash.events.Event")]
+	</fx:Metadata>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+		
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.event.*;
+			import cofm.model.*;
+			import cofm.util.*;
+			
+			import mx.events.FlexEvent;
+			import mx.utils.StringUtil;
+			
+			import spark.events.IndexChangeEvent;
+			
+			private static const MAX_ENUM_LENGTH: int = 40;
+			private static const ENUM_INPUT_WIDTH: int = 110;
+			
+			[Bindable]
+			public var submitBtnLabel: String = RS.ok;
+			
+			public function reset(): void {
+				nameInput.editable = true;
+				
+				typeInput.visible = false;
+				typeInput.includeInLayout = false;
+				
+				typeSelect.visible = true;
+				typeSelect.includeInLayout = true;
+				
+				currentState = "StringLike";
+				typeSelect.selectedIndex = 0;
+			}
+			
+			private function onTypeChange(evt: IndexChangeEvent): void {
+				changeType(evt.currentTarget.selectedItem.label);
+			}
+			
+			private function onTypeSet(evt: FlexEvent): void {
+				changeType(evt.currentTarget.selectedItem.label);
+			}
+			
+			private function changeType(type: String): void {
+				switch (type) {
+					case Cst.ATTR_TYPE_ENUM:
+						currentState = "Enum";
+						break;
+					case Cst.ATTR_TYPE_NUMBER:
+						currentState = "Number";
+						break;
+					default:
+						currentState = "StringLike";
+						break;
+				}
+			}
+			
+			private function doAddEnumRow(evt: MouseEvent): void {
+				// Add before the button
+				var btn: LinkButton = LinkButton(evt.currentTarget);
+				var formItem: FormItem = FormItem(btn.parent);
+				formItem.addElementAt(createEnumRow(), formItem.getChildren().length - 1); 
+			}
+			
+			private function createEnumRow(): HGroup {
+				// The xml:
+				//   <HGroup>
+				//     <TextInput 1>
+				//     <TextInput 2>
+				//   </HGroup>
+				var hg: HGroup = new HGroup();
+				var t1: TextInput = new TextInput();
+				var t2: TextInput = new TextInput();
+				t1.maxChars = MAX_ENUM_LENGTH;
+				t2.maxChars = MAX_ENUM_LENGTH;
+				t1.width = ENUM_INPUT_WIDTH;
+				t2.width = ENUM_INPUT_WIDTH;
+				hg.addElement(t1);
+				hg.addElement(t2);
+				
+				return hg;
+			}
+			
+			public function set attrXml(xml: XML): void {
+				nameInput.text = xml.@name;
+				if (nameInput.text == Cst.ATTR_FEATURE_NAME ||
+					nameInput.text == Cst.ATTR_FEATURE_DES) {
+					currentState = "StringLike";
+					
+					nameInput.editable = false;
+					
+					typeInput.text = xml.@type;
+					typeInput.visible = true;
+					typeInput.includeInLayout = true;
+					
+					typeSelect.selectedIndex = 0;
+					typeSelect.visible = false;
+					typeSelect.includeInLayout = false;
+				} else {
+					nameInput.editable = true;
+					
+					typeInput.visible = false;
+					typeInput.includeInLayout = false;
+					
+					typeSelect.visible = true;
+					typeSelect.includeInLayout = true;
+					
+					switch (String(xml.@type)) {
+						case Cst.ATTR_TYPE_STRING:
+							currentState = "StringLike";
+							typeSelect.selectedIndex = 0;
+							break;
+						case Cst.ATTR_TYPE_TEXT:
+							currentState = "StringLike";
+							typeSelect.selectedIndex = 1;
+							break;
+						case Cst.ATTR_TYPE_ENUM:
+							currentState = "Enum";
+							typeSelect.selectedIndex = 2;
+							setEnumValues(XML(xml.enums));
+							break;
+						case Cst.ATTR_TYPE_NUMBER:
+							currentState = "Number";
+							typeSelect.selectedIndex = 3;
+							minInput.text = xml.min.text().toString();
+							maxInput.text = xml.max.text().toString();
+							unitInput.text = xml.unit.text().toString();
+							break;
+					}
+				}
+				dupSelect.selected = !ModelUtil.isTrue(String(xml.@dup));
+				
+			}
+			
+			public function get attrXml(): XML {
+				var aName: String = StringUtil.trim(nameInput.text);			
+				var aType: String = typeSelect.selectedItem.label;
+				var allowDup: Boolean = dupSelect.selected == false;
+				
+				var rslt: XML = <attrDef name={aName} type={aType} dup={allowDup} multi="true"/>;
+				
+				switch (aType) {
+					case Cst.ATTR_TYPE_ENUM:
+						rslt.appendChild(getEnumValues());
+						return rslt;
+					case Cst.ATTR_TYPE_NUMBER:
+						var min: Number = Number(minInput.text);
+						var max: Number = Number(maxInput.text);
+						var unit: String = StringUtil.trim(unitInput.text);
+						rslt.appendChild(<min>{min}</min>);
+						rslt.appendChild(<max>{max}</max>);
+						rslt.appendChild(<unit>{unit}</unit>);
+						return rslt;
+					default:
+						return rslt;
+				}
+			}
+			
+			private function getEnumValues(): XML {
+				var result: XML = <enums/>;
+				for each (var hg: Object in enumValues.getChildren()) {
+					if (hg is HGroup) {
+						for (var i: int = 0; i < HGroup(hg).numElements; i++) {
+							var o: Object = HGroup(hg).getElementAt(i);
+							if (o is TextInput && StringUtil.trim(TextInput(o).text) != "") {
+								result.appendChild(
+									<enum>{StringUtil.trim(TextInput(o).text)}</enum>);
+							}
+						}
+					} 
+				}
+				return result;
+			}
+			
+			private function setEnumValues(enums: XML): void {
+				var es: XMLList = XMLList(enums.enum);
+				var idx: int = 0;
+				for each (var hg: Object in enumValues.getChildren()) {
+					if (hg is HGroup && idx < es.length()) {
+						for (var i: int = 0; 
+							i < HGroup(hg).numElements && idx < es.length(); i++) {
+							var o: Object = HGroup(hg).getElementAt(i);
+							if (o is TextInput) {
+								TextInput(o).text = es[idx++].text().toString();
+							}
+						}
+					} 
+				}
+				
+				// If there are more enums than TextInputs
+				while (idx < es.length()) {
+					// Add a new row
+					var row: HGroup = createEnumRow();
+					for (var j: int = 0; 
+						j < HGroup(hg).numElements && idx < es.length(); j++) {
+						var o2: Object = HGroup(hg).getElementAt(j);
+						if (o2 is TextInput) {
+							TextInput(o2).text = es[idx++].text().toString();
+						}
+					}
+					enumValues.addElementAt(
+						row,
+						enumValues.getChildren().length - 1);
+					
+				}
+			}
+
+		]]>
+	</fx:Script>
+	
+	<mx:FormItem label="{RS.m_ca_name}">
+		<s:TextInput id="nameInput" widthInChars="18" maxChars="30"/>
+	</mx:FormItem>
+	
+	<mx:FormItem label="{RS.m_ca_type}">
+		<s:TextInput id="typeInput" editable="false" />
+		<s:ComboBox id="typeSelect" requireSelection="true" 
+					change="onTypeChange(event);"
+				    valueCommit="onTypeSet(event);">
+			<s:dataProvider>
+				<s:ArrayCollection>
+					<fx:Object label="{Cst.ATTR_TYPE_STRING}"/>
+					<fx:Object label="{Cst.ATTR_TYPE_TEXT}"/>
+					<fx:Object label="{Cst.ATTR_TYPE_ENUM}"/>
+					<fx:Object label="{Cst.ATTR_TYPE_NUMBER}"/>
+					<fx:Object label="{Cst.ATTR_TYPE_PTR}"/>
+				</s:ArrayCollection>
+			</s:dataProvider>
+		</s:ComboBox>
+	</mx:FormItem>
+	
+	<mx:FormItem>
+		<s:CheckBox id="dupSelect" label="Is identifier" />
+	</mx:FormItem>
+	
+	<mx:FormItem label="{RS.m_ca_enum}" id="enumValues" includeIn="Enum">
+		<s:HGroup>
+			<s:TextInput maxChars="{MAX_ENUM_LENGTH}" width="{ENUM_INPUT_WIDTH}"/>
+			<s:TextInput maxChars="{MAX_ENUM_LENGTH}" width="{ENUM_INPUT_WIDTH}"/>
+		</s:HGroup>
+		<s:HGroup>
+			<s:TextInput maxChars="{MAX_ENUM_LENGTH}" width="{ENUM_INPUT_WIDTH}"/>
+			<s:TextInput maxChars="{MAX_ENUM_LENGTH}" width="{ENUM_INPUT_WIDTH}"/>
+		</s:HGroup>
+		<mx:LinkButton label="{RS.m_ca_add_row}" click="doAddEnumRow(event);"/>
+	</mx:FormItem>
+	
+	<mx:FormItem label="{RS.m_ca_range}" direction="horizontal" includeIn="Number">
+		<s:TextInput id="minInput" width="80" maxChars="20"/>
+		<s:Label text="-"/>
+		<s:TextInput id="maxInput" width="80" maxChars="20"/>
+	</mx:FormItem>
+	<mx:FormItem label="{RS.m_ca_unit}" includeIn="Number">
+		<s:TextInput id="unitInput" widthInChars="10" maxChars="30"/>
+	</mx:FormItem>
+	
+	<mx:FormItem>
+		<s:Button label="{submitBtnLabel}" click="this.dispatchEvent(new Event('submit'));"/>
+	</mx:FormItem>
+	
+</mx:Form>

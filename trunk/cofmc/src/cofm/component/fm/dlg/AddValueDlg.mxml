@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx"
+			   width="400" height="300"
+			   title="{RS.m_cv_title}"
+			   creationComplete="initView();">
+	<s:states>
+		<s:State name="AddString"/>
+		<s:State name="AddText"/>
+		<s:State name="AddNumber"/>
+		<s:State name="AddPointer"/>
+	</s:states>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.event.*;
+			import cofm.model.*;
+			import cofm.util.*;
+			
+			import mx.collections.XMLListCollection;
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+			
+			import spark.events.IndexChangeEvent;
+			
+			private var _attrId: String;
+			
+			[Bindable]
+			private var ptrVals: XMLListCollection = Model.instance().entities;
+			
+			[Bindable]
+			private var ptrAttrs: XMLListCollection;
+			
+			private var curEntypeId: String;
+			
+			[Bindable] 
+			public function set attrId(a: String): void {
+				_attrId = a;
+				var attrDef: XML = Model.instance().getAttrDefById(
+					CurrentFeature.instance().element, _attrId);
+				if (attrDef != null) {
+					changeForm(attrDef);
+					attrInput.text = attrDef.@name;
+				}
+			}
+			
+			public function get attrId(): String {
+				return _attrId;
+			}
+			
+			private function initView(): void {
+				
+			}
+			
+			private function filterEntityByType(item: Object): Boolean {
+				if (String(item.@typeId) == curEntypeId) {
+					return true;
+				}
+				return false;
+			}
+			
+			private function resetPtrComboBox(entype: Object): void {
+				curEntypeId = String(entype.@id);
+				ptrVals.filterFunction = filterEntityByType;
+				ptrVals.refresh();
+				ptrAttrs = new XMLListCollection(XMLList(entype.attrDefs.attrDef).copy());
+				ptrAttrs.addItemAt(<attrDef id="0" name='(NONE)'/>, 0);
+			}
+			
+			private function onTypeChange(evt: IndexChangeEvent): void {
+				resetPtrComboBox(ptrType.selectedItem);
+			}
+			
+			private function changeForm(a: Object): void {
+				switch (String(a.@type)) {
+					case Cst.ATTR_TYPE_TEXT:
+						currentState = "AddText";
+						break;
+					case Cst.ATTR_TYPE_NUMBER:
+						currentState = "AddNumber";
+						numInfo.text = a.min.text().toString() +
+						" - " + a.max.text().toString() + 
+						" (" + a.unit.text().toString() + ")";
+						break;
+					case Cst.ATTR_TYPE_PTR:
+						currentState = "AddPointer";
+						ptrType.selectedIndex = 0;
+						resetPtrComboBox(ptrType.selectedItem);
+						break;
+					default:
+						currentState = "AddString";
+						break;
+				} 
+			}
+			
+			private function extractEntityName(item: Object): String {
+				// use the name displayed in the global tree.
+				return GlobalTreeData.instance().getEntityNameById(String(item.@id));
+			}
+			
+			private function doAddValue(): void {
+				//TODO: validate
+				var val: String;
+				if (this.currentState == "AddText") {
+					val = textVal.text;
+				} else if (this.currentState == "AddPointer") {
+					// Val = ENTITY_ID + "," + ATTR_ID
+					val = ptrVal.selectedItem.@id + "," + ptrAttr.selectedItem.@id;
+				} else {
+					val = strVal.text;
+				}
+				val = StringUtil.trim(val);
+				
+				new VoteAddValueCommand(
+					int(this.attrId),
+					val, 
+					CurrentFeature.instance().id).execute();
+				doClose();
+			}
+			
+			private function doClose(): void {
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</fx:Script>
+	
+	<mx:Form>
+		<mx:FormItem label="{RS.m_cv_attr}">
+			<s:TextInput id="attrInput" editable="false" enabled="false"/>
+		</mx:FormItem>
+		<mx:FormItem label="Target Type" includeIn="AddPointer">
+			<s:ComboBox id="ptrType" dataProvider="{Model.instance().entypes}"
+						labelField="@name"
+						requireSelection="true"
+					    change="onTypeChange(event);"/>
+		</mx:FormItem>
+		<mx:FormItem label="Target Instance" includeIn="AddPointer">
+			<s:ComboBox id="ptrVal"  
+						dataProvider="{ptrVals}"
+						labelFunction="extractEntityName"
+						requireSelection="true" />
+		</mx:FormItem>
+		<mx:FormItem label="Target Attribute (Optional)" includeIn="AddPointer">
+			<s:ComboBox id="ptrAttr" dataProvider="{ptrAttrs}"
+					    labelField="@name"
+					    requireSelection="true" />
+		</mx:FormItem>
+		<mx:FormItem label="{RS.m_cv_value}" excludeFrom="AddPointer">
+			
+			<!-- The input for String-typed & Numeric attributes -->
+			<s:TextInput id="strVal" includeIn="AddString, AddNumber"/>
+			
+			<!-- The input for Text-typed attributes -->
+			<s:TextArea id="textVal" includeIn="AddText"/>
+			
+			<!-- The prompt for number unit, min and max values -->
+			<s:Label id="numInfo"/>
+		</mx:FormItem>
+		<mx:FormItem direction="horizontal">
+			<s:Button label="{RS.ok}" click="doAddValue();"/>
+			<s:Button label="{RS.close}" click="doClose();"/>
+		</mx:FormItem>
+	</mx:Form>
+</s:TitleWindow>

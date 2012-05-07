@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" width="660" height="580"
+			   title="Edit Binary Relationships (5:33)" xmlns:common="cofm.component.common.*"
+			   close="onCancel();"
+			   creationComplete="initView();">
+	<s:states>
+		<s:State name="RelationUnselected" />
+		<s:State name="OldSelected" />
+		<s:State name="NewSelected" />
+	</s:states>
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import cofm.command.*;
+			import cofm.event.*;
+			import cofm.model.*;
+			import cofm.util.*;
+			
+			import mx.collections.XMLListCollection;
+			import mx.controls.Alert;
+			import mx.events.ListEvent;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			public var binrels: XMLListCollection = new XMLListCollection();
+			
+			private function initView(): void {
+				for each (var br: Object in Model.instance().bintypes) {
+					binrels.addItem(<binrel dirty="false" add="false"
+								id={br.@id} 
+								name={br.@name}
+								dir={br.@dir}
+								leftId={br.@sourceTypeId}
+								rightId={br.@targetTypeId}
+							    leftName={Model.instance().getEntityTypeNameById(br.@sourceTypeId)}
+								rightName={Model.instance().getEntityTypeNameById(br.@targetTypeId)} />);
+				}
+			}
+			
+			private function onRelationClicked(): void {
+				var r: XML = XML(relationGrid.selectedItem);
+				
+				if (ModelUtil.isTrue(r.@add)) {
+					this.currentState = "NewSelected";
+				} else {
+					this.currentState = "OldSelected";
+				}
+				relationNameInput.text = r.@name;
+				leftTypeSelect.selectedItem = Model.instance().entypes.source.(@id==r.@leftId)[0];
+				rightTypeSelect.selectedItem = Model.instance().entypes.source.(@id==r.@rightId)[0];
+				//hierCheck.selected = ModelUtil.isTrue(String(r.@hier));
+				dirCheck.selected = ModelUtil.isTrue(String(r.@dir));
+			}
+			
+			private function isValidRelation(): Boolean {
+				// name must not be used.
+				var names: XMLList = binrels.source.(@name==relationNameInput.text);
+				if (names.length() > 0) {
+					return false;
+				}
+				return true;
+			}
+			
+			private function onRelationChanged(): void {
+				if (this.currentState == "OldSelected" || this.currentState == "NewSelected") {
+					var old: Object = relationGrid.selectedItem;
+					old.@dirty = true;
+					old.@name = relationNameInput.text;
+					old.@leftId = leftTypeSelect.selectedItem.@id;
+					old.@rightId = rightTypeSelect.selectedItem.@id;
+					old.@leftName = leftTypeSelect.selectedItem.@name;
+					old.@rightName = rightTypeSelect.selectedItem.@name;
+					//old.@hier = hierCheck.selected;
+					old.@hier = false;
+					old.@dir = dirCheck.selected;
+				} else if (isValidRelation()) {
+					binrels.addItem(<binrel dirty="true" add="true"
+						name={relationNameInput.text}
+						leftId={leftTypeSelect.selectedItem.@id}
+						rightId={rightTypeSelect.selectedItem.@id}
+						leftName={leftTypeSelect.selectedItem.@name}
+						rightName={rightTypeSelect.selectedItem.@name}
+						hier="false"
+						dir={dirCheck.selected} />);
+					//hier={hierCheck.selected}
+				}
+				this.currentState = "RelationUnselected";
+				relationGrid.selectedIndex = -1;
+			}
+			
+			private function onRelationDeleted(): void {
+				var n: String = String(relationGrid.selectedItem.@name);
+				var r:XML = XML(binrels.source.(@name==n)[0]);
+				binrels.removeItemAt(binrels.getItemIndex(r));
+				this.currentState = "RelationUnselected";
+				relationGrid.selectedIndex = -1;
+			}
+			
+			private function onNext(): void {
+				nextBtn.enabled = false;
+				
+				for each (var br: Object in binrels) {
+					// Commit all "dirty" objects to server
+					if (ModelUtil.isTrue(br.@dirty)) {
+						new EditAddBinRelationTypeCommand(br.@name, 
+							int(br.@leftId), int(br.@rightId), 
+							false, br.@dir,
+							ModelCollection.instance().currentModelId,
+							(ModelUtil.isTrue(br.@add) ? -1 : int(br.@id))).execute();
+					}
+				}
+				
+				onCancel();
+			}
+			
+			private function onCancel(): void {
+				PopUpManager.removePopUp(this);
+			}
+			
+			
+			
+		]]>
+	</fx:Script>
+	
+	<s:VGroup width="100%" height="400" paddingTop="10">
+		<s:Label text="Define the types of constraints in this model. (Only binary constraints now.)"/>
+		
+		<mx:DataGrid id="relationGrid" rowCount="10" width="100%"
+					 itemClick="onRelationClicked();"
+					 dataProvider="{binrels}">
+			<mx:columns>
+				<mx:DataGridColumn dataField="@name" headerText="Name"/>
+				<!--<mx:DataGridColumn dataField="@hier" headerText="Is Refinement"/>-->
+				<mx:DataGridColumn dataField="@dir" headerText="Is Directed"/>
+				<mx:DataGridColumn dataField="@leftName" headerText="Entity Type 1">
+				</mx:DataGridColumn>
+				<mx:DataGridColumn dataField="@rightName" headerText="Entity Type 2"/>
+			</mx:columns>
+		</mx:DataGrid>
+		
+		<mx:Form>
+			<mx:FormItem label="Constraint Name">
+				<s:TextInput widthInChars="20" id="relationNameInput" />
+			</mx:FormItem>
+			<mx:FormItem label="End Types" direction="horizontal">
+				<s:Label text="Left"/>
+				<s:ComboBox id="leftTypeSelect"
+							dataProvider="{Model.instance().entypes}"
+							requireSelection="true"
+							labelField="@name" />
+				<s:Label text="Right" />
+				<s:ComboBox id="rightTypeSelect"
+							dataProvider="{Model.instance().entypes}"
+							requireSelection="true"
+							labelField="@name" />
+			</mx:FormItem>
+			<mx:FormItem direction="horizontal">
+				<!--<s:CheckBox id="hierCheck" label="Is Refinement" />
+				<mx:Spacer />-->
+				<s:CheckBox id="dirCheck" label="Is Directed" />
+			</mx:FormItem>
+			<mx:FormItem direction="horizontal">
+				<s:Button label="Save changes" label.RelationUnselected="Create a new one" 
+						  click="onRelationChanged();" />
+				<s:Button label="Delete" enabled="false"
+						  enabled.NewSelected="true" 
+						  click="onRelationDeleted();" />
+			</mx:FormItem>
+		</mx:Form>
+	</s:VGroup>
+	
+	<mx:Canvas height="30" width="100%" bottom="10">
+		<s:HGroup right="10">
+			<s:Button id="nextBtn" label="Finish" click="onNext();"/>
+			<s:Button label="Cancel" click="onCancel();"/>
+		</s:HGroup>
+	</mx:Canvas>
+	
+</s:TitleWindow>
