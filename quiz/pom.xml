@@ -10,13 +10,13 @@
   
   <properties>  <!-- User-defined properties -->
     <!-- Glassfish 3 install directory -->
-    <glassfishInsDir>c:/glassfish3</glassfishInsDir>
+    <glassfishInsDir>e:/glassfish3</glassfishInsDir>
     <!-- Glassfish server admin info -->
     <glassfishAdmin>admin</glassfishAdmin>
-    <glassfishPass>123</glassfishPass>
+    <glassfishPass>admin</glassfishPass>
     <!-- Server port -->
     <glassfishAdminPort>4848</glassfishAdminPort>
-    <glassfishHttpPort>8080</glassfishHttpPort>
+    <glassfishHttpPort>9090</glassfishHttpPort>
     <glassfishHttpsPort>8181</glassfishHttpsPort>    
   </properties>
   
