@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="quiz.server.bean">
+  <class name="Quiz" table="QUIZ">
+  
+  	<id name="id" type="integer" column="QUIZ_ID">
+  		<generator class="native"></generator>
+  	</id>
+  	
+  	<property name="content" type="string" column="CONTENT"></property>
+  	<property name="point" type="integer" column="POINT"></property>
+  	
+  	<set name="candidates" inverse="true">
+  		<key column="QUIZ_ID"></key>
+  		<one-to-many class="Candidate"/>
+  	</set>
+  </class>
+</hibernate-mapping>

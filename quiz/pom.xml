@@ -1,0 +1,275 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>pku.billiards</groupId>
+  <artifactId>quiz</artifactId>
+  <packaging>war</packaging>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>quiz Maven Webapp</name>
+  <url>http://maven.apache.org</url>
+  
+  <properties>  <!-- User-defined properties -->
+    <!-- Glassfish 3 install directory -->
+    <glassfishInsDir>c:/glassfish3</glassfishInsDir>
+    <!-- Glassfish server admin info -->
+    <glassfishAdmin>admin</glassfishAdmin>
+    <glassfishPass>123</glassfishPass>
+    <!-- Server port -->
+    <glassfishAdminPort>4848</glassfishAdminPort>
+    <glassfishHttpPort>8080</glassfishHttpPort>
+    <glassfishHttpsPort>8181</glassfishHttpsPort>    
+  </properties>
+  
+  <pluginRepositories>
+      <pluginRepository>
+          <id>maven.java.net</id>
+          <name>Java.net Maven2 Repository</name>
+          <url>http://download.java.net/maven/2</url>
+      </pluginRepository>
+
+	  <pluginRepository>
+          <id>maven2-repository.dev.java.net</id>
+          <name>Java.net Repository for Maven</name>
+          <url>http://download.java.net/maven/glassfish/</url>
+      </pluginRepository>
+  </pluginRepositories>
+  
+  <repositories>
+  	<repository>
+  		<id>java.net</id>
+  		<name>GlassFish Maven Repository</name>
+  		<url>http://download.java.net/maven/glassfish</url>
+  		<layout>default</layout>
+  	</repository>
+  	<repository>
+        <id>maven2-repository.dev.java.net</id>
+        <name>Java.net Repository for Maven</name>
+        <url>http://download.java.net/maven/2/</url>
+        <layout>default</layout>
+    </repository>
+    <repository>
+    	<id>clojars.org</id>
+    	<name>Clojars Repository</name>
+  		<url>http://clojars.org/repo</url>
+    </repository>
+  </repositories>
+  
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.6</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>com.sun.grizzly</groupId>
+  		<artifactId>grizzly-comet</artifactId>
+  		<version>1.9.34</version>
+	</dependency>
+	 <dependency>
+        <groupId>javax.mail</groupId>
+        <artifactId>mail</artifactId>
+        <version>1.4</version>
+        <scope>provided</scope>
+    </dependency>
+	<dependency>
+		<groupId>javax</groupId>
+		<artifactId>javaee-api</artifactId>
+		<version>6.0</version>
+		<scope>provided</scope>
+	</dependency>
+	 <dependency>
+    	<groupId>org.slf4j</groupId>
+    	<artifactId>slf4j-log4j12</artifactId>
+    	<version>1.4.3</version>
+    </dependency> 
+    <dependency>
+    	<groupId>net.sf.json-lib</groupId>
+    	<artifactId>json-lib</artifactId>
+    	<version>2.3</version>
+	</dependency>
+    <dependency>
+    	<groupId>org.hibernate</groupId>
+    	<artifactId>hibernate</artifactId>
+    	<version>3.2.6.ga</version>
+    </dependency>
+    <dependency>
+    	<groupId>javax.transaction</groupId>
+    	<artifactId>jta</artifactId>
+    	<version>1.1</version>
+    </dependency>
+    <dependency>
+		<groupId>mysql</groupId>
+		<artifactId>mysql-connector-java</artifactId>
+		<version>5.1.12</version>
+	</dependency>
+    <dependency>
+    	<groupId>c3p0</groupId>
+   		<artifactId>c3p0</artifactId>
+   		<version>0.9.1</version>
+	</dependency>
+	<dependency>
+		<groupId>edu.stanford.nlp</groupId>
+		<artifactId>stanford-pos-tagger</artifactId>
+		<version>3.0.2</version>
+	</dependency>
+	<dependency>
+		<groupId>edu.stanford.nlp</groupId>
+		<artifactId>stanford-parser</artifactId>
+		<version>1.6.9</version>
+	</dependency>
+  </dependencies>
+  <build>
+    <finalName>quiz</finalName>
+    
+    <pluginManagement>
+    	<plugins>
+    		<plugin>
+    			<artifactId>maven-install-plugin</artifactId>
+    			<version>2.3.1</version>
+    		</plugin>
+    	</plugins>
+    </pluginManagement>
+    
+    <resources> 
+      <!-- Specify the main/config directory as a source folder -->
+      <resource>
+        <directory>src/main/config</directory>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+    
+    <plugins>
+    
+      <plugin>  <!-- Set JDK version for compiler to 5.0 -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.glassfish.maven.plugin</groupId>
+        <artifactId>maven-glassfish-plugin</artifactId>
+        <version>2.1</version>
+        <configuration>
+          <user>${glassfishAdmin}</user>
+          <adminPassword>${glassfishPass}</adminPassword>
+          <glassfishDirectory>${glassfishInsDir}</glassfishDirectory>
+          <components>
+            <component>
+              <name>${project.artifactId}</name>
+              <artifact>${project.build.directory}/${project.build.finalName}.war</artifact>
+            </component>
+          </components>
+          <domain>
+            <name>${project.artifactId}</name>
+            <adminPort>${glassfishAdminPort}</adminPort>
+            <httpPort>${glassfishHttpPort}</httpPort>
+            <httpsPort>${glassfishHttpsPort}</httpsPort>
+          </domain>
+        </configuration>
+      </plugin>
+      
+    </plugins>
+    
+  </build>
+  
+  <profiles>
+    
+    <profile>
+      <id>emptify-and-create-prod-db</id>
+      <build>
+      <plugins>
+      <plugin>  <!-- Hibernate 3 tools for maven  -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>hibernate3-maven-plugin</artifactId>
+        <version>2.2</version>
+        <executions>
+          <execution> <!-- Execution of the hbm2ddl tool -->
+            <id>export_schema</id>
+            <phase>process-classes</phase> <!-- The phase must AFTER process-resources -->
+            <goals>
+              <goal>hbm2ddl</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <components>
+            <component>
+              <name>hbm2ddl</name>
+              <implementation>configuration</implementation>
+            </component>
+          </components>
+          <componentProperties> <!-- hbm2ddl configuration -->
+            <drop>true</drop>
+            <create>true</create>
+            <outputfilename>dump.ddl</outputfilename>
+            <configurationfile>src/main/config/hibernate.cfg.xml</configurationfile>
+            <propertyfile>src/main/config/hibernate.properties</propertyfile>
+          </componentProperties>
+        </configuration>
+        <dependencies>
+          <dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.12</version>
+		  </dependency>
+        </dependencies>
+      </plugin>
+      </plugins>
+      </build>
+    </profile>
+    
+     <profile>
+      <id>update-prod-db-schema</id>
+      <build>
+      <plugins>
+      <plugin>  <!-- Hibernate 3 tools for maven  -->
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>hibernate3-maven-plugin</artifactId>
+        <version>2.2</version>
+        <executions>
+          <execution> <!-- Execution of the hbm2ddl tool -->
+            <id>export_schema</id>
+            <phase>process-classes</phase> <!-- The phase must AFTER process-resources -->
+            <goals>
+              <goal>hbm2ddl</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <components>
+            <component>
+              <name>hbm2ddl</name>
+              <implementation>configuration</implementation>
+            </component>
+          </components>
+          <componentProperties> <!-- hbm2ddl configuration -->
+            <drop>false</drop>
+            <create>false</create>
+            <update>true</update>
+            <outputfilename>dump.ddl</outputfilename>
+            <configurationfile>src/main/config/hibernate.cfg.xml</configurationfile>
+            <propertyfile>src/main/config/hibernate.properties</propertyfile>
+          </componentProperties>
+        </configuration>
+        <dependencies>
+          <dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.12</version>
+		  </dependency>
+        </dependencies>
+      </plugin>
+      </plugins>
+      </build>
+    </profile>
+    
+  </profiles>
+  
+</project>

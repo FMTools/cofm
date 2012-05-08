@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="quiz.server.bean">
+  <class name="Answer" table="ANSWER">
+  	
+  	<id name="id" type="integer" column="ANSWER_ID">
+  		<generator class="native"></generator>
+  	</id>
+  	
+  	<property name="time" type="long" column="TIME"></property>
+  	
+  	<many-to-one name="choice" column="CHOICE_ID" unique="true" not-null="true"></many-to-one>
+  	
+  	<many-to-one name="user" class="User" column="USER_ID"></many-to-one>
+  </class>
+</hibernate-mapping>
