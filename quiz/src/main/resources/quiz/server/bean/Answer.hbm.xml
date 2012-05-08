@@ -10,9 +10,9 @@
   	</id>
   	
   	<property name="time" type="long" column="TIME"></property>
-  	
-  	<many-to-one name="choice" column="CHOICE_ID" unique="true" not-null="true"></many-to-one>
-  	
+  	<property name="quizNo" type="integer" column="QUIZ_NO"></property>
+  	<property name="choice" type="string" column="CHOICE"></property>
+  	<property name="score" type="integer" column="SCORE"></property>
   	<many-to-one name="user" class="User" column="USER_ID"></many-to-one>
   </class>
 </hibernate-mapping>

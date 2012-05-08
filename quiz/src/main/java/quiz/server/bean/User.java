@@ -19,7 +19,7 @@ public class User {
 			if (i++ > 0) {
 				s.append(",");
 			}
-			s.append(a.getChoice().getQuiz().getId());
+			s.append(a.getQuizNo());
 		}
 		s.append("]");
 		return s.toString();
@@ -28,7 +28,7 @@ public class User {
 	public int calcTotalPoint() {
 		int p = 0;
 		for (Answer a: answers) {
-			p += a.calcPoint();
+			p += a.getScore();
 		}
 		return p;
 	}

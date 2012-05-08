@@ -5,17 +5,11 @@ public class Answer {
 
 	private int id;
 	
-	private Candidate choice;
+	private int quizNo;
+	private String choice;
 	private long time;
-	
+	private int score;
 	private User user;
-	
-	public int calcPoint() {
-		if (choice.isCorrect()) {
-			return choice.getQuiz().getPoint();
-		}
-		return 0;
-	}
 	
 	public int getId() {
 		return id;
@@ -23,12 +17,7 @@ public class Answer {
 	public void setId(int id) {
 		this.id = id;
 	}
-	public Candidate getChoice() {
-		return choice;
-	}
-	public void setChoice(Candidate choice) {
-		this.choice = choice;
-	}
+	
 
 	public void setTime(long time) {
 		this.time = time;
@@ -44,6 +33,24 @@ public class Answer {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+	public void setQuizNo(int quizNo) {
+		this.quizNo = quizNo;
+	}
+	public int getQuizNo() {
+		return quizNo;
+	}
+	public void setChoice(String choice) {
+		this.choice = choice;
+	}
+	public String getChoice() {
+		return choice;
+	}
+	public void setScore(int score) {
+		this.score = score;
+	}
+	public int getScore() {
+		return score;
 	}
 	
 }

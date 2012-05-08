@@ -72,11 +72,12 @@ public class QuizServlet extends HttpServlet {
 	private void handleSave(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		String user = req.getParameter(KEY_USER);
 		int quizId = Integer.valueOf(req.getParameter(KEY_QUIZ));
-		int answer = Integer.valueOf(req.getParameter(KEY_DECISION));
+		String answer = req.getParameter(KEY_DECISION);
 		long time = Long.valueOf(req.getParameter(KEY_TIME));
+		int score = Integer.valueOf(req.getParameter(KEY_SCORE));
 		
 		if (loginUsers.contains(user)) {
-			Response result = new SaveRequest(user, quizId, answer, time).handle();
+			Response result = new SaveRequest(user, quizId, answer, score, time).handle();
 			res.getWriter().write(result.getMessage());
 		}
 		res.getWriter().write("ERROR");

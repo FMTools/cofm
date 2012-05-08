@@ -1,5 +1,7 @@
 package quiz.server.request;
 
+import org.apache.log4j.Logger;
+
 import quiz.server.bean.Answer;
 import quiz.server.bean.Candidate;
 import quiz.server.bean.User;
@@ -7,15 +9,19 @@ import quiz.server.dao.DaoUtil;
 
 public class SaveRequest implements Request {
 
+	static Logger logger = Logger.getLogger(SaveRequest.class);
+	
 	private String name;
+	private String choice;
 	private int quizId;
-	private int answer;
+	private int score;
 	private long time;
 	
-	public SaveRequest(String name, int quizId, int answer, long time) {
+	public SaveRequest(String name, int quizId, String choice, int score, long time) {
 		this.name = name;
 		this.quizId = quizId;
-		this.answer = answer;
+		this.choice = choice;
+		this.score = score;
 		this.time = time;
 	}
 	
@@ -26,29 +32,24 @@ public class SaveRequest implements Request {
 		}
 		
 		for (Answer a: u.getAnswers()) {
-			if (quizId == a.getChoice().getQuiz().getId()) {
+			if (quizId == a.getQuizNo()) {
 				return new Response(Response.STATUS_BAD, "Quiz has already been answered.");
 			}
-		}
-		
-		Candidate choice = DaoUtil.getCandidateDao().getById(answer, false);
-		if (choice == null) {
-			return new Response(Response.STATUS_BAD, "No such candidate.");
-		}
-		
-		if (choice.getQuiz().getId() != this.quizId) {
-			return new Response(Response.STATUS_BAD, "Candidate and Quiz don't match.");
 		}
 		
 		Answer answer = new Answer();
 		answer.setChoice(choice);
 		answer.setTime(time);
+		answer.setQuizNo(quizId);
+		answer.setScore(score);
+		answer.setUser(u);
 		
 		u.getAnswers().add(answer);
 		
 		DaoUtil.getAnswerDao().save(answer);
 		DaoUtil.getUserDao().save(u);
 		
+		logger.info("SAVE: " + name + " - Question #" + quizId + " Answer=" + choice + " Score=" + score + " Time=" + time);
 		return new Response(Response.STATUS_OK);
 	}
 
