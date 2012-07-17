@@ -1,0 +1,8 @@
+[1] Kang, Cohen, Hess, Feature Oriented Domain Analysis Feasibility Study
+Griss, Favaro, Integrating feature modeling with the RSEB
+Kang, Kim, Lee, FORM: A feature oriented reuse method with domain specific reference architectures
+
+
+Title:A COLLABORATIVE APPROACH TO ONTOLOGY DESIGN.
+Source:Holsapple, Clyde W.; Joshi, K. D.; Communications of the ACM, 2002, vol. 45, issue 2, p 42, ISSN 00010782. ISBN 00010782.
+
